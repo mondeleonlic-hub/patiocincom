@@ -846,8 +846,11 @@
       <tbody id="hist-body"></tbody>
     </table>
   </div>
-  <div style="margin-top:16px;display:flex;gap:10px">
+  <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn btn-outline" onclick="exportCSV()">📥 Exportar CSV</button>
+    <button class="btn btn-outline" onclick="exportBackup()" style="color:var(--green);border-color:var(--green)">💾 Backup JSON</button>
+    <button class="btn btn-outline" onclick="document.getElementById('import-file').click()" style="color:var(--blue);border-color:var(--blue)">📂 Importar backup</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importBackup(this)">
     <button class="btn btn-outline" onclick="clearAll()" style="color:var(--red);border-color:var(--red)">🗑 Borrar todo</button>
   </div>
 </div>
@@ -1769,6 +1772,36 @@ function clearAll() {
   data = { weeks: [] }; currentWeekIdx = -1;
   save(); renderHistorial(); buildWeekSelect();
   showToast('Todos los datos eliminados');
+}
+
+function exportBackup() {
+  const raw = localStorage.getItem('pc_financial_v2');
+  if (!raw) { showToast('Sin datos para exportar'); return; }
+  const blob = new Blob([raw], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'patocincoo-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('✓ Backup guardado');
+}
+
+function importBackup(inp) {
+  const file = inp.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!parsed.weeks && !parsed.semanas) throw new Error('Formato inválido');
+      if (!confirm('¿Importar backup? Se reemplazarán los datos actuales.')) return;
+      localStorage.setItem('pc_financial_v2', e.target.result);
+      location.reload();
+    } catch(err) {
+      alert('Error al importar: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  inp.value = '';
 }
 
 function exportCSV() {
