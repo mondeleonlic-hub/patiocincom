@@ -12,8 +12,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f2f2f2;min-height:100vh
 .logo{font-weight:900;font-size:17px;letter-spacing:3px}
 .logo span{color:#555;font-size:10px;font-weight:400;letter-spacing:1px;margin-left:6px}
 #sem{background:#222;color:#f8ba00;border:1px solid #444;border-radius:4px;padding:3px 8px;font-size:13px;font-weight:700;width:90px;font-family:inherit}
-.tabs{background:#1a1a1a;display:flex;flex-wrap:nowrap;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tabs-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;flex-wrap:wrap;align-items:center}
+.tabs{background:#1a1a1a}
+.tabs-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;flex-wrap:nowrap;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.tabs-inner::-webkit-scrollbar{display:none}
 .tab{padding:10px 16px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:transparent;color:#999;border-bottom:3px solid transparent;white-space:nowrap;height:44px}
 .tab.on{background:#f8ba00;color:#000;border-bottom:3px solid #f8ba00}
 #fmsg{margin-left:auto;padding:9px 16px;font-size:12px;font-weight:700;color:#38a169;display:none}
@@ -162,8 +162,8 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
   <button class="tab" data-t="sobres">🖨️ Sobres</button>
   <button class="tab" data-t="flujo">💵 Flujo</button>
   <button class="tab" data-t="hist">📅 Historial</button>
-  </div>
   <span id="fmsg"></span>
+  </div>
 </div>
 <div id="content">
 
@@ -411,9 +411,9 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
             <td style="padding:10px;text-align:right;color:#1c3a61" id="fl-tot-ala">$0</td>
             <td colspan="3"></td>
           </tr>
-          <tr style="background:#f8ba00;font-weight:900;font-size:14px">
+          <tr style="background:#f8ba00;font-weight:900;font-size:14px;color:#1c3a61">
             <td style="padding:10px">TOTAL SEMANA</td>
-            <td colspan="7" style="padding:10px;text-align:right;font-size:16px" id="fl-tot-total">$0</td>
+            <td colspan="7" style="padding:10px;text-align:right;font-size:16px;color:#1c3a61" id="fl-tot-total">$0</td>
           </tr>
         </tfoot>
       </table>
