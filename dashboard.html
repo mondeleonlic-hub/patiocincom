@@ -20,7 +20,7 @@
   body { font-family: Arial, sans-serif; background: #F0F0F0; color: var(--dark); }
 
   /* NAV */
-  nav { background: var(--dark); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  nav { background: var(--dark); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.4); padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
   .nav-brand { display: flex; align-items: center; }
   .nav-brand span { color: var(--white); font-weight: 300; }
   .nav-tabs { display: flex; gap: 4px; }
@@ -321,6 +321,15 @@
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<script>
+// Pre-cargar datos si localStorage está vacío
+(function(){
+  if(!localStorage.getItem('pc_financial_v2')){
+    localStorage.setItem('pc_financial_v2', "{\"weeks\":[{\"label\":\"09-mar \u2013 15-mar 2026\",\"date\":\"2026-03-09T06:00:00.000Z\",\"dateStart\":\"2026-03-09T06:00:00.000Z\",\"dateEnd\":\"2026-03-15T06:00:00.000Z\",\"cw-ref\":91797,\"cw-ala\":66595,\"food-ref\":27716,\"food-ala\":14807,\"mem\":9881,\"det\":6945,\"coches\":1007,\"comandas\":50.14,\"mem-vend\":8,\"mem-canc\":10,\"mem-act\":98,\"ref-renta-mes\":89206,\"ref-serv\":3000,\"ref-com\":33940,\"ref-ins\":1868,\"ref-nom\":8000,\"ref-insf\":12388,\"ref-otros\":1000,\"ala-renta-mes\":61560,\"ala-serv\":3000,\"ala-com\":33940,\"ala-ins\":2719,\"ala-nom\":4500,\"ala-insf\":12388,\"ala-otros\":1000,\"ref-serv-mes\":15000,\"ala-serv-mes\":8000},{\"label\":\"15-mar \u2013 21-mar 2026\",\"date\":\"2026-03-15T06:00:00.000Z\",\"dateStart\":\"2026-03-15T06:00:00.000Z\",\"dateEnd\":\"2026-03-21T06:00:00.000Z\",\"cw-ref\":103178,\"cw-ala\":95431,\"food-ref\":30258,\"food-ala\":17931,\"mem\":12333,\"det\":4010,\"coches\":1113,\"comandas\":47,\"mem-vend\":5,\"mem-canc\":1,\"mem-act\":141,\"ref-renta-mes\":89206,\"ref-serv-mes\":20329,\"ref-com\":35983,\"ref-ins\":3590,\"ref-nom\":10050,\"ref-insf\":20653,\"ref-otros\":4575,\"ala-renta-mes\":61560,\"ala-serv-mes\":12011,\"ala-com\":35983,\"ala-ins\":4349,\"ala-nom\":3830,\"ala-insf\":20653,\"ala-otros\":5021,\"ref-nom-cw\":0,\"ala-nom-cw\":0,\"gen-nom-mes\":30000,\"gen-cont\":0,\"gen-mkt\":0,\"gen-admin\":0,\"gen-otros\":2000},{\"label\":\"22-mar \u2013 31-mar 2026\",\"date\":\"2026-03-22T06:00:00.000Z\",\"dateStart\":\"2026-03-22T06:00:00.000Z\",\"dateEnd\":\"2026-03-31T06:00:00.000Z\",\"cw-ref\":74538,\"cw-ala\":45612,\"food-ref\":27637,\"food-ala\":17238,\"mem\":19096,\"det\":22990,\"coches\":662,\"comandas\":92,\"mem-vend\":14,\"mem-canc\":7,\"mem-act\":165,\"ref-renta-mes\":89206,\"ref-serv-mes\":20329,\"ref-com\":40800,\"ref-ins\":4420,\"ref-nom-cw\":3450,\"ref-nom\":5000,\"ref-insf\":8554,\"ref-otros\":0,\"ala-renta-mes\":61560,\"ala-serv-mes\":13297,\"ala-com\":27800,\"ala-ins\":1779,\"ala-nom-cw\":2700,\"ala-nom\":4150,\"ala-insf\":8554,\"ala-otros\":0,\"gen-nom-mes\":45000,\"gen-cont\":1562,\"gen-mkt\":900,\"gen-admin\":8000,\"gen-otros\":2411},{\"label\":\"29-mar \u2013 05-abr 2026\",\"date\":\"2026-03-29T06:00:00.000Z\",\"dateStart\":\"2026-03-29T06:00:00.000Z\",\"dateEnd\":\"2026-04-05T06:00:00.000Z\",\"cw-ref\":74538,\"cw-ala\":45612,\"food-ref\":27637,\"food-ala\":17238,\"mem\":19096,\"det\":26290,\"coches\":986,\"comandas\":92,\"mem-vend\":14,\"mem-canc\":7,\"mem-act\":165,\"ref-renta-mes\":89206,\"ref-serv-mes\":20329,\"ref-com\":43091,\"ref-ins\":4920,\"ref-nom-cw\":2700,\"ref-nom\":10050,\"ref-insf\":7703.5,\"ref-otros\":1000,\"ala-renta-mes\":61560,\"ala-serv-mes\":13297,\"ala-com\":27800,\"ala-ins\":2279,\"ala-nom-cw\":2700,\"ala-nom\":4000,\"ala-insf\":7703.5,\"ala-otros\":1300,\"gen-nom-mes\":90000,\"gen-cont\":1562,\"gen-mkt\":900,\"gen-admin\":8000,\"gen-otros\":2411,\"det-ref\":11170,\"det-ala\":15120,\"coches-ref\":544,\"coches-ala\":442,\"food-heb\":4409,\"food-agua\":175,\"food-guad\":1017,\"food-etrusca\":0,\"food-hielo\":350,\"food-crem\":518,\"food-mp\":2286,\"food-cafe\":-2,\"food-carne\":750,\"food-costco\":5904,\"food-otros\":0,\"ref-serv-agua-mes\":14616,\"ala-serv-agua-mes\":1429,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"ref-serv-gas\":500,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":-2,\"ala-serv-gas\":500,\"ala-serv-internet\":649,\"ala-serv-spotify\":100,\"ala-serv-basura\":1800,\"ala-serv-otros\":0,\"ref-ins-diesel\":500,\"ref-ins-quim\":1080,\"ref-ins-herr\":2840,\"ref-ins-otros\":0,\"ala-ins-diesel\":589,\"ala-ins-quim\":1190,\"ala-ins-otros\":0,\"gen-ins\":1000,\"nom-ref-direct\":2700,\"nom-ala-direct\":2700,\"nom-gen-mes\":45000,\"ref-nom-food\":10050,\"ala-nom-food\":4000,\"uber-ref\":0,\"uber-ala\":300,\"ref-serv-direct\":6074,\"ala-serv-direct\":5417},{\"label\":\"Sem 15 \u00b7 06-abr \u2013 12-abr 2026\",\"date\":\"2026-04-06T06:00:00.000Z\",\"dateStart\":\"2026-04-06T06:00:00.000Z\",\"dateEnd\":\"2026-04-12T06:00:00.000Z\",\"cw-ref\":120628,\"cw-ala\":112711,\"food-ref\":39138,\"food-ala\":23355,\"mem\":16652,\"det-ref\":12010,\"det-ala\":14307,\"coches-ref\":744,\"coches-ala\":655,\"comandas\":58.94,\"mem-vend\":13,\"mem-canc\":3,\"mem-act\":173,\"food-heb\":3071,\"food-agua\":105,\"food-guad\":2840,\"food-etrusca\":5621,\"food-hielo\":350,\"food-crem\":1112,\"food-mp\":1657,\"food-cafe\":0,\"food-carne\":0,\"food-costco\":6155,\"food-otros\":1913,\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":15000,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"ref-serv-gas\":0,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":1000,\"ala-serv-gas\":0,\"ala-serv-internet\":649,\"ala-serv-spotify\":100,\"ala-serv-basura\":500,\"ala-serv-otros\":1000,\"ref-ins-diesel\":500,\"ref-ins-quim\":2120,\"ref-ins-herr\":143,\"ref-ins-otros\":619,\"ala-ins-diesel\":0,\"ala-ins-quim\":2130,\"ala-ins-herr\":0,\"ala-ins-otros\":619,\"gen-ins\":0,\"nom-ref-direct\":6066,\"nom-ala-direct\":2700,\"nom-gen-mes\":45000,\"ref-nom-food\":10618,\"ala-nom-food\":0,\"ref-com\":23000,\"ala-com\":23000,\"uber-ref\":125,\"uber-ala\":144,\"ref-otros\":500,\"ala-otros\":1666,\"gen-cont\":598,\"gen-mkt\":700,\"gen-admin\":6000,\"gen-otros\":3690,\"ref-serv-direct\":6205,\"ala-serv-direct\":4721,\"ref-ins\":3382,\"ala-ins\":2749,\"ref-nom-cw\":6066,\"ala-nom-cw\":2700,\"ref-nom\":10618,\"gen-nom-mes\":360000,\"ref-insf\":11412,\"ala-insf\":11412,\"det\":26317,\"coches\":1399,\"num-comandas\":844,\"mem-canc-cli\":0},{\"label\":\"Sem 16 \u00b7 13-abr \u2013 19-abr 2026\",\"date\":\"2026-04-13T06:00:00.000Z\",\"dateStart\":\"2026-04-13T06:00:00.000Z\",\"dateEnd\":\"2026-04-19T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"cw-ref\":80038,\"cw-ala\":61475,\"food-ref\":23339,\"food-ala\":10744,\"mem\":12983,\"det-ref\":2115,\"det-ala\":1877,\"coches-ref\":489,\"coches-ala\":378,\"num-comandas\":398,\"mem-vend\":7,\"mem-canc\":13,\"mem-act\":172,\"mem-canc-cli\":1,\"food-heb\":2782,\"food-agua\":160,\"food-guad\":1188,\"food-etrusca\":0,\"food-hielo\":340,\"food-crem\":1117,\"food-mp\":0,\"food-cafe\":1970,\"food-carne\":1350,\"food-costco\":7411,\"food-otros\":7822,\"ref-serv-gas\":0,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":0,\"ala-serv-gas\":0,\"ala-serv-internet\":649,\"ala-serv-spotify\":100,\"ala-serv-basura\":500,\"ala-serv-otros\":0,\"ref-ins-diesel\":1000,\"ref-ins-quim\":1979,\"ref-ins-herr\":289,\"ref-ins-otros\":0,\"ala-ins-diesel\":500,\"ala-ins-quim\":1640,\"ala-ins-herr\":289,\"ala-ins-otros\":706,\"gen-ins\":0,\"nom-ref-direct\":3000,\"nom-ala-direct\":3300,\"nom-gen-mes\":45000,\"ref-nom-food\":7934,\"ala-nom-food\":4269,\"ref-com\":26511,\"ala-com\":26511,\"uber-ref\":240,\"uber-ala\":0,\"ref-otros\":480,\"ala-otros\":2140,\"gen-cont\":0,\"gen-mkt\":1436,\"gen-admin\":2300,\"gen-otros\":80,\"ref-serv-direct\":5995,\"ala-serv-direct\":3721,\"ref-ins\":3268,\"ala-ins\":3135,\"ref-nom-cw\":3000,\"ala-nom-cw\":3300,\"ref-nom\":7934,\"ala-nom\":4269,\"gen-nom-mes\":180000,\"ref-insf\":12070,\"ala-insf\":12070,\"det\":3992,\"coches\":867,\"mem-canc-pago\":12,\"nota-neg\":\"\",\"nota-pos\":\"\",\"nota-gen\":\"\",\"tags\":[]},{\"label\":\"Sem 17 \u00b7 20-abr \u2013 26-abr 2026\",\"date\":\"2026-04-20T06:00:00.000Z\",\"dateStart\":\"2026-04-20T06:00:00.000Z\",\"dateEnd\":\"2026-04-26T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"cw-ref\":72453,\"cw-ala\":56779,\"food-ref\":21465,\"food-ala\":12811,\"mem\":13730,\"det-ref\":5690,\"det-ala\":850,\"coches-ref\":449,\"coches-ala\":368,\"num-comandas\":376,\"mem-vend\":13,\"mem-canc-pago\":3,\"mem-canc-cli\":3,\"mem-act\":177,\"food-heb\":1358,\"food-agua\":300,\"food-guad\":1606,\"food-etrusca\":0,\"food-hielo\":350,\"food-crem\":334,\"food-mp\":554,\"food-cafe\":1500,\"food-carne\":0,\"food-costco\":2954,\"food-otros\":100,\"ref-serv-gas\":500,\"ref-serv-internet\":0,\"ref-serv-spotify\":0,\"ref-serv-basura\":0,\"ref-serv-otros\":500,\"ala-serv-gas\":500,\"ala-serv-internet\":0,\"ala-serv-spotify\":0,\"ala-serv-basura\":400,\"ala-serv-otros\":500,\"ref-ins-diesel\":500,\"ref-ins-quim\":1540,\"ref-ins-herr\":0,\"ref-ins-otros\":440,\"ala-ins-diesel\":1125,\"ala-ins-quim\":1889,\"ala-ins-herr\":0,\"ala-ins-otros\":480,\"gen-ins\":12159,\"nom-ref-direct\":3150,\"nom-ala-direct\":3300,\"nom-gen-mes\":45000,\"ref-nom-food\":9654,\"ala-nom-food\":4813,\"ref-com\":27602,\"ala-com\":27602,\"uber-ref\":210,\"uber-ala\":90,\"ref-otros\":1210,\"ala-otros\":1090,\"gen-cont\":0,\"gen-mkt\":350,\"gen-admin\":0,\"gen-otros\":0,\"ref-serv-direct\":6231,\"ala-serv-direct\":3872,\"ref-ins\":8559.5,\"ala-ins\":9573.5,\"ref-nom-cw\":3150,\"ala-nom-cw\":3300,\"ref-nom\":9654,\"ala-nom\":4813,\"gen-nom-mes\":45000,\"ref-insf\":4528,\"ala-insf\":4528,\"det\":6540,\"coches\":817,\"mem-canc\":6,\"nota-neg\":\"Tuvimos semana baja porque los primeros dias veniamos de lluvias y ademas tuvimos algunos dias con 3-5 lavadores\",\"nota-pos\":\"Funcionamos a pesar de las adversidades\",\"nota-gen\":\"\",\"tags\":[\"tag-lluvia\",\"tag-falta-personal\"]},{\"label\":\"Sem 18 \u00b7 27-abr \u2013 03-may 2026\",\"date\":\"2026-04-27T06:00:00.000Z\",\"dateStart\":\"2026-04-27T06:00:00.000Z\",\"dateEnd\":\"2026-05-03T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":5037,\"ala-serv-luz-mes\":8668,\"cw-ref\":149780,\"cw-ala\":114687,\"food-ref\":23747,\"food-ala\":13353,\"mem\":20174,\"det-ref\":9362,\"det-ala\":3315,\"coches-ref\":940,\"coches-ala\":744,\"num-comandas\":236,\"mem-vend\":9,\"mem-canc-pago\":7,\"mem-canc-cli\":6,\"mem-act\":179,\"food-heb\":5347,\"food-agua\":420,\"food-guad\":2983,\"food-etrusca\":0,\"food-hielo\":350,\"food-crem\":1138,\"food-mp\":3909,\"food-cafe\":0,\"food-carne\":750,\"food-costco\":6759,\"food-otros\":2272,\"ref-serv-gas\":200,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":0,\"ala-serv-gas\":200,\"ala-serv-internet\":664,\"ala-serv-spotify\":100,\"ala-serv-basura\":400,\"ala-serv-otros\":0,\"ref-ins-diesel\":510,\"ref-ins-quim\":1080,\"ref-ins-herr\":0,\"ref-ins-otros\":155,\"ala-ins-diesel\":0,\"ala-ins-quim\":1530,\"ala-ins-herr\":0,\"ala-ins-otros\":155,\"gen-ins\":1159,\"nom-ref-direct\":3800,\"nom-ala-direct\":2925,\"nom-gen-mes\":45000,\"ref-nom-food\":9344,\"ala-nom-food\":6716,\"ref-com\":0,\"ala-com\":0,\"uber-ref\":70,\"uber-ala\":0,\"ref-otros\":670,\"ala-otros\":600,\"gen-cont\":2205,\"gen-mkt\":1200,\"gen-admin\":1139,\"gen-otros\":3480,\"ref-serv-direct\":6429,\"ala-serv-direct\":4051,\"ref-ins\":2324.5,\"ala-ins\":2264.5,\"ref-nom-cw\":3800,\"ala-nom-cw\":2925,\"ref-nom\":9344,\"ala-nom\":6716,\"gen-nom-mes\":45000,\"ref-insf\":11964,\"ala-insf\":11964,\"det\":12677,\"coches\":1684,\"mem-canc\":13,\"nota-neg\":\"hugo se fue temprano el domingo y falto el lunes sin comprobante, eso hizo que quitara a dani de compras y yo las hiciera, creo que mejor que el. Se requiere implementaci\u00f3n de sistemas para ver porque tenemos tanta perdida en food, sospecho que se les echan cosas a perder y no reporta y como el que hace compras, no est\u00e1 ah\u00ed operando, no nos damos cuenta. Tambi\u00e9n hubo boicot de Charlie, se molesto porque estaba mal su pago y no fueron lavadores. Hicieron falta 20,000 pesos para completar los pagos.\",\"nota-pos\":\"Tambi\u00e9n se fue el internet durante 4 d\u00edas porque Benji olvido pagarlo. Se fue de vacaciones 4 d\u00edas Styben y todo bien. \\nLos d\u00edas con buenos lavadores y buen clima lavamos bien. No he podido enfocarme en la publicidad, tal vez esta sea una buena semana para eso.\",\"nota-gen\":\"\",\"tags\":[\"tag-falta-personal\",\"tag-falla-equipo\",\"tag-clima-ideal\"]},{\"label\":\"Sem 19 \u00b7 04-may \u2013 10-may 2026\",\"date\":\"2026-05-04T06:00:00.000Z\",\"dateStart\":\"2026-05-04T06:00:00.000Z\",\"dateEnd\":\"2026-05-10T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":5037,\"ala-serv-luz-mes\":8668,\"cw-ref\":84740,\"cw-ala\":68671,\"food-ref\":22727,\"food-ala\":1635,\"mem\":2062,\"det-ref\":7967,\"det-ala\":2900,\"coches-ref\":499,\"coches-ala\":437,\"num-comandas\":0,\"mem-vend\":13,\"mem-canc-pago\":5,\"mem-canc-cli\":4,\"mem-act\":198,\"food-heb\":2695,\"food-agua\":0,\"food-guad\":1497,\"food-etrusca\":0,\"food-hielo\":488,\"food-crem\":843,\"food-mp\":1368,\"food-cafe\":0,\"food-carne\":0,\"food-costco\":6749,\"food-otros\":7467,\"ref-serv-gas\":0,\"ref-serv-internet\":649,\"ref-serv-spotify\":25,\"ref-serv-basura\":0,\"ref-serv-otros\":0,\"ala-serv-gas\":0,\"ala-serv-internet\":649,\"ala-serv-spotify\":25,\"ala-serv-basura\":400,\"ala-serv-otros\":0,\"ref-ins-diesel\":500,\"ref-ins-quim\":2089,\"ref-ins-herr\":0,\"ref-ins-otros\":0,\"ala-ins-diesel\":500,\"ala-ins-quim\":1349,\"ala-ins-herr\":0,\"ala-ins-otros\":0,\"gen-ins\":4824,\"nom-ref-direct\":3000,\"nom-ala-direct\":3300,\"nom-gen-mes\":45000,\"ref-nom-food\":5078,\"ala-nom-food\":0,\"ref-com\":27896,\"ala-com\":32107,\"uber-ref\":100,\"uber-ala\":100,\"ref-otros\":200,\"ala-otros\":310,\"gen-cont\":0,\"gen-mkt\":1989,\"gen-admin\":0,\"gen-otros\":0,\"ref-serv-direct\":5962,\"ala-serv-direct\":3674,\"ref-ins\":5001,\"ala-ins\":4261,\"ref-nom-cw\":3000,\"ala-nom-cw\":3300,\"ref-nom\":5078,\"gen-nom-mes\":45000,\"ref-insf\":10553.5,\"ala-insf\":10553.5,\"det\":10867,\"coches\":936,\"mem-canc\":9,\"nota-neg\":\"\",\"nota-pos\":\"\",\"nota-gen\":\"\",\"tags\":[],\"_desglose\":{\"f-food-otros\":[{\"desc\":\"almacenaje\",\"amount\":1219},{\"desc\":\"mantenimiento refri\",\"amount\":2400},{\"desc\":\"mantenimiento herr\",\"amount\":348},{\"desc\":\"fumigaci\u00f3n\",\"amount\":3500}],\"f-gen-ins\":[{\"desc\":\"shampoo armorl all\",\"amount\":1040},{\"desc\":\"pipa\",\"amount\":1400},{\"desc\":\"pipa\",\"amount\":1400},{\"desc\":\"frascos aroma y cera\",\"amount\":984}],\"f-nom-gen-mes\":[{\"desc\":\"Mon\",\"amount\":15000},{\"desc\":\"Dan\",\"amount\":15000},{\"desc\":\"Ben\",\"amount\":15000}]}},{\"label\":\"Sem 20 \u00b7 11-may \u2013 24-may 2026\",\"date\":\"2026-05-11T06:00:00.000Z\",\"dateStart\":\"2026-05-11T06:00:00.000Z\",\"dateEnd\":\"2026-05-24T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":5037,\"ala-serv-luz-mes\":8668}]}");
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -573,14 +582,24 @@
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-gas" placeholder="0" oninput="recalc()"></td>
         </tr>
         <tr>
-          <td class="td-label">Internet</td>
+          <td class="td-label">Internet <span style="color:var(--gold);font-size:10px">(mensual)</span></td>
           <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet" placeholder="0" oninput="recalc()"></td>
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet" placeholder="0" oninput="recalc()"></td>
         </tr>
+        <tr class="computed">
+          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Internet período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
         <tr>
-          <td class="td-label">Spotify</td>
+          <td class="td-label">Spotify <span style="color:var(--gold);font-size:10px">(mensual)</span></td>
           <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify" placeholder="0" oninput="recalc()"></td>
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr class="computed">
+          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Spotify período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
         </tr>
         <tr>
           <td class="td-label">Basura</td>
@@ -1230,7 +1249,8 @@ function confirmNewWeek() {
   save(); buildWeekSelect(); clearForm(); updateWeekDatesDisplay(); closeModal();
   // clearForm() borra los inputs — restaurar los costos fijos copiados
   const fixedKeys = ['ref-renta-mes','ala-renta-mes','ref-serv-agua-mes','ala-serv-agua-mes',
-                     'ref-serv-luz-mes','ala-serv-luz-mes'];
+                     'ref-serv-luz-mes','ala-serv-luz-mes',
+                     'ref-serv-internet','ala-serv-internet','ref-serv-spotify','ala-serv-spotify'];
   const anyFixed = fixedKeys.some(k => newW[k]);
   fixedKeys.forEach(k => {
     if (newW[k]) {
@@ -1239,7 +1259,7 @@ function confirmNewWeek() {
     }
   });
   if (anyFixed) recalc();
-  showToast(anyFixed ? '✓ Nueva semana — Renta, Agua y Luz copiadas de semana anterior' : '✓ Nueva semana creada');
+  showToast(anyFixed ? '✓ Nueva semana — Renta, Agua, Luz, Internet y Spotify copiados' : '✓ Nueva semana creada');
 }
 
 function clearForm() {
@@ -1296,12 +1316,20 @@ function recalc() {
   set('f-ala-serv-agua-pro', alaAguaPro > 0 ? peso(alaAguaPro) : '');
   set('f-ref-serv-luz-pro',  refLuzPro  > 0 ? peso(refLuzPro)  : '');
   set('f-ala-serv-luz-pro',  alaLuzPro  > 0 ? peso(alaLuzPro)  : '');
-  const directServKeys = ['gas','internet','spotify','basura','otros'];
+  const refInternetPro = Math.round(v('f-ref-serv-internet') * rf);
+  const alaInternetPro = Math.round(v('f-ala-serv-internet') * rf);
+  const refSpotifyPro  = Math.round(v('f-ref-serv-spotify')  * rf);
+  const alaSpotifyPro  = Math.round(v('f-ala-serv-spotify')  * rf);
+  set('f-ref-serv-internet-pro', refInternetPro > 0 ? peso(refInternetPro) : '');
+  set('f-ala-serv-internet-pro', alaInternetPro > 0 ? peso(alaInternetPro) : '');
+  set('f-ref-serv-spotify-pro',  refSpotifyPro  > 0 ? peso(refSpotifyPro)  : '');
+  set('f-ala-serv-spotify-pro',  alaSpotifyPro  > 0 ? peso(alaSpotifyPro)  : '');
+  const directServKeys = ['gas','basura','otros'];
   const refServDirect = directServKeys.reduce((a, k) => a + v('f-ref-serv-' + k), 0);
   const alaServDirect = directServKeys.reduce((a, k) => a + v('f-ala-serv-' + k), 0);
-  const servRef = refAguaPro + refLuzPro + refServDirect
+  const servRef = refAguaPro + refLuzPro + refInternetPro + refSpotifyPro + refServDirect
     || Math.round(v('f-ref-serv-mes') * rf); // legacy fallback
-  const servAla = alaAguaPro + alaLuzPro + alaServDirect
+  const servAla = alaAguaPro + alaLuzPro + alaInternetPro + alaSpotifyPro + alaServDirect
     || Math.round(v('f-ala-serv-mes') * rf);
   setText('f-ref-serv-subtotal', peso(servRef));
   setText('f-ala-serv-subtotal', peso(servAla));
@@ -1439,9 +1467,13 @@ function saveWeek() {
   const alaAguaSave = Math.round((w['ala-serv-agua-mes'] || 0) * rf);
   const refLuzSave  = Math.round((w['ref-serv-luz-mes']  || 0) * rf);
   const alaLuzSave  = Math.round((w['ala-serv-luz-mes']  || 0) * rf);
-  const directKeys  = ['gas','internet','spotify','basura','otros'];
-  const refServSum  = refAguaSave + refLuzSave + directKeys.reduce((a,k) => a+(w['ref-serv-'+k]||0),0);
-  const alaServSum  = alaAguaSave + alaLuzSave + directKeys.reduce((a,k) => a+(w['ala-serv-'+k]||0),0);
+  const refInternetSave = Math.round((w['ref-serv-internet']||0) * rf);
+  const alaInternetSave = Math.round((w['ala-serv-internet']||0) * rf);
+  const refSpotifySave  = Math.round((w['ref-serv-spotify'] ||0) * rf);
+  const alaSpotifySave  = Math.round((w['ala-serv-spotify'] ||0) * rf);
+  const directKeys  = ['gas','basura','otros'];
+  const refServSum  = refAguaSave + refLuzSave + refInternetSave + refSpotifySave + directKeys.reduce((a,k) => a+(w['ref-serv-'+k]||0),0);
+  const alaServSum  = alaAguaSave + alaLuzSave + alaInternetSave + alaSpotifySave + directKeys.reduce((a,k) => a+(w['ala-serv-'+k]||0),0);
   w['ref-serv-direct'] = refServSum;
   w['ala-serv-direct'] = alaServSum;
 
