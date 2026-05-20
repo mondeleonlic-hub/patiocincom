@@ -12,9 +12,9 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;width:100%;overflow:hidden;background:#000;font-family:-apple-system,Arial,sans-serif}
   #shell{display:flex;flex-direction:column;height:100%;height:100dvh;padding-top:env(safe-area-inset-top)}
-  #frames{flex:1;position:relative;overflow:hidden}
-  iframe{position:absolute;inset:0;width:100%;height:100%;border:none;background:#f0f0f0;opacity:0;pointer-events:none;transition:opacity .2s;overflow-y:scroll;-webkit-overflow-scrolling:touch}
-  iframe.active{opacity:1;pointer-events:all}
+  #frames{flex:1;position:relative;overflow:hidden}#frames>.fw{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transition:opacity .2s}#frames>.fw.active{opacity:1;pointer-events:all}
+  iframe{width:100%;border:none;background:#f0f0f0;display:block}
+  
   #nav{display:flex;background:#111;border-top:1px solid #333;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
   .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;color:#666;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;-webkit-tap-highlight-color:transparent;min-height:60px;border-top:2px solid transparent;transition:color .15s,border-color .15s}
   .nb.on{color:#C8960C;border-top-color:#C8960C;background:rgba(200,150,12,.06)}
@@ -33,8 +33,8 @@
 </div>
 <div id="shell">
   <div id="frames">
-    <iframe id="f-fin" class="active" src="dashboard.html" title="Dashboard"></iframe>
-    <iframe id="f-sob" src="sobres.html" title="Sobres"></iframe>
+    <div id="fw-fin" class="fw active"><iframe id="f-fin" src="dashboard.html" title="Dashboard" style="min-height:100%;width:100%;border:none"></iframe></div>
+    <div id="fw-sob" class="fw"><iframe id="f-sob" src="sobres.html" title="Sobres" style="min-height:100%;width:100%;border:none"></iframe></div>
   </div>
   <nav id="nav">
     <button class="nb on" id="b-fin" onclick="sw('fin')">
@@ -48,7 +48,7 @@
 <script>
 function sw(id){
   ['fin','sob'].forEach(k=>{
-    document.getElementById('f-'+k).classList.toggle('active',k===id);
+    document.getElementById('fw-'+k).classList.toggle('active',k===id);
     document.getElementById('b-'+k).classList.toggle('on',k===id);
   });
 }
