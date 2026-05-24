@@ -810,8 +810,9 @@ async function parsePDFDirecto(file){
   const xMerch= merchItem    ? merchItem.x    : Infinity;
 
   // Separar items por sección según posición X
+  // COMISIONES empieza desde x=0 para incluir la columna NOTAS (ALAMOS/REFUGIO)
   const GAP=8;
-  const comItems  =items.filter(i=>i.x>=comItem.x   && i.x<xFood -GAP);
+  const comItems  =items.filter(i=>i.x<xFood -GAP);
   const foodItems =items.filter(i=>i.x>=xFood  -GAP && i.x<xMerch-GAP);
   const merchItems=items.filter(i=>i.x>=xMerch -GAP && i.x<xMerch+220);
 
@@ -856,25 +857,31 @@ function _parseComisiones(items){
   const rows=_groupY(items,6);
   let sucursal="";
   const workers={};
-  const SKIP=/^(COMISIONES|NOTAS|COLABORADOR|%|\$\sCOMISIÓN|#\scoches|BONO|Suma|total|SEMANA)$/i;
 
   for(const row of rows){
     const texts=row.map(r=>r.text);
+    const line=texts.join(" ");
 
-    // Detectar sucursal
-    if(texts.some(t=>/^(ALAMOS|ÁLAMOS)$/i.test(t))) sucursal="PC Álamos";
-    if(texts.some(t=>/^REFUGIO$/i.test(t)))          sucursal="PC Refugio";
+    // Detectar sucursal — funciona si ALAMOS/REFUGIO es item solo O parte de otro texto
+    if(/\b(ALAMOS|ÁLAMOS)\b/i.test(line)) sucursal="PC Álamos";
+    if(/\bREFUGIO\b/i.test(line))          sucursal="PC Refugio";
 
-    // Filas de total: "Total NombrePosible $X,XXX.XX 99 ..."
-    const ti=texts.indexOf("Total");
-    if(ti<0) continue;
+    // Buscar patrón "Total [Nombre]" en la fila
+    // Caso A: ["Total","Danilo","$1,448.00","23"]  → "Total" es item separado
+    // Caso B: ["Total Danilo","$1,448.00","23"]    → "Total Danilo" es un solo item
+    // Caso C: ["ALAMOS Total Danilo","$1,448.00"]  → combinado con sucursal
 
-    // Buscar primer monto ($X,XXX.XX)
-    const ai=texts.findIndex((t,i)=>i>ti&&/^\$[\d,]+\.?\d*$/.test(t));
+    // Encontrar primer monto $X,XXX.XX en la fila
+    const ai=texts.findIndex(t=>/^\$[\d,]+\.?\d*$/.test(t));
     if(ai<0) continue;
 
-    const name=texts.slice(ti+1,ai).join(" ").trim();
-    if(!name||SKIP.test(name)) continue;
+    // Todo lo que está antes del primer monto debe contener "Total Nombre"
+    const before=texts.slice(0,ai).join(" ");
+    const m=before.match(/Total\s+([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ\s.]*?)(?:\s+\d+%?)?$/i);
+    if(!m) continue;
+
+    const name=m[1].trim();
+    if(!name||name.length<2||/^(total|suma)$/i.test(name)) continue;
 
     const comision=_parseMonto(texts[ai]);
     const autos=parseInt(texts[ai+1])||0;
