@@ -330,6 +330,7 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
         <button class="fbtn ala" id="fs-ala" onclick="setFS('PC Álamos')">PC Álamos</button>
         <button class="btn bk" onclick="printTermica()" title="Imprimir todos en térmica 58mm">🖨️ Imprimir todos</button>
         <button class="btn by" id="btn-imprimir-sel" onclick="printSeleccionado()" style="display:none">🖨️ Imprimir seleccionado</button>
+        <button class="btn bo" onclick="guardarSobresImagen()" title="Guardar cada sobre como imagen PNG en Descargas">📸 Guardar imágenes</button>
       </div>
     </div>
     <p style="font-size:11px;color:#aaa;margin-bottom:10px">Toca un sobre para seleccionarlo e imprimirlo solo.</p>
@@ -710,7 +711,7 @@ function applyPerfil(r){
 }
 
 function num(s){return parseFloat(String(s||"").replace(/[$,\s]/g,""))||0}
-function fmt(n){return(parseFloat(n)||0).toLocaleString("es-MX",{style:"currency",currency:"MXN"})}
+function fmt(n){return"$"+(Math.round(parseFloat(n)||0)).toLocaleString("es-MX")}
 function esc(v){return String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")}
 function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").replace(/[éèë]/g,"e").replace(/[íìï]/g,"i").replace(/[óòö]/g,"o").replace(/[úùü]/g,"u").replace(/ñ/g,"n").trim()}
 function getDesc(n){const d=deudas[n];if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;return d.montoPorPago||d.total/d.numPagos||0}
@@ -1842,6 +1843,52 @@ function printSobres(){
   // mostrar el área y luego llamar print con delay
   pa.style.display="flex";
   setTimeout(()=>{ window.print(); }, 300);
+}
+
+// ── GUARDAR SOBRES COMO IMÁGENES ──────────────────────────────────────────────
+async function guardarSobresImagen(){
+  const sem=document.getElementById("sem").value;
+  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  if(filtroS!=="all") act=act.filter(r=>r.sucursal===filtroS);
+  if(!act.length){alert("No hay sobres para guardar.");return;}
+
+  // Cargar html2canvas si no está
+  if(!window.html2canvas){
+    await new Promise((res,rej)=>{
+      const s=document.createElement("script");
+      s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+      s.onload=res; s.onerror=rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  flash("⏳ Generando imágenes...");
+
+  // Contenedor temporal oculto
+  const wrap=document.createElement("div");
+  wrap.style.cssText="position:fixed;left:-9999px;top:0;z-index:-1;background:#fff";
+  document.body.appendChild(wrap);
+
+  for(const r of act){
+    wrap.innerHTML=bsobre(r,sem);
+    const el=wrap.querySelector(".sobre");
+    if(!el)continue;
+    el.style.cursor="default";
+    el.style.boxShadow="none";
+    await new Promise(res=>setTimeout(res,50));
+    try{
+      const canvas=await html2canvas(el,{scale:3,backgroundColor:"#ffffff",useCORS:true,logging:false});
+      const a=document.createElement("a");
+      const nombre=(r.nombre||"sobre").replace(/[^a-zA-Z0-9áéíóúüñÁÉÍÓÚÜÑ]/g,"_");
+      a.download=`sobre_sem${sem.replace("/","-")}_${nombre}.png`;
+      a.href=canvas.toDataURL("image/png");
+      a.click();
+      await new Promise(res=>setTimeout(res,150));
+    }catch(e){console.warn("Error sobre",r.nombre,e);}
+  }
+
+  document.body.removeChild(wrap);
+  flash(`✅ ${act.length} sobre${act.length>1?"s":""} guardados`);
 }
 
 // ── CERRAR SEMANA ─────────────────────────────────────────────────────────────
