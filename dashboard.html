@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Patio Cinco — Dashboard Financiero v3</title>
 <style>
   :root {
@@ -17,34 +17,20 @@
     --ala-dark: #0D47A1; --ala-bg: #E8F0FE; --ala-mid: #1976D2;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
   body { font-family: Arial, sans-serif; background: #F0F0F0; color: var(--dark); }
 
   /* NAV */
-  nav { background: var(--dark); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: calc(56px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,.4); }
+  nav { background: var(--dark); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.4); padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
   .nav-brand { display: flex; align-items: center; }
   .nav-brand span { color: var(--white); font-weight: 300; }
-  .nav-period { color: var(--gold-mid); font-size: 12px; font-weight: 600; white-space: nowrap; }
-  /* TABS BAR — separate row, matches Sobres style */
-  .nav-tabs-bar { background: #111; position: fixed; top: calc(56px + env(safe-area-inset-top)); left: 0; right: 0; z-index: 99; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .nav-tabs-bar::-webkit-scrollbar { display: none; }
-  .nav-tabs { display: flex; flex-wrap: nowrap; white-space: nowrap; padding: 0 4px; }
-  .nav-tab { color: #999; padding: 0 16px; height: 44px; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 12px; font-weight: 700; font-family: inherit; background: transparent; white-space: nowrap; transition: all .2s; }
-  .nav-tab:hover { color: var(--white); }
-  .nav-tab.active { color: var(--dark); background: var(--gold); border-bottom-color: var(--gold); }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab { color: #aaa; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; border: none; background: none; }
+  .nav-tab:hover { color: var(--white); background: #333; }
+  .nav-tab.active { color: var(--dark); background: var(--gold); }
+  .nav-period { color: var(--gold-mid); font-size: 13px; font-weight: 600; }
 
   /* PAGES */
-  .page { display: none; padding: 28px 32px; padding-top: calc(56px + 44px + env(safe-area-inset-top) + 28px); max-width: 1400px; margin: 0 auto; }
-  #page-input { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
-  @media (max-width: 640px) {
-    nav { padding: 0 16px; }
-    .page { padding: 16px; padding-top: calc(56px + 44px + env(safe-area-inset-top) + 16px); }
-    .nav-period { font-size: 11px; }
-    .save-bar { padding: 8px 16px; padding-bottom: max(8px, env(safe-area-inset-bottom)); gap: 8px; }
-    .save-bar-kpis { display: none; }
-    .save-bar-msg { font-size: 12px; }
-    .page-input .form-card { margin-bottom: 10px; }
-  }
+  .page { display: none; padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
   .page.active { display: block; }
 
   /* SECTION TITLE */
@@ -167,7 +153,7 @@
   .res-sub { font-size: 11px; color: var(--light); margin-top: 3px; }
 
   /* SAVE BAR */
-  .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark); padding: 10px 20px; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 -2px 12px rgba(0,0,0,.3); z-index: 50; flex-wrap: wrap; }
+  .save-bar { position: sticky; bottom: 0; background: var(--dark); padding: 12px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 -2px 12px rgba(0,0,0,.3); z-index: 50; flex-wrap: wrap; }
   .save-bar-msg { color: #aaa; font-size: 13px; }
   .save-bar-msg.saved { color: #81C784; }
   .save-bar-kpis { display: flex; gap: 24px; }
@@ -350,7 +336,7 @@
 <!-- ══ NAV ══ -->
 <nav>
   <div class="nav-brand">
-    <svg height="34" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <svg height="38" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
       <path fill="#e0a614" d="M1799.77,509.66q46.68,0,76.32-36.92l40.6,41.8q-48.33,54.42-113.88,54.39t-108-41.41q-42.39-41.38-42.41-104.51t43.22-105.35q43.23-42.18,105.75-42.2,69.81,0,116.92,53.16l-39.4,44.67q-30-37.35-74.7-37.35-35.7,0-61.07,23.34t-25.36,62.92q0,39.57,23.91,63.52T1799.77,509.66Z"/>
       <path fill="#e0a614" d="M2082.7,282H2146V565.68h-63.3Z"/>
       <path fill="#e0a614" d="M2530.4,282h63.34V565.68H2530.4L2395.23,387.89V565.68h-63.34V282h59.27L2530.4,464.6Z"/>
@@ -364,16 +350,14 @@
       <polygon fill="#ffffff" points="439.6 553.68 437.06 565.83 437.06 565.83 439.6 553.68"/>
     </svg>
   </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="showPage('input')">Capturar semana</button>
+    <button class="nav-tab" onclick="showPage('graficas')">Gráficas</button>
+    <button class="nav-tab" onclick="showPage('historial')">Historial</button>
+  </div>
   <div class="nav-period" id="nav-period">Cargando...</div>
 </nav>
-<div class="nav-tabs-bar">
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('dashboard')">📊 Dashboard</button>
-    <button class="nav-tab" onclick="showPage('input')">⚡ Capturar semana</button>
-    <button class="nav-tab" onclick="showPage('graficas')">📈 Gráficas</button>
-    <button class="nav-tab" onclick="showPage('historial')">📅 Historial</button>
-  </div>
-</div>
 
 <!-- ══ PAGE: DASHBOARD ══ -->
 <div class="page active" id="page-dashboard">
@@ -598,24 +582,14 @@
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-gas" placeholder="0" oninput="recalc()"></td>
         </tr>
         <tr>
-          <td class="td-label">Internet <span style="color:var(--gold);font-size:10px">(mensual)</span></td>
+          <td class="td-label">Internet</td>
           <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet" placeholder="0" oninput="recalc()"></td>
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet" placeholder="0" oninput="recalc()"></td>
         </tr>
-        <tr class="computed">
-          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Internet período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
         <tr>
-          <td class="td-label">Spotify <span style="color:var(--gold);font-size:10px">(mensual)</span></td>
+          <td class="td-label">Spotify</td>
           <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify" placeholder="0" oninput="recalc()"></td>
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr class="computed">
-          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Spotify período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
         </tr>
         <tr>
           <td class="td-label">Basura</td>
@@ -1265,8 +1239,7 @@ function confirmNewWeek() {
   save(); buildWeekSelect(); clearForm(); updateWeekDatesDisplay(); closeModal();
   // clearForm() borra los inputs — restaurar los costos fijos copiados
   const fixedKeys = ['ref-renta-mes','ala-renta-mes','ref-serv-agua-mes','ala-serv-agua-mes',
-                     'ref-serv-luz-mes','ala-serv-luz-mes',
-                     'ref-serv-internet','ala-serv-internet','ref-serv-spotify','ala-serv-spotify'];
+                     'ref-serv-luz-mes','ala-serv-luz-mes'];
   const anyFixed = fixedKeys.some(k => newW[k]);
   fixedKeys.forEach(k => {
     if (newW[k]) {
@@ -1275,7 +1248,7 @@ function confirmNewWeek() {
     }
   });
   if (anyFixed) recalc();
-  showToast(anyFixed ? '✓ Nueva semana — Renta, Agua, Luz, Internet y Spotify copiados' : '✓ Nueva semana creada');
+  showToast(anyFixed ? '✓ Nueva semana — Renta, Agua y Luz copiadas de semana anterior' : '✓ Nueva semana creada');
 }
 
 function clearForm() {
@@ -1332,20 +1305,12 @@ function recalc() {
   set('f-ala-serv-agua-pro', alaAguaPro > 0 ? peso(alaAguaPro) : '');
   set('f-ref-serv-luz-pro',  refLuzPro  > 0 ? peso(refLuzPro)  : '');
   set('f-ala-serv-luz-pro',  alaLuzPro  > 0 ? peso(alaLuzPro)  : '');
-  const refInternetPro = Math.round(v('f-ref-serv-internet') * rf);
-  const alaInternetPro = Math.round(v('f-ala-serv-internet') * rf);
-  const refSpotifyPro  = Math.round(v('f-ref-serv-spotify')  * rf);
-  const alaSpotifyPro  = Math.round(v('f-ala-serv-spotify')  * rf);
-  set('f-ref-serv-internet-pro', refInternetPro > 0 ? peso(refInternetPro) : '');
-  set('f-ala-serv-internet-pro', alaInternetPro > 0 ? peso(alaInternetPro) : '');
-  set('f-ref-serv-spotify-pro',  refSpotifyPro  > 0 ? peso(refSpotifyPro)  : '');
-  set('f-ala-serv-spotify-pro',  alaSpotifyPro  > 0 ? peso(alaSpotifyPro)  : '');
-  const directServKeys = ['gas','basura','otros'];
+  const directServKeys = ['gas','internet','spotify','basura','otros'];
   const refServDirect = directServKeys.reduce((a, k) => a + v('f-ref-serv-' + k), 0);
   const alaServDirect = directServKeys.reduce((a, k) => a + v('f-ala-serv-' + k), 0);
-  const servRef = refAguaPro + refLuzPro + refInternetPro + refSpotifyPro + refServDirect
+  const servRef = refAguaPro + refLuzPro + refServDirect
     || Math.round(v('f-ref-serv-mes') * rf); // legacy fallback
-  const servAla = alaAguaPro + alaLuzPro + alaInternetPro + alaSpotifyPro + alaServDirect
+  const servAla = alaAguaPro + alaLuzPro + alaServDirect
     || Math.round(v('f-ala-serv-mes') * rf);
   setText('f-ref-serv-subtotal', peso(servRef));
   setText('f-ala-serv-subtotal', peso(servAla));
@@ -1483,13 +1448,9 @@ function saveWeek() {
   const alaAguaSave = Math.round((w['ala-serv-agua-mes'] || 0) * rf);
   const refLuzSave  = Math.round((w['ref-serv-luz-mes']  || 0) * rf);
   const alaLuzSave  = Math.round((w['ala-serv-luz-mes']  || 0) * rf);
-  const refInternetSave = Math.round((w['ref-serv-internet']||0) * rf);
-  const alaInternetSave = Math.round((w['ala-serv-internet']||0) * rf);
-  const refSpotifySave  = Math.round((w['ref-serv-spotify'] ||0) * rf);
-  const alaSpotifySave  = Math.round((w['ala-serv-spotify'] ||0) * rf);
-  const directKeys  = ['gas','basura','otros'];
-  const refServSum  = refAguaSave + refLuzSave + refInternetSave + refSpotifySave + directKeys.reduce((a,k) => a+(w['ref-serv-'+k]||0),0);
-  const alaServSum  = alaAguaSave + alaLuzSave + alaInternetSave + alaSpotifySave + directKeys.reduce((a,k) => a+(w['ala-serv-'+k]||0),0);
+  const directKeys  = ['gas','internet','spotify','basura','otros'];
+  const refServSum  = refAguaSave + refLuzSave + directKeys.reduce((a,k) => a+(w['ref-serv-'+k]||0),0);
+  const alaServSum  = alaAguaSave + alaLuzSave + directKeys.reduce((a,k) => a+(w['ala-serv-'+k]||0),0);
   w['ref-serv-direct'] = refServSum;
   w['ala-serv-direct'] = alaServSum;
 
