@@ -796,25 +796,28 @@ async function parsePDFDirecto(file){
   }
 
   // Encontrar encabezados de sección y sus posiciones X
-  const comItem =items.find(i=>i.text==="COMISIONES");
+  // Los headers incluyen el número de semana: "COMISIONES (SEMANA 21/2026)"
+  const comItem =items.find(i=>/^COMISIONES/i.test(i.text));
   if(!comItem)throw new Error("No encontré la sección COMISIONES. ¿Es el PDF correcto?");
 
   // FOOD aparece dos veces (semana actual y anterior) — tomar el más cercano en Y a COMISIONES
-  const foodAll=items.filter(i=>i.text==="FOOD");
+  const foodAll=items.filter(i=>/^FOOD\b/i.test(i.text));
   const mainFoodItem=foodAll.reduce((best,cur)=>
     !best||Math.abs(cur.y-comItem.y)<Math.abs(best.y-comItem.y)?cur:best, null);
 
-  const merchItem=items.find(i=>i.text==="MERCH");
+  const merchItem=items.find(i=>/^MERCH/i.test(i.text));
 
   const xFood = mainFoodItem ? mainFoodItem.x : Infinity;
   const xMerch= merchItem    ? merchItem.x    : Infinity;
 
   // Separar items por sección según posición X
   // COMISIONES empieza desde x=0 para incluir la columna NOTAS (ALAMOS/REFUGIO)
+  // MERCH: usar GAP=15 para capturar nombres en x=490 cuando header está en x=499
   const GAP=8;
+  const MERCH_GAP=15;
   const comItems  =items.filter(i=>i.x<xFood -GAP);
-  const foodItems =items.filter(i=>i.x>=xFood  -GAP && i.x<xMerch-GAP);
-  const merchItems=items.filter(i=>i.x>=xMerch -GAP && i.x<xMerch+220);
+  const foodItems =items.filter(i=>i.x>=xFood -GAP && i.x<xMerch-MERCH_GAP);
+  const merchItems=items.filter(i=>i.x>=xMerch-MERCH_GAP && i.x<xMerch+220);
 
   const workers=_parseComisiones(comItems);
   const foodMap =_parseFood(foodItems, mainFoodItem?mainFoodItem.y:Infinity);
@@ -826,9 +829,10 @@ async function parsePDFDirecto(file){
     w.merch=_findAmt(merchMap,w.nombre);
   });
 
-  // Detectar número de semana del header (ej: "20/2026")
-  const semItem=items.find(i=>/^\(?\d{1,2}\/\d{4}\)?$/.test(i.text));
-  const semana=semItem?semItem.text.replace(/[()]/g,""):null;
+  // Detectar número de semana del header: "COMISIONES (SEMANA 21/2026)" → "21/2026"
+  const semText=items.find(i=>/SEMANA\s+\d{1,2}\/\d{4}/.test(i.text));
+  const semMatch=semText?.text.match(/(\d{1,2}\/\d{4})/);
+  const semana=semMatch?semMatch[1]:null;
 
   return {lavadores:workers, semana};
 }
@@ -897,28 +901,34 @@ function _parseComisiones(items){
 }
 
 function _parseFood(items, mainFoodY){
-  // Excluir la sección FOOD secundaria (semana anterior) que está más abajo en la página
-  const secFoodHeaders=items.filter(i=>i.text==="FOOD"&&i.y<mainFoodY-15);
+  // Excluir la sección FOOD secundaria (coordinadores) que está más abajo en la página
+  const secFoodHeaders=items.filter(i=>/^FOOD\b/i.test(i.text)&&i.y<mainFoodY-15);
   const secCutY=secFoodHeaders.length>0?Math.max(...secFoodHeaders.map(i=>i.y)):0;
   const mainItems=items.filter(i=>i.y>secCutY+5);
 
   const rows=_groupY(mainItems,5);
   const foodMap={};
-  const SKIP=/^(FOOD|COLABORADOR|BONO|TOTAL|\$\sFOOD|Suma|total|SEMANA|\d{4})$/i;
+  const SKIP=/^(COLABORADOR|BONO|TOTAL|Suma|SEMANA|\d{4})$/i;
 
   for(const row of rows){
     const texts=row.map(r=>r.text);
-    if(texts.some(t=>SKIP.test(t)||/SEMANA/.test(t))) continue;
+    // Saltar filas de headers (contienen FOOD/MERCH/SEMANA)
+    if(texts.some(t=>/^FOOD\b/i.test(t)||/^MERCH\b/i.test(t)||/SEMANA/.test(t)||SKIP.test(t))) continue;
 
     // Nombre: texto alfabético (acepta acentos, espacios, puntos)
     const nameItem=row.find(i=>/^[A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ\s.]*$/.test(i.text)&&i.text.length>1);
-    // Monto positivo: número sin $ (los negativos son descuentos, ignorar)
-    const amtItems=row.filter(i=>/^[\d,]+\.?\d*$/.test(i.text)&&parseFloat(i.text.replace(/,/g,""))>0);
 
-    if(nameItem&&amtItems.length>0){
-      const amt=_parseMonto(amtItems[0].text);
-      if(amt>0) foodMap[nameItem.text]=amt;
+    // Monto: buscar primer $ positivo — maneja "$460.00 -$460.00" extrayendo primer número
+    let amt=0;
+    for(const i of row){
+      // Monto solo: "$460.00"
+      if(/^\$[\d,]+\.?\d*$/.test(i.text)){amt=_parseMonto(i.text);break;}
+      // Monto combinado: "$460.00 -$460.00" → tomar primer match
+      const m=i.text.match(/\$([\d,]+\.?\d*)/);
+      if(m){amt=parseFloat(m[1].replace(/,/g,""));break;}
     }
+
+    if(nameItem&&amt>0) foodMap[nameItem.text]=amt;
   }
   return foodMap;
 }
@@ -926,11 +936,11 @@ function _parseFood(items, mainFoodY){
 function _parseMerch(items){
   const rows=_groupY(items,5);
   const merchMap={};
-  const SKIP=/^(MERCH|COLABORADOR|\$\sMERCH|Suma|total|SEMANA)$/i;
+  const SKIP=/^(COLABORADOR|Suma|total)$/i;
 
   for(const row of rows){
     const texts=row.map(r=>r.text);
-    if(texts.some(t=>SKIP.test(t)||/SEMANA/.test(t))) continue;
+    if(texts.some(t=>/^MERCH\b/i.test(t)||/SEMANA/.test(t)||SKIP.test(t))) continue;
 
     const nameItem=row.find(i=>/^[A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ\s.]*$/.test(i.text)&&i.text.length>1);
     const amtItem =row.find(i=>/^\$[\d,]+\.?\d*$/.test(i.text));
