@@ -1845,50 +1845,59 @@ function printSobres(){
   setTimeout(()=>{ window.print(); }, 300);
 }
 
-// ── GUARDAR SOBRES COMO IMÁGENES ──────────────────────────────────────────────
+// ── GUARDAR SOBRES COMO IMÁGENES (ZIP) ────────────────────────────────────────
 async function guardarSobresImagen(){
   const sem=document.getElementById("sem").value;
   let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
   if(filtroS!=="all") act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para guardar.");return;}
 
-  // Cargar html2canvas si no está
-  if(!window.html2canvas){
-    await new Promise((res,rej)=>{
-      const s=document.createElement("script");
-      s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-      s.onload=res; s.onerror=rej;
-      document.head.appendChild(s);
-    });
-  }
+  // Cargar dependencias en paralelo
+  const loadScript=src=>new Promise((res,rej)=>{
+    if(document.querySelector(`script[src="${src}"]`)){res();return;}
+    const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
+  });
+  flash("⏳ Preparando...");
+  await Promise.all([
+    window.html2canvas?Promise.resolve():loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"),
+    window.JSZip?Promise.resolve():loadScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js")
+  ]);
 
-  flash("⏳ Generando imágenes...");
+  const zip=new JSZip();
+  const carpeta=`sobres_sem${sem.replace("/","-")}`;
+  const folder=zip.folder(carpeta);
 
   // Contenedor temporal oculto
   const wrap=document.createElement("div");
   wrap.style.cssText="position:fixed;left:-9999px;top:0;z-index:-1;background:#fff";
   document.body.appendChild(wrap);
 
-  for(const r of act){
+  for(let i=0;i<act.length;i++){
+    const r=act[i];
+    flash(`⏳ Generando ${i+1}/${act.length}: ${r.nombre}...`);
     wrap.innerHTML=bsobre(r,sem);
     const el=wrap.querySelector(".sobre");
     if(!el)continue;
-    el.style.cursor="default";
-    el.style.boxShadow="none";
-    await new Promise(res=>setTimeout(res,50));
+    el.style.cursor="default";el.style.boxShadow="none";
+    await new Promise(res=>setTimeout(res,60));
     try{
       const canvas=await html2canvas(el,{scale:3,backgroundColor:"#ffffff",useCORS:true,logging:false});
-      const a=document.createElement("a");
       const nombre=(r.nombre||"sobre").replace(/[^a-zA-Z0-9áéíóúüñÁÉÍÓÚÜÑ]/g,"_");
-      a.download=`sobre_sem${sem.replace("/","-")}_${nombre}.png`;
-      a.href=canvas.toDataURL("image/png");
-      a.click();
-      await new Promise(res=>setTimeout(res,150));
+      // canvas.toDataURL devuelve "data:image/png;base64,XXXX" — extraer solo la parte base64
+      const b64=canvas.toDataURL("image/png").split(",")[1];
+      folder.file(`${nombre}.png`,b64,{base64:true});
     }catch(e){console.warn("Error sobre",r.nombre,e);}
   }
 
   document.body.removeChild(wrap);
-  flash(`✅ ${act.length} sobre${act.length>1?"s":""} guardados`);
+  flash("📦 Comprimiendo...");
+
+  const blob=await zip.generateAsync({type:"blob"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`${carpeta}.zip`;
+  a.click();
+  flash(`✅ ${act.length} sobre${act.length>1?"s":""} → ${carpeta}.zip`);
 }
 
 // ── CERRAR SEMANA ─────────────────────────────────────────────────────────────
