@@ -879,13 +879,21 @@ function _parseComisiones(items){
     const ai=texts.findIndex(t=>/^\$[\d,]+\.?\d*$/.test(t));
     if(ai<0) continue;
 
-    // Todo lo que está antes del primer monto debe contener "Total Nombre"
+    // Todo lo que está antes del primer monto debe contener "Total Nombre [pct%]"
     const before=texts.slice(0,ai).join(" ");
-    const m=before.match(/Total\s+([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ\s.]*?)(?:\s+\d+%?)?$/i);
+    // Capturar nombre Y porcentaje: "Total Canelo 40%" → name="Canelo" pct=40
+    const m=before.match(/Total\s+([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ\s.]*?)(?:\s+(\d+)%?)?$/i);
     if(!m) continue;
 
     const name=m[1].trim();
     if(!name||name.length<2||/^(total|suma)$/i.test(name)) continue;
+
+    // Porcentaje: del regex, o buscar un número 20-60 en la fila antes del monto
+    let pct=m[2]?parseInt(m[2]):0;
+    if(!pct){
+      const pctItem=texts.slice(0,ai).find(t=>/^\d+%?$/.test(t)&&parseInt(t)>=20&&parseInt(t)<=70);
+      pct=pctItem?parseInt(pctItem):40;
+    }
 
     const comision=_parseMonto(texts[ai]);
     const autos=parseInt(texts[ai+1])||0;
@@ -895,7 +903,7 @@ function _parseComisiones(items){
     const afterAutos=texts[ai+2];
     if(afterAutos&&/^\$[\d,]+\.?\d*$/.test(afterAutos)) bono=_parseMonto(afterAutos);
 
-    workers[name]={nombre:name,sucursal,autos,comision,bono,food:0,merch:0,pct:40};
+    workers[name]={nombre:name,sucursal,autos,comision,bono,food:0,merch:0,pct};
   }
   return Object.values(workers);
 }
