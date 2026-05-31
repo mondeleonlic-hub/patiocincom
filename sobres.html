@@ -386,6 +386,7 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
     <div class="ph">
       <h2>💵 Flujo de efectivo — <span id="flujo-sem-lbl">Semana 19/2026</span></h2>
       <div class="bg">
+        <button class="btn bo" onclick="nuevaSemanaFlujo()" title="Reinicia los 7 días con la semana activa">🔄 Nueva semana</button>
         <button class="btn by" onclick="agregarDiaFlujo()">+ Día</button>
         <button class="btn bk" onclick="guardarFlujo()">💾 Guardar</button>
       </div>
@@ -2240,12 +2241,28 @@ function initFlujo(){
 }
 
 // ── HELPERS FLUJO ─────────────────────────────────────────────────────────────
-// Genera los 7 días de la semana actual (dom→sáb) con fechas reales
-function semanaCompleta(){
+// Genera los 7 días dom→sáb a partir del número de semana/año
+// semStr = "22/2026" — si no se pasa, usa el campo #sem
+function semanaCompleta(semStr){
+  if(!semStr){
+    const el=document.getElementById("sem");
+    semStr=el?el.value:"1/"+new Date().getFullYear();
+  }
+  const parts=(semStr||"").split("/");
+  const weekNum=Math.max(1,parseInt(parts[0])||1);
+  const year=parseInt(parts[1])||new Date().getFullYear();
+
+  // El domingo que inicia la semana 1 = el domingo el o antes del 1 de enero
+  const jan1=new Date(year,0,1);
+  const week1Sun=new Date(jan1);
+  week1Sun.setDate(jan1.getDate()-jan1.getDay()); // retroceder al domingo
+
+  // El domingo de la semana N = week1Sun + (N-1)*7 días
+  const dom=new Date(week1Sun);
+  dom.setDate(week1Sun.getDate()+(weekNum-1)*7);
+
   const dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
   const meses=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
-  const hoy=new Date();
-  const dom=new Date(hoy); dom.setDate(hoy.getDate()-hoy.getDay());
   return dias.map((dia,i)=>{
     const f=new Date(dom); f.setDate(dom.getDate()+i);
     return{
@@ -2254,6 +2271,17 @@ function semanaCompleta(){
       ala:{cortes:[{val:"",nota:""}],gasto:0,gastoNota:"",staff:"",recibido:false}
     };
   });
+}
+
+// Reinicia el flujo con los 7 días correctos según semana activa
+function nuevaSemanaFlujo(){
+  const sem=document.getElementById("sem").value;
+  if(!confirm(`¿Iniciar semana ${sem} en Flujo? Se borrará lo actual (guarda primero si necesitas conservarlo).`)) return;
+  flujoDias=semanaCompleta(sem);
+  sv("pc4_flujo_dias",flujoDias);
+  document.getElementById("flujo-sem-lbl").textContent="Semana "+sem;
+  renderFlujoTabla();
+  flash("✓ Flujo semana "+sem+" listo");
 }
 
 function diaLabel(){
@@ -2427,8 +2455,8 @@ function calcFlujoTotales(){
 
 function guardarFlujo(){
   const sem=document.getElementById("sem").value;
-  const totRef=flujoDias.reduce((s,d)=>s+(d.ref.monto||0)-(d.ref.gasto||0),0);
-  const totAla=flujoDias.reduce((s,d)=>s+(d.ala.monto||0)-(d.ala.gasto||0),0);
+  const totRef=flujoDias.reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0),0);
+  const totAla=flujoDias.reduce((s,d)=>s+montoAla(d)-(d.ala.gasto||0),0);
   const entry={semana:sem,fecha:new Date().toLocaleDateString("es-MX"),dias:[...flujoDias],totRef,totAla,total:totRef+totAla};
   flujoHist=[entry,...flujoHist].slice(0,30);
   sv("pc4_flujo",flujoHist);
