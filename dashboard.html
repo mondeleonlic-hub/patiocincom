@@ -19,15 +19,17 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #F0F0F0; color: var(--dark); }
 
-  /* NAV */
-  nav { background: var(--dark); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.4); padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
+  /* NAV — mismo estilo que sobres.html */
+  nav { background: #000; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  .nav-row1 { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 8px; padding: 0 20px; height: calc(56px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
   .nav-brand { display: flex; align-items: center; }
-  .nav-brand span { color: var(--white); font-weight: 300; }
-  .nav-tabs { display: flex; gap: 4px; }
-  .nav-tab { color: #aaa; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; border: none; background: none; }
-  .nav-tab:hover { color: var(--white); background: #333; }
-  .nav-tab.active { color: var(--dark); background: var(--gold); }
-  .nav-period { color: var(--gold-mid); font-size: 13px; font-weight: 600; }
+  .nav-period { color: #aaa; font-size: 11px; font-weight: 400; letter-spacing: .3px; white-space: nowrap; }
+  .nav-row2 { background: #1a1a1a; display: flex; flex-wrap: nowrap; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .nav-row2::-webkit-scrollbar { display: none; }
+  .nav-tabs { display: flex; flex-wrap: nowrap; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .nav-tab { padding: 10px 16px; border: none; cursor: pointer; font-size: 12px; font-weight: 700; font-family: Arial, sans-serif; background: transparent; color: #999; border-bottom: 3px solid transparent; white-space: nowrap; height: 44px; }
+  .nav-tab:hover { color: #fff; }
+  .nav-tab.active { background: #f8ba00; color: #000; border-bottom: 3px solid #f8ba00; border-radius: 0; }
 
   /* PAGES */
   .page { display: none; padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
@@ -335,8 +337,9 @@
 
 <!-- ══ NAV ══ -->
 <nav>
+ <div class="nav-row1">
   <div class="nav-brand">
-    <svg height="38" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <svg height="32" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
       <path fill="#e0a614" d="M1799.77,509.66q46.68,0,76.32-36.92l40.6,41.8q-48.33,54.42-113.88,54.39t-108-41.41q-42.39-41.38-42.41-104.51t43.22-105.35q43.23-42.18,105.75-42.2,69.81,0,116.92,53.16l-39.4,44.67q-30-37.35-74.7-37.35-35.7,0-61.07,23.34t-25.36,62.92q0,39.57,23.91,63.52T1799.77,509.66Z"/>
       <path fill="#e0a614" d="M2082.7,282H2146V565.68h-63.3Z"/>
       <path fill="#e0a614" d="M2530.4,282h63.34V565.68H2530.4L2395.23,387.89V565.68h-63.34V282h59.27L2530.4,464.6Z"/>
@@ -350,13 +353,16 @@
       <polygon fill="#ffffff" points="439.6 553.68 437.06 565.83 437.06 565.83 439.6 553.68"/>
     </svg>
   </div>
+  <div class="nav-period" id="nav-period" style="display:none"></div>
+ </div>
+ <div class="nav-row2">
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-tab" onclick="showPage('input')">Capturar semana</button>
     <button class="nav-tab" onclick="showPage('graficas')">Gráficas</button>
     <button class="nav-tab" onclick="showPage('historial')">Historial</button>
   </div>
-  <div class="nav-period" id="nav-period">Cargando...</div>
+ </div>
 </nav>
 
 <!-- ══ PAGE: DASHBOARD ══ -->
@@ -476,65 +482,10 @@
     </div>
   </div>
 
-  <!-- ─── BLOQUE 2: Insumos Food (compartidos ÷2) ─── -->
-  <p class="section-title" style="margin-top:28px">Insumos Food — Costo compartido (se divide automáticamente ÷ 2 entre sucursales)</p>
-  <div class="cmp-wrap full">
-    <div class="cmp-header gold">🥩 Ingredientes & Proveedores Food — Global</div>
-    <table class="cmp">
-      <thead>
-        <tr>
-          <th class="th-label" style="width:35%">Proveedor / Concepto</th>
-          <th class="th-global" style="width:32%">Monto Global ($)</th>
-          <th class="th-auto" style="width:33%">÷ 2 → por sucursal (auto)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td class="td-label">Heb</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-heb" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-heb">—</span></td></tr>
-        <tr><td class="td-label">Agua</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-agua" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-agua">—</span></td></tr>
-        <tr><td class="td-label">Guadalupana</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-guad" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-guad">—</span></td></tr>
-        <tr><td class="td-label">Etrusca</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-etrusca" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-etrusca">—</span></td></tr>
-        <tr><td class="td-label">Hielo</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-hielo" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-hielo">—</span></td></tr>
-        <tr><td class="td-label">Cremería</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-crem" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-crem">—</span></td></tr>
-        <tr><td class="td-label">Materias Primas</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-mp" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-mp">—</span></td></tr>
-        <tr><td class="td-label">Café</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-cafe" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-cafe">—</span></td></tr>
-        <tr><td class="td-label">Carne</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-carne" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-carne">—</span></td></tr>
-        <tr><td class="td-label">Costco</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-costco" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-costco">—</span></td></tr>
-        <tr><td class="td-label">Otros food</td>
-          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-otros" placeholder="0" oninput="recalc()"></td>
-          <td class="td-auto"><span id="c-food-otros">—</span></td></tr>
-        <tr class="total-row">
-          <td style="padding-left:18px;font-weight:700">TOTAL FOOD</td>
-          <td style="text-align:right;font-size:16px" id="f-food-total">$0</td>
-          <td style="text-align:right;font-size:14px;color:var(--gold-mid)">÷2 = <span id="f-food-por-suc">$0</span> / sucursal</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
   <!-- ─── BLOQUE 3: Renta + Servicios ─── -->
-  <p class="section-title" style="margin-top:28px">Renta · Servicios</p>
+  <p class="section-title" style="margin-top:28px">Fijos — Renta y Servicios <span style="font-size:10px;font-weight:400;color:var(--light);letter-spacing:0;text-transform:none">(montos mensuales se prorratean automáticamente al período seleccionado)</span></p>
   <div class="cmp-wrap full">
-    <div class="cmp-header dark">🏠 Renta y Servicios por sucursal</div>
+    <div class="cmp-header dark">Fijos — Renta y Servicios por sucursal</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -616,9 +567,9 @@
   </div>
 
   <!-- ─── BLOQUE 4: Insumos CW ─── -->
-  <p class="section-title" style="margin-top:28px">Insumos Carwash</p>
+  <p class="section-title" style="margin-top:28px">Insumos CW</p>
   <div class="cmp-wrap full">
-    <div class="cmp-header blue">🧴 Insumos CW por sucursal</div>
+    <div class="cmp-header blue">Insumos CW por sucursal</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -662,10 +613,65 @@
     </table>
   </div>
 
-  <!-- ─── BLOQUE 5: Nómina y Sueldos ─── -->
-  <p class="section-title" style="margin-top:28px">Nómina · Sueldos · Comisiones</p>
+  <!-- ─── BLOQUE 2: Insumos Food (compartidos ÷2) ─── -->
+  <p class="section-title" style="margin-top:28px">Insumos Food — Costo compartido (se divide automáticamente ÷ 2 entre sucursales)</p>
   <div class="cmp-wrap full">
-    <div class="cmp-header purple">👤 Personal por sucursal</div>
+    <div class="cmp-header gold">Insumos Food — Ingredientes & Proveedores</div>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th class="th-label" style="width:35%">Proveedor / Concepto</th>
+          <th class="th-global" style="width:32%">Monto Global ($)</th>
+          <th class="th-auto" style="width:33%">÷ 2 → por sucursal (auto)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-label">Heb</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-heb" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-heb">—</span></td></tr>
+        <tr><td class="td-label">Agua</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-agua" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-agua">—</span></td></tr>
+        <tr><td class="td-label">Guadalupana</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-guad" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-guad">—</span></td></tr>
+        <tr><td class="td-label">Etrusca</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-etrusca" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-etrusca">—</span></td></tr>
+        <tr><td class="td-label">Hielo</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-hielo" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-hielo">—</span></td></tr>
+        <tr><td class="td-label">Cremería</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-crem" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-crem">—</span></td></tr>
+        <tr><td class="td-label">Materias Primas</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-mp" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-mp">—</span></td></tr>
+        <tr><td class="td-label">Café</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-cafe" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-cafe">—</span></td></tr>
+        <tr><td class="td-label">Carne</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-carne" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-carne">—</span></td></tr>
+        <tr><td class="td-label">Costco</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-costco" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-costco">—</span></td></tr>
+        <tr><td class="td-label">Otros food</td>
+          <td class="td-global"><input class="cmp-input global" type="number" id="f-food-otros" placeholder="0" oninput="recalc()"></td>
+          <td class="td-auto"><span id="c-food-otros">—</span></td></tr>
+        <tr class="total-row">
+          <td style="padding-left:18px;font-weight:700">TOTAL FOOD</td>
+          <td style="text-align:right;font-size:16px" id="f-food-total">$0</td>
+          <td style="text-align:right;font-size:14px;color:var(--gold-mid)">÷2 = <span id="f-food-por-suc">$0</span> / sucursal</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── BLOQUE 5: Nómina y Sueldos ─── -->
+  <p class="section-title" style="margin-top:28px">Personal — Nómina · Sueldos · Comisiones</p>
+  <div class="cmp-wrap full">
+    <div class="cmp-header purple">Personal por sucursal</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -717,7 +723,7 @@
   </div>
 
   <!-- ─── BLOQUE 6: Gasto Opp + Generales ─── -->
-  <p class="section-title" style="margin-top:28px">Gasto Oportunidad · Generales de Marca</p>
+  <p class="section-title" style="margin-top:28px">Gastos Generales</p>
   <div class="form-grid">
 
     <!-- Gasto Opp -->
@@ -733,7 +739,7 @@
 
     <!-- Generales -->
     <div class="form-card">
-      <div class="form-card-header purple">Generales — Marca</div>
+      <div class="form-card-header purple">Generales de Marca</div>
       <div class="form-row"><label>Gasto general</label><input type="number" id="f-gen-cont" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>Marketing / Redes</label><input type="number" id="f-gen-mkt" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>Gastos administrativos</label><input type="number" id="f-gen-admin" placeholder="0" oninput="recalc()"></div>
