@@ -2070,7 +2070,8 @@ function renderCharts() {
   // ── SECTION 1: KPI CARDS ──
   function setKpi(id,val,deltaEl,deltaVal,unit,sparkEl,sparkVals,colorHigh){
     const el=document.getElementById(id);
-    if(el) el.textContent = unit==='pct' ? (val.toFixed(1)+'%') : peso(val);
+    const fmtVal = v => unit==='pct' ? (v.toFixed(1)+'%') : unit==='n' ? Math.round(v).toLocaleString('es-MX') : peso(v);
+    if(el) el.textContent = fmtVal(val);
     const del=document.getElementById(deltaEl);
     if(del){
       const diff = deltaVal;
@@ -2079,7 +2080,7 @@ function renderCharts() {
       const sign = diff>=0?'+':'';
       const cls = Math.abs(diff)<0.5 ? 'neutral' : (isGood ? 'up' : 'down');
       const arrow = diff>0.5?'▲':diff<-0.5?'▼':'→';
-      const fmt = unit==='pct' ? (sign+diff.toFixed(1)+'%') : (sign+peso(diff));
+      const fmt = unit==='pct' ? (sign+diff.toFixed(1)+'%') : unit==='n' ? (sign+Math.round(diff).toLocaleString('es-MX')) : (sign+peso(diff));
       del.className='kpi-delta '+cls;
       del.textContent = arrow+' '+fmt+' vs sem anterior';
     }
