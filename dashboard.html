@@ -13,8 +13,8 @@
     --blue: #1565C0; --blue-bg: #E3F2FD;
     --purple: #5E35B1; --purple-bg: #EDE7F6;
     --white: #fff; --gray: #F5F5F5;
-    --ref-dark: #1B5E20; --ref-bg: #F1F8E9; --ref-mid: #388E3C;
-    --ala-dark: #0D47A1; --ala-bg: #E8F0FE; --ala-mid: #1976D2;
+    --ref-dark: #f8ba00; --ref-bg: #FFF9E6; --ref-mid: #f8ba00;
+    --ala-dark: #0D1B4B; --ala-bg: #E8ECF5; --ala-mid: #0D1B4B;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #F0F0F0; color: var(--dark); }
@@ -189,17 +189,18 @@
   .acc-header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 11px 18px; cursor: pointer; user-select: none;
-    transition: filter .15s;
+    background: var(--white); border-bottom: 1px solid var(--border);
+    transition: background .15s;
   }
-  .acc-header:hover { filter: brightness(0.93); }
+  .acc-header:hover { background: #f9f9f9; }
   .acc-title { font-weight: 700; font-size: 11px; text-transform: uppercase;
-    letter-spacing: .9px; display: flex; align-items: center; gap: 8px; }
-  .acc-chevron { display: inline-block; transition: transform .22s; font-size: 9px; opacity: .85; }
+    letter-spacing: .9px; display: flex; align-items: center; gap: 8px; color: var(--dark); }
+  .acc-chevron { display: inline-block; transition: transform .22s; font-size: 11px; font-weight: 900; }
   .acc-header.open .acc-chevron { transform: rotate(90deg); }
-  .acc-total { font-size: 15px; font-weight: 700; }
+  .acc-total { font-size: 15px; font-weight: 700; color: var(--dark); }
   .acc-body { display: none; }
   .acc-body.open { display: block; }
-  .acc-hint { font-size: 10px; opacity: .65; font-weight: 400; margin-left: 6px; text-transform: none; letter-spacing: 0; }
+  .acc-hint { font-size: 10px; opacity: .55; font-weight: 400; margin-left: 6px; text-transform: none; letter-spacing: 0; }
 
   /* NOTES */
   .notes-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-top: 0; }
@@ -302,16 +303,69 @@
   .pill-ref { background: var(--ref-bg); color: var(--ref-dark); }
   .pill-ala { background: var(--ala-bg); color: var(--ala-dark); }
   .pill-gen { background: var(--purple-bg); color: var(--purple); }
-  /* CHARTS PAGE */
+  /* GRAFICAS PAGE — scoped to avoid conflicts with Dashboard */
+  /* Section titles: same style as dashboard section-title */
+  #page-graficas .g-section-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--light); margin: 0 0 12px; display: block; }
+  /* KPI grid in graficas: 4-col layout */
+  #page-graficas .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+  /* KPI cards: unified with dashboard style */
+  #page-graficas .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  #page-graficas .kpi-card.highlight { border-color: var(--gold); }
+  /* Delta indicator (graficas-only) */
+  .kpi-delta { font-size: 11px; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+  .kpi-delta.up { color: var(--green); }
+  .kpi-delta.down { color: var(--red); }
+  .kpi-delta.neutral { color: var(--mid); }
+  .kpi-spark { display: flex; align-items: flex-end; gap: 2px; height: 28px; margin-top: 10px; }
+  .kpi-spark span { flex: 1; border-radius: 2px 2px 0 0; min-width: 6px; opacity: .85; transition: opacity .2s; }
+  .kpi-spark span:last-child { opacity: 1; }
+  .story-scroll { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px,1fr)); gap: 12px; margin-bottom: 24px; }
+  .story-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
+  .story-card:hover { border-color: var(--gold); }
+  .story-card.story-top { border-color: var(--green); }
+  .story-card.story-bad { border-color: var(--red); }
+  .story-header { padding: 12px 14px 8px; }
+  .story-sem { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--mid); margin-bottom: 3px; }
+  .story-ing { font-size: 18px; font-weight: 900; color: var(--dark); }
+  .story-margen { font-size: 12px; color: var(--mid); margin-top: 2px; }
+  .story-bars { padding: 0 14px 10px; }
+  .story-bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 10px; }
+  .story-bar-bg { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .story-bar-fill { height: 100%; border-radius: 3px; }
+  .story-chip { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin: 4px 14px 8px; }
+  .chip-top { background: #d1fae5; color: #065f46; }
+  .chip-good { background: #dcfce7; color: #166534; }
+  .chip-avg { background: #fef9c3; color: #713f12; }
+  .chip-bad { background: #fee2e2; color: #7f1d1d; }
+  .story-notes { border-top: 1px solid var(--border); padding: 10px 14px; display: none; }
+  .story-notes.open { display: block; }
+  .story-note-item { font-size: 11px; color: var(--mid); margin-bottom: 4px; line-height: 1.4; }
+  .story-note-item.pos { color: #166534; }
+  .story-note-item.neg { color: #7f1d1d; }
+  .accion-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .accion-item { display: flex; gap: 12px; align-items: flex-start; background: var(--white); border-radius: 10px; border: 1px solid var(--border); padding: 12px 16px; }
+  .accion-item.urgente { border-left: 4px solid var(--red); }
+  .accion-item.atencion { border-left: 4px solid #f59e0b; }
+  .accion-item.bueno { border-left: 4px solid var(--green); }
+  .accion-icon { font-size: 20px; flex-shrink: 0; line-height: 1; }
+  .accion-body strong { font-size: 13px; font-weight: 700; color: var(--dark); display: block; margin-bottom: 2px; }
+  .accion-body span { font-size: 12px; color: var(--mid); line-height: 1.4; }
+  .suc-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .suc-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .suc-box-title { font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+  .suc-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .suc-stat-row:last-child { border-bottom: none; font-weight: 700; }
+  .trend-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+  .trend-canvas-wrap { position: relative; height: 220px; }
+  /* legacy chart classes (keep for backward compat) */
   .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .chart-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .chart-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
   .chart-card.full { grid-column: 1/-1; }
   .chart-card-header { padding: 12px 18px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
   .chart-card-header.dark { background: var(--dark); }
   .chart-card-header.green { background: var(--green); }
   .chart-card-header.blue { background: var(--blue); }
   .chart-card-header.gold { background: var(--gold); color: var(--dark); }
-  .chart-card-header.purple { background: var(--purple); }
   .chart-canvas-wrap { padding: 20px; position: relative; height: 280px; }
   .chart-canvas-wrap.tall { height: 340px; }
 
@@ -418,8 +472,8 @@
 
   <p class="section-title" style="margin-top:32px">Desglose</p>
   <div class="detail-grid">
-    <div class="detail-card"><div class="detail-card-header green">Ingreso — Detalle</div><div id="detail-income"></div></div>
-    <div class="detail-card"><div class="detail-card-header red">Gasto — Detalle</div><div id="detail-expense"></div></div>
+    <div class="detail-card"><div class="detail-card-header" style="background:white;color:var(--green);border-bottom:2px solid var(--green)">Ingreso — Detalle</div><div id="detail-income"></div></div>
+    <div class="detail-card"><div class="detail-card-header" style="background:white;color:var(--red);border-bottom:2px solid var(--red)">Gasto — Detalle</div><div id="detail-expense"></div></div>
   </div>
 </div>
 
@@ -442,7 +496,7 @@
 
     <!-- Ingresos -->
     <div class="form-card">
-      <div class="form-card-header green">Ingresos</div>
+      <div class="form-card-header" style="background:white;color:var(--green);border-bottom:2px solid var(--green)">Ingresos</div>
       <div class="form-row sub-header-row"><label>Carwash</label></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-cw-ref" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-cw-ala" placeholder="0" oninput="recalc()"></div>
@@ -460,7 +514,7 @@
 
     <!-- Operaciones -->
     <div class="form-card">
-      <div class="form-card-header blue">Operaciones</div>
+      <div class="form-card-header" style="background:white;color:var(--blue);border-bottom:2px solid var(--blue)">Operaciones</div>
       <div class="form-row sub-header-row"><label>Coches lavados</label></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-coches-ref" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-coches-ala" placeholder="0" oninput="recalc()"></div>
@@ -485,7 +539,7 @@
   <!-- ─── BLOQUE 3: Renta + Servicios ─── -->
   <p class="section-title" style="margin-top:28px">Fijos — Renta y Servicios <span style="font-size:10px;font-weight:400;color:var(--light);letter-spacing:0;text-transform:none">(montos mensuales se prorratean automáticamente al período seleccionado)</span></p>
   <div class="cmp-wrap full">
-    <div class="cmp-header dark">Fijos — Renta y Servicios por sucursal</div>
+    <div class="cmp-header" style="background:white;color:var(--dark);border-bottom:2px solid var(--dark)">Fijos</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -527,31 +581,61 @@
           <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
           <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
         </tr>
+        <tr class="sub-head"><td colspan="3" style="font-size:10px;color:#aaa;font-style:italic">Fijos mensuales → se prorratean al período</td></tr>
+        <tr>
+          <td class="td-label">Internet mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Internet período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Spotify mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Spotify período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Canva mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-canva-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-canva-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Canva período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-canva-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-canva-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Otros fijos mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-otros-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-otros-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Otros fijos período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-otros-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-otros-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr class="sub-head"><td colspan="3" style="font-size:10px;color:#aaa;font-style:italic">Variables semanales → se capturan directo</td></tr>
         <tr>
           <td class="td-label">Gas</td>
           <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-gas" placeholder="0" oninput="recalc()"></td>
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-gas" placeholder="0" oninput="recalc()"></td>
         </tr>
         <tr>
-          <td class="td-label">Internet</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Spotify</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
           <td class="td-label">Basura</td>
           <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-basura" placeholder="0" oninput="recalc()"></td>
           <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-basura" placeholder="0" oninput="recalc()"></td>
         </tr>
-        <tr>
-          <td class="td-label">Otros servicios</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-otros" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-otros" placeholder="0" oninput="recalc()"></td>
-        </tr>
+        <!-- Legacy hidden inputs for backwards compatibility -->
+        <tr style="display:none"><td><input type="number" id="f-ref-serv-internet" value="0" oninput="recalc()"></td><td><input type="number" id="f-ala-serv-internet" value="0"></td><td><input type="number" id="f-ref-serv-spotify" value="0"></td></tr>
+        <tr style="display:none"><td><input type="number" id="f-ala-serv-spotify" value="0"></td><td><input type="number" id="f-ref-serv-otros" value="0"></td><td><input type="number" id="f-ala-serv-otros" value="0"></td></tr>
         <tr class="sub-total">
           <td style="padding-left:18px">Subtotal Servicios</td>
           <td style="text-align:right" id="f-ref-serv-subtotal">$0</td>
@@ -569,7 +653,7 @@
   <!-- ─── BLOQUE 4: Insumos CW ─── -->
   <p class="section-title" style="margin-top:28px">Insumos CW</p>
   <div class="cmp-wrap full">
-    <div class="cmp-header blue">Insumos CW por sucursal</div>
+    <div class="cmp-header" style="background:white;color:var(--blue);border-bottom:2px solid var(--blue)">Insumos CARWASH</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -616,7 +700,7 @@
   <!-- ─── BLOQUE 2: Insumos Food (compartidos ÷2) ─── -->
   <p class="section-title" style="margin-top:28px">Insumos Food — Costo compartido (se divide automáticamente ÷ 2 entre sucursales)</p>
   <div class="cmp-wrap full">
-    <div class="cmp-header gold">Insumos Food — Ingredientes & Proveedores</div>
+    <div class="cmp-header" style="background:white;color:#e67e22;border-bottom:2px solid #e67e22">Insumos FOOD</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -671,7 +755,7 @@
   <!-- ─── BLOQUE 5: Nómina y Sueldos ─── -->
   <p class="section-title" style="margin-top:28px">Personal — Nómina · Sueldos · Comisiones</p>
   <div class="cmp-wrap full">
-    <div class="cmp-header purple">Personal por sucursal</div>
+    <div class="cmp-header" style="background:white;color:var(--purple);border-bottom:2px solid var(--purple)">Personal</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -724,28 +808,51 @@
 
   <!-- ─── BLOQUE 6: Gasto Opp + Generales ─── -->
   <p class="section-title" style="margin-top:28px">Gastos Generales</p>
-  <div class="form-grid">
-
-    <!-- Gasto Opp -->
-    <div class="form-card">
-      <div class="form-card-header red">Gasto Oportunidad</div>
-      <div class="form-row sub-header-row"><label>Uber</label></div>
-      <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-uber-ref" placeholder="0" oninput="recalc()"></div>
-      <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-uber-ala" placeholder="0" oninput="recalc()"></div>
-      <div class="form-row sub-header-row"><label>Otros Gasto Opp</label></div>
-      <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-ref-otros" placeholder="0" oninput="recalc()"></div>
-      <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-ala-otros" placeholder="0" oninput="recalc()"></div>
-    </div>
-
-    <!-- Generales -->
-    <div class="form-card">
-      <div class="form-card-header purple">Generales de Marca</div>
-      <div class="form-row"><label>Gasto general</label><input type="number" id="f-gen-cont" placeholder="0" oninput="recalc()"></div>
-      <div class="form-row"><label>Marketing / Redes</label><input type="number" id="f-gen-mkt" placeholder="0" oninput="recalc()"></div>
-      <div class="form-row"><label>Gastos administrativos</label><input type="number" id="f-gen-admin" placeholder="0" oninput="recalc()"></div>
-      <div class="form-row"><label>Otros generales</label><input type="number" id="f-gen-otros" placeholder="0" oninput="recalc()"></div>
-      <div class="form-row computed"><label><strong>TOTAL GENERALES</strong></label><input type="text" id="f-total-gen" readonly></div>
-    </div>
+  <div class="cmp-wrap full">
+    <div class="cmp-header" style="background:white;color:#f8ba00;border-bottom:2px solid #f8ba00">Gastos Generales</div>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th class="th-label" style="width:36%">Concepto</th>
+          <th class="th-ref" style="width:32%">REFUGIO</th>
+          <th class="th-ala" style="width:32%">ÁLAMOS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="sub-head"><td colspan="3">GASTO OPORTUNIDAD</td></tr>
+        <tr>
+          <td class="td-label">Uber</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-uber-ref" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-uber-ala" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Otros gasto oportunidad</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-otros" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-otros" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr class="sub-head"><td colspan="3">GENERALES DE MARCA</td></tr>
+        <tr>
+          <td class="td-label">Gasto general</td>
+          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-cont" placeholder="0" oninput="recalc()" style="width:200px"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Marketing / Redes</td>
+          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-mkt" placeholder="0" oninput="recalc()" style="width:200px"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Gastos administrativos</td>
+          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-admin" placeholder="0" oninput="recalc()" style="width:200px"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Otros generales</td>
+          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-otros" placeholder="0" oninput="recalc()" style="width:200px"></td>
+        </tr>
+        <tr class="total-row">
+          <td style="padding-left:18px">TOTAL GASTOS GENERALES</td>
+          <td colspan="2" style="text-align:right" id="f-total-gen">$0</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- ─── BLOQUE 7: Notas de la semana ─── -->
@@ -799,47 +906,45 @@
 
 <!-- ══ PAGE: GRÁFICAS ══ -->
 <div class="page" id="page-graficas">
-  <div class="week-selector" style="margin-bottom:20px">
-    <label style="font-weight:700;font-size:13px;color:var(--mid)">Período:</label>
-    <select id="chart-week-select" onchange="renderCharts()">
-      <option value="all">Todas las semanas</option>
-    </select>
-    <div class="month-filter">
-      <label>o por mes:</label>
-      <select id="chart-month-select" onchange="renderCharts()">
-        <option value="">— Todos los meses —</option>
-      </select>
-    </div>
+
+  <!-- FILTRO DE PERÍODO (invisible pero funcional para compatibilidad) -->
+  <div style="display:none">
+    <select id="chart-week-select" onchange="renderCharts()"><option value="all">Todas</option></select>
+    <select id="chart-month-select" onchange="renderCharts()"><option value="">Todos</option></select>
   </div>
-  <div class="charts-grid">
-    <!-- Donut: Distribución de Gastos -->
-    <div class="chart-card">
-      <div class="chart-card-header dark">🍩 Distribución de Gastos</div>
-      <div class="chart-canvas-wrap"><canvas id="chart-gastos-donut"></canvas></div>
-    </div>
-    <!-- Donut: Mix de Ingresos -->
-    <div class="chart-card">
-      <div class="chart-card-header gold">🍩 Mix de Ingresos</div>
-      <div class="chart-canvas-wrap"><canvas id="chart-ing-donut"></canvas></div>
-    </div>
-    <!-- Barras horizontales: Refugio vs Álamos -->
-    <div class="chart-card full">
-      <div class="chart-card-header blue">📊 Refugio vs Álamos — Gastos por Categoría</div>
-      <div class="chart-canvas-wrap tall"><canvas id="chart-suc-bar"></canvas></div>
-    </div>
-    <!-- Línea: Tendencia semanal -->
-    <div class="chart-card full">
-      <div class="chart-card-header green">📈 Tendencia Semanal</div>
-      <div class="chart-canvas-wrap tall"><canvas id="chart-trend-line"></canvas></div>
-    </div>
+
+  <!-- KPI COMMAND CENTER -->
+  <p class="section-title" style="margin-top:0">Visión global</p>
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card highlight"><div class="kpi-label">Ingresos brutos</div><div class="kpi-value" id="kpi-ing">—</div><div class="kpi-delta neutral" id="kpi-ing-delta">vs semana anterior</div><div class="kpi-spark" id="kpi-ing-spark"></div></div>
+    <div class="kpi-card"><div class="kpi-label">Margen neto</div><div class="kpi-value" id="kpi-margen">—</div><div class="kpi-delta neutral" id="kpi-margen-delta">vs promedio</div><div class="kpi-spark" id="kpi-margen-spark"></div></div>
+    <div class="kpi-card"><div class="kpi-label">Gastos totales</div><div class="kpi-value" id="kpi-gastos">—</div><div class="kpi-delta neutral" id="kpi-gastos-delta">vs semana anterior</div><div class="kpi-spark" id="kpi-gastos-spark"></div></div>
+    <div class="kpi-card"><div class="kpi-label">Coches lavados</div><div class="kpi-value" id="kpi-g-coches">—</div><div class="kpi-delta neutral" id="kpi-g-coches-delta">vs semana anterior</div><div class="kpi-spark" id="kpi-g-coches-spark"></div></div>
   </div>
-  <!-- Áreas de oportunidad -->
-  <div class="insight-panel">
-    <div class="insight-header">💡 Áreas de Oportunidad — Análisis Automático</div>
-    <div class="insight-body" id="insight-body">
-      <div class="insight-item info"><span class="insight-icon">ℹ️</span><div class="insight-text"><strong>Cargando análisis...</strong><span>Selecciona un período para ver recomendaciones.</span></div></div>
-    </div>
+
+  <!-- COMPARATIVO SUCURSALES (última semana) -->
+  <p class="section-title" style="margin-top:24px">Refugio vs Álamos — última semana</p>
+  <div class="suc-compare" id="suc-compare">
+    <div class="suc-box"><div class="suc-box-title" style="color:var(--ref-dark)">PC Refugio</div><div id="suc-ref-rows"></div></div>
+    <div class="suc-box"><div class="suc-box-title" style="color:var(--ala-dark)">PC Álamos</div><div id="suc-ala-rows"></div></div>
   </div>
+
+  <!-- TENDENCIA INGRESOS -->
+  <p class="section-title" style="margin-top:24px">Tendencia de ingresos</p>
+  <div class="trend-wrap">
+    <div class="trend-canvas-wrap"><canvas id="chart-trend-line"></canvas></div>
+  </div>
+
+  <!-- STORY MODE: últimas semanas -->
+  <p class="section-title" style="margin-top:24px">Historial reciente — toca para ver notas</p>
+  <div class="story-scroll" id="story-scroll"></div>
+
+  <!-- ACCIONES PARA ESTA SEMANA -->
+  <p class="section-title" style="margin-top:24px">Acciones para esta semana</p>
+  <div class="accion-list" id="accion-list">
+    <div class="accion-item atencion"><span class="accion-icon">⏳</span><div class="accion-body"><strong>Sin datos</strong><span>Registra semanas para ver recomendaciones automáticas.</span></div></div>
+  </div>
+
 </div>
 
 <!-- ══ PAGE: HISTORIAL ══ -->
@@ -996,10 +1101,16 @@ const INPUT_FIELDS = [
   'food-crem','food-mp','food-cafe','food-carne','food-costco','food-otros',
   // Renta
   'ref-renta-mes','ala-renta-mes',
-  // Servicios (Agua y Luz son mensuales prorrateadas; Gas, Internet, etc. son directos)
+  // Servicios fijos (todos mensuales prorrateados excepto Gas y Basura)
   'ref-serv-agua-mes','ala-serv-agua-mes','ref-serv-luz-mes','ala-serv-luz-mes',
-  'ref-serv-gas','ref-serv-internet','ref-serv-spotify','ref-serv-basura','ref-serv-otros',
-  'ala-serv-gas','ala-serv-internet','ala-serv-spotify','ala-serv-basura','ala-serv-otros',
+  'ref-serv-internet-mes','ala-serv-internet-mes',
+  'ref-serv-spotify-mes','ala-serv-spotify-mes',
+  'ref-serv-canva-mes','ala-serv-canva-mes',
+  'ref-serv-otros-mes','ala-serv-otros-mes',
+  'ref-serv-gas','ref-serv-basura','ala-serv-gas','ala-serv-basura',
+  // Legacy direct fields (backward compat)
+  'ref-serv-internet','ref-serv-spotify','ref-serv-otros',
+  'ala-serv-internet','ala-serv-spotify','ala-serv-otros',
   // Insumos CW
   'ref-ins-diesel','ref-ins-quim','ref-ins-herr','ref-ins-otros',
   'ala-ins-diesel','ala-ins-quim','ala-ins-herr','ala-ins-otros',
@@ -1125,11 +1236,12 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
-  event.target.classList.add('active');
+  // Highlight the clicked tab without relying on the legacy global `event`
+  const activeBtn = document.querySelector(`.nav-tab[onclick*="'${id}'"]`);
+  if (activeBtn) activeBtn.classList.add('active');
   if (id === 'dashboard') renderDashboard();
   if (id === 'historial') renderHistorial();
   if (id === 'graficas') { buildChartSelects(); renderCharts(); }
-  // Note: buildChartSelects only on page entry; renderCharts on filter changes
 }
 
 // ── WEEK SELECTOR ──
@@ -1302,7 +1414,22 @@ function recalc() {
   set('f-ref-renta', rentRef > 0 ? peso(rentRef) : '');
   set('f-ala-renta', rentAla > 0 ? peso(rentAla) : '');
 
-  // ── Servicios: Agua y Luz son mensuales prorrateadas; el resto directos
+  // ── Servicios: todos los fijos mensuales se prorratean; Gas y Basura son directos
+  const proServKeys = ['agua','luz','internet','spotify','canva','otros'];
+  let refServPro = 0, alaServPro = 0;
+  proServKeys.forEach(k => {
+    const refVal = Math.round(v('f-ref-serv-' + k + '-mes') * rf);
+    const alaVal = Math.round(v('f-ala-serv-' + k + '-mes') * rf);
+    // legacy fallback for agua/luz that have -mes suffix in old data
+    const refMes = k==='agua'? v('f-ref-serv-agua-mes') : k==='luz'? v('f-ref-serv-luz-mes') : v('f-ref-serv-'+k+'-mes');
+    const alaMes = k==='agua'? v('f-ala-serv-agua-mes') : k==='luz'? v('f-ala-serv-luz-mes') : v('f-ala-serv-'+k+'-mes');
+    const rp = Math.round(refMes * rf);
+    const ap = Math.round(alaMes * rf);
+    set('f-ref-serv-' + k + '-pro', rp > 0 ? peso(rp) : '');
+    set('f-ala-serv-' + k + '-pro', ap > 0 ? peso(ap) : '');
+    refServPro += rp; alaServPro += ap;
+  });
+  // Legacy ids (agua/luz use old -mes keys directly)
   const refAguaPro = Math.round(v('f-ref-serv-agua-mes') * rf);
   const alaAguaPro = Math.round(v('f-ala-serv-agua-mes') * rf);
   const refLuzPro  = Math.round(v('f-ref-serv-luz-mes') * rf);
@@ -1311,13 +1438,11 @@ function recalc() {
   set('f-ala-serv-agua-pro', alaAguaPro > 0 ? peso(alaAguaPro) : '');
   set('f-ref-serv-luz-pro',  refLuzPro  > 0 ? peso(refLuzPro)  : '');
   set('f-ala-serv-luz-pro',  alaLuzPro  > 0 ? peso(alaLuzPro)  : '');
-  const directServKeys = ['gas','internet','spotify','basura','otros'];
-  const refServDirect = directServKeys.reduce((a, k) => a + v('f-ref-serv-' + k), 0);
-  const alaServDirect = directServKeys.reduce((a, k) => a + v('f-ala-serv-' + k), 0);
-  const servRef = refAguaPro + refLuzPro + refServDirect
-    || Math.round(v('f-ref-serv-mes') * rf); // legacy fallback
-  const servAla = alaAguaPro + alaLuzPro + alaServDirect
-    || Math.round(v('f-ala-serv-mes') * rf);
+  // Variables directas: solo Gas y Basura
+  const refServDirect = v('f-ref-serv-gas') + v('f-ref-serv-basura');
+  const alaServDirect = v('f-ala-serv-gas') + v('f-ala-serv-basura');
+  const servRef = refServPro + refServDirect || Math.round(v('f-ref-serv-mes') * rf);
+  const servAla = alaServPro + alaServDirect || Math.round(v('f-ala-serv-mes') * rf);
   setText('f-ref-serv-subtotal', peso(servRef));
   setText('f-ala-serv-subtotal', peso(servAla));
   setText('f-ref-rentaserv-total', peso(rentRef + servRef));
@@ -1396,7 +1521,7 @@ function recalc() {
   set('f-utilidad', peso(util));
   set('f-margen-util', pct(margenUtil));
   set('f-margen-nom', pct(margenNom));
-  set('f-total-gen', peso(genTotal));
+  setText('f-total-gen', peso(genTotal));
   set('f-total-ref', peso(refTotal));
   set('f-total-ala', peso(alaTotal));
   const cochesTotal = v('f-coches-ref') + v('f-coches-ala');
@@ -1702,39 +1827,38 @@ function renderDashboard() {
     ['Food Refugio', s.foodRef], ['Food Álamos', s.foodAla],
     ['Membresías', s.mem], ['Detallado', s.det],
   ].map(r => `<div class="detail-row"><span class="label">${r[0]}</span><span class="amount">${peso(r[1])}</span></div>`).join('');
-  incHtml += `<div class="detail-row total-row"><span class="label">TOTAL INGRESOS</span><span class="amount">${peso(s.ing)}</span></div>`;
+  incHtml += `<div class="detail-row" style="background:var(--green);color:white;font-weight:700;padding:10px 18px;"><span class="label" style="color:white">TOTAL INGRESOS</span><span class="amount" style="color:white">${peso(s.ing)}</span></div>`;
   document.getElementById('detail-income').innerHTML = incHtml;
 
   // Expense detail — grupos colapsables
-  function accGroup(id, bg, color, label, total, rows) {
+  function accGroup(id, chevronColor, label, total, rows) {
     const rowsHtml = rows.map(r =>
       `<div class="detail-row"><span class="label">${r[0]}</span><span class="amount">${peso(r[1])}</span></div>`
     ).join('');
     // Restore open state if it was open before re-render
     const wasOpen = document.getElementById('acc-body-' + id)?.classList.contains('open');
     return `
-      <div class="acc-header${wasOpen ? ' open' : ''}" id="acc-hdr-${id}"
-           style="background:${bg};color:${color}" onclick="toggleGroup('${id}')">
+      <div class="acc-header${wasOpen ? ' open' : ''}" id="acc-hdr-${id}" onclick="toggleGroup('${id}')">
         <span class="acc-title">
-          <span class="acc-chevron">▶</span> ${label}
+          <span class="acc-chevron" style="color:${chevronColor}">▶</span> ${label}
           <span class="acc-hint">clic para ver detalle</span>
         </span>
         <span class="acc-total">${peso(total)}</span>
       </div>
       <div class="acc-body${wasOpen ? ' open' : ''}" id="acc-body-${id}">${rowsHtml}</div>`;
   }
-  let expHtml = accGroup('ref', 'var(--green)', 'white', '🏠 Refugio', s.refTotal,
+  let expHtml = accGroup('ref', '#f8ba00', '🏠 Refugio', s.refTotal,
     [['Renta',s.refRenta],['Servicios',s.refServ],['Comisiones',s.refCom],
      ['Insumos CW',s.refIns],['Nómina CW',s.refNomCw],['Nómina Food',s.refNom],
      ['Insumos Food',s.refInsf],['Gasto Opp / Otros',s.refOtros]]);
-  expHtml += accGroup('ala', '#1565C0', 'white', '🏠 Álamos', s.alaTotal,
+  expHtml += accGroup('ala', '#0D1B4B', '🏠 Álamos', s.alaTotal,
     [['Renta',s.alaRenta],['Servicios',s.alaServ],['Comisiones',s.alaCom],
      ['Insumos CW',s.alaIns],['Nómina CW',s.alaNomCw],['Nómina Food',s.alaNom],
      ['Insumos Food',s.alaInsf],['Gasto Opp / Otros',s.alaOtros]]);
-  expHtml += accGroup('gen', '#5E35B1', 'white', '🏢 Generales / Marca', s.genTotal,
+  expHtml += accGroup('gen', '#1A1A1A', '🏢 Generales / Marca', s.genTotal,
     [['Nómina admin',s.genNom],['Gasto general',s.genCont],
      ['Marketing / Redes',s.genMkt],['Gastos admin',s.genAdmin],['Otros',s.genOtros]]);
-  expHtml += `<div class="detail-row total-row"><span class="label">TOTAL GASTOS</span><span class="amount">${peso(s.gastos)}</span></div>`;
+  expHtml += `<div class="detail-row" style="background:var(--red);color:white;font-weight:700;padding:10px 18px;"><span class="label" style="color:white">TOTAL GASTOS</span><span class="amount" style="color:white">${peso(s.gastos)}</span></div>`;
   document.getElementById('detail-expense').innerHTML = expHtml;
 }
 
@@ -1917,201 +2041,229 @@ function getFilteredWeeks(weekSelId, monthSelId) {
 }
 
 function renderCharts() {
-  const weeks = getFilteredWeeks('chart-week-select', 'chart-month-select');
-  if (weeks.length === 0) return;
-  const s = getAggregated(weeks);
-
-  // ── 1. Gastos Donut
-  destroyChart('gastos-donut');
-  const ctxGD = document.getElementById('chart-gastos-donut');
-  if (ctxGD) {
-    chartInstances['gastos-donut'] = new Chart(ctxGD, {
-      type: 'doughnut',
-      data: {
-        labels: ['Renta Ref','Renta Ala','Servicios Ref','Servicios Ala','Nómina','Insumos CW','Insumos Food','Comisiones','Gastos Opp','Generales'],
-        datasets: [{
-          data: [s.refRenta,s.alaRenta,s.refServ,s.alaServ,
-                 s.refNomCw+s.alaNomCw+s.refNom+s.alaNom+s.genNom,
-                 s.refIns+s.alaIns, s.refInsf+s.alaInsf,
-                 s.refCom+s.alaCom,
-                 s.refOtros+s.alaOtros, s.genCont+s.genMkt+s.genAdmin+s.genOtros],
-          backgroundColor: ['#2E7D32','#1565C0','#43A047','#1E88E5','#5E35B1','#F57C00','#F9A825','#C62828','#6D4C41','#546E7A'],
-          borderWidth: 2, borderColor: '#fff'
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'right', labels: { font: { size: 11 }, padding: 10 } },
-          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed).toLocaleString('es-MX')}` } }
-        }
-      }
-    });
+  const _acErr = document.getElementById('accion-list');
+  try {
+  if (!data.weeks || data.weeks.length === 0) {
+    if(_acErr) _acErr.innerHTML='<div class="accion-item atencion"><span class="accion-icon">📭</span><div class="accion-body"><strong>Sin semanas registradas</strong><span>Captura tu primera semana para ver las gráficas.</span></div></div>';
+    return;
   }
 
-  // ── 2. Ingresos Donut
-  destroyChart('ing-donut');
-  const ctxID = document.getElementById('chart-ing-donut');
-  if (ctxID) {
-    chartInstances['ing-donut'] = new Chart(ctxID, {
-      type: 'doughnut',
-      data: {
-        labels: ['CW Refugio','CW Álamos','Food Refugio','Food Álamos','Membresías'],
-        datasets: [{
-          data: [s.cwRef, s.cwAla, s.foodRef, s.foodAla, s.mem],
-          backgroundColor: ['#2E7D32','#1565C0','#43A047','#1E88E5','#C8960C'],
-          borderWidth: 2, borderColor: '#fff'
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'right', labels: { font: { size: 11 }, padding: 10 } },
-          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed).toLocaleString('es-MX')}` } }
-        }
-      }
-    });
+  // ── Helpers ──
+  function wIng(w){return (w['cw-ref']||0)+(w['cw-ala']||0)+(w['food-ref']||0)+(w['food-ala']||0)+(w['mem']||0);}
+  function wCoches(w){return (w['coches-ref']||0)+(w['coches-ala']||0)||w['coches']||0;}
+
+  const all = data.weeks;
+  const last = all[all.length-1];
+  const prev = all.length>1 ? all[all.length-2] : null;
+  const last5 = all.slice(-5);
+
+  // Aggregated for all weeks (promedio base)
+  const sAll = getAggregated(all);
+  const avgIng = all.length > 0 ? sAll.ing / all.length : 0;
+  const avgGastos = all.length > 0 ? sAll.gastos / all.length : 0;
+  const avgMargen = sAll.ing > 0 ? sAll.util / sAll.ing * 100 : 0;
+  const avgCoches = all.length > 0 ? all.reduce((a,w)=>a+wCoches(w),0)/all.length : 0;
+
+  const sLast = last ? getAggregated([last]) : null;
+  const sPrev = prev ? getAggregated([prev]) : null;
+
+  // ── SECTION 1: KPI CARDS ──
+  function setKpi(id,val,deltaEl,deltaVal,unit,sparkEl,sparkVals,colorHigh){
+    const el=document.getElementById(id);
+    if(el) el.textContent = unit==='pct' ? (val.toFixed(1)+'%') : peso(val);
+    const del=document.getElementById(deltaEl);
+    if(del){
+      const diff = deltaVal;
+      const abs = Math.abs(diff);
+      const isGood = colorHigh ? diff>=0 : diff<=0;
+      const sign = diff>=0?'+':'';
+      const cls = Math.abs(diff)<0.5 ? 'neutral' : (isGood ? 'up' : 'down');
+      const arrow = diff>0.5?'▲':diff<-0.5?'▼':'→';
+      const fmt = unit==='pct' ? (sign+diff.toFixed(1)+'%') : (sign+peso(diff));
+      del.className='kpi-delta '+cls;
+      del.textContent = arrow+' '+fmt+' vs sem anterior';
+    }
+    const sp=document.getElementById(sparkEl);
+    if(sp&&sparkVals.length){
+      const mx=Math.max(...sparkVals,1);
+      const color=colorHigh?'#f8ba00':'#e53e3e';
+      sp.innerHTML=sparkVals.map((v,i)=>`<span style="height:${Math.round(v/mx*100)}%;background:${i===sparkVals.length-1?color:(colorHigh?'#fde68a':'#fca5a5')};flex:1;min-width:5px;border-radius:2px 2px 0 0"></span>`).join('');
+    }
   }
 
-  // ── 3. Refugio vs Álamos horizontal bar
-  destroyChart('suc-bar');
-  const ctxSB = document.getElementById('chart-suc-bar');
-  if (ctxSB) {
-    const cats = ['Renta','Servicios','Nómina CW','Nómina Food','Comisiones','Insumos CW','Insumos Food','Gasto Opp'];
-    chartInstances['suc-bar'] = new Chart(ctxSB, {
-      type: 'bar',
-      data: {
-        labels: cats,
-        datasets: [
-          { label: 'Refugio', data: [s.refRenta,s.refServ,s.refNomCw,s.refNom,s.refCom,s.refIns,s.refInsf,s.refOtros], backgroundColor: 'rgba(46,125,50,0.75)', borderRadius: 4 },
-          { label: 'Álamos',  data: [s.alaRenta,s.alaServ,s.alaNomCw,s.alaNom,s.alaCom,s.alaIns,s.alaInsf,s.alaOtros], backgroundColor: 'rgba(21,101,192,0.75)', borderRadius: 4 }
-        ]
-      },
-      options: {
-        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top' },
-          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed.x).toLocaleString('es-MX')}` } }
-        },
-        scales: {
-          x: { ticks: { callback: v => '$'+Math.round(v/1000)+'k' } }
-        }
-      }
-    });
+  const ingSpark = last5.map(w=>wIng(w));
+  const gastosSpark = last5.map(w=>getAggregated([w]).gastos);
+  const margenSpark = last5.map(w=>{const i=wIng(w);const g=getAggregated([w]).gastos;return i>0?(i-g)/i*100:0;});
+  const cochesSpark = last5.map(w=>wCoches(w));
+
+  if(sLast){
+    const lastIng=wIng(last), prevIng=prev?wIng(prev):lastIng;
+    const lastG=sLast.gastos, prevG=sPrev?sPrev.gastos:lastG;
+    const lastM=lastIng>0?sLast.util/lastIng*100:0;
+    const prevM=prev&&sPrev?wIng(prev)>0?sPrev.util/wIng(prev)*100:0:lastM;
+    const lastC=wCoches(last), prevC=prev?wCoches(prev):lastC;
+    setKpi('kpi-ing',lastIng,'kpi-ing-delta',lastIng-prevIng,'$','kpi-ing-spark',ingSpark,true);
+    setKpi('kpi-margen',lastM,'kpi-margen-delta',lastM-prevM,'pct','kpi-margen-spark',margenSpark,true);
+    setKpi('kpi-gastos',lastG,'kpi-gastos-delta',lastG-prevG,'$','kpi-gastos-spark',gastosSpark,false);
+    setKpi('kpi-g-coches',lastC,'kpi-g-coches-delta',lastC-prevC,'n','kpi-g-coches-spark',cochesSpark,true);
   }
 
-  // ── 4. Tendencia semanal (line chart — all weeks individually)
+  // ── SECTION 2: SUCURSALES LAST WEEK ──
+  if(last){
+    function sucRows(refIng, alaIng, refG, alaG){
+      const sufixRef=[
+        ['Ingreso CW', peso(last['cw-ref']||0)],
+        ['Ingreso Food', peso(last['food-ref']||0)],
+        ['Gastos', peso(refG)],
+        ['Utilidad', peso(refIng-refG)]
+      ];
+      const sufixAla=[
+        ['Ingreso CW', peso(last['cw-ala']||0)],
+        ['Ingreso Food', peso(last['food-ala']||0)],
+        ['Gastos', peso(alaG)],
+        ['Utilidad', peso(alaIng-alaG)]
+      ];
+      const rowsRef=document.getElementById('suc-ref-rows');
+      const rowsAla=document.getElementById('suc-ala-rows');
+      if(rowsRef) rowsRef.innerHTML=sufixRef.map(([l,v],i)=>`<div class="suc-stat-row"><span>${l}</span><span style="font-weight:${i===3?700:400};color:${i===3?((refIng-refG)>=0?'var(--green)':'var(--red)'):'var(--dark)'}">${v}</span></div>`).join('');
+      if(rowsAla) rowsAla.innerHTML=sufixAla.map(([l,v],i)=>`<div class="suc-stat-row"><span>${l}</span><span style="font-weight:${i===3?700:400};color:${i===3?((alaIng-alaG)>=0?'var(--green)':'var(--red)'):'var(--dark)'}">${v}</span></div>`).join('');
+    }
+    const lAgg=sLast;
+    sucRows(
+      (last['cw-ref']||0)+(last['food-ref']||0),
+      (last['cw-ala']||0)+(last['food-ala']||0),
+      lAgg.refTotal,
+      lAgg.alaTotal
+    );
+  }
+
+  // ── SECTION 3: TENDENCIA (line chart) ──
   destroyChart('trend-line');
-  const ctxTL = document.getElementById('chart-trend-line');
-  if (ctxTL && data.weeks.length > 0) {
-    const tWeeks = weeks.length > 1 ? weeks : data.weeks;
-    const labels = tWeeks.map(w => w.label ? w.label.split('·')[0].trim() : '?');
-    const ingArr    = tWeeks.map(w => (w['cw-ref']||0)+(w['cw-ala']||0)+(w['food-ref']||0)+(w['food-ala']||0)+(w['mem']||0));
-    const gastosArr = tWeeks.map(w => getAggregated([w]).gastos);
-    const utilArr   = tWeeks.map(w => { const sg = getAggregated([w]); return sg.util; });
-    chartInstances['trend-line'] = new Chart(ctxTL, {
-      type: 'line',
-      data: {
+  const ctxT=document.getElementById('chart-trend-line');
+  if(ctxT&&all.length>1){
+    const tWeeks=all.slice(-10);
+    const labels=tWeeks.map(w=>w.label||(w.dateStart?('S'+(new Date(w.dateStart).getMonth()+1)):('S?')));
+    chartInstances['trend-line']=new Chart(ctxT,{
+      type:'line',
+      data:{
         labels,
-        datasets: [
-          { label: 'Ingresos', data: ingArr, borderColor: '#2E7D32', backgroundColor: 'rgba(46,125,50,0.1)', tension: 0.3, fill: true, pointRadius: 4 },
-          { label: 'Gastos',   data: gastosArr, borderColor: '#C62828', backgroundColor: 'rgba(198,40,40,0.08)', tension: 0.3, fill: true, pointRadius: 4 },
-          { label: 'Utilidad', data: utilArr, borderColor: '#C8960C', backgroundColor: 'rgba(200,150,12,0.1)', tension: 0.3, fill: false, pointRadius: 4, borderDash: [5,3] }
+        datasets:[
+          {label:'Ingresos',data:tWeeks.map(w=>wIng(w)),borderColor:'#f8ba00',backgroundColor:'rgba(248,186,0,.08)',tension:.3,fill:true,pointRadius:4,pointBackgroundColor:'#f8ba00'},
+          {label:'Gastos',data:tWeeks.map(w=>getAggregated([w]).gastos),borderColor:'#e53e3e',backgroundColor:'rgba(229,62,62,.05)',tension:.3,fill:false,pointRadius:4,pointBackgroundColor:'#e53e3e'},
+          {label:'Utilidad',data:tWeeks.map(w=>{const a=getAggregated([w]);return a.util;}),borderColor:'#38a169',backgroundColor:'rgba(56,161,105,.05)',tension:.3,fill:false,pointRadius:4,borderDash:[5,3],pointBackgroundColor:'#38a169'}
         ]
       },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top' },
-          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed.y).toLocaleString('es-MX')}` } }
-        },
-        scales: {
-          y: { ticks: { callback: v => '$'+Math.round(v/1000)+'k' } }
-        }
-      }
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}},
+          tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+peso(ctx.parsed.y)}}},
+        scales:{x:{grid:{display:false},ticks:{font:{size:10},maxRotation:30}},
+          y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},callback:v=>peso(v)}}}}
     });
   }
 
-  // ── Insights / Áreas de oportunidad ──
-  renderInsights(s, weeks);
+  // ── SECTION 4: STORY MODE ──
+  const storyEl=document.getElementById('story-scroll');
+  if(storyEl){
+    const stories=last5.slice().reverse();
+    const margenVals=stories.map(w=>{const i=wIng(w);const g=getAggregated([w]).gastos;return i>0?(i-g)/i*100:0;});
+    const avgM=margenVals.length>0?margenVals.reduce((a,b)=>a+b,0)/margenVals.length:0;
+
+    storyEl.innerHTML=stories.map((w,idx)=>{
+      const ing=wIng(w);
+      const agg=getAggregated([w]);
+      const m=ing>0?agg.util/ing*100:0;
+      const mFmt=m.toFixed(1)+'%';
+      const cwRef=w['cw-ref']||0, cwAla=w['cw-ala']||0;
+      const maxCW=Math.max(cwRef,cwAla,1);
+      const isTop=m>=avgM+5;
+      const isBad=m<avgM-5||agg.util<0;
+      const chipClass=isTop?'chip-top':isBad?'chip-bad':m>=avgM?'chip-good':'chip-avg';
+      const chipText=isTop?'Top semana':isBad?(agg.util<0?'Semana difícil':'Semana baja'):m>=avgM?'Buena semana':'Semana ok';
+      const cardClass=isTop?'story-top':isBad?'story-bad':'';
+      const notaPos=w['nota-pos']||''; const notaNeg=w['nota-neg']||''; const notaGen=w['nota-gen']||'';
+      const hasNotes=notaPos||notaNeg||notaGen;
+      const notesHtml=hasNotes?`
+        ${notaPos?`<div class="story-note-item pos">+ ${notaPos}</div>`:''}
+        ${notaNeg?`<div class="story-note-item neg">− ${notaNeg}</div>`:''}
+        ${notaGen?`<div class="story-note-item">${notaGen}</div>`:''}`:'<div class="story-note-item">Sin notas esta semana.</div>';
+      return `<div class="story-card ${cardClass}" onclick="toggleStoryNotes(this)">
+        <div class="story-header">
+          <div class="story-sem">${w.label||'Sem ?'}</div>
+          <div class="story-ing">${peso(ing)}</div>
+          <div class="story-margen">Margen ${mFmt} · ${wCoches(w)} coches</div>
+        </div>
+        <div class="story-bars">
+          <div class="story-bar-row"><span style="color:var(--ref-dark);width:52px">Refugio</span><div class="story-bar-bg"><div class="story-bar-fill" style="width:${Math.round(cwRef/maxCW*100)}%;background:var(--ref-dark)"></div></div></div>
+          <div class="story-bar-row"><span style="color:var(--ala-dark);width:52px">Álamos</span><div class="story-bar-bg"><div class="story-bar-fill" style="width:${Math.round(cwAla/maxCW*100)}%;background:var(--ala-dark)"></div></div></div>
+        </div>
+        <div><span class="story-chip ${chipClass}">${chipText}</span></div>
+        <div class="story-notes" id="snotes-${idx}">${notesHtml}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── SECTION 5: ACCIONES PARA ESTA SEMANA ──
+  const accionEl=document.getElementById('accion-list');
+  if(!accionEl||!sLast)return;
+  const acciones=[];
+  const lastIng=wIng(last);
+  const lastM=lastIng>0?sLast.util/lastIng*100:0;
+
+  // Margen general
+  if(lastM<25&&lastIng>0) acciones.push({t:'urgente',i:'🔴',title:'Margen crítico: '+lastM.toFixed(1)+'%',text:'El margen de la última semana está por debajo del 25%. Revisa gastos urgentemente — nómina, insumos o gastos generales.'});
+  else if(lastM<35&&lastIng>0) acciones.push({t:'atencion',i:'🟡',title:'Margen bajo objetivo: '+lastM.toFixed(1)+'%',text:'El objetivo es ≥35%. Esta semana quedó '+lastM.toFixed(1)+'%. Identifica qué categoría subió vs semanas anteriores.'});
+  else if(lastIng>0) acciones.push({t:'bueno',i:'🟢',title:'Margen saludable: '+lastM.toFixed(1)+'%',text:'Buen resultado. Mantén el control de gastos variables para sostenerlo.'});
+
+  // Comparativa sucursales
+  if(last&&lastIng>0){
+    const refTotal=sLast.refTotal, alaTotal=sLast.alaTotal;
+    const refIng=(last['cw-ref']||0)+(last['food-ref']||0);
+    const alaIng=(last['cw-ala']||0)+(last['food-ala']||0);
+    const refM=refIng>0?(refIng-refTotal)/refIng*100:0;
+    const alaM=alaIng>0?(alaIng-alaTotal)/alaIng*100:0;
+    if(Math.abs(refM-alaM)>12){
+      const baja=refM<alaM?'Refugio':'Álamos';
+      const diff=Math.abs(refM-alaM).toFixed(1);
+      acciones.push({t:'atencion',i:'⚖️',title:baja+' tiene margen '+diff+'pts más bajo',text:`Hay un desequilibrio entre sucursales. Revisa gastos de ${baja} esta semana — puede ser nómina, insumos o gasto operativo extra.`});
+    }
+  }
+
+  // Nómina alta
+  const nomPct=lastIng>0?(sLast.nomina)/lastIng*100:0;
+  if(nomPct>50&&lastIng>0) acciones.push({t:'urgente',i:'👥',title:'Nómina al '+nomPct.toFixed(0)+'% de ingresos',text:'La nómina total (comisiones + coordinadores + food) supera el 50% de los ingresos. Revisa horas extra y bonos de la semana.'});
+  else if(nomPct>42&&lastIng>0) acciones.push({t:'atencion',i:'👥',title:'Nómina en '+nomPct.toFixed(0)+'% de ingresos',text:'Ligeramente alta. El objetivo es mantenerla ≤42%. Analiza si hay turnos extra o bonos no planificados.'});
+
+  // Insumos CW
+  const insPct=lastIng>0?(sLast.refIns+sLast.alaIns)/lastIng*100:0;
+  if(insPct>18&&lastIng>0) acciones.push({t:'urgente',i:'🧴',title:'Insumos CW en '+insPct.toFixed(0)+'% de ingresos',text:'Los insumos están por encima del 18%. Revisa si hubo compra doble, desperdicio o si se requiere ajustar el stock.'});
+
+  // Tendencia: 3 semanas seguidas a la baja
+  if(all.length>=3){
+    const lastThree=all.slice(-3).map(w=>wIng(w));
+    if(lastThree[2]<lastThree[1]&&lastThree[1]<lastThree[0]) acciones.push({t:'urgente',i:'📉',title:'3 semanas consecutivas a la baja',text:'Los ingresos llevan 3 semanas cayendo. Revisa si hay patrón de clima, personal o competencia. Esta semana es clave para revertirlo.'});
+  }
+
+  // Membresías: cancelaciones altas
+  if(last&&(last['mem-canc']||0)>(last['mem-vend']||0)&&(last['mem-vend']||0)>0) acciones.push({t:'atencion',i:'🎫',title:'Cancelaciones superan nuevas membresías',text:'Esta semana se cancelaron más membresías de las que se vendieron. Habla con el equipo sobre la propuesta de valor y el proceso de renovación.'});
+
+  // Positivo: ingresos record
+  if(all.length>=2){
+    const maxIng=Math.max(...all.slice(0,-1).map(w=>wIng(w)));
+    if(wIng(last)>maxIng*1.05) acciones.push({t:'bueno',i:'🏆',title:'Semana récord de ingresos',text:'Los ingresos de esta semana superan el máximo histórico. Analiza qué funcionó para replicarlo.'});
+  }
+
+  if(acciones.length===0) acciones.push({t:'bueno',i:'✅',title:'Todo en orden',text:'No se detectaron alertas en la última semana registrada. Sigue con el ritmo actual.'});
+
+  accionEl.innerHTML=acciones.map(a=>`<div class="accion-item ${a.t}"><span class="accion-icon">${a.i}</span><div class="accion-body"><strong>${a.title}</strong><span>${a.text}</span></div></div>`).join('');
+  } catch(e) {
+    console.error('renderCharts error:', e);
+    if(_acErr) _acErr.innerHTML=`<div class="accion-item urgente"><span class="accion-icon">⚠️</span><div class="accion-body"><strong>Error al cargar gráficas</strong><span>${e.message}</span></div></div>`;
+  }
 }
 
-function renderInsights(s, weeks) {
-  const el = document.getElementById('insight-body');
-  if (!el || !s) return;
-  const insights = [];
-
-  // Margen de utilidad
-  const margen = s.ing > 0 ? s.util / s.ing : 0;
-  if (margen < 0.10) {
-    insights.push({ type:'warn', icon:'🔴', title:'Margen de utilidad crítico', text:`El margen es ${(margen*100).toFixed(1)}%. Lo ideal es superar 15%. Revisa los gastos más grandes.` });
-  } else if (margen < 0.18) {
-    insights.push({ type:'info', icon:'🟡', title:'Margen de utilidad bajo', text:`Margen de ${(margen*100).toFixed(1)}%. Hay espacio para mejorar — objetivo 20%+.` });
-  } else {
-    insights.push({ type:'good', icon:'✅', title:'Margen de utilidad saludable', text:`${(margen*100).toFixed(1)}% — buen resultado. Mantén el control de costos.` });
-  }
-
-  // Nómina como % de ingresos
-  const pctNom = s.ing > 0 ? s.nomina / s.ing : 0;
-  if (pctNom > 0.45) {
-    insights.push({ type:'warn', icon:'👥', title:'Nómina muy alta', text:`La nómina representa el ${(pctNom*100).toFixed(1)}% de los ingresos. Lo recomendable es <40%. Revisa personal general y food.` });
-  } else if (pctNom > 0.38) {
-    insights.push({ type:'info', icon:'👥', title:'Nómina elevada', text:`Nómina al ${(pctNom*100).toFixed(1)}% de ingresos. Monitorea y busca eficiencias.` });
-  }
-
-  // Gastos Refugio vs Álamos
-  if (s.refTotal > 0 && s.alaTotal > 0) {
-    const diff = Math.abs(s.refTotal - s.alaTotal);
-    const pctDiff = diff / Math.max(s.refTotal, s.alaTotal);
-    if (pctDiff > 0.30) {
-      const mayor = s.refTotal > s.alaTotal ? 'Refugio' : 'Álamos';
-      insights.push({ type:'warn', icon:'⚖️', title:`Desequilibrio de gastos entre sucursales`, text:`${mayor} gasta ${(pctDiff*100).toFixed(0)}% más que la otra sucursal. Revisa insumos y nómina locales.` });
-    }
-  }
-
-  // Insumos CW altos
-  const pctIns = s.ing > 0 ? (s.refIns + s.alaIns) / s.ing : 0;
-  if (pctIns > 0.15) {
-    insights.push({ type:'warn', icon:'🧴', title:'Insumos CW elevados', text:`Representan el ${(pctIns*100).toFixed(1)}% de ingresos. Evalúa proveedores o cantidades.` });
-  }
-
-  // Churn de membresías
-  if (s.memAct > 0 && s.memCanc > 0) {
-    const churn = s.memCanc / s.memAct * 100;
-    if (churn > 10) {
-      insights.push({ type:'warn', icon:'❌', title:'Alta tasa de cancelación de membresías', text:`${churn.toFixed(1)}% de membresías activas canceladas. Analiza si es por falta de pago o insatisfacción.` });
-    } else if (churn > 5) {
-      insights.push({ type:'info', icon:'📉', title:'Tasa de cancelación moderada', text:`${churn.toFixed(1)}% cancelación. Considera estrategias de retención.` });
-    }
-  }
-
-  // Tendencia (si hay múltiples semanas)
-  if (weeks.length >= 3) {
-    const last3 = weeks.slice(-3);
-    const ingArr = last3.map(w => (w['cw-ref']||0)+(w['cw-ala']||0)+(w['food-ref']||0)+(w['food-ala']||0)+(w['mem']||0));
-    if (ingArr[2] > ingArr[1] && ingArr[1] > ingArr[0]) {
-      insights.push({ type:'good', icon:'📈', title:'Ingresos en crecimiento', text:'Los últimos 3 períodos muestran crecimiento sostenido. ¡Buen ritmo!' });
-    } else if (ingArr[2] < ingArr[1] && ingArr[1] < ingArr[0]) {
-      insights.push({ type:'warn', icon:'📉', title:'Tendencia de ingresos a la baja', text:'Los últimos 3 períodos muestran caída. Revisa las notas de cada semana para identificar causas.' });
-    }
-  }
-
-  // Generales altos
-  const pctGen = s.ing > 0 ? s.genTotal / s.ing : 0;
-  if (pctGen > 0.12) {
-    insights.push({ type:'info', icon:'🏢', title:'Gastos generales de marca altos', text:`${(pctGen*100).toFixed(1)}% de ingresos en generales. Revisa marketing y gastos administrativos.` });
-  }
-
-  if (insights.length === 0) {
-    insights.push({ type:'good', icon:'🎯', title:'Todo en orden', text:'No se detectaron alertas significativas en este período.' });
-  }
-
-  el.innerHTML = insights.map(i =>
-    `<div class="insight-item ${i.type}">
-       <span class="insight-icon">${i.icon}</span>
-       <div class="insight-text"><strong>${i.title}</strong><span>${i.text}</span></div>
-     </div>`
-  ).join('');
+function toggleStoryNotes(card){
+  const notes=card.querySelector('.story-notes');
+  if(notes) notes.classList.toggle('open');
 }
 
 // ══════════════════════════════════════════════════
@@ -2373,7 +2525,8 @@ function saveApiKey() {
 // ── INIT ──
 buildWeekSelect();
 renderDashboard();
-if (data.weeks.length > 0) loadWeek();
+buildChartSelects();
+if (data.weeks.length > 0) { loadWeek(); }
 </script>
 </body>
 </html>

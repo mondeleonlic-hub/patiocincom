@@ -1,9 +1,10 @@
-const CACHE = 'patiocinco-v20260531';
+const CACHE = 'patiocinco-v20260608';
 const FILES = ['./'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(c => c.addAll(FILES))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -16,7 +17,7 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // HTML siempre de red primero para recibir actualizaciones al instante
+  // Network-first for HTML documents
   if (e.request.destination === 'document' || e.request.url.endsWith('.html')) {
     e.respondWith(
       fetch(e.request).then(res => {
@@ -27,12 +28,15 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-  // Resto (imágenes, scripts externos) → cache primero
+  // Cache-first for everything else
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
-      const clone = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, clone));
-      return res;
-    }))
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      });
+    })
   );
 });
