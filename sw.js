@@ -1,4 +1,4 @@
-const CACHE = 'patiocinco-v20260608';
+const CACHE = 'patiocinco-v20260608b';
 const FILES = ['./'];
 
 self.addEventListener('install', e => {
