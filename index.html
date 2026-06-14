@@ -54,7 +54,7 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
 .pill-sin{display:inline-block;background:#f5f5f5;color:#aaa;border-radius:20px;padding:1px 8px;font-size:10px;font-weight:700}
 /* DEUDA INLINE */
 .deuda-cell{min-width:200px}
-.deuda-sin{color:#ccc;font-size:11px}
+.deuda-sin{color:#ccc;font-size:11px;display:inline-flex;align-items:center;gap:4px}
 .deuda-info{background:#fff5f5;border:1px solid #fcc;border-radius:6px;padding:7px 9px;font-size:11px}
 .deuda-concepto{font-weight:700;color:#c53030;margin-bottom:4px}
 .deuda-row{display:flex;align-items:center;gap:5px;margin-bottom:2px;color:#555}
@@ -690,9 +690,13 @@ function parsePDFWords(words){
     sv('pc4_sem', semM[1]);
   }
 
-  // Columnas: comisiones x<370, food x 475-620
-  const comW  = words.filter(w=>w.x<370);
-  const foodW = words.filter(w=>w.x>=475&&w.x<620);
+  // Columnas detectadas con pdfplumber:
+  //  COMISIONES  x < 310  (nombres, %, $comisión, #autos en x=134-265)
+  //  FOOD nombres x = 310-370 (nombre del lavador con descuento food, aparece a x≈320)
+  //  FOOD montos  x = 370-450 (monto positivo del descuento food, a x≈383)
+  //  MERCH        x = 475-600, y < 200 (sección MERCH que aparece antes del bloque FOOD APP)
+  const comW   = words.filter(w=>w.x<310);
+  const merchW = words.filter(w=>w.x>=475&&w.x<600&&w.y<200);
 
   function groupLines(ws){
     const rows={};
@@ -705,7 +709,7 @@ function parsePDFWords(words){
   }
 
   const comLines  = groupLines(comW);
-  const foodLines = groupLines(foodW);
+  const merchLines= groupLines(merchW);
 
   // ── Parser comisiones ─────────────────────────────────────────────────────
   let section="", workers={}, pcts={}, lastK=null;
@@ -745,14 +749,29 @@ function parsePDFWords(words){
     }
   }
 
-  // ── Parser food ───────────────────────────────────────────────────────────
-  for(const line of foodLines){
-    if(line.includes("Suma total")) break;
-    if(/COLABORADOR|FOOD \(SEMANA|MERCH/.test(line)) continue;
+  // ── Parser FOOD (descuentos por alimentos) ────────────────────────────────
+  // Los nombres de food aparecen a x≈320 (rango 310-370) en las filas Total
+  // Los montos aparecen a x≈383 (rango 370-450) en la misma y
+  words.filter(w=>w.x>=310&&w.x<370).forEach(fw=>{
+    const fname=fw.text.trim();
+    if(!fname||/^(Suma|total|FOOD|COLABORADOR|\$|\d)/i.test(fname)) return;
+    const k=normN(fname);
+    if(!workers[k]) return;
+    const fy=Math.round(fw.y/4)*4;
+    // Encontrar monto food en misma fila, x=370-450
+    const amtWs=words.filter(w=>Math.round(w.y/4)*4===fy&&w.x>=370&&w.x<450);
+    const amtText=amtWs.map(w=>w.text).join(' ');
+    const am=amtText.match(/\$([\d,]+\.?\d*)/);
+    if(am) workers[k].food+=parseFloat(am[1].replace(/,/g,''));
+  });
+
+  // ── Parser MERCH ──────────────────────────────────────────────────────────
+  for(const line of merchLines){
+    if(/Suma\s*total|COLABORADOR|\$\s*MERCH|MERCH\s*\(/i.test(line)) continue;
     const m=line.match(/^([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ ]*?)\s+\$([\d,]+\.?\d*)/);
     if(m){
       const k=normN(m[1].trim()), amt=parseFloat(m[2].replace(/,/g,""));
-      if(workers[k]) workers[k].food+=amt;
+      if(workers[k]) workers[k].merch+=amt;
     }
   }
 
@@ -809,7 +828,8 @@ function renderT(){
         : `<div class="deuda-row"><span>Esta semana (Pago ${d.pagoActual}/${d.numPagos}):</span><strong style="color:#e53e3e">-${fmt(desc)}</strong></div>
            <div class="deuda-resta">Saldo tras pago: ${fmt(Math.max(0,d.total-desc*(d.pagoActual||1)))}</div>`
       }
-    </div>`:`<span class="deuda-sin">—</span>`;
+    </div>`:`<span class="deuda-sin">—${row.nombre?`<button onclick="abrirNuevaDeuda({nombre:'${esc(row.nombre)}',lockNombre:true})" title="Registrar deuda" style="background:transparent;border:none;color:#e53e3e;cursor:pointer;font-size:13px;padding:0 2px;vertical-align:middle;opacity:.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5">💰</button>`:""}
+    </span>`;
 
     tr.innerHTML=`
       <td style="white-space:nowrap"><input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:100px">${
