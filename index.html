@@ -318,6 +318,7 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
         <button class="fbtn on" id="fs-all" onclick="setFS('all')">Todos</button>
         <button class="fbtn ref" id="fs-ref" onclick="setFS('PC Refugio')">PC Refugio</button>
         <button class="fbtn ala" id="fs-ala" onclick="setFS('PC Álamos')">PC Álamos</button>
+        <button class="btn by" onclick="renderS()" title="Actualizar sobres con los datos actuales">🔄 Actualizar</button>
         <button class="btn bk" onclick="printTermica()" title="Imprimir todos en térmica 58mm">🖨️ Imprimir todos</button>
         <button class="btn by" id="btn-imprimir-sel" onclick="printSeleccionado()" style="display:none">🖨️ Imprimir seleccionado</button>
       </div>
@@ -1393,7 +1394,7 @@ let colaImpresion = [];
 let colaIndex = 0;
 
 function printTermica(){
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre);
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir.");return;}
   const sem=document.getElementById("sem").value;
@@ -1568,7 +1569,7 @@ let sobreSeleccionado = null; // nombre del lavador seleccionado
 
 function renderS(){
   const sem=document.getElementById("sem").value,g=document.getElementById("sg");
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre);
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){g.innerHTML='<p class="nd">Sin datos.</p>';return;}
   g.innerHTML=act.map(r=>bsobre(r,sem)).join("");
@@ -1613,7 +1614,7 @@ function printSeleccionado(){
 
 function printSobres(){
   const sem=document.getElementById("sem").value;
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre);
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir con este filtro.");return;}
   const pa=document.getElementById("print-area");
