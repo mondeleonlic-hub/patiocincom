@@ -681,6 +681,15 @@ async function runOCR(b64,mime){
 }
 
 function parsePDFWords(words){
+  // Extraer número de semana del PDF (ej. "SEMANA 24/2026")
+  const allText = words.map(w=>w.text).join(' ');
+  const semM = allText.match(/SEMANA\s+(\d+\/\d+)/);
+  if(semM){
+    const semEl = document.getElementById('sem');
+    if(semEl) semEl.value = semM[1];
+    sv('pc4_sem', semM[1]);
+  }
+
   // Columnas: comisiones x<370, food x 475-620
   const comW  = words.filter(w=>w.x<370);
   const foodW = words.filter(w=>w.x>=475&&w.x<620);
@@ -768,9 +777,10 @@ function parsePDFWords(words){
   renderT(); renderD(); renderSucursales();
 
   const sinSuc=rows.filter(r=>!r.sucursal).length;
+  const semLabel = semM ? ` — Semana ${semM[1]}` : '';
   setSt("ok", sinSuc>0
-    ?`✓ ${rows.length} lavadores cargados — ${sinSuc} sin sucursal detectada`
-    :`✓ ${rows.length} lavadores cargados desde PDF ✅`);
+    ?`✓ ${rows.length} lavadores cargados${semLabel} — ${sinSuc} sin sucursal detectada`
+    :`✓ ${rows.length} lavadores cargados${semLabel} ✅`);
 }
 
 // ── TABLA ─────────────────────────────────────────────────────────────────────
