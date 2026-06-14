@@ -726,9 +726,10 @@ function parsePDFWords(words){
       const pct=vp.length?Math.max(...vp):40;
       lastK=null;
       if(!workers[k]){
-        workers[k]={nombre:name,sucursal:section,pct,autos,comision,food:0,merch:0,bono:0};
+        workers[k]={nombre:name,sucursal:section,pct,autos,comision,food:0,merch:0,bono:0,branches:[section]};
       } else {
         const ex=workers[k];
+        if(!ex.branches.includes(section)) ex.branches.push(section);
         if(autos>ex.autos){ex.sucursal=section;ex.pct=pct;}
         ex.autos+=autos; ex.comision+=comision;
       }
@@ -751,7 +752,8 @@ function parsePDFWords(words){
     nombre:l.nombre, sucursal:l.sucursal, pct:l.pct,
     autos:l.autos||"", comision:l.comision||"",
     food:l.food||"", merch:l.merch||"", bono:l.bono||"",
-    ahorro:"", extra:0, extraConcepto:""
+    ahorro:"", extra:0, extraConcepto:"",
+    branches: l.branches||[l.sucursal]
   }));
 
   // Actualizar perfiles
@@ -800,7 +802,11 @@ function renderT(){
     </div>`:`<span class="deuda-sin">—</span>`;
 
     tr.innerHTML=`
-      <td><input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:100px"></td>
+      <td style="white-space:nowrap"><input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:100px">${
+  (row.branches&&row.branches.length>1)
+    ? row.branches.map(b=>`<span title="${b}" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${b==='PC Álamos'?'#0D1B4B':'#f8ba00'};margin-left:3px;vertical-align:middle;border:1px solid #ccc"></span>`).join('')
+    : ''
+}</td>
       <td>${sucLabel}</td>
       <td><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
       <td><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:58px;text-align:center"></td>
