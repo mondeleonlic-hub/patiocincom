@@ -148,9 +148,6 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
     <label style="color:#aaa;font-size:11px">Semana</label>
     <input type="text" id="sem" value="19/2026">
-    <input type="password" id="gkey-input" placeholder="API Key Gemini"
-      style="background:#222;color:#f8ba00;border:1px solid #444;border-radius:4px;padding:3px 8px;font-size:11px;width:140px;font-family:monospace"
-      onchange="localStorage.setItem('pc4_gkey',this.value);flash('✓ API Key guardada')">
   </div>
 </div>
 <div class="tabs">
@@ -173,12 +170,8 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
       <h2 id="ptit">Semana 19/2026 — datos cargados ✓</h2>
       <div class="bg">
         <button class="btn by" onclick="document.getElementById('fi').click()">📸 Subir reporte</button>
-        <button class="btn" onclick="cargarS20()" style="background:#f8ba00;color:#000;font-size:11px">⚡ Cargar S20</button>
         <button class="btn" onclick="resetearSemana()" style="background:#1c3a61;color:#fff;font-size:11px">🔄 Nueva semana</button>
-        <button class="btn" onclick="exportarDatos()" style="background:#276749;color:#fff;font-size:11px">📤 Exportar</button>
-        <button class="btn" onclick="document.getElementById('fi-import').click()" style="background:#276749;color:#fff;font-size:11px">📥 Importar</button>
         <button class="btn bo" onclick="addRow()">+ Lavador</button>
-        <button class="btn bb" onclick="goTab('sobres')">🖨️ Ver sobres</button>
         <button class="btn bk" onclick="cerrarSemana()">✅ Cerrar semana</button>
       </div>
     </div>
@@ -653,126 +646,163 @@ function onFile(inp){
 }
 
 async function runOCR(b64,mime){
-  setSt("load","🔍 Leyendo reporte con IA...");
-  const prompt=`Analiza este reporte semanal de lavadores de Patio Cinco.
-
-El reporte tiene 4 tablas:
-1. COMISIONES: columnas NOTAS (sucursal), COLABORADOR, %, $ COMISIÓN, # coches (autos), BONO
-2. FOOD (primera tabla): COLABORADOR, $ FOOD — montos positivos solo para lavadores
-3. MERCH: COLABORADOR, $ MERCH
-4. Segunda tabla de FOOD (coordinadores) — IGNORA ESTA
-
-REGLAS CRÍTICAS:
-- Lee TODOS los lavadores de COMISIONES. IGNORA filas "Total", "Suma total" y encabezados.
-- La columna NOTAS o encabezados de sección indican sucursal:
-  * "ALAMOS" o "ÁLAMOS" → "PC Álamos"
-  * "REFUGIO" → "PC Refugio"
-- PORCENTAJE: Lee el valor EXACTO de la columna "%" para cada lavador. Lee el número tal como aparece: 30, 35, 40, 45, etc. Si la celda está vacía o es 0%, usa 0.
-- AUTOS: Lee el valor EXACTO de la columna "# coches" para cada lavador.
-- Si un mismo lavador aparece en MÚLTIPLES FILAS (diferentes sucursales o diferentes %):
-  * COMBÍNALOS en UN SOLO objeto
-  * SUMA autos y comisiones de todas sus filas
-  * USA el % de la fila con más autos (o el más alto si hay empate)
-  * USA la sucursal de la fila con más autos
-- Para food: usa el monto positivo de la tabla FOOD. Si no aparece, food=0
-- Para merch: usa el monto de MERCH. Si no aparece, merch=0
-- Para bono: valor positivo (verde) en columna BONO de COMISIONES. Si no hay, bono=0
-- Los montos son números sin $ ni comas. Los decimales usan punto.
-
-Devuelve SOLO este JSON (sin markdown, sin texto extra):
-{"lavadores":[{"nombre":"","sucursal":"PC Refugio o PC Álamos","pct":30,"autos":0,"comision":0,"food":0,"merch":0,"bono":0}]}`;
-
+  if(mime!=="application/pdf"){
+    setSt("err","❌ Por favor sube el reporte en formato PDF (no imagen)");return;
+  }
+  setSt("load","📄 Leyendo reporte PDF...");
   try{
-  const GKEY=localStorage.getItem("pc4_gkey")||"GEMINI_KEY_PLACEHOLDER";
-  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GKEY}`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({contents:[{parts:[
-        {inline_data:{mime_type:mime,data:b64}},
-        {text:prompt}
-      ]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
-    });
-    const raw=await res.text();
-    if(!res.ok){setSt("err","❌ Error API: "+raw.slice(0,200));return}
-    const data=JSON.parse(raw);
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
-    const parsed=JSON.parse(text.replace(/```json\n?|\n?```/g,"").trim());
-    if(!parsed.lavadores){setSt("err","❌ No se pudo leer la estructura");return}
+    // Cargar PDF.js si no está disponible
+    if(!window.pdfjsLib){
+      await new Promise((res,rej)=>{
+        const s=document.createElement("script");
+        s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+        s.onload=res; s.onerror=rej; document.head.appendChild(s);
+      });
+      pdfjsLib.GlobalWorkerOptions.workerSrc=
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+    // Decodificar base64 → Uint8Array
+    const bin=atob(b64), bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
 
-    // ── Paso 1: mapear y normalizar cada entrada de Gemini ──
-    const rawList = parsed.lavadores.map(l=>{
-      const nNorm=normN(l.nombre);
-      const pk=Object.keys(perfiles).find(k=>normN(k)===nNorm);
-      const perf=pk?perfiles[pk]:null;
-      // pct: si Gemini devuelve un número válido úsalo; si no, usa perfil guardado o 40
-      const pctVal = (typeof l.pct === 'number' && l.pct > 0) ? l.pct
-                   : (typeof l.pct === 'string' && parseFloat(l.pct) > 0) ? parseFloat(l.pct)
-                   : (perf?.pct || 40);
-      return{
-        nombre:  l.nombre||"",
-        sucursal:l.sucursal||perf?.sucursal||"",
-        pct:     pctVal,
-        autos:   num(l.autos),
-        comision:num(l.comision),
-        food:    num(l.food),
-        merch:   num(l.merch),
-        bono:    num(l.bono)
-      };
-    }).filter(l=>l.nombre&&normN(l.nombre)!=="total"&&normN(l.nombre)!=="suma total");
+    const pdf  = await pdfjsLib.getDocument({data:bytes}).promise;
+    const page = await pdf.getPage(1);
+    const vp   = page.getViewport({scale:1});
+    const ph   = vp.height;
+    const tc   = await page.getTextContent();
 
-    // ── Paso 2: combinar lavadores duplicados (misma persona, diferente sucursal o %) ──
-    const merged={};
-    rawList.forEach(l=>{
-      const key=normN(l.nombre);
-      if(!merged[key]){
-        merged[key]={...l};
-      } else {
-        const m=merged[key];
-        // La sucursal con más autos es la principal
-        const mAutos=num(m.autos)||0, lAutos=num(l.autos)||0;
-        if(lAutos>mAutos){
-          m.sucursal=l.sucursal;
-          m.pct=l.pct;  // usar % de la fila dominante
-        }
-        m.autos    = mAutos + lAutos;
-        m.comision = (num(m.comision)||0) + (num(l.comision)||0);
-        m.food     = (num(m.food)||0)     + (num(l.food)||0);
-        m.merch    = (num(m.merch)||0)    + (num(l.merch)||0);
-        m.bono     = (num(m.bono)||0)     + (num(l.bono)||0);
-      }
-    });
+    // Construir lista de palabras con posición (flip Y a top-left)
+    const words = tc.items
+      .filter(it=>it.str.trim())
+      .map(it=>({text:it.str.trim(), x:it.transform[4], y:ph-it.transform[5]}));
 
-    rows = Object.values(merged).map(l=>({
-      nombre:       l.nombre,
-      sucursal:     l.sucursal,
-      pct:          l.pct,
-      autos:        l.autos||"",
-      comision:     l.comision||"",
-      food:         l.food||"",
-      merch:        l.merch||"",
-      bono:         l.bono||"",
-      ahorro:       "",
-      extra:        0,
-      extraConcepto:""
-    }));
-
-    // actualizar perfiles con sucursal recién leída
-    rows.forEach(r=>{
-      if(r.nombre&&r.sucursal){
-        if(!perfiles[r.nombre])perfiles[r.nombre]={sucursal:r.sucursal,pct:r.pct};
-        else{perfiles[r.nombre].sucursal=r.sucursal;perfiles[r.nombre].pct=r.pct;}
-      }
-    });
-    sv("pc4_perfiles",perfiles);
-    sv("pc4_rows",rows);
-    renderT();renderD();renderSucursales();
-
-    const sinSuc=rows.filter(r=>!r.sucursal).length;
-    setSt("ok",sinSuc>0
-      ?`✓ ${rows.length} lavadores cargados — ${sinSuc} sin sucursal detectada (revisa 🏢 Sucursales)`
-      :`✓ ${rows.length} lavadores cargados con sucursal asignada automáticamente`);
-  }catch(e){setSt("err","❌ "+e.message)}
+    parsePDFWords(words);
+  }catch(e){ setSt("err","❌ Error leyendo PDF: "+e.message); }
 }
+
+function parsePDFWords(words){
+  // Extraer número de semana del PDF (ej. "SEMANA 24/2026")
+  const allText = words.map(w=>w.text).join(' ');
+  const semM = allText.match(/SEMANA\s+(\d+\/\d+)/);
+  if(semM){
+    const semEl = document.getElementById('sem');
+    if(semEl) semEl.value = semM[1];
+    sv('pc4_sem', semM[1]);
+  }
+
+  // Columnas detectadas con pdfplumber:
+  //  COMISIONES  x < 310  (nombres, %, $comisión, #autos en x=134-265)
+  //  FOOD nombres x = 310-370 (nombre del lavador con descuento food, aparece a x≈320)
+  //  FOOD montos  x = 370-450 (monto positivo del descuento food, a x≈383)
+  //  MERCH        x = 475-600, y < 200 (sección MERCH que aparece antes del bloque FOOD APP)
+  const comW   = words.filter(w=>w.x<310);
+  const merchW = words.filter(w=>w.x>=475&&w.x<600&&w.y<200);
+
+  function groupLines(ws){
+    const rows={};
+    ws.forEach(w=>{
+      const y=Math.round(w.y/4)*4;
+      (rows[y]=rows[y]||[]).push([w.x,w.text]);
+    });
+    return Object.entries(rows).sort(([a],[b])=>+a-+b)
+      .map(([,v])=>v.sort((a,b)=>a[0]-b[0]).map(([,t])=>t).join(" "));
+  }
+
+  const comLines  = groupLines(comW);
+  const merchLines= groupLines(merchW);
+
+  // ── Parser comisiones ─────────────────────────────────────────────────────
+  let section="", workers={}, pcts={}, lastK=null;
+
+  for(const line of comLines){
+    const clean=line.replace(/^(?:ALAMOS|REFUGIO)\s+/,"");
+    if(/^ALAMOS\b/.test(line))  section="PC Álamos";
+    if(/^REFUGIO\b/.test(line)) section="PC Refugio";
+
+    // Línea con nombre y porcentaje: "Name XX% ..."
+    let m=clean.match(/^([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ ]*?)\s+(\d+)%/);
+    if(m){
+      const k=normN(m[1].trim());
+      (pcts[k]=pcts[k]||[]).push(parseInt(m[2]));
+      lastK=k;
+    }
+    // Línea de continuación: "XX% $..." (sin nombre — mismo lavador)
+    m=line.match(/^(\d+)%\s+\$/);
+    if(m&&lastK)(pcts[lastK]=pcts[lastK]||[]).push(parseInt(m[1]));
+
+    // Línea Total: "Total Name $X.XX N"
+    m=line.match(/^Total\s+(.+?)\s+\$([\d,]+\.?\d*)\s+(\d+)/);
+    if(m){
+      const name=m[1].trim(), comision=parseFloat(m[2].replace(/,/g,"")), autos=parseInt(m[3]);
+      const k=normN(name);
+      const vp=(pcts[k]||[]).filter(p=>p>0);
+      const pct=vp.length?Math.max(...vp):40;
+      lastK=null;
+      if(!workers[k]){
+        workers[k]={nombre:name,sucursal:section,pct,autos,comision,food:0,merch:0,bono:0,branches:[section]};
+      } else {
+        const ex=workers[k];
+        if(!ex.branches.includes(section)) ex.branches.push(section);
+        if(autos>ex.autos){ex.sucursal=section;ex.pct=pct;}
+        ex.autos+=autos; ex.comision+=comision;
+      }
+    }
+  }
+
+  // ── Parser FOOD (descuentos por alimentos) ────────────────────────────────
+  // Los nombres de food aparecen a x≈320 (rango 310-370) en las filas Total
+  // Los montos aparecen a x≈383 (rango 370-450) en la misma y
+  words.filter(w=>w.x>=310&&w.x<370).forEach(fw=>{
+    const fname=fw.text.trim();
+    if(!fname||/^(Suma|total|FOOD|COLABORADOR|\$|\d)/i.test(fname)) return;
+    const k=normN(fname);
+    if(!workers[k]) return;
+    const fy=Math.round(fw.y/4)*4;
+    // Encontrar monto food en misma fila, x=370-450
+    const amtWs=words.filter(w=>Math.round(w.y/4)*4===fy&&w.x>=370&&w.x<450);
+    const amtText=amtWs.map(w=>w.text).join(' ');
+    const am=amtText.match(/\$([\d,]+\.?\d*)/);
+    if(am) workers[k].food+=parseFloat(am[1].replace(/,/g,''));
+  });
+
+  // ── Parser MERCH ──────────────────────────────────────────────────────────
+  for(const line of merchLines){
+    if(/Suma\s*total|COLABORADOR|\$\s*MERCH|MERCH\s*\(/i.test(line)) continue;
+    const m=line.match(/^([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ ]*?)\s+\$([\d,]+\.?\d*)/);
+    if(m){
+      const k=normN(m[1].trim()), amt=parseFloat(m[2].replace(/,/g,""));
+      if(workers[k]) workers[k].merch+=amt;
+    }
+  }
+
+  // ── Construir rows ────────────────────────────────────────────────────────
+  rows=Object.values(workers).map(l=>({
+    nombre:l.nombre, sucursal:l.sucursal, pct:l.pct,
+    autos:l.autos||"", comision:l.comision||"",
+    food:l.food||"", merch:l.merch||"", bono:l.bono||"",
+    ahorro:"", extra:0, extraConcepto:"",
+    branches: l.branches||[l.sucursal]
+  }));
+
+  // Actualizar perfiles
+  rows.forEach(r=>{
+    if(r.nombre&&r.sucursal){
+      if(!perfiles[r.nombre]) perfiles[r.nombre]={sucursal:r.sucursal,pct:r.pct};
+      else{ perfiles[r.nombre].sucursal=r.sucursal; perfiles[r.nombre].pct=r.pct; }
+    }
+  });
+  sv("pc4_perfiles",perfiles);
+  sv("pc4_rows",rows);
+  renderT(); renderD(); renderSucursales();
+
+  const sinSuc=rows.filter(r=>!r.sucursal).length;
+  const semLabel = semM ? ` — Semana ${semM[1]}` : '';
+  setSt("ok", sinSuc>0
+    ?`✓ ${rows.length} lavadores cargados${semLabel} — ${sinSuc} sin sucursal detectada`
+    :`✓ ${rows.length} lavadores cargados${semLabel} ✅`);
+}
+
+// ── TABLA ─────────────────────────────────────────────────────────────────────
 
 // ── TABLA ─────────────────────────────────────────────────────────────────────
 function renderT(){
@@ -1361,7 +1391,7 @@ let colaImpresion = [];
 let colaIndex = 0;
 
 function printTermica(){
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre);
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir.");return;}
   const sem=document.getElementById("sem").value;
@@ -1408,6 +1438,7 @@ function mostrarCola(){
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button onclick="imprimirActual()" style="padding:10px 18px;background:#f8ba00;color:#000;border:none;border-radius:6px;font-weight:900;font-size:13px;cursor:pointer">🖨️ Imprimir</button>
+        <button onclick="guardarImagenTermica('${actual.nombre}')" style="padding:10px 14px;background:#38a169;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">📥 Guardar imagen</button>
         ${colaIndex+1 < total
           ? `<button onclick="siguienteEnCola()" style="padding:10px 14px;background:#1c3a61;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">Saltar →</button>`
           : ""}
@@ -1423,6 +1454,32 @@ function imprimirActual(){
   window.print();
   // Esperar a que se cierre el diálogo y pasar al siguiente
   setTimeout(()=>{ siguienteEnCola(); }, 600);
+}
+
+async function guardarImagenTermica(nombre){
+  // Cargar html2canvas si no está disponible
+  if(!window.html2canvas){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload=res; s.onerror=()=>rej(new Error('No se pudo cargar html2canvas'));
+      document.head.appendChild(s);
+    }).catch(e=>{ alert('Error al cargar la librería: '+e.message); throw e; });
+  }
+  const el=document.querySelector('#print-area .sobre-termica');
+  if(!el){ alert('No hay sobre visible para guardar.'); return; }
+  try{
+    const canvas=await html2canvas(el,{
+      backgroundColor:'#ffffff',
+      scale:4,          // alta resolución para impresora térmica
+      useCORS:true,
+      logging:false
+    });
+    const link=document.createElement('a');
+    link.download='sobre-'+(nombre||'lavador').replace(/[^a-zA-Z0-9áéíóúüñÁÉÍÓÚÜÑ]/g,'_')+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }catch(e){ alert('Error al generar imagen: '+e.message); }
 }
 
 function siguienteEnCola(){
@@ -1536,7 +1593,7 @@ let sobreSeleccionado = null; // nombre del lavador seleccionado
 
 function renderS(){
   const sem=document.getElementById("sem").value,g=document.getElementById("sg");
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre);
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){g.innerHTML='<p class="nd">Sin datos.</p>';return;}
   g.innerHTML=act.map(r=>bsobre(r,sem)).join("");
@@ -1569,8 +1626,9 @@ function printSeleccionado(){
   const pa=document.getElementById("print-area");
   pa.style.cssText="display:block;position:fixed;top:0;left:0;width:58mm;background:#fff;padding:0;z-index:9999";
   pa.innerHTML=bsobreTermica(row,sem)+
-    `<div id="print-btns-t" style="position:fixed;bottom:12px;right:12px;display:flex;gap:8px">
+    `<div id="print-btns-t" style="position:fixed;bottom:12px;right:12px;display:flex;gap:8px;flex-wrap:wrap">
       <button onclick="window.print()" style="padding:10px 18px;background:#f8ba00;color:#000;border:none;border-radius:6px;font-weight:900;font-size:13px;cursor:pointer">🖨️ Imprimir</button>
+      <button onclick="guardarImagenTermica('${row.nombre}')" style="padding:10px 14px;background:#38a169;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">📥 Guardar imagen</button>
       <button onclick="closePrint()" style="padding:10px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">✕</button>
     </div>`;
   let style=document.getElementById("thermal-print-style");
@@ -1581,7 +1639,7 @@ function printSeleccionado(){
 
 function printSobres(){
   const sem=document.getElementById("sem").value;
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre);
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir con este filtro.");return;}
   const pa=document.getElementById("print-area");
@@ -2620,8 +2678,7 @@ init().then(()=>{
   initLiquidaciones();
 });
 // Rellenar campo de API key si está guardada (esto sí puede quedar en localStorage)
-const _k=localStorage.getItem("pc4_gkey");
-if(_k)document.getElementById("gkey-input").value=_k;
+
 </script>
 </body>
 </html>
