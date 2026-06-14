@@ -148,9 +148,6 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
     <label style="color:#aaa;font-size:11px">Semana</label>
     <input type="text" id="sem" value="19/2026">
-    <input type="text" id="gkey-input" placeholder="API Key Gemini"
-      style="background:#222;color:#f8ba00;border:1px solid #444;border-radius:4px;padding:3px 8px;font-size:11px;width:140px;font-family:monospace"
-      oninput="localStorage.setItem('pc4_gkey',this.value.trim())" onchange="localStorage.setItem('pc4_gkey',this.value.trim());flash('✓ API Key guardada')">
   </div>
 </div>
 <div class="tabs">
@@ -647,116 +644,131 @@ function onFile(inp){
   r.readAsDataURL(file);inp.value="";
 }
 
+// ── OCR / PDF PARSER (sin API key — extracción directa de texto) ───────────────
 async function runOCR(b64,mime){
-  setSt("load","🔍 Leyendo reporte con IA...");
-  const prompt=`Analiza este reporte semanal de lavadores de Patio Cinco.
-
-El reporte tiene una columna NOTAS o secciones marcadas como "ALAMOS" y "REFUGIO" que indican a qué sucursal pertenece cada lavador.
-
-Hay 4 tablas separadas:
-1. COMISIONES: columnas NOTAS (sucursal), COLABORADOR, %, $ COMISIÓN, # coches (autos), BONO
-2. FOOD (primera tabla): COLABORADOR, $ FOOD — solo los que consumieron food. Ignora la columna BONO negativa roja de esta tabla (son descuentos ya calculados).
-3. MERCH: COLABORADOR, $ MERCH — solo los que tienen merch
-4. Segunda tabla de FOOD (personal/coordinadores) — IGNORA ESTA, no son lavadores
-
-REGLAS IMPORTANTES:
-- Lee TODOS los lavadores de COMISIONES
-- La columna NOTAS o los encabezados de sección (ALAMOS, REFUGIO) determinan la sucursal:
-  * "ALAMOS" o "ÁLAMOS" → sucursal: "PC Álamos"
-  * "REFUGIO" → sucursal: "PC Refugio"
-- PORCENTAJE: Lee el valor EXACTO de la columna '%' para cada lavador. Lee el número tal como aparece: 30, 35, 40, 45, etc. NO asumas que todos tienen 40%.
-- Para food: busca cada nombre en la tabla FOOD de lavadores. Si aparece, usa ese monto (positivo). Si no aparece, food=0
-- Para merch: busca cada nombre en la tabla MERCH. Si aparece, usa ese monto. Si no, merch=0
-- Para bono: usa la columna BONO de COMISIONES si existe (valor positivo verde). Si no hay, bono=0
-- Si un mismo lavador aparece en MÚLTIPLES FILAS (por ejemplo en ÁLAMOS y REFUGIO), COMBÍNALOS en UN SOLO objeto: SUMA autos y comisiones, usa la sucursal con más autos, usa el % más alto
-- NO incluyas filas "Total" ni "Suma total"
-- Los montos son números sin $ ni comas
-
-Devuelve SOLO este JSON, sin markdown ni texto extra:
-{"lavadores":[{"nombre":"","sucursal":"PC Refugio o PC Álamos","pct":30,"autos":0,"comision":0,"food":0,"merch":0,"bono":0}]}`;
-
+  if(mime!=="application/pdf"){
+    setSt("err","❌ Por favor sube el reporte en formato PDF (no imagen)");return;
+  }
+  setSt("load","📄 Leyendo reporte PDF...");
   try{
-  const GKEY=(localStorage.getItem("pc4_gkey")||"").trim();
-  if(!GKEY){setSt("err","❌ Falta API Key de Gemini — pégala en el campo de arriba a la derecha");return;}
-  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GKEY}`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({contents:[{parts:[
-        {inline_data:{mime_type:mime,data:b64}},
-        {text:prompt}
-      ]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
+    // Cargar PDF.js si no está disponible
+    if(!window.pdfjsLib){
+      await new Promise((res,rej)=>{
+        const s=document.createElement("script");
+        s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+        s.onload=res; s.onerror=rej; document.head.appendChild(s);
+      });
+      pdfjsLib.GlobalWorkerOptions.workerSrc=
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+    // Decodificar base64 → Uint8Array
+    const bin=atob(b64), bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+
+    const pdf  = await pdfjsLib.getDocument({data:bytes}).promise;
+    const page = await pdf.getPage(1);
+    const vp   = page.getViewport({scale:1});
+    const ph   = vp.height;
+    const tc   = await page.getTextContent();
+
+    // Construir lista de palabras con posición (flip Y a top-left)
+    const words = tc.items
+      .filter(it=>it.str.trim())
+      .map(it=>({text:it.str.trim(), x:it.transform[4], y:ph-it.transform[5]}));
+
+    parsePDFWords(words);
+  }catch(e){ setSt("err","❌ Error leyendo PDF: "+e.message); }
+}
+
+function parsePDFWords(words){
+  // Columnas: comisiones x<370, food x 475-620
+  const comW  = words.filter(w=>w.x<370);
+  const foodW = words.filter(w=>w.x>=475&&w.x<620);
+
+  function groupLines(ws){
+    const rows={};
+    ws.forEach(w=>{
+      const y=Math.round(w.y/4)*4;
+      (rows[y]=rows[y]||[]).push([w.x,w.text]);
     });
-    const raw=await res.text();
-    if(!res.ok){setSt("err","❌ Error API: "+raw.slice(0,200));return}
-    const data=JSON.parse(raw);
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
-    const parsed=JSON.parse(text.replace(/```json\n?|\n?```/g,"").trim());
-    if(!parsed.lavadores){setSt("err","❌ No se pudo leer la estructura");return}
+    return Object.entries(rows).sort(([a],[b])=>+a-+b)
+      .map(([,v])=>v.sort((a,b)=>a[0]-b[0]).map(([,t])=>t).join(" "));
+  }
 
-    const rawList = parsed.lavadores.map(l=>{
-      const nNorm=normN(l.nombre);
-      const pk=Object.keys(perfiles).find(k=>normN(k)===nNorm);
-      const perf=pk?perfiles[pk]:null;
-      // Fix pct: falsy check fails for 0 — use explicit type check
-      const pctVal = (typeof l.pct === 'number' && l.pct > 0) ? l.pct
-                   : (typeof l.pct === 'string' && parseFloat(l.pct) > 0) ? parseFloat(l.pct)
-                   : (perf?.pct || 40);
-      return{
-        nombre:  l.nombre||"",
-        sucursal:l.sucursal||perf?.sucursal||"",
-        pct:     pctVal,
-        autos:   num(l.autos),
-        comision:num(l.comision),
-        food:    num(l.food),
-        merch:   num(l.merch),
-        bono:    num(l.bono)
-      };
-    }).filter(l=>l.nombre && normN(l.nombre)!=="total" && normN(l.nombre)!=="suma total");
+  const comLines  = groupLines(comW);
+  const foodLines = groupLines(foodW);
 
-    // Merge workers that appear in multiple branches
-    const merged={};
-    rawList.forEach(l=>{
-      const key=normN(l.nombre);
-      if(!merged[key]){
-        merged[key]={...l};
+  // ── Parser comisiones ─────────────────────────────────────────────────────
+  let section="", workers={}, pcts={}, lastK=null;
+
+  for(const line of comLines){
+    const clean=line.replace(/^(?:ALAMOS|REFUGIO)\s+/,"");
+    if(/^ALAMOS\b/.test(line))  section="PC Álamos";
+    if(/^REFUGIO\b/.test(line)) section="PC Refugio";
+
+    // Línea con nombre y porcentaje: "Name XX% ..."
+    let m=clean.match(/^([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ ]*?)\s+(\d+)%/);
+    if(m){
+      const k=normN(m[1].trim());
+      (pcts[k]=pcts[k]||[]).push(parseInt(m[2]));
+      lastK=k;
+    }
+    // Línea de continuación: "XX% $..." (sin nombre — mismo lavador)
+    m=line.match(/^(\d+)%\s+\$/);
+    if(m&&lastK)(pcts[lastK]=pcts[lastK]||[]).push(parseInt(m[1]));
+
+    // Línea Total: "Total Name $X.XX N"
+    m=line.match(/^Total\s+(.+?)\s+\$([\d,]+\.?\d*)\s+(\d+)/);
+    if(m){
+      const name=m[1].trim(), comision=parseFloat(m[2].replace(/,/g,"")), autos=parseInt(m[3]);
+      const k=normN(name);
+      const vp=(pcts[k]||[]).filter(p=>p>0);
+      const pct=vp.length?Math.max(...vp):40;
+      lastK=null;
+      if(!workers[k]){
+        workers[k]={nombre:name,sucursal:section,pct,autos,comision,food:0,merch:0,bono:0};
       } else {
-        const m=merged[key];
-        const mAutos=m.autos||0, lAutos=l.autos||0;
-        // keep sucursal/pct from branch with more autos
-        if(lAutos>mAutos){ m.sucursal=l.sucursal; m.pct=l.pct; }
-        m.autos    = mAutos + lAutos;
-        m.comision = (m.comision||0) + (l.comision||0);
-        m.food     = (m.food||0)     + (l.food||0);
-        m.merch    = (m.merch||0)    + (l.merch||0);
-        m.bono     = (m.bono||0)     + (l.bono||0);
+        const ex=workers[k];
+        if(autos>ex.autos){ex.sucursal=section;ex.pct=pct;}
+        ex.autos+=autos; ex.comision+=comision;
       }
-    });
-    rows = Object.values(merged).map(l=>({
-      nombre:l.nombre, sucursal:l.sucursal, pct:l.pct,
-      autos:   l.autos||"",
-      comision:l.comision||"",
-      food:    l.food||"",
-      merch:   l.merch||"",
-      bono:    l.bono||"",
-      ahorro:"", extra:0, extraConcepto:""
-    }));
+    }
+  }
 
-    // actualizar perfiles con sucursal recién leída
-    rows.forEach(r=>{
-      if(r.nombre&&r.sucursal){
-        if(!perfiles[r.nombre])perfiles[r.nombre]={sucursal:r.sucursal,pct:r.pct};
-        else{perfiles[r.nombre].sucursal=r.sucursal;perfiles[r.nombre].pct=r.pct;}
-      }
-    });
-    sv("pc4_perfiles",perfiles);
-    sv("pc4_rows",rows);
-    renderT();renderD();renderSucursales();
+  // ── Parser food ───────────────────────────────────────────────────────────
+  for(const line of foodLines){
+    if(line.includes("Suma total")) break;
+    if(/COLABORADOR|FOOD \(SEMANA|MERCH/.test(line)) continue;
+    const m=line.match(/^([A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ ]*?)\s+\$([\d,]+\.?\d*)/);
+    if(m){
+      const k=normN(m[1].trim()), amt=parseFloat(m[2].replace(/,/g,""));
+      if(workers[k]) workers[k].food+=amt;
+    }
+  }
 
-    const sinSuc=rows.filter(r=>!r.sucursal).length;
-    setSt("ok",sinSuc>0
-      ?`✓ ${rows.length} lavadores cargados — ${sinSuc} sin sucursal detectada (revisa 🏢 Sucursales)`
-      :`✓ ${rows.length} lavadores cargados con sucursal asignada automáticamente`);
-  }catch(e){setSt("err","❌ "+e.message)}
+  // ── Construir rows ────────────────────────────────────────────────────────
+  rows=Object.values(workers).map(l=>({
+    nombre:l.nombre, sucursal:l.sucursal, pct:l.pct,
+    autos:l.autos||"", comision:l.comision||"",
+    food:l.food||"", merch:l.merch||"", bono:l.bono||"",
+    ahorro:"", extra:0, extraConcepto:""
+  }));
+
+  // Actualizar perfiles
+  rows.forEach(r=>{
+    if(r.nombre&&r.sucursal){
+      if(!perfiles[r.nombre]) perfiles[r.nombre]={sucursal:r.sucursal,pct:r.pct};
+      else{ perfiles[r.nombre].sucursal=r.sucursal; perfiles[r.nombre].pct=r.pct; }
+    }
+  });
+  sv("pc4_perfiles",perfiles);
+  sv("pc4_rows",rows);
+  renderT(); renderD(); renderSucursales();
+
+  const sinSuc=rows.filter(r=>!r.sucursal).length;
+  setSt("ok", sinSuc>0
+    ?`✓ ${rows.length} lavadores cargados — ${sinSuc} sin sucursal detectada`
+    :`✓ ${rows.length} lavadores cargados desde PDF ✅`);
 }
 
 // ── TABLA ─────────────────────────────────────────────────────────────────────
@@ -2594,8 +2606,6 @@ init().then(()=>{
   initLiquidaciones();
 });
 // Rellenar campo de API key si está guardada (esto sí puede quedar en localStorage)
-const _k=localStorage.getItem("pc4_gkey");
-if(_k)document.getElementById("gkey-input").value=_k;
 </script>
 </body>
 </html>
