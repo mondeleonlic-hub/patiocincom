@@ -148,9 +148,9 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
     <label style="color:#aaa;font-size:11px">Semana</label>
     <input type="text" id="sem" value="19/2026">
-    <input type="password" id="gkey-input" placeholder="API Key Gemini"
+    <input type="text" id="gkey-input" placeholder="API Key Gemini"
       style="background:#222;color:#f8ba00;border:1px solid #444;border-radius:4px;padding:3px 8px;font-size:11px;width:140px;font-family:monospace"
-      onchange="localStorage.setItem('pc4_gkey',this.value);flash('✓ API Key guardada')">
+      oninput="localStorage.setItem('pc4_gkey',this.value.trim())" onchange="localStorage.setItem('pc4_gkey',this.value.trim());flash('✓ API Key guardada')">
   </div>
 </div>
 <div class="tabs">
@@ -676,7 +676,8 @@ Devuelve SOLO este JSON, sin markdown ni texto extra:
 {"lavadores":[{"nombre":"","sucursal":"PC Refugio o PC Álamos","pct":30,"autos":0,"comision":0,"food":0,"merch":0,"bono":0}]}`;
 
   try{
-  const GKEY=localStorage.getItem("pc4_gkey")||"GEMINI_KEY_PLACEHOLDER";
+  const GKEY=(localStorage.getItem("pc4_gkey")||"").trim();
+  if(!GKEY){setSt("err","❌ Falta API Key de Gemini — pégala en el campo de arriba a la derecha");return;}
   const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GKEY}`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
