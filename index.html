@@ -313,7 +313,7 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
   <!-- SOBRES -->
   <div class="pnl" id="pnl-sobres">
     <div class="ph">
-      <h2 id="stit">Sobres — Semana 18/2026</h2>
+      <h2 id="stit">Sobres</h2>
       <div class="bg">
         <button class="fbtn on" id="fs-all" onclick="setFS('all')">Todos</button>
         <button class="fbtn ref" id="fs-ref" onclick="setFS('PC Refugio')">PC Refugio</button>
@@ -330,7 +330,7 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
   <!-- COORDINADORES -->
   <div class="pnl" id="pnl-coords">
     <div class="ph">
-      <h2>👔 Coordinadores — <span id="coord-sem-lbl">Semana 18/2026</span></h2>
+      <h2>👔 Coordinadores — <span id="coord-sem-lbl">Semana —</span></h2>
       <div class="bg">
         <button class="btn by" onclick="addCoord()">+ Coordinador</button>
         <button class="btn bk" onclick="guardarSemanaCoords()">💾 Guardar semana</button>
@@ -374,7 +374,7 @@ select:focus,input:focus{border-color:#f8ba00}select{cursor:pointer}
   <!-- FLUJO DE EFECTIVO -->
   <div class="pnl" id="pnl-flujo">
     <div class="ph">
-      <h2>💵 Flujo de efectivo — <span id="flujo-sem-lbl">Semana 19/2026</span></h2>
+      <h2>💵 Flujo de efectivo — <span id="flujo-sem-lbl">Semana —</span></h2>
       <div class="bg">
         <button class="btn by" onclick="agregarDiaFlujo()">+ Día</button>
         <button class="btn bk" onclick="guardarFlujo()">💾 Guardar</button>
@@ -565,7 +565,7 @@ async function init(){
     gsLoad("pc4_perfiles",PERFILES_DEFAULT).then(v=>{ perfiles=v; _cache["pc4_perfiles"]=v; }),
     gsLoad("pc4_rows",null).then(v=>{ _cache["pc4_rows"]=v; }),
     gsLoad("pc4_semana","20/2026").then(v=>{ _cache["pc4_semana"]=v; }),
-    gsLoad("pc4_coords",[{nombre:"Styben",sueldo:1800,comision:0},{nombre:"Javier",sueldo:1237.50,comision:675},{nombre:"Hugo",sueldo:3000,comision:675}]).then(v=>{ coords=v; _cache["pc4_coords"]=v; }),
+    gsLoad("pc4_coords",[{nombre:"COORD",sueldo:0,comision:0},{nombre:"COORD",sueldo:0,comision:0}]).then(v=>{ coords=v; _cache["pc4_coords"]=v; }),
     gsLoad("pc4_coord_hist",[]).then(v=>{ coordHist=v; _cache["pc4_coord_hist"]=v; }),
     gsLoad("pc4_liquidaciones",[]).then(v=>{ _cache["pc4_liquidaciones"]=v; }),
     gsLoad("pc4_flujo",[]).then(v=>{ _cache["pc4_flujo"]=v; }),
@@ -589,6 +589,13 @@ async function init(){
     sv("pc4_semana","19/2026");
     document.getElementById("sem").value = "19/2026";
   }
+
+  // Sincronizar todos los labels de semana
+  const semVal = document.getElementById("sem").value;
+  document.getElementById("ptit").textContent  = "Semana "+semVal+(rows.some(r=>r.comision>0)?" — datos cargados ✓":"");
+  document.getElementById("stit").textContent  = "Sobres — Semana "+semVal;
+  document.getElementById("coord-sem-lbl").textContent = "Semana "+semVal;
+  document.getElementById("flujo-sem-lbl").textContent = "Semana "+semVal;
 
   sv("pc4_perfiles", perfiles);
 
@@ -912,7 +919,11 @@ function renderResumen(){
   const tM=vis.reduce((s,r)=>s+num(r.merch),0);
   const nR=vis.filter(r=>r.sucursal==="PC Refugio").length;
   const nA=vis.filter(r=>r.sucursal==="PC Álamos").length;
+  const sinDatos = tC===0 && tF===0 && tM===0;
   document.getElementById("resumen").innerHTML=`
+    ${sinDatos?`<div style="grid-column:1/-1;background:#fffbe6;border:1px solid #f8ba00;border-radius:8px;padding:10px 14px;font-size:12px;color:#7a5c00;font-weight:600">
+      📸 Sube el reporte PDF de la semana para ver los números de comisiones, food y merch.
+    </div>`:""}
     <div class="rcard"><div class="rl">Total a pagar</div><div class="rv" style="color:#1c3a61">${fmt(tP)}</div></div>
     <div class="rcard"><div class="rl">Comisiones</div><div class="rv">${fmt(tC)}</div></div>
     <div class="rcard"><div class="rl">Food</div><div class="rv" style="color:#e53e3e">-${fmt(tF)}</div></div>
@@ -1688,32 +1699,6 @@ let liquidaciones=[];
 
 function initLiquidaciones(){
   liquidaciones=ld("pc4_liquidaciones",[]);
-  // Pre-cargar liquidación de Hugo si no existe
-  if(!liquidaciones.find(l=>l.nombre==="Hugo Sánchez")){
-    liquidaciones.push({
-      nombre:"Hugo Sánchez",
-      periodo:"Abril 2026",
-      fecha:new Date().toLocaleDateString("es-MX"),
-      concepto:"Coordinador PC Álamos",
-      diasNormales:24, tarifaDia:450,
-      notaDias:"24 días laborados en abril (excluye jueves descanso y días de otros meses). S14: 3 días. S15-S17: 6 días c/u. S18: 3 días.",
-      notaMayo:"Pendiente de liquidar en mayo: festivo vie 1 may ($900) + 2 hrs extra ($150) = $1,050.",
-      comisiones:[
-        {desc:"Comisión fija (1.5%)",monto:3067},
-        {desc:"Detallados (5%)",monto:368},
-        {desc:"Membresías (20%)",monto:3120},
-        {desc:"Comisión variable (2%) — 3/5 semanas",monto:2453}
-      ],
-      abonos:[
-        {sem:"S14",monto:1350,nota:"$1,350 de $2,700 pagados aplican a abril"},
-        {sem:"S15",monto:2700,nota:""},
-        {sem:"S16",monto:3000,nota:""},
-        {sem:"S17",monto:3000,nota:""},
-        {sem:"S18",monto:1800,nota:"$1,800 de $3,675 pagados aplican a abril"}
-      ]
-    });
-    sv("pc4_liquidaciones",liquidaciones);
-  }
   renderLiquidaciones();
 }
 
@@ -2034,7 +2019,7 @@ function renderFlujoTabla(){
           style="width:16px;height:16px;accent-color:#000;cursor:pointer;margin-top:4px">
       </td>
       <td style="padding:8px;vertical-align:top">
-        <input type="text" value="${d.ref.staff||""}" placeholder="Styben"
+        <input type="text" value="${d.ref.staff||""}" placeholder="COORD"
           oninput="ufd(${i},'ref.staff',this.value)"
           style="width:100%;border:none;background:transparent;font-size:12px;font-family:inherit;outline:none">
       </td>
@@ -2044,7 +2029,7 @@ function renderFlujoTabla(){
           style="width:16px;height:16px;accent-color:#000;cursor:pointer;margin-top:4px">
       </td>
       <td style="padding:8px;vertical-align:top">
-        <input type="text" value="${d.ala.staff||""}" placeholder="Hugo"
+        <input type="text" value="${d.ala.staff||""}" placeholder="COORD"
           oninput="ufd(${i},'ala.staff',this.value)"
           style="width:100%;border:none;background:transparent;font-size:12px;font-family:inherit;outline:none">
       </td>
