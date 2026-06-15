@@ -397,18 +397,19 @@
       <div id="cmp-vs-body"></div>
     </div>
     <!-- Week notes display -->
-    <div id="dash-notes-display" style="margin-top:14px;display:none">
-      <div class="notes-card">
-        <div class="notes-card-header">📝 Notas de la semana</div>
-        <div id="dash-notes-body" style="padding:14px 18px;font-size:13px;color:var(--mid);display:grid;grid-template-columns:1fr 1fr;gap:12px"></div>
-      </div>
-    </div>
   </div>
 
   <p class="section-title" style="margin-top:32px">Desglose</p>
   <div class="detail-grid">
     <div class="detail-card"><div class="detail-card-header green">Ingreso — Detalle</div><div id="detail-income"></div></div>
     <div class="detail-card"><div class="detail-card-header red">Gasto — Detalle</div><div id="detail-expense"></div></div>
+  </div>
+
+  <div id="dash-notes-display" style="margin-top:20px;display:none">
+    <div class="notes-card">
+      <div class="notes-card-header">📝 Notas de la semana</div>
+      <div id="dash-notes-body" style="padding:14px 18px;font-size:13px;color:var(--mid);display:grid;grid-template-columns:1fr 1fr;gap:12px"></div>
+    </div>
   </div>
 </div>
 
@@ -827,25 +828,30 @@
     </div>
   </div>
   <div class="charts-grid">
-    <!-- Donut: Distribución de Gastos -->
-    <div class="chart-card">
-      <div class="chart-card-header dark">🍩 Distribución de Gastos</div>
-      <div class="chart-canvas-wrap"><canvas id="chart-gastos-donut"></canvas></div>
-    </div>
     <!-- Donut: Mix de Ingresos -->
     <div class="chart-card">
-      <div class="chart-card-header gold">🍩 Mix de Ingresos</div>
+      <div class="chart-card-header" style="background:#C8960C;color:#1A1A1A">🍩 Mix de Ingresos</div>
       <div class="chart-canvas-wrap"><canvas id="chart-ing-donut"></canvas></div>
     </div>
-    <!-- Barras horizontales: Refugio vs Álamos -->
-    <div class="chart-card full">
-      <div class="chart-card-header blue">📊 Refugio vs Álamos — Gastos por Categoría</div>
-      <div class="chart-canvas-wrap tall"><canvas id="chart-suc-bar"></canvas></div>
+    <!-- Donut: Distribución de Gastos -->
+    <div class="chart-card">
+      <div class="chart-card-header" style="background:#1A1A1A;color:white">🍩 Distribución de Gastos</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-gastos-donut"></canvas></div>
     </div>
-    <!-- Línea: Tendencia semanal -->
+    <!-- Línea: Tendencia Ingresos, Gastos y Utilidad -->
     <div class="chart-card full">
-      <div class="chart-card-header green">📈 Tendencia Semanal</div>
+      <div class="chart-card-header" style="background:#1c3a61;color:white">📈 Tendencia Semanal — Ingresos · Gastos · Utilidad</div>
       <div class="chart-canvas-wrap tall"><canvas id="chart-trend-line"></canvas></div>
+    </div>
+    <!-- Barras: Margen de utilidad % por semana -->
+    <div class="chart-card full">
+      <div class="chart-card-header" style="background:#2E7D32;color:white">📊 Margen de Utilidad % por Semana</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-margen-bar"></canvas></div>
+    </div>
+    <!-- Barras horizontales: Refugio vs Álamos gastos -->
+    <div class="chart-card full">
+      <div class="chart-card-header" style="background:#5E35B1;color:white">🏠 Refugio vs Álamos — Gastos por Categoría</div>
+      <div class="chart-canvas-wrap tall"><canvas id="chart-suc-bar"></canvas></div>
     </div>
   </div>
   <!-- Áreas de oportunidad -->
@@ -1798,33 +1804,32 @@ function renderDashboard() {
   incHtml += `<div class="detail-row total-row"><span class="label">TOTAL INGRESOS</span><span class="amount">${peso(s.ing)}</span></div>`;
   document.getElementById('detail-income').innerHTML = incHtml;
 
-  // Expense detail — grupos colapsables
-  function accGroup(id, bg, color, label, total, rows) {
+  // Expense detail — grupos colapsables (fondo blanco, color en texto/borde)
+  function accGroup(id, color, label, total, rows) {
     const rowsHtml = rows.map(r =>
       `<div class="detail-row"><span class="label">${r[0]}</span><span class="amount">${peso(r[1])}</span></div>`
     ).join('');
-    // Restore open state if it was open before re-render
     const wasOpen = document.getElementById('acc-body-' + id)?.classList.contains('open');
     return `
       <div class="acc-header${wasOpen ? ' open' : ''}" id="acc-hdr-${id}"
-           style="background:${bg};color:${color}" onclick="toggleGroup('${id}')">
+           style="background:#fff;color:${color};border-left:4px solid ${color};border-bottom:1px solid #eee" onclick="toggleGroup('${id}')">
         <span class="acc-title">
-          <span class="acc-chevron">▶</span> ${label}
-          <span class="acc-hint">clic para ver detalle</span>
+          <span class="acc-chevron" style="color:${color}">▶</span> ${label}
+          <span class="acc-hint" style="color:#aaa">clic para ver detalle</span>
         </span>
-        <span class="acc-total">${peso(total)}</span>
+        <span class="acc-total" style="color:${color}">${peso(total)}</span>
       </div>
       <div class="acc-body${wasOpen ? ' open' : ''}" id="acc-body-${id}">${rowsHtml}</div>`;
   }
-  let expHtml = accGroup('ref', 'var(--green)', 'white', '🏠 Refugio', s.refTotal,
+  let expHtml = accGroup('ref', '#C8960C', '🏠 Refugio', s.refTotal,
     [['Renta',s.refRenta],['Servicios',s.refServ],['Comisiones',s.refCom],
      ['Insumos CW',s.refIns],['Nómina CW',s.refNomCw],['Nómina Food',s.refNom],
      ['Insumos Food',s.refInsf],['Gasto Opp / Otros',s.refOtros]]);
-  expHtml += accGroup('ala', '#1565C0', 'white', '🏠 Álamos', s.alaTotal,
+  expHtml += accGroup('ala', '#1c3a61', '🏠 Álamos', s.alaTotal,
     [['Renta',s.alaRenta],['Servicios',s.alaServ],['Comisiones',s.alaCom],
      ['Insumos CW',s.alaIns],['Nómina CW',s.alaNomCw],['Nómina Food',s.alaNom],
      ['Insumos Food',s.alaInsf],['Gasto Opp / Otros',s.alaOtros]]);
-  expHtml += accGroup('gen', '#5E35B1', 'white', '🏢 Generales / Marca', s.genTotal,
+  expHtml += accGroup('gen', '#5E35B1', '🏢 Generales / Marca', s.genTotal,
     [['Nómina admin',s.genNom],['Gasto general',s.genCont],
      ['Marketing / Redes',s.genMkt],['Gastos admin',s.genAdmin],['Otros',s.genOtros]]);
   expHtml += `<div class="detail-row total-row"><span class="label">TOTAL GASTOS</span><span class="amount">${peso(s.gastos)}</span></div>`;
@@ -2120,6 +2125,45 @@ function renderCharts() {
         },
         scales: {
           y: { ticks: { callback: v => '$'+Math.round(v/1000)+'k' } }
+        }
+      }
+    });
+  }
+
+  // ── 5. Margen de Utilidad % por semana (barras)
+  destroyChart('margen-bar');
+  const ctxMB = document.getElementById('chart-margen-bar');
+  if (ctxMB && data.weeks.length > 0) {
+    const mWeeks = weeks.length > 1 ? weeks : data.weeks;
+    const mLabels  = mWeeks.map(w => w.label ? w.label.split('·')[0].trim() : '?');
+    const mMargen  = mWeeks.map(w => {
+      const sg = getAggregated([w]);
+      return sg.ing > 0 ? Math.round((sg.util / sg.ing) * 1000) / 10 : 0;
+    });
+    const mColors = mMargen.map(v => v >= 20 ? '#2E7D32' : v >= 10 ? '#C8960C' : '#C62828');
+    chartInstances['margen-bar'] = new Chart(ctxMB, {
+      type: 'bar',
+      data: {
+        labels: mLabels,
+        datasets: [{
+          label: 'Margen %',
+          data: mMargen,
+          backgroundColor: mColors,
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y.toFixed(1)}%` } }
+        },
+        scales: {
+          y: {
+            ticks: { callback: v => v + '%' },
+            grid: { color: 'rgba(0,0,0,0.05)' }
+          }
         }
       }
     });
