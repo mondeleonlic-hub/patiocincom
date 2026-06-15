@@ -575,16 +575,19 @@ async function init(){
 
   Object.entries(PERFILES_DEFAULT).forEach(([n,v])=>{if(!perfiles[n])perfiles[n]=v;});
 
-  const savedSem = _cache["pc4_semana"] || "20/2026";
+  const savedSem = _cache["pc4_semana"] || "";
   const savedRows = _cache["pc4_rows"];
 
-  if(savedSem === "19/2026" && savedRows && savedRows.length > 0 && savedRows[0].comision > 0){
+  if(savedRows && savedRows.length > 0){
+    // Hay datos guardados — siempre los usamos (sea cual sea la semana)
     rows = savedRows.map(r=>applyPerfil(r));
+    if(savedSem) document.getElementById("sem").value = savedSem;
   } else {
+    // Sin datos guardados: usar S19 como punto de partida
     rows = S19.map(r=>({...r}));
     sv("pc4_rows", rows);
-    sv("pc4_semana","20/2026");
-    document.getElementById("sem").value="19/2026";
+    sv("pc4_semana","19/2026");
+    document.getElementById("sem").value = "19/2026";
   }
 
   sv("pc4_perfiles", perfiles);
@@ -689,6 +692,7 @@ function parsePDFWords(words){
     const semEl = document.getElementById('sem');
     if(semEl) semEl.value = semM[1];
     sv('pc4_sem', semM[1]);
+    sv('pc4_semana', semM[1]);  // guardar también como clave principal de semana
   }
 
   // Columnas detectadas con pdfplumber:
@@ -1648,7 +1652,7 @@ function cerrarSemana(){
     rows:rows.map(r=>{const desc=getDesc(r.nombre);const d=deudas[r.nombre];return{...r,total:calcT(r,r.nombre),deudaDesc:desc,deudaCon:d?.concepto||"",pagoPago:d?.pagoActual||1,pagoTot:d?.numPagos||1}})});
   historial=arr.slice(0,10);
   rows=rows.map(r=>({nombre:r.nombre,sucursal:r.sucursal,pct:r.pct,autos:"",comision:"",food:"",merch:"",bono:""}));
-  sv("pc4_deudas",deudas);sv("pc4_hist",historial);sv("pc4_rows",rows);
+  sv("pc4_deudas",deudas);sv("pc4_hist",historial);sv("pc4_rows",rows);sv("pc4_semana",sem);
   renderT();renderD();flash("✓ Semana "+sem+" cerrada");
 }
 
