@@ -25,32 +25,23 @@
   .nb-icon{font-size:20px;line-height:1}
   #splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
   #splash.hide{opacity:0;pointer-events:none}
-  #splash svg{width:240px;max-width:75vw}
   .dot{width:6px;height:6px;background:#C8960C;border-radius:50%;margin-top:28px;animation:pulse 1s infinite}
   @keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
 </style>
 </head>
 <body>
 
-<!-- ── SPLASH SCREEN ── -->
+<!-- ── SPLASH ── -->
 <div id="splash">
-  <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
-    <!-- Outer ring -->
+  <svg width="220" height="220" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
     <circle cx="120" cy="120" r="115" fill="none" stroke="#C8960C" stroke-width="3.5"/>
     <circle cx="120" cy="120" r="107" fill="none" stroke="#C8960C" stroke-width="0.8" opacity="0.4"/>
-    <!-- Inner fill -->
     <circle cx="120" cy="120" r="106" fill="#0a0a0a"/>
-    <!-- Stars / decoration -->
     <text x="120" y="58" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#C8960C" letter-spacing="8" opacity="0.7">★ ★ ★</text>
-    <!-- PATIO -->
     <text x="120" y="96" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="26" font-weight="900" fill="#C8960C" letter-spacing="6">PATIO</text>
-    <!-- Big 5 -->
-    <text x="120" y="152" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="64" font-weight="900" fill="#fff" letter-spacing="0">5</text>
-    <!-- CARWASH -->
+    <text x="120" y="152" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="64" font-weight="900" fill="#fff">5</text>
     <text x="120" y="178" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="12" font-weight="700" fill="#C8960C" letter-spacing="7">CARWASH</text>
-    <!-- Bottom bar line -->
     <line x1="55" y1="190" x2="185" y2="190" stroke="#C8960C" stroke-width="1" opacity="0.5"/>
-    <!-- REFUGIO · ÁLAMOS -->
     <text x="120" y="204" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="9" font-weight="500" fill="#888" letter-spacing="3">REFUGIO · ÁLAMOS</text>
   </svg>
   <div class="dot"></div>
@@ -59,17 +50,11 @@
 <!-- ── SHELL ── -->
 <div id="shell">
   <div id="frames">
-    <!-- DASHBOARD -->
     <div class="fw active" id="fw-d">
-      <iframe id="if-d" src="dashboard.html" title="Dashboard Financiero"></iframe>
+      <iframe src="dashboard.html" title="Dashboard Financiero"></iframe>
     </div>
-    <!-- SOBRES -->
     <div class="fw" id="fw-s">
-      <iframe id="if-s" src="sobres.html" title="Sobres — Pago de lavadores"></iframe>
-    </div>
-    <!-- ERP (index) -->
-    <div class="fw" id="fw-e">
-      <iframe id="if-e" src="index.html" title="ERP — Control semanal"></iframe>
+      <iframe src="sobres.html" title="Sobres"></iframe>
     </div>
   </div>
 
@@ -82,32 +67,18 @@
       <span class="nb-icon">✉️</span>
       Sobres
     </button>
-    <button class="nb" id="nb-e" onclick="go('e',this)">
-      <span class="nb-icon">⚙️</span>
-      ERP
-    </button>
   </nav>
 </div>
 
 <script>
-// ── Cambiar de app ──────────────────────────────────
 function go(id, btn) {
   document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
   document.getElementById('fw-' + id).classList.add('active');
   btn.classList.add('on');
 }
-
-// ── Ocultar splash al cargar ────────────────────────
 window.addEventListener('load', () => {
-  // Cargar iframes inactivos con pequeño delay para no bloquear el render
-  setTimeout(() => {
-    document.getElementById('if-s').src = 'sobres.html';
-    document.getElementById('if-e').src = 'index.html';
-  }, 1200);
-  setTimeout(() => {
-    document.getElementById('splash').classList.add('hide');
-  }, 1500);
+  setTimeout(() => document.getElementById('splash').classList.add('hide'), 1500);
 });
 </script>
 </body>
