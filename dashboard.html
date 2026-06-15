@@ -13,23 +13,21 @@
     --blue: #1565C0; --blue-bg: #E3F2FD;
     --purple: #5E35B1; --purple-bg: #EDE7F6;
     --white: #fff; --gray: #F5F5F5;
-    --ref-dark: #f8ba00; --ref-bg: #FFF9E6; --ref-mid: #f8ba00;
-    --ala-dark: #0D1B4B; --ala-bg: #E8ECF5; --ala-mid: #0D1B4B;
+    --ref-dark: #1B5E20; --ref-bg: #F1F8E9; --ref-mid: #388E3C;
+    --ala-dark: #0D47A1; --ala-bg: #E8F0FE; --ala-mid: #1976D2;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #F0F0F0; color: var(--dark); }
 
-  /* NAV — mismo estilo que sobres.html */
-  nav { background: #000; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
-  .nav-row1 { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 8px; padding: 0 20px; height: calc(56px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+  /* NAV */
+  nav { background: var(--dark); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
   .nav-brand { display: flex; align-items: center; }
-  .nav-period { color: #aaa; font-size: 11px; font-weight: 400; letter-spacing: .3px; white-space: nowrap; }
-  .nav-row2 { background: #1a1a1a; display: flex; flex-wrap: nowrap; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .nav-row2::-webkit-scrollbar { display: none; }
-  .nav-tabs { display: flex; flex-wrap: nowrap; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .nav-tab { padding: 10px 16px; border: none; cursor: pointer; font-size: 12px; font-weight: 700; font-family: Arial, sans-serif; background: transparent; color: #999; border-bottom: 3px solid transparent; white-space: nowrap; height: 44px; }
-  .nav-tab:hover { color: #fff; }
-  .nav-tab.active { background: #f8ba00; color: #000; border-bottom: 3px solid #f8ba00; border-radius: 0; }
+  .nav-brand span { color: var(--white); font-weight: 300; }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab { color: #aaa; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; border: none; background: none; }
+  .nav-tab:hover { color: var(--white); background: #333; }
+  .nav-tab.active { color: var(--dark); background: var(--gold); }
+  .nav-period { color: var(--gold-mid); font-size: 13px; font-weight: 600; }
 
   /* PAGES */
   .page { display: none; padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
@@ -189,18 +187,17 @@
   .acc-header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 11px 18px; cursor: pointer; user-select: none;
-    background: var(--white); border-bottom: 1px solid var(--border);
-    transition: background .15s;
+    transition: filter .15s;
   }
-  .acc-header:hover { background: #f9f9f9; }
+  .acc-header:hover { filter: brightness(0.93); }
   .acc-title { font-weight: 700; font-size: 11px; text-transform: uppercase;
-    letter-spacing: .9px; display: flex; align-items: center; gap: 8px; color: var(--dark); }
-  .acc-chevron { display: inline-block; transition: transform .22s; font-size: 11px; font-weight: 900; }
+    letter-spacing: .9px; display: flex; align-items: center; gap: 8px; }
+  .acc-chevron { display: inline-block; transition: transform .22s; font-size: 9px; opacity: .85; }
   .acc-header.open .acc-chevron { transform: rotate(90deg); }
-  .acc-total { font-size: 15px; font-weight: 700; color: var(--dark); }
+  .acc-total { font-size: 15px; font-weight: 700; }
   .acc-body { display: none; }
   .acc-body.open { display: block; }
-  .acc-hint { font-size: 10px; opacity: .55; font-weight: 400; margin-left: 6px; text-transform: none; letter-spacing: 0; }
+  .acc-hint { font-size: 10px; opacity: .65; font-weight: 400; margin-left: 6px; text-transform: none; letter-spacing: 0; }
 
   /* NOTES */
   .notes-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-top: 0; }
@@ -303,69 +300,16 @@
   .pill-ref { background: var(--ref-bg); color: var(--ref-dark); }
   .pill-ala { background: var(--ala-bg); color: var(--ala-dark); }
   .pill-gen { background: var(--purple-bg); color: var(--purple); }
-  /* GRAFICAS PAGE — scoped to avoid conflicts with Dashboard */
-  /* Section titles: same style as dashboard section-title */
-  #page-graficas .g-section-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--light); margin: 0 0 12px; display: block; }
-  /* KPI grid in graficas: 4-col layout */
-  #page-graficas .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
-  /* KPI cards: unified with dashboard style */
-  #page-graficas .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-  #page-graficas .kpi-card.highlight { border-color: var(--gold); }
-  /* Delta indicator (graficas-only) */
-  .kpi-delta { font-size: 11px; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
-  .kpi-delta.up { color: var(--green); }
-  .kpi-delta.down { color: var(--red); }
-  .kpi-delta.neutral { color: var(--mid); }
-  .kpi-spark { display: flex; align-items: flex-end; gap: 2px; height: 28px; margin-top: 10px; }
-  .kpi-spark span { flex: 1; border-radius: 2px 2px 0 0; min-width: 6px; opacity: .85; transition: opacity .2s; }
-  .kpi-spark span:last-child { opacity: 1; }
-  .story-scroll { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px,1fr)); gap: 12px; margin-bottom: 24px; }
-  .story-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
-  .story-card:hover { border-color: var(--gold); }
-  .story-card.story-top { border-color: var(--green); }
-  .story-card.story-bad { border-color: var(--red); }
-  .story-header { padding: 12px 14px 8px; }
-  .story-sem { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--mid); margin-bottom: 3px; }
-  .story-ing { font-size: 18px; font-weight: 900; color: var(--dark); }
-  .story-margen { font-size: 12px; color: var(--mid); margin-top: 2px; }
-  .story-bars { padding: 0 14px 10px; }
-  .story-bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 10px; }
-  .story-bar-bg { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .story-bar-fill { height: 100%; border-radius: 3px; }
-  .story-chip { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin: 4px 14px 8px; }
-  .chip-top { background: #d1fae5; color: #065f46; }
-  .chip-good { background: #dcfce7; color: #166534; }
-  .chip-avg { background: #fef9c3; color: #713f12; }
-  .chip-bad { background: #fee2e2; color: #7f1d1d; }
-  .story-notes { border-top: 1px solid var(--border); padding: 10px 14px; display: none; }
-  .story-notes.open { display: block; }
-  .story-note-item { font-size: 11px; color: var(--mid); margin-bottom: 4px; line-height: 1.4; }
-  .story-note-item.pos { color: #166534; }
-  .story-note-item.neg { color: #7f1d1d; }
-  .accion-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-  .accion-item { display: flex; gap: 12px; align-items: flex-start; background: var(--white); border-radius: 10px; border: 1px solid var(--border); padding: 12px 16px; }
-  .accion-item.urgente { border-left: 4px solid var(--red); }
-  .accion-item.atencion { border-left: 4px solid #f59e0b; }
-  .accion-item.bueno { border-left: 4px solid var(--green); }
-  .accion-icon { font-size: 20px; flex-shrink: 0; line-height: 1; }
-  .accion-body strong { font-size: 13px; font-weight: 700; color: var(--dark); display: block; margin-bottom: 2px; }
-  .accion-body span { font-size: 12px; color: var(--mid); line-height: 1.4; }
-  .suc-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-  .suc-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-  .suc-box-title { font-size: 12px; font-weight: 700; margin-bottom: 10px; }
-  .suc-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
-  .suc-stat-row:last-child { border-bottom: none; font-weight: 700; }
-  .trend-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 24px; }
-  .trend-canvas-wrap { position: relative; height: 220px; }
-  /* legacy chart classes (keep for backward compat) */
+  /* CHARTS PAGE */
   .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .chart-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+  .chart-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
   .chart-card.full { grid-column: 1/-1; }
   .chart-card-header { padding: 12px 18px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
   .chart-card-header.dark { background: var(--dark); }
   .chart-card-header.green { background: var(--green); }
   .chart-card-header.blue { background: var(--blue); }
   .chart-card-header.gold { background: var(--gold); color: var(--dark); }
+  .chart-card-header.purple { background: var(--purple); }
   .chart-canvas-wrap { padding: 20px; position: relative; height: 280px; }
   .chart-canvas-wrap.tall { height: 340px; }
 
@@ -377,23 +321,13 @@
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-<script>
-// Pre-cargar datos si localStorage está vacío
-(function(){
-  if(!localStorage.getItem('pc_financial_v2')){
-    localStorage.setItem('pc_financial_v2', "{\"weeks\":[{\"label\":\"09-mar \u2013 15-mar 2026\",\"date\":\"2026-03-09T06:00:00.000Z\",\"dateStart\":\"2026-03-09T06:00:00.000Z\",\"dateEnd\":\"2026-03-15T06:00:00.000Z\",\"cw-ref\":91797,\"cw-ala\":66595,\"food-ref\":27716,\"food-ala\":14807,\"mem\":9881,\"det\":6945,\"coches\":1007,\"comandas\":50.14,\"mem-vend\":8,\"mem-canc\":10,\"mem-act\":98,\"ref-renta-mes\":89206,\"ref-serv\":3000,\"ref-com\":33940,\"ref-ins\":1868,\"ref-nom\":8000,\"ref-insf\":12388,\"ref-otros\":1000,\"ala-renta-mes\":61560,\"ala-serv\":3000,\"ala-com\":33940,\"ala-ins\":2719,\"ala-nom\":4500,\"ala-insf\":12388,\"ala-otros\":1000,\"ref-serv-mes\":15000,\"ala-serv-mes\":8000},{\"label\":\"15-mar \u2013 21-mar 2026\",\"date\":\"2026-03-15T06:00:00.000Z\",\"dateStart\":\"2026-03-15T06:00:00.000Z\",\"dateEnd\":\"2026-03-21T06:00:00.000Z\",\"cw-ref\":103178,\"cw-ala\":95431,\"food-ref\":30258,\"food-ala\":17931,\"mem\":12333,\"det\":4010,\"coches\":1113,\"comandas\":47,\"mem-vend\":5,\"mem-canc\":1,\"mem-act\":141,\"ref-renta-mes\":89206,\"ref-serv-mes\":20329,\"ref-com\":35983,\"ref-ins\":3590,\"ref-nom\":10050,\"ref-insf\":20653,\"ref-otros\":4575,\"ala-renta-mes\":61560,\"ala-serv-mes\":12011,\"ala-com\":35983,\"ala-ins\":4349,\"ala-nom\":3830,\"ala-insf\":20653,\"ala-otros\":5021,\"ref-nom-cw\":0,\"ala-nom-cw\":0,\"gen-nom-mes\":30000,\"gen-cont\":0,\"gen-mkt\":0,\"gen-admin\":0,\"gen-otros\":2000},{\"label\":\"22-mar \u2013 31-mar 2026\",\"date\":\"2026-03-22T06:00:00.000Z\",\"dateStart\":\"2026-03-22T06:00:00.000Z\",\"dateEnd\":\"2026-03-31T06:00:00.000Z\",\"cw-ref\":74538,\"cw-ala\":45612,\"food-ref\":27637,\"food-ala\":17238,\"mem\":19096,\"det\":22990,\"coches\":662,\"comandas\":92,\"mem-vend\":14,\"mem-canc\":7,\"mem-act\":165,\"ref-renta-mes\":89206,\"ref-serv-mes\":20329,\"ref-com\":40800,\"ref-ins\":4420,\"ref-nom-cw\":3450,\"ref-nom\":5000,\"ref-insf\":8554,\"ref-otros\":0,\"ala-renta-mes\":61560,\"ala-serv-mes\":13297,\"ala-com\":27800,\"ala-ins\":1779,\"ala-nom-cw\":2700,\"ala-nom\":4150,\"ala-insf\":8554,\"ala-otros\":0,\"gen-nom-mes\":45000,\"gen-cont\":1562,\"gen-mkt\":900,\"gen-admin\":8000,\"gen-otros\":2411},{\"label\":\"29-mar \u2013 05-abr 2026\",\"date\":\"2026-03-29T06:00:00.000Z\",\"dateStart\":\"2026-03-29T06:00:00.000Z\",\"dateEnd\":\"2026-04-05T06:00:00.000Z\",\"cw-ref\":74538,\"cw-ala\":45612,\"food-ref\":27637,\"food-ala\":17238,\"mem\":19096,\"det\":26290,\"coches\":986,\"comandas\":92,\"mem-vend\":14,\"mem-canc\":7,\"mem-act\":165,\"ref-renta-mes\":89206,\"ref-serv-mes\":20329,\"ref-com\":43091,\"ref-ins\":4920,\"ref-nom-cw\":2700,\"ref-nom\":10050,\"ref-insf\":7703.5,\"ref-otros\":1000,\"ala-renta-mes\":61560,\"ala-serv-mes\":13297,\"ala-com\":27800,\"ala-ins\":2279,\"ala-nom-cw\":2700,\"ala-nom\":4000,\"ala-insf\":7703.5,\"ala-otros\":1300,\"gen-nom-mes\":90000,\"gen-cont\":1562,\"gen-mkt\":900,\"gen-admin\":8000,\"gen-otros\":2411,\"det-ref\":11170,\"det-ala\":15120,\"coches-ref\":544,\"coches-ala\":442,\"food-heb\":4409,\"food-agua\":175,\"food-guad\":1017,\"food-etrusca\":0,\"food-hielo\":350,\"food-crem\":518,\"food-mp\":2286,\"food-cafe\":-2,\"food-carne\":750,\"food-costco\":5904,\"food-otros\":0,\"ref-serv-agua-mes\":14616,\"ala-serv-agua-mes\":1429,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"ref-serv-gas\":500,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":-2,\"ala-serv-gas\":500,\"ala-serv-internet\":649,\"ala-serv-spotify\":100,\"ala-serv-basura\":1800,\"ala-serv-otros\":0,\"ref-ins-diesel\":500,\"ref-ins-quim\":1080,\"ref-ins-herr\":2840,\"ref-ins-otros\":0,\"ala-ins-diesel\":589,\"ala-ins-quim\":1190,\"ala-ins-otros\":0,\"gen-ins\":1000,\"nom-ref-direct\":2700,\"nom-ala-direct\":2700,\"nom-gen-mes\":45000,\"ref-nom-food\":10050,\"ala-nom-food\":4000,\"uber-ref\":0,\"uber-ala\":300,\"ref-serv-direct\":6074,\"ala-serv-direct\":5417},{\"label\":\"Sem 15 \u00b7 06-abr \u2013 12-abr 2026\",\"date\":\"2026-04-06T06:00:00.000Z\",\"dateStart\":\"2026-04-06T06:00:00.000Z\",\"dateEnd\":\"2026-04-12T06:00:00.000Z\",\"cw-ref\":120628,\"cw-ala\":112711,\"food-ref\":39138,\"food-ala\":23355,\"mem\":16652,\"det-ref\":12010,\"det-ala\":14307,\"coches-ref\":744,\"coches-ala\":655,\"comandas\":58.94,\"mem-vend\":13,\"mem-canc\":3,\"mem-act\":173,\"food-heb\":3071,\"food-agua\":105,\"food-guad\":2840,\"food-etrusca\":5621,\"food-hielo\":350,\"food-crem\":1112,\"food-mp\":1657,\"food-cafe\":0,\"food-carne\":0,\"food-costco\":6155,\"food-otros\":1913,\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":15000,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"ref-serv-gas\":0,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":1000,\"ala-serv-gas\":0,\"ala-serv-internet\":649,\"ala-serv-spotify\":100,\"ala-serv-basura\":500,\"ala-serv-otros\":1000,\"ref-ins-diesel\":500,\"ref-ins-quim\":2120,\"ref-ins-herr\":143,\"ref-ins-otros\":619,\"ala-ins-diesel\":0,\"ala-ins-quim\":2130,\"ala-ins-herr\":0,\"ala-ins-otros\":619,\"gen-ins\":0,\"nom-ref-direct\":6066,\"nom-ala-direct\":2700,\"nom-gen-mes\":45000,\"ref-nom-food\":10618,\"ala-nom-food\":0,\"ref-com\":23000,\"ala-com\":23000,\"uber-ref\":125,\"uber-ala\":144,\"ref-otros\":500,\"ala-otros\":1666,\"gen-cont\":598,\"gen-mkt\":700,\"gen-admin\":6000,\"gen-otros\":3690,\"ref-serv-direct\":6205,\"ala-serv-direct\":4721,\"ref-ins\":3382,\"ala-ins\":2749,\"ref-nom-cw\":6066,\"ala-nom-cw\":2700,\"ref-nom\":10618,\"gen-nom-mes\":360000,\"ref-insf\":11412,\"ala-insf\":11412,\"det\":26317,\"coches\":1399,\"num-comandas\":844,\"mem-canc-cli\":0},{\"label\":\"Sem 16 \u00b7 13-abr \u2013 19-abr 2026\",\"date\":\"2026-04-13T06:00:00.000Z\",\"dateStart\":\"2026-04-13T06:00:00.000Z\",\"dateEnd\":\"2026-04-19T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"cw-ref\":80038,\"cw-ala\":61475,\"food-ref\":23339,\"food-ala\":10744,\"mem\":12983,\"det-ref\":2115,\"det-ala\":1877,\"coches-ref\":489,\"coches-ala\":378,\"num-comandas\":398,\"mem-vend\":7,\"mem-canc\":13,\"mem-act\":172,\"mem-canc-cli\":1,\"food-heb\":2782,\"food-agua\":160,\"food-guad\":1188,\"food-etrusca\":0,\"food-hielo\":340,\"food-crem\":1117,\"food-mp\":0,\"food-cafe\":1970,\"food-carne\":1350,\"food-costco\":7411,\"food-otros\":7822,\"ref-serv-gas\":0,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":0,\"ala-serv-gas\":0,\"ala-serv-internet\":649,\"ala-serv-spotify\":100,\"ala-serv-basura\":500,\"ala-serv-otros\":0,\"ref-ins-diesel\":1000,\"ref-ins-quim\":1979,\"ref-ins-herr\":289,\"ref-ins-otros\":0,\"ala-ins-diesel\":500,\"ala-ins-quim\":1640,\"ala-ins-herr\":289,\"ala-ins-otros\":706,\"gen-ins\":0,\"nom-ref-direct\":3000,\"nom-ala-direct\":3300,\"nom-gen-mes\":45000,\"ref-nom-food\":7934,\"ala-nom-food\":4269,\"ref-com\":26511,\"ala-com\":26511,\"uber-ref\":240,\"uber-ala\":0,\"ref-otros\":480,\"ala-otros\":2140,\"gen-cont\":0,\"gen-mkt\":1436,\"gen-admin\":2300,\"gen-otros\":80,\"ref-serv-direct\":5995,\"ala-serv-direct\":3721,\"ref-ins\":3268,\"ala-ins\":3135,\"ref-nom-cw\":3000,\"ala-nom-cw\":3300,\"ref-nom\":7934,\"ala-nom\":4269,\"gen-nom-mes\":180000,\"ref-insf\":12070,\"ala-insf\":12070,\"det\":3992,\"coches\":867,\"mem-canc-pago\":12,\"nota-neg\":\"\",\"nota-pos\":\"\",\"nota-gen\":\"\",\"tags\":[]},{\"label\":\"Sem 17 \u00b7 20-abr \u2013 26-abr 2026\",\"date\":\"2026-04-20T06:00:00.000Z\",\"dateStart\":\"2026-04-20T06:00:00.000Z\",\"dateEnd\":\"2026-04-26T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":4031,\"ala-serv-luz-mes\":7748,\"cw-ref\":72453,\"cw-ala\":56779,\"food-ref\":21465,\"food-ala\":12811,\"mem\":13730,\"det-ref\":5690,\"det-ala\":850,\"coches-ref\":449,\"coches-ala\":368,\"num-comandas\":376,\"mem-vend\":13,\"mem-canc-pago\":3,\"mem-canc-cli\":3,\"mem-act\":177,\"food-heb\":1358,\"food-agua\":300,\"food-guad\":1606,\"food-etrusca\":0,\"food-hielo\":350,\"food-crem\":334,\"food-mp\":554,\"food-cafe\":1500,\"food-carne\":0,\"food-costco\":2954,\"food-otros\":100,\"ref-serv-gas\":500,\"ref-serv-internet\":0,\"ref-serv-spotify\":0,\"ref-serv-basura\":0,\"ref-serv-otros\":500,\"ala-serv-gas\":500,\"ala-serv-internet\":0,\"ala-serv-spotify\":0,\"ala-serv-basura\":400,\"ala-serv-otros\":500,\"ref-ins-diesel\":500,\"ref-ins-quim\":1540,\"ref-ins-herr\":0,\"ref-ins-otros\":440,\"ala-ins-diesel\":1125,\"ala-ins-quim\":1889,\"ala-ins-herr\":0,\"ala-ins-otros\":480,\"gen-ins\":12159,\"nom-ref-direct\":3150,\"nom-ala-direct\":3300,\"nom-gen-mes\":45000,\"ref-nom-food\":9654,\"ala-nom-food\":4813,\"ref-com\":27602,\"ala-com\":27602,\"uber-ref\":210,\"uber-ala\":90,\"ref-otros\":1210,\"ala-otros\":1090,\"gen-cont\":0,\"gen-mkt\":350,\"gen-admin\":0,\"gen-otros\":0,\"ref-serv-direct\":6231,\"ala-serv-direct\":3872,\"ref-ins\":8559.5,\"ala-ins\":9573.5,\"ref-nom-cw\":3150,\"ala-nom-cw\":3300,\"ref-nom\":9654,\"ala-nom\":4813,\"gen-nom-mes\":45000,\"ref-insf\":4528,\"ala-insf\":4528,\"det\":6540,\"coches\":817,\"mem-canc\":6,\"nota-neg\":\"Tuvimos semana baja porque los primeros dias veniamos de lluvias y ademas tuvimos algunos dias con 3-5 lavadores\",\"nota-pos\":\"Funcionamos a pesar de las adversidades\",\"nota-gen\":\"\",\"tags\":[\"tag-lluvia\",\"tag-falta-personal\"]},{\"label\":\"Sem 18 \u00b7 27-abr \u2013 03-may 2026\",\"date\":\"2026-04-27T06:00:00.000Z\",\"dateStart\":\"2026-04-27T06:00:00.000Z\",\"dateEnd\":\"2026-05-03T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":5037,\"ala-serv-luz-mes\":8668,\"cw-ref\":149780,\"cw-ala\":114687,\"food-ref\":23747,\"food-ala\":13353,\"mem\":20174,\"det-ref\":9362,\"det-ala\":3315,\"coches-ref\":940,\"coches-ala\":744,\"num-comandas\":236,\"mem-vend\":9,\"mem-canc-pago\":7,\"mem-canc-cli\":6,\"mem-act\":179,\"food-heb\":5347,\"food-agua\":420,\"food-guad\":2983,\"food-etrusca\":0,\"food-hielo\":350,\"food-crem\":1138,\"food-mp\":3909,\"food-cafe\":0,\"food-carne\":750,\"food-costco\":6759,\"food-otros\":2272,\"ref-serv-gas\":200,\"ref-serv-internet\":664,\"ref-serv-spotify\":100,\"ref-serv-basura\":0,\"ref-serv-otros\":0,\"ala-serv-gas\":200,\"ala-serv-internet\":664,\"ala-serv-spotify\":100,\"ala-serv-basura\":400,\"ala-serv-otros\":0,\"ref-ins-diesel\":510,\"ref-ins-quim\":1080,\"ref-ins-herr\":0,\"ref-ins-otros\":155,\"ala-ins-diesel\":0,\"ala-ins-quim\":1530,\"ala-ins-herr\":0,\"ala-ins-otros\":155,\"gen-ins\":1159,\"nom-ref-direct\":3800,\"nom-ala-direct\":2925,\"nom-gen-mes\":45000,\"ref-nom-food\":9344,\"ala-nom-food\":6716,\"ref-com\":0,\"ala-com\":0,\"uber-ref\":70,\"uber-ala\":0,\"ref-otros\":670,\"ala-otros\":600,\"gen-cont\":2205,\"gen-mkt\":1200,\"gen-admin\":1139,\"gen-otros\":3480,\"ref-serv-direct\":6429,\"ala-serv-direct\":4051,\"ref-ins\":2324.5,\"ala-ins\":2264.5,\"ref-nom-cw\":3800,\"ala-nom-cw\":2925,\"ref-nom\":9344,\"ala-nom\":6716,\"gen-nom-mes\":45000,\"ref-insf\":11964,\"ala-insf\":11964,\"det\":12677,\"coches\":1684,\"mem-canc\":13,\"nota-neg\":\"hugo se fue temprano el domingo y falto el lunes sin comprobante, eso hizo que quitara a dani de compras y yo las hiciera, creo que mejor que el. Se requiere implementaci\u00f3n de sistemas para ver porque tenemos tanta perdida en food, sospecho que se les echan cosas a perder y no reporta y como el que hace compras, no est\u00e1 ah\u00ed operando, no nos damos cuenta. Tambi\u00e9n hubo boicot de Charlie, se molesto porque estaba mal su pago y no fueron lavadores. Hicieron falta 20,000 pesos para completar los pagos.\",\"nota-pos\":\"Tambi\u00e9n se fue el internet durante 4 d\u00edas porque Benji olvido pagarlo. Se fue de vacaciones 4 d\u00edas Styben y todo bien. \\nLos d\u00edas con buenos lavadores y buen clima lavamos bien. No he podido enfocarme en la publicidad, tal vez esta sea una buena semana para eso.\",\"nota-gen\":\"\",\"tags\":[\"tag-falta-personal\",\"tag-falla-equipo\",\"tag-clima-ideal\"]},{\"label\":\"Sem 19 \u00b7 04-may \u2013 10-may 2026\",\"date\":\"2026-05-04T06:00:00.000Z\",\"dateStart\":\"2026-05-04T06:00:00.000Z\",\"dateEnd\":\"2026-05-10T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":5037,\"ala-serv-luz-mes\":8668,\"cw-ref\":84740,\"cw-ala\":68671,\"food-ref\":22727,\"food-ala\":1635,\"mem\":2062,\"det-ref\":7967,\"det-ala\":2900,\"coches-ref\":499,\"coches-ala\":437,\"num-comandas\":0,\"mem-vend\":13,\"mem-canc-pago\":5,\"mem-canc-cli\":4,\"mem-act\":198,\"food-heb\":2695,\"food-agua\":0,\"food-guad\":1497,\"food-etrusca\":0,\"food-hielo\":488,\"food-crem\":843,\"food-mp\":1368,\"food-cafe\":0,\"food-carne\":0,\"food-costco\":6749,\"food-otros\":7467,\"ref-serv-gas\":0,\"ref-serv-internet\":649,\"ref-serv-spotify\":25,\"ref-serv-basura\":0,\"ref-serv-otros\":0,\"ala-serv-gas\":0,\"ala-serv-internet\":649,\"ala-serv-spotify\":25,\"ala-serv-basura\":400,\"ala-serv-otros\":0,\"ref-ins-diesel\":500,\"ref-ins-quim\":2089,\"ref-ins-herr\":0,\"ref-ins-otros\":0,\"ala-ins-diesel\":500,\"ala-ins-quim\":1349,\"ala-ins-herr\":0,\"ala-ins-otros\":0,\"gen-ins\":4824,\"nom-ref-direct\":3000,\"nom-ala-direct\":3300,\"nom-gen-mes\":45000,\"ref-nom-food\":5078,\"ala-nom-food\":0,\"ref-com\":27896,\"ala-com\":32107,\"uber-ref\":100,\"uber-ala\":100,\"ref-otros\":200,\"ala-otros\":310,\"gen-cont\":0,\"gen-mkt\":1989,\"gen-admin\":0,\"gen-otros\":0,\"ref-serv-direct\":5962,\"ala-serv-direct\":3674,\"ref-ins\":5001,\"ala-ins\":4261,\"ref-nom-cw\":3000,\"ala-nom-cw\":3300,\"ref-nom\":5078,\"gen-nom-mes\":45000,\"ref-insf\":10553.5,\"ala-insf\":10553.5,\"det\":10867,\"coches\":936,\"mem-canc\":9,\"nota-neg\":\"\",\"nota-pos\":\"\",\"nota-gen\":\"\",\"tags\":[],\"_desglose\":{\"f-food-otros\":[{\"desc\":\"almacenaje\",\"amount\":1219},{\"desc\":\"mantenimiento refri\",\"amount\":2400},{\"desc\":\"mantenimiento herr\",\"amount\":348},{\"desc\":\"fumigaci\u00f3n\",\"amount\":3500}],\"f-gen-ins\":[{\"desc\":\"shampoo armorl all\",\"amount\":1040},{\"desc\":\"pipa\",\"amount\":1400},{\"desc\":\"pipa\",\"amount\":1400},{\"desc\":\"frascos aroma y cera\",\"amount\":984}],\"f-nom-gen-mes\":[{\"desc\":\"Mon\",\"amount\":15000},{\"desc\":\"Dan\",\"amount\":15000},{\"desc\":\"Ben\",\"amount\":15000}]}},{\"label\":\"Sem 20 \u00b7 11-may \u2013 24-may 2026\",\"date\":\"2026-05-11T06:00:00.000Z\",\"dateStart\":\"2026-05-11T06:00:00.000Z\",\"dateEnd\":\"2026-05-24T06:00:00.000Z\",\"ref-renta-mes\":89206,\"ala-renta-mes\":61560,\"ref-serv-agua-mes\":18384,\"ala-serv-agua-mes\":2846,\"ref-serv-luz-mes\":5037,\"ala-serv-luz-mes\":8668}]}");
-  }
-})();
-</script>
 </head>
 <body>
 
 <!-- ══ NAV ══ -->
 <nav>
- <div class="nav-row1">
   <div class="nav-brand">
-    <svg height="32" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <svg height="38" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
       <path fill="#e0a614" d="M1799.77,509.66q46.68,0,76.32-36.92l40.6,41.8q-48.33,54.42-113.88,54.39t-108-41.41q-42.39-41.38-42.41-104.51t43.22-105.35q43.23-42.18,105.75-42.2,69.81,0,116.92,53.16l-39.4,44.67q-30-37.35-74.7-37.35-35.7,0-61.07,23.34t-25.36,62.92q0,39.57,23.91,63.52T1799.77,509.66Z"/>
       <path fill="#e0a614" d="M2082.7,282H2146V565.68h-63.3Z"/>
       <path fill="#e0a614" d="M2530.4,282h63.34V565.68H2530.4L2395.23,387.89V565.68h-63.34V282h59.27L2530.4,464.6Z"/>
@@ -407,16 +341,13 @@
       <polygon fill="#ffffff" points="439.6 553.68 437.06 565.83 437.06 565.83 439.6 553.68"/>
     </svg>
   </div>
-  <div class="nav-period" id="nav-period" style="display:none"></div>
- </div>
- <div class="nav-row2">
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-tab" onclick="showPage('input')">Capturar semana</button>
     <button class="nav-tab" onclick="showPage('graficas')">Gráficas</button>
     <button class="nav-tab" onclick="showPage('historial')">Historial</button>
   </div>
- </div>
+  <div class="nav-period" id="nav-period">Cargando...</div>
 </nav>
 
 <!-- ══ PAGE: DASHBOARD ══ -->
@@ -472,8 +403,8 @@
 
   <p class="section-title" style="margin-top:32px">Desglose</p>
   <div class="detail-grid">
-    <div class="detail-card"><div class="detail-card-header" style="background:white;color:var(--green);border-bottom:2px solid var(--green)">Ingreso — Detalle</div><div id="detail-income"></div></div>
-    <div class="detail-card"><div class="detail-card-header" style="background:white;color:var(--red);border-bottom:2px solid var(--red)">Gasto — Detalle</div><div id="detail-expense"></div></div>
+    <div class="detail-card"><div class="detail-card-header green">Ingreso — Detalle</div><div id="detail-income"></div></div>
+    <div class="detail-card"><div class="detail-card-header red">Gasto — Detalle</div><div id="detail-expense"></div></div>
   </div>
 </div>
 
@@ -496,7 +427,7 @@
 
     <!-- Ingresos -->
     <div class="form-card">
-      <div class="form-card-header" style="background:white;color:var(--green);border-bottom:2px solid var(--green)">Ingresos</div>
+      <div class="form-card-header green">Ingresos</div>
       <div class="form-row sub-header-row"><label>Carwash</label></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-cw-ref" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-cw-ala" placeholder="0" oninput="recalc()"></div>
@@ -514,7 +445,7 @@
 
     <!-- Operaciones -->
     <div class="form-card">
-      <div class="form-card-header" style="background:white;color:var(--blue);border-bottom:2px solid var(--blue)">Operaciones</div>
+      <div class="form-card-header blue">Operaciones</div>
       <div class="form-row sub-header-row"><label>Coches lavados</label></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-coches-ref" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-coches-ala" placeholder="0" oninput="recalc()"></div>
@@ -536,171 +467,10 @@
     </div>
   </div>
 
-  <!-- ─── BLOQUE 3: Renta + Servicios ─── -->
-  <p class="section-title" style="margin-top:28px">Fijos — Renta y Servicios <span style="font-size:10px;font-weight:400;color:var(--light);letter-spacing:0;text-transform:none">(montos mensuales se prorratean automáticamente al período seleccionado)</span></p>
-  <div class="cmp-wrap full">
-    <div class="cmp-header" style="background:white;color:var(--dark);border-bottom:2px solid var(--dark)">Fijos</div>
-    <table class="cmp">
-      <thead>
-        <tr>
-          <th class="th-label" style="width:36%">Concepto</th>
-          <th class="th-ref" style="width:32%">REFUGIO</th>
-          <th class="th-ala" style="width:32%">ÁLAMOS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="sub-head"><td colspan="3">RENTA</td></tr>
-        <tr>
-          <td class="td-label">Renta mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-renta-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-renta-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Renta período (auto-prorrateado)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr class="sub-head"><td colspan="3">SERVICIOS</td></tr>
-        <tr>
-          <td class="td-label">Agua mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Agua período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Luz mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Luz período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr class="sub-head"><td colspan="3" style="font-size:10px;color:#aaa;font-style:italic">Fijos mensuales → se prorratean al período</td></tr>
-        <tr>
-          <td class="td-label">Internet mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Internet período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Spotify mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Spotify período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Canva mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-canva-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-canva-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Canva período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-canva-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-canva-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Otros fijos mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-otros-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-otros-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Otros fijos período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-otros-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-otros-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr class="sub-head"><td colspan="3" style="font-size:10px;color:#aaa;font-style:italic">Variables semanales → se capturan directo</td></tr>
-        <tr>
-          <td class="td-label">Gas</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-gas" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-gas" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Basura</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-basura" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-basura" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <!-- Legacy hidden inputs for backwards compatibility -->
-        <tr style="display:none"><td><input type="number" id="f-ref-serv-internet" value="0" oninput="recalc()"></td><td><input type="number" id="f-ala-serv-internet" value="0"></td><td><input type="number" id="f-ref-serv-spotify" value="0"></td></tr>
-        <tr style="display:none"><td><input type="number" id="f-ala-serv-spotify" value="0"></td><td><input type="number" id="f-ref-serv-otros" value="0"></td><td><input type="number" id="f-ala-serv-otros" value="0"></td></tr>
-        <tr class="sub-total">
-          <td style="padding-left:18px">Subtotal Servicios</td>
-          <td style="text-align:right" id="f-ref-serv-subtotal">$0</td>
-          <td style="text-align:right" id="f-ala-serv-subtotal">$0</td>
-        </tr>
-        <tr class="total-row">
-          <td style="padding-left:18px">TOTAL RENTA + SERVICIOS</td>
-          <td style="text-align:right" id="f-ref-rentaserv-total">$0</td>
-          <td style="text-align:right" id="f-ala-rentaserv-total">$0</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ─── BLOQUE 4: Insumos CW ─── -->
-  <p class="section-title" style="margin-top:28px">Insumos CW</p>
-  <div class="cmp-wrap full">
-    <div class="cmp-header" style="background:white;color:var(--blue);border-bottom:2px solid var(--blue)">Insumos CARWASH</div>
-    <table class="cmp">
-      <thead>
-        <tr>
-          <th class="th-label" style="width:36%">Insumo</th>
-          <th class="th-ref" style="width:32%">REFUGIO</th>
-          <th class="th-ala" style="width:32%">ÁLAMOS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="td-label">Diesel</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-diesel" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-diesel" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Químicos</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-quim" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-quim" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Herramientas</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-herr" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-herr" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Otros insumos CW</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-otros" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-otros" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr class="sub-head"><td colspan="3">INSUMOS GENERALES — se registran en Generales de Marca</td></tr>
-        <tr>
-          <td class="td-label">Insumos generales</td>
-          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-ins" placeholder="0" oninput="recalc()" style="width:200px"> <span style="font-size:11px;color:var(--light)"> → va a Generales, no se divide</span></td>
-        </tr>
-        <tr class="total-row">
-          <td style="padding-left:18px">TOTAL INSUMOS CW (por sucursal)</td>
-          <td style="text-align:right" id="f-ref-ins-total">$0</td>
-          <td style="text-align:right" id="f-ala-ins-total">$0</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
   <!-- ─── BLOQUE 2: Insumos Food (compartidos ÷2) ─── -->
   <p class="section-title" style="margin-top:28px">Insumos Food — Costo compartido (se divide automáticamente ÷ 2 entre sucursales)</p>
   <div class="cmp-wrap full">
-    <div class="cmp-header" style="background:white;color:#e67e22;border-bottom:2px solid #e67e22">Insumos FOOD</div>
+    <div class="cmp-header gold">🥩 Ingredientes & Proveedores Food — Global</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -752,10 +522,141 @@
     </table>
   </div>
 
-  <!-- ─── BLOQUE 5: Nómina y Sueldos ─── -->
-  <p class="section-title" style="margin-top:28px">Personal — Nómina · Sueldos · Comisiones</p>
+  <!-- ─── BLOQUE 3: Renta + Servicios ─── -->
+  <p class="section-title" style="margin-top:28px">Renta · Servicios</p>
   <div class="cmp-wrap full">
-    <div class="cmp-header" style="background:white;color:var(--purple);border-bottom:2px solid var(--purple)">Personal</div>
+    <div class="cmp-header dark">🏠 Renta y Servicios por sucursal</div>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th class="th-label" style="width:36%">Concepto</th>
+          <th class="th-ref" style="width:32%">REFUGIO</th>
+          <th class="th-ala" style="width:32%">ÁLAMOS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="sub-head"><td colspan="3">RENTA</td></tr>
+        <tr>
+          <td class="td-label">Renta mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-renta-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-renta-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Renta período (auto-prorrateado)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr class="sub-head"><td colspan="3">SERVICIOS</td></tr>
+        <tr>
+          <td class="td-label">Agua mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Agua período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Luz mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Luz período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Gas</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-gas" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-gas" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Internet</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Spotify</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Basura</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-basura" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-basura" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Otros servicios</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-otros" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-otros" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr class="sub-total">
+          <td style="padding-left:18px">Subtotal Servicios</td>
+          <td style="text-align:right" id="f-ref-serv-subtotal">$0</td>
+          <td style="text-align:right" id="f-ala-serv-subtotal">$0</td>
+        </tr>
+        <tr class="total-row">
+          <td style="padding-left:18px">TOTAL RENTA + SERVICIOS</td>
+          <td style="text-align:right" id="f-ref-rentaserv-total">$0</td>
+          <td style="text-align:right" id="f-ala-rentaserv-total">$0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── BLOQUE 4: Insumos CW ─── -->
+  <p class="section-title" style="margin-top:28px">Insumos Carwash</p>
+  <div class="cmp-wrap full">
+    <div class="cmp-header blue">🧴 Insumos CW por sucursal</div>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th class="th-label" style="width:36%">Insumo</th>
+          <th class="th-ref" style="width:32%">REFUGIO</th>
+          <th class="th-ala" style="width:32%">ÁLAMOS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">Diesel</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-diesel" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-diesel" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Químicos</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-quim" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-quim" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Herramientas</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-herr" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-herr" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Otros insumos CW</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-otros" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-otros" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr class="sub-head"><td colspan="3">INSUMOS GENERALES — se registran en Generales de Marca</td></tr>
+        <tr>
+          <td class="td-label">Insumos generales</td>
+          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-ins" placeholder="0" oninput="recalc()" style="width:200px"> <span style="font-size:11px;color:var(--light)"> → va a Generales, no se divide</span></td>
+        </tr>
+        <tr class="total-row">
+          <td style="padding-left:18px">TOTAL INSUMOS CW (por sucursal)</td>
+          <td style="text-align:right" id="f-ref-ins-total">$0</td>
+          <td style="text-align:right" id="f-ala-ins-total">$0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── BLOQUE 5: Nómina y Sueldos ─── -->
+  <p class="section-title" style="margin-top:28px">Nómina · Sueldos · Comisiones</p>
+  <div class="cmp-wrap full">
+    <div class="cmp-header purple">👤 Personal por sucursal</div>
     <table class="cmp">
       <thead>
         <tr>
@@ -807,11 +708,1657 @@
   </div>
 
   <!-- ─── BLOQUE 6: Gasto Opp + Generales ─── -->
-  <p class="section-title" style="margin-top:28px">Gastos Generales</p>
-  <div class="cmp-wrap full">
-    <div class="cmp-header" style="background:white;color:#f8ba00;border-bottom:2px solid #f8ba00">Gastos Generales</div>
-    <table class="cmp">
+  <p class="section-title" style="margin-top:28px">Gasto Oportunidad · Generales de Marca</p>
+  <div class="form-grid">
+
+    <!-- Gasto Opp -->
+    <div class="form-card">
+      <div class="form-card-header red">Gasto Oportunidad</div>
+      <div class="form-row sub-header-row"><label>Uber</label></div>
+      <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-uber-ref" placeholder="0" oninput="recalc()"></div>
+      <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-uber-ala" placeholder="0" oninput="recalc()"></div>
+      <div class="form-row sub-header-row"><label>Otros Gasto Opp</label></div>
+      <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-ref-otros" placeholder="0" oninput="recalc()"></div>
+      <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-ala-otros" placeholder="0" oninput="recalc()"></div>
+    </div>
+
+    <!-- Generales -->
+    <div class="form-card">
+      <div class="form-card-header purple">Generales — Marca</div>
+      <div class="form-row"><label>Gasto general</label><input type="number" id="f-gen-cont" placeholder="0" oninput="recalc()"></div>
+      <div class="form-row"><label>Marketing / Redes</label><input type="number" id="f-gen-mkt" placeholder="0" oninput="recalc()"></div>
+      <div class="form-row"><label>Gastos administrativos</label><input type="number" id="f-gen-admin" placeholder="0" oninput="recalc()"></div>
+      <div class="form-row"><label>Otros generales</label><input type="number" id="f-gen-otros" placeholder="0" oninput="recalc()"></div>
+      <div class="form-row computed"><label><strong>TOTAL GENERALES</strong></label><input type="text" id="f-total-gen" readonly></div>
+    </div>
+  </div>
+
+  <!-- ─── BLOQUE 7: Notas de la semana ─── -->
+  <p class="section-title" style="margin-top:28px">Notas · Contexto de la semana</p>
+  <div class="notes-card">
+    <div class="notes-card-header">📝 ¿Qué pasó esta semana?</div>
+    <div class="notes-body">
+      <div class="notes-field">
+        <label>Factores negativos</label>
+        <div class="tag-row" id="tags-neg">
+          <button class="tag-btn" onclick="toggleTag(this,'tag-lluvia')">🌧 Lluvia</button>
+          <button class="tag-btn" onclick="toggleTag(this,'tag-falta-personal')">👤 Falta personal</button>
+          <button class="tag-btn" onclick="toggleTag(this,'tag-falla-equipo')">🔧 Falla equipo</button>
+          <button class="tag-btn" onclick="toggleTag(this,'tag-anomalia')">⚠️ Anomalía</button>
+          <button class="tag-btn" onclick="toggleTag(this,'tag-pocos-lavadores')">🚗 Pocos lavadores</button>
+        </div>
+        <textarea id="f-nota-neg" placeholder="Describe qué salió mal, incidentes, gastos inesperados..." oninput="markUnsaved()"></textarea>
+      </div>
+      <div class="notes-field">
+        <label>Factores positivos</label>
+        <div class="tag-row" id="tags-pos">
+          <button class="tag-btn" onclick="toggleTag(this,'tag-promo')">🎯 Promoción</button>
+          <button class="tag-btn" onclick="toggleTag(this,'tag-evento')">🎉 Evento</button>
+          <button class="tag-btn" onclick="toggleTag(this,'tag-clima-ideal')">☀️ Clima ideal</button>
+          <button class="tag-btn" onclick="toggleTag(this,'tag-full-personal')">💪 Equipo completo</button>
+        </div>
+        <textarea id="f-nota-pos" placeholder="¿Qué funcionó bien? ¿Qué hicimos diferente esta semana?" oninput="markUnsaved()"></textarea>
+      </div>
+      <div class="notes-field full">
+        <label>Nota general</label>
+        <textarea id="f-nota-gen" placeholder="Contexto adicional, observaciones, decisiones tomadas..." style="min-height:60px" oninput="markUnsaved()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE BAR -->
+  <div class="save-bar">
+    <div class="save-bar-msg" id="save-msg">Llena los datos y guarda.</div>
+    <div class="save-bar-kpis">
+      <div class="save-kpi"><div class="save-kpi-label">Ingresos</div><div class="save-kpi-val" id="sb-ing" style="color:#81C784">$0</div></div>
+      <div class="save-kpi"><div class="save-kpi-label">Gastos</div><div class="save-kpi-val" id="sb-gas" style="color:#EF9A9A">$0</div></div>
+      <div class="save-kpi"><div class="save-kpi-label">Utilidad</div><div class="save-kpi-val" id="sb-util" style="color:var(--gold-mid)">$0</div></div>
+      <div class="save-kpi"><div class="save-kpi-label">Margen</div><div class="save-kpi-val" id="sb-margen" style="color:var(--gold-mid)">—</div></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline" onclick="clearForm()">Limpiar</button>
+      <button class="btn btn-gold" onclick="saveWeek()">💾 Guardar semana</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: GRÁFICAS ══ -->
+<div class="page" id="page-graficas">
+  <div class="week-selector" style="margin-bottom:20px">
+    <label style="font-weight:700;font-size:13px;color:var(--mid)">Período:</label>
+    <select id="chart-week-select" onchange="renderCharts()">
+      <option value="all">Todas las semanas</option>
+    </select>
+    <div class="month-filter">
+      <label>o por mes:</label>
+      <select id="chart-month-select" onchange="renderCharts()">
+        <option value="">— Todos los meses —</option>
+      </select>
+    </div>
+  </div>
+  <div class="charts-grid">
+    <!-- Donut: Distribución de Gastos -->
+    <div class="chart-card">
+      <div class="chart-card-header dark">🍩 Distribución de Gastos</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-gastos-donut"></canvas></div>
+    </div>
+    <!-- Donut: Mix de Ingresos -->
+    <div class="chart-card">
+      <div class="chart-card-header gold">🍩 Mix de Ingresos</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-ing-donut"></canvas></div>
+    </div>
+    <!-- Barras horizontales: Refugio vs Álamos -->
+    <div class="chart-card full">
+      <div class="chart-card-header blue">📊 Refugio vs Álamos — Gastos por Categoría</div>
+      <div class="chart-canvas-wrap tall"><canvas id="chart-suc-bar"></canvas></div>
+    </div>
+    <!-- Línea: Tendencia semanal -->
+    <div class="chart-card full">
+      <div class="chart-card-header green">📈 Tendencia Semanal</div>
+      <div class="chart-canvas-wrap tall"><canvas id="chart-trend-line"></canvas></div>
+    </div>
+  </div>
+  <!-- Áreas de oportunidad -->
+  <div class="insight-panel">
+    <div class="insight-header">💡 Áreas de Oportunidad — Análisis Automático</div>
+    <div class="insight-body" id="insight-body">
+      <div class="insight-item info"><span class="insight-icon">ℹ️</span><div class="insight-text"><strong>Cargando análisis...</strong><span>Selecciona un período para ver recomendaciones.</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: HISTORIAL ══ -->
+<div class="page" id="page-historial">
+  <p class="section-title">Todas las semanas registradas</p>
+  <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <table style="width:100%;border-collapse:collapse;font-size:13px" id="hist-table">
       <thead>
-        <tr>
-          <th class="th-label" style="width:36%">Concepto</th>
-          <th class=
+        <tr style="background:var(--dark);color:var(--white)">
+          <th style="padding:12px 16px;text-align:left">Semana</th>
+          <th style="padding:12px 16px;text-align:right">Ingresos</th>
+          <th style="padding:12px 16px;text-align:right">Gastos</th>
+          <th style="padding:12px 16px;text-align:right">Utilidad</th>
+          <th style="padding:12px 16px;text-align:right">Margen</th>
+          <th style="padding:12px 16px;text-align:right">Coches</th>
+          <th style="padding:12px 16px;text-align:center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="hist-body"></tbody>
+    </table>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-outline" onclick="exportCSV()">📥 Exportar CSV</button>
+    <button class="btn btn-outline" onclick="exportBackup()" style="color:var(--green);border-color:var(--green)">💾 Backup JSON</button>
+    <button class="btn btn-outline" onclick="document.getElementById('import-file').click()" style="color:var(--blue);border-color:var(--blue)">📂 Importar backup</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importBackup(this)">
+    <button class="btn btn-outline" onclick="clearAll()" style="color:var(--red);border-color:var(--red)">🗑 Borrar todo</button>
+  </div>
+</div>
+
+<!-- ══ MODAL: DESGLOSE / SCAN ══ -->
+<div class="desg-modal" id="desg-modal" onclick="if(event.target===this)closeDesglose()">
+  <div class="desg-box">
+    <div class="desg-hdr">
+      <h3 id="desg-title">📋 Desglose</h3>
+      <button onclick="closeDesglose()">×</button>
+    </div>
+    <div class="desg-scroll" id="desg-scroll"></div>
+    <div class="desg-foot">
+      <!-- Scan zone -->
+      <div class="scan-zone" id="scan-zone"
+           onclick="document.getElementById('scan-file-inp').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="this.classList.remove('drag');handleScanDrop(event)">
+        <div class="scan-icon">📷</div>
+        <p>Sube o arrastra la foto del ticket — se lee automáticamente y gratis</p>
+        <input type="file" id="scan-file-inp" accept="image/*" style="display:none" onchange="handleScanFile(event)">
+      </div>
+      <div class="scan-status" id="scan-status"></div>
+      <!-- API key (optional upgrade, hidden) -->
+      <div id="apikey-section" style="display:none">
+        <div style="font-size:11px;color:var(--light);margin-bottom:4px">🔑 API Key de Anthropic <em>(opcional — mejora la lectura)</em>:</div>
+        <div class="apikey-row">
+          <input type="password" id="apikey-inp" placeholder="sk-ant-api03-...">
+          <button class="btn btn-dark" style="font-size:12px;padding:6px 12px" onclick="saveApiKey()">Guardar</button>
+          <button class="btn btn-outline" style="font-size:12px;padding:6px 10px" onclick="document.getElementById('apikey-section').style.display='none'">✕</button>
+        </div>
+        <div style="font-size:10px;color:var(--light);margin-top:4px">Consíguela gratis en <strong>console.anthropic.com</strong></div>
+      </div>
+      <div style="text-align:right"><button style="background:none;border:none;font-size:10px;color:var(--light);cursor:pointer;padding:0" onclick="document.getElementById('apikey-section').style.display=document.getElementById('apikey-section').style.display==='none'?'block':'none'">🔑 Mejorar con AI</button></div>
+      <!-- Total + actions -->
+      <div class="desg-total-row">
+        <span>Total</span>
+        <span id="desg-total-disp">$0</span>
+      </div>
+      <div class="desg-btns">
+        <button class="btn btn-outline" onclick="addDesgloseRow()">+ Agregar concepto</button>
+        <button class="btn btn-gold" onclick="applyDesglose()">✓ Aplicar al campo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: NUEVA SEMANA ══ -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-title">Nueva semana / período</div>
+    <div class="modal-section">Período predefinido</div>
+    <label class="period-option" onclick="selectPeriod('7')"><input type="radio" name="period" value="7"> Últimos 7 días</label>
+    <label class="period-option" onclick="selectPeriod('14')"><input type="radio" name="period" value="14"> Últimos 14 días</label>
+    <label class="period-option" onclick="selectPeriod('week')"><input type="radio" name="period" value="week"> Esta semana (lun – hoy)</label>
+    <label class="period-option" onclick="selectPeriod('month')"><input type="radio" name="period" value="month"> Este mes</label>
+    <label class="period-option" onclick="selectPeriod('lastmonth')"><input type="radio" name="period" value="lastmonth"> Mes pasado</label>
+    <label class="period-option" onclick="selectPeriod('custom')"><input type="radio" name="period" value="custom"> Personalizar</label>
+    <div class="modal-custom" id="modal-custom">
+      <label>Desde<input type="date" id="modal-start"></label>
+      <label>Hasta<input type="date" id="modal-end"></label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-gold" onclick="confirmNewWeek()">Crear semana</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>Patio Cinco · Dashboard Financiero v3 · Datos guardados localmente en este navegador</footer>
+
+<script>
+// ── DATA STORE ──
+const STORE_KEY = 'pc_financial_v2';
+// Try to migrate old data
+let data;
+const oldData = localStorage.getItem('pc_financial_v1');
+const newData = localStorage.getItem(STORE_KEY);
+if (newData) {
+  data = JSON.parse(newData);
+} else if (oldData) {
+  data = JSON.parse(oldData);
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+} else {
+  data = { weeks: [] };
+}
+let currentWeekIdx = data.weeks.length > 0 ? data.weeks.length - 1 : -1;
+
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+
+// ── HELPERS ──
+function peso(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return '$' + Math.round(n).toLocaleString('es-MX');
+}
+function pct(n) {
+  if (!isFinite(n) || isNaN(n)) return '—';
+  return (n * 100).toFixed(1) + '%';
+}
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? (parseFloat(el.value) || 0) : 0;
+}
+function set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── ALL INPUT FIELDS ──
+const INPUT_FIELDS = [
+  // Ingresos
+  'cw-ref','cw-ala','food-ref','food-ala','mem','det-ref','det-ala',
+  // Operaciones
+  'coches-ref','coches-ala','num-comandas','mem-vend','mem-canc-pago','mem-canc-cli','mem-act',
+  // Food items
+  'food-heb','food-agua','food-guad','food-etrusca','food-hielo',
+  'food-crem','food-mp','food-cafe','food-carne','food-costco','food-otros',
+  // Renta
+  'ref-renta-mes','ala-renta-mes',
+  // Servicios (Agua y Luz son mensuales prorrateadas; Gas, Internet, etc. son directos)
+  'ref-serv-agua-mes','ala-serv-agua-mes','ref-serv-luz-mes','ala-serv-luz-mes',
+  'ref-serv-gas','ref-serv-internet','ref-serv-spotify','ref-serv-basura','ref-serv-otros',
+  'ala-serv-gas','ala-serv-internet','ala-serv-spotify','ala-serv-basura','ala-serv-otros',
+  // Insumos CW
+  'ref-ins-diesel','ref-ins-quim','ref-ins-herr','ref-ins-otros',
+  'ala-ins-diesel','ala-ins-quim','ala-ins-herr','ala-ins-otros',
+  'gen-ins',
+  // Nómina
+  'nom-ref-direct','nom-ala-direct','nom-gen-mes',
+  'ref-nom-food','ala-nom-food','ref-com','ala-com',
+  // Gasto opp
+  'uber-ref','uber-ala',
+  // Otros
+  'ref-otros','ala-otros',
+  // Generales
+  'gen-cont','gen-mkt','gen-admin','gen-otros',
+  // Legacy (backward compat for old data)
+  'ref-serv-mes','ala-serv-mes','ref-ins','ala-ins','ref-nom-cw','ala-nom-cw','ref-nom','ala-nom','ref-insf','ala-insf','det','coches','gen-nom-mes'
+];
+
+// ── FEATURE 1: IN-CELL ACCUMULATOR ──
+// Press "+" to add to current value, "-" to subtract.
+// e.g.: field has 1420 → press "+" → field clears → type 870 → Enter/Tab → shows 2290
+function initAccumulator() {
+  document.querySelectorAll('input[type=number]').forEach(inp => {
+    // Save base on focus
+    inp.addEventListener('focus', function() {
+      if (!this.classList.contains('accumulating')) {
+        this.dataset.base = parseFloat(this.value) || 0;
+      }
+    });
+
+    // Intercept "+" and "-" keys BEFORE the browser handles them
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === '+') {
+        e.preventDefault();
+        this.dataset.base = parseFloat(this.value) || 0;
+        this.dataset.op = '+';
+        this._savedPlaceholder = this.placeholder;
+        this.value = '';
+        this.placeholder = '+ ' + this.dataset.base;
+        this.classList.add('accumulating');
+      } else if (e.key === '-' && this.classList.contains('accumulating')) {
+        // allow normal minus while in accumulate mode — do nothing
+      } else if (e.key === 'Enter' || e.key === 'Tab') {
+        if (this.classList.contains('accumulating')) {
+          e.preventDefault();
+          applyAccumulator(this);
+          if (e.key === 'Tab') {
+            // move to next input
+            const inputs = Array.from(document.querySelectorAll('input[type=number]:not([readonly])'));
+            const idx = inputs.indexOf(this);
+            if (idx >= 0 && inputs[idx + 1]) inputs[idx + 1].focus();
+          }
+        }
+      } else if (e.key === 'Escape' && this.classList.contains('accumulating')) {
+        // Cancel accumulation, restore original value
+        this.value = this.dataset.base || '';
+        this.placeholder = this._savedPlaceholder || '0';
+        this.classList.remove('accumulating');
+        recalc();
+      }
+    });
+
+    // Apply on blur too
+    inp.addEventListener('blur', function() {
+      if (this.classList.contains('accumulating')) {
+        applyAccumulator(this);
+      }
+    });
+  });
+}
+
+function applyAccumulator(inp) {
+  const base  = parseFloat(inp.dataset.base) || 0;
+  const delta = parseFloat(inp.value) || 0;
+  const result = Math.round(base + delta);
+  inp.value = result > 0 ? result : '';
+  inp.dataset.base = result;
+  inp.placeholder = inp._savedPlaceholder || '0';
+  inp.classList.remove('accumulating');
+  recalc();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initAccumulator();
+  initFieldButtons();
+});
+
+// ── FEATURE 5: NOTES / TAGS ──
+const ALL_TAGS = ['tag-lluvia','tag-falta-personal','tag-falla-equipo','tag-anomalia','tag-pocos-lavadores','tag-promo','tag-evento','tag-clima-ideal','tag-full-personal'];
+
+function toggleTag(btn, tagId) {
+  btn.classList.toggle('active');
+  markUnsaved();
+}
+
+function getActiveTags() {
+  return ALL_TAGS.filter(t => {
+    const btn = document.querySelector(`[onclick="toggleTag(this,'${t}')"]`);
+    return btn && btn.classList.contains('active');
+  });
+}
+
+function setActiveTags(tags) {
+  ALL_TAGS.forEach(t => {
+    const btn = document.querySelector(`[onclick="toggleTag(this,'${t}')"]`);
+    if (btn) btn.classList.toggle('active', tags && tags.includes(t));
+  });
+}
+
+function clearNotes() {
+  ['f-nota-neg','f-nota-pos','f-nota-gen'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  setActiveTags([]);
+}
+
+function markUnsaved() {
+  const msgEl = document.getElementById('save-msg');
+  if (msgEl) { msgEl.textContent = 'Cambios sin guardar.'; msgEl.className = 'save-bar-msg'; }
+}
+
+// ── NAVIGATION ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'historial') renderHistorial();
+  if (id === 'graficas') { buildChartSelects(); renderCharts(); }
+  // Note: buildChartSelects only on page entry; renderCharts on filter changes
+}
+
+// ── WEEK SELECTOR ──
+function buildWeekSelect() {
+  const sel = document.getElementById('week-select');
+  sel.innerHTML = '';
+  if (data.weeks.length === 0) {
+    sel.innerHTML = '<option>Sin semanas — crea una nueva</option>';
+    return;
+  }
+  data.weeks.forEach((w, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = w.label || `Semana ${i + 1}`;
+    sel.appendChild(opt);
+  });
+  sel.value = currentWeekIdx;
+}
+
+function loadWeek() {
+  currentWeekIdx = parseInt(document.getElementById('week-select').value);
+  const w = data.weeks[currentWeekIdx];
+  if (!w) return;
+  INPUT_FIELDS.forEach(f => {
+    const el = document.getElementById('f-' + f);
+    if (el && el.type !== 'text') el.value = w[f] || '';
+  });
+  recalc();
+  updateWeekDatesDisplay();
+  // Restore notes and tags
+  const nNeg = document.getElementById('f-nota-neg'); if (nNeg) nNeg.value = w['nota-neg'] || '';
+  const nPos = document.getElementById('f-nota-pos'); if (nPos) nPos.value = w['nota-pos'] || '';
+  const nGen = document.getElementById('f-nota-gen'); if (nGen) nGen.value = w['nota-gen'] || '';
+  // Also restore mem-canc-pago (may be stored directly)
+  const mpEl = document.getElementById('f-mem-canc-pago'); if (mpEl) mpEl.value = w['mem-canc-pago'] || '';
+  setActiveTags(w['tags'] || []);
+  // Restore desglose data and refresh all buttons
+  desgloseData = w['_desglose'] ? JSON.parse(JSON.stringify(w['_desglose'])) : {};
+  document.querySelectorAll('[id^="dbtn-"]').forEach(btn => {
+    refreshDesgloseBtn(btn.id.replace('dbtn-',''));
+  });
+  document.getElementById('save-msg').textContent = `Semana cargada: ${w.label}`;
+  document.getElementById('save-msg').className = 'save-bar-msg';
+}
+
+function prevWeek() {
+  if (currentWeekIdx > 0) { currentWeekIdx--; document.getElementById('week-select').value = currentWeekIdx; loadWeek(); }
+}
+function nextWeek() {
+  if (currentWeekIdx < data.weeks.length - 1) { currentWeekIdx++; document.getElementById('week-select').value = currentWeekIdx; loadWeek(); }
+}
+
+function newWeek() {
+  const today = new Date();
+  document.getElementById('modal-end').value   = today.toISOString().split('T')[0];
+  const d7 = new Date(today); d7.setDate(d7.getDate() - 6);
+  document.getElementById('modal-start').value = d7.toISOString().split('T')[0];
+  document.querySelectorAll('.period-option').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.period-option input').forEach(el => el.checked = false);
+  document.getElementById('modal-custom').classList.remove('show');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function selectPeriod(val) {
+  document.querySelectorAll('.period-option').forEach(el => el.classList.remove('selected'));
+  const clicked = document.querySelector(`.period-option input[value="${val}"]`)?.parentElement;
+  if (clicked) clicked.classList.add('selected');
+  document.getElementById('modal-custom').classList.toggle('show', val === 'custom');
+  if (val !== 'custom') {
+    const today = new Date(); today.setHours(0,0,0,0);
+    let start, end = new Date(today);
+    if (val === '7')         { start = new Date(today); start.setDate(start.getDate() - 6); }
+    else if (val === '14')   { start = new Date(today); start.setDate(start.getDate() - 13); }
+    else if (val === 'week') { start = new Date(today); start.setDate(start.getDate() - ((today.getDay()+6)%7)); }
+    else if (val === 'month'){ start = new Date(today.getFullYear(), today.getMonth(), 1); end = new Date(today.getFullYear(), today.getMonth()+1, 0); }
+    else if (val === 'lastmonth'){ start = new Date(today.getFullYear(), today.getMonth()-1, 1); end = new Date(today.getFullYear(), today.getMonth(), 0); }
+    document.getElementById('modal-start').value = start.toISOString().split('T')[0];
+    document.getElementById('modal-end').value   = end.toISOString().split('T')[0];
+  }
+}
+
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function isoWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+function confirmNewWeek() {
+  const startStr = document.getElementById('modal-start').value;
+  const endStr   = document.getElementById('modal-end').value;
+  if (!startStr || !endStr) { showToast('⚠ Selecciona las fechas'); return; }
+  const start = new Date(startStr + 'T00:00:00');
+  const end   = new Date(endStr   + 'T00:00:00');
+  if (isNaN(start) || isNaN(end) || end < start) { showToast('⚠ Fechas inválidas'); return; }
+  const fmt = d => d.toLocaleDateString('es-MX', {day:'2-digit', month:'short'});
+  const weekNum = isoWeek(start);
+  const label = `Sem ${weekNum} · ${fmt(start)} – ${fmt(end)} ${end.getFullYear()}`;
+  const newW = { label, date: start.toISOString(), dateStart: start.toISOString(), dateEnd: end.toISOString() };
+  data.weeks.push(newW);
+  // Auto-fill fixed monthly costs from previous week
+  if (data.weeks.length >= 2) {
+    const prev = data.weeks[data.weeks.length - 2];
+    ['ref-renta-mes','ala-renta-mes','ref-serv-agua-mes','ala-serv-agua-mes',
+     'ref-serv-luz-mes','ala-serv-luz-mes'].forEach(k => {
+      if (prev[k]) newW[k] = prev[k];
+    });
+  }
+  currentWeekIdx = data.weeks.length - 1;
+  save(); buildWeekSelect(); clearForm(); updateWeekDatesDisplay(); closeModal();
+  // clearForm() borra los inputs — restaurar los costos fijos copiados
+  const fixedKeys = ['ref-renta-mes','ala-renta-mes','ref-serv-agua-mes','ala-serv-agua-mes',
+                     'ref-serv-luz-mes','ala-serv-luz-mes'];
+  const anyFixed = fixedKeys.some(k => newW[k]);
+  fixedKeys.forEach(k => {
+    if (newW[k]) {
+      const el = document.getElementById('f-' + k);
+      if (el) el.value = newW[k];
+    }
+  });
+  if (anyFixed) recalc();
+  showToast(anyFixed ? '✓ Nueva semana — Renta, Agua y Luz copiadas de semana anterior' : '✓ Nueva semana creada');
+}
+
+function clearForm() {
+  INPUT_FIELDS.forEach(f => {
+    const el = document.getElementById('f-' + f);
+    if (el && el.type !== 'text') el.value = '';
+  });
+  clearNotes();
+  desgloseData = {};
+  document.querySelectorAll('[id^="dbtn-"]').forEach(btn => refreshDesgloseBtn(btn.id.replace('dbtn-','')));
+  recalc();
+}
+
+// ── RENT FACTOR ──
+function rentFactor() {
+  const w = currentWeekIdx >= 0 ? data.weeks[currentWeekIdx] : null;
+  if (w && w.dateStart && w.dateEnd) {
+    const s = new Date(w.dateStart), e = new Date(w.dateEnd);
+    const days = Math.round((e - s) / 86400000) + 1;
+    const mDays = new Date(s.getFullYear(), s.getMonth() + 1, 0).getDate();
+    return days / mDays;
+  }
+  return 7 / 30;
+}
+
+// ── RECALC ──
+function recalc() {
+  const rf = rentFactor();
+
+  // ── Food items
+  const foodKeys = ['heb','agua','guad','etrusca','hielo','crem','mp','cafe','carne','costco','otros'];
+  const foodTotal = foodKeys.reduce((a, k) => a + v('f-food-' + k), 0);
+  const foodPorSuc = foodTotal / 2;
+  foodKeys.forEach(k => {
+    const val = v('f-food-' + k);
+    const el = document.getElementById('c-food-' + k);
+    if (el) el.textContent = val > 0 ? peso(val / 2) : '—';
+  });
+  setText('f-food-total', peso(foodTotal));
+  setText('f-food-por-suc', peso(foodPorSuc));
+
+  // ── Renta (prorated)
+  const rentRef = Math.round(v('f-ref-renta-mes') * rf);
+  const rentAla = Math.round(v('f-ala-renta-mes') * rf);
+  set('f-ref-renta', rentRef > 0 ? peso(rentRef) : '');
+  set('f-ala-renta', rentAla > 0 ? peso(rentAla) : '');
+
+  // ── Servicios: Agua y Luz son mensuales prorrateadas; el resto directos
+  const refAguaPro = Math.round(v('f-ref-serv-agua-mes') * rf);
+  const alaAguaPro = Math.round(v('f-ala-serv-agua-mes') * rf);
+  const refLuzPro  = Math.round(v('f-ref-serv-luz-mes') * rf);
+  const alaLuzPro  = Math.round(v('f-ala-serv-luz-mes') * rf);
+  set('f-ref-serv-agua-pro', refAguaPro > 0 ? peso(refAguaPro) : '');
+  set('f-ala-serv-agua-pro', alaAguaPro > 0 ? peso(alaAguaPro) : '');
+  set('f-ref-serv-luz-pro',  refLuzPro  > 0 ? peso(refLuzPro)  : '');
+  set('f-ala-serv-luz-pro',  alaLuzPro  > 0 ? peso(alaLuzPro)  : '');
+  const directServKeys = ['gas','internet','spotify','basura','otros'];
+  const refServDirect = directServKeys.reduce((a, k) => a + v('f-ref-serv-' + k), 0);
+  const alaServDirect = directServKeys.reduce((a, k) => a + v('f-ala-serv-' + k), 0);
+  const servRef = refAguaPro + refLuzPro + refServDirect
+    || Math.round(v('f-ref-serv-mes') * rf); // legacy fallback
+  const servAla = alaAguaPro + alaLuzPro + alaServDirect
+    || Math.round(v('f-ala-serv-mes') * rf);
+  setText('f-ref-serv-subtotal', peso(servRef));
+  setText('f-ala-serv-subtotal', peso(servAla));
+  setText('f-ref-rentaserv-total', peso(rentRef + servRef));
+  setText('f-ala-rentaserv-total', peso(rentAla + servAla));
+
+  // ── Insumos CW (por sucursal, sin dividir; gen-ins va a Generales)
+  const refInsNew = v('f-ref-ins-diesel') + v('f-ref-ins-quim') + v('f-ref-ins-herr') + v('f-ref-ins-otros');
+  const alaInsNew = v('f-ala-ins-diesel') + v('f-ala-ins-quim') + v('f-ala-ins-herr') + v('f-ala-ins-otros');
+  const genIns = v('f-gen-ins'); // va a genTotal, NO se divide entre sucursales
+  const refIns = refInsNew > 0 ? refInsNew : v('f-ref-ins');
+  const alaIns = alaInsNew > 0 ? alaInsNew : v('f-ala-ins');
+  setText('f-ref-ins-total', peso(refIns));
+  setText('f-ala-ins-total', peso(alaIns));
+
+  // ── Nómina / Personal
+  const nomRefDirect = v('f-nom-ref-direct');
+  const nomAlaDirect = v('f-nom-ala-direct');
+  const nomGenMes    = v('f-nom-gen-mes');
+  const nomGenPro    = Math.round(nomGenMes * rf);
+  const refNomFood   = v('f-ref-nom-food');
+  const alaNomFood   = v('f-ala-nom-food');
+  const refCom = v('f-ref-com');
+  const alaCom = v('f-ala-com');
+  setText('f-nom-gen-pro', nomGenPro > 0 ? peso(nomGenPro) : '—');
+
+  const refNomCw = nomRefDirect > 0 ? nomRefDirect : v('f-ref-nom-cw');
+  const alaNomCw = nomAlaDirect > 0 ? nomAlaDirect : v('f-ala-nom-cw');
+  const refNomF  = refNomFood > 0 ? refNomFood : v('f-ref-nom');
+  const alaNomF  = alaNomFood > 0 ? alaNomFood : v('f-ala-nom');
+
+  const refNomTotal = refNomCw + refNomF + refCom;
+  const alaNomTotal = alaNomCw + alaNomF + alaCom;
+  setText('f-ref-nom-total', peso(refNomTotal));
+  setText('f-ala-nom-total', peso(alaNomTotal));
+
+  // ── Food cost (insf)
+  const refInsf = foodTotal > 0 ? foodPorSuc : v('f-ref-insf');
+  const alaInsf = foodTotal > 0 ? foodPorSuc : v('f-ala-insf');
+
+  // ── Gasto Opp + Otros
+  const uberRef = v('f-uber-ref');
+  const uberAla = v('f-uber-ala');
+  const refOtros = uberRef + v('f-ref-otros');
+  const alaOtros = uberAla + v('f-ala-otros');
+
+  // ── Ingresos
+  const cwRef = v('f-cw-ref');
+  const cwAla = v('f-cw-ala');
+  const detRef = v('f-det-ref');
+  const detAla = v('f-det-ala');
+  // Carwash Neto: el detallado ya está dentro del total de carwash
+  const cwNetoRef = cwRef - detRef;
+  const cwNetoAla = cwAla - detAla;
+  set('f-cw-neto-ref', cwRef > 0 || detRef > 0 ? peso(cwNetoRef) : '');
+  set('f-cw-neto-ala', cwAla > 0 || detAla > 0 ? peso(cwNetoAla) : '');
+  // Ingresos: detallados ya están incluidos en cw-ref / cw-ala, NO se suman de nuevo
+  const ing = cwRef + cwAla + v('f-food-ref') + v('f-food-ala') + v('f-mem');
+
+  // ── Totales por sucursal
+  const refTotal = rentRef + servRef + refCom + refIns + refNomCw + refNomF + refInsf + refOtros;
+  const alaTotal = rentAla + servAla + alaCom + alaIns + alaNomCw + alaNomF + alaInsf + alaOtros;
+
+  // ── Generales (incluye gen-ins y Personal General prorrateado)
+  const genNomPro = Math.round(v('f-gen-nom-mes') * rf) + nomGenPro;
+  const genTotal = genNomPro + v('f-gen-cont') + v('f-gen-mkt') + v('f-gen-admin') + v('f-gen-otros') + genIns;
+
+  const gastos = refTotal + alaTotal + genTotal;
+  const util = ing - gastos;
+  const margenUtil = ing > 0 ? util / ing : null;
+  const nomina = refCom + alaCom + refNomCw + alaNomCw + refNomF + alaNomF + nomGenPro;
+  const margenNom = ing > 0 ? nomina / ing : null;
+
+  // ── Update form fields
+  set('f-total-ing', peso(ing));
+  set('f-total-gasto', peso(gastos));
+  set('f-utilidad', peso(util));
+  set('f-margen-util', pct(margenUtil));
+  set('f-margen-nom', pct(margenNom));
+  set('f-total-gen', peso(genTotal));
+  set('f-total-ref', peso(refTotal));
+  set('f-total-ala', peso(alaTotal));
+  const cochesTotal = v('f-coches-ref') + v('f-coches-ala');
+  set('f-coches-total', cochesTotal || '');
+  const numComandas = v('f-num-comandas');
+  const eficienciaCmd = cochesTotal > 0 && numComandas > 0 ? (numComandas / cochesTotal) * 100 : null;
+  set('f-eficiencia-cmd', eficienciaCmd !== null ? eficienciaCmd.toFixed(1) + '%' : '—');
+
+  // ── Membresías canceladas (total auto-computed)
+  const memCancPago = v('f-mem-canc-pago');
+  const memCancCli  = v('f-mem-canc-cli');
+  const memCancTotal = memCancPago + memCancCli;
+  set('f-mem-canc', memCancTotal > 0 ? memCancTotal : '');
+  // ── Churn rate: total canceladas / activas × 100
+  const memAct = v('f-mem-act');
+  const churnRate = memAct > 0 && memCancTotal > 0 ? (memCancTotal / memAct) * 100 : null;
+  set('f-churn-rate', churnRate !== null ? churnRate.toFixed(1) + '%' : '—');
+
+  // ── Save bar KPIs
+  setText('sb-ing', peso(ing));
+  setText('sb-gas', peso(gastos));
+  setText('sb-util', peso(util));
+  setText('sb-margen', pct(margenUtil));
+  const sbUtil = document.getElementById('sb-util');
+  if (sbUtil) sbUtil.style.color = util >= 0 ? '#81C784' : '#EF9A9A';
+  const sbMar = document.getElementById('sb-margen');
+  if (sbMar) sbMar.style.color = margenUtil > 0 ? 'var(--gold-mid)' : '#EF9A9A';
+
+  const msgEl = document.getElementById('save-msg');
+  if (msgEl) { msgEl.textContent = 'Cambios sin guardar.'; msgEl.className = 'save-bar-msg'; }
+}
+
+// ── SAVE WEEK ──
+function saveWeek() {
+  if (currentWeekIdx < 0 || currentWeekIdx >= data.weeks.length) { showToast('⚠ Crea una semana primero'); return; }
+  const w = data.weeks[currentWeekIdx];
+  const rf = rentFactor();
+
+  // Save all input fields
+  INPUT_FIELDS.forEach(f => {
+    const el = document.getElementById('f-' + f);
+    if (el && el.type !== 'text') w[f] = parseFloat(el.value) || 0;
+  });
+
+  // Compute and save aggregates for dashboard compatibility
+  const foodKeys = ['heb','agua','guad','etrusca','hielo','crem','mp','cafe','carne','costco','otros'];
+  const foodTotal = foodKeys.reduce((a, k) => a + (w['food-' + k] || 0), 0);
+  const foodPorSuc = foodTotal / 2;
+
+  const rentRef = Math.round((w['ref-renta-mes'] || 0) * rf);
+  const rentAla = Math.round((w['ala-renta-mes'] || 0) * rf);
+
+  // Agua y Luz se prorratean; el resto son directos
+  const refAguaSave = Math.round((w['ref-serv-agua-mes'] || 0) * rf);
+  const alaAguaSave = Math.round((w['ala-serv-agua-mes'] || 0) * rf);
+  const refLuzSave  = Math.round((w['ref-serv-luz-mes']  || 0) * rf);
+  const alaLuzSave  = Math.round((w['ala-serv-luz-mes']  || 0) * rf);
+  const directKeys  = ['gas','internet','spotify','basura','otros'];
+  const refServSum  = refAguaSave + refLuzSave + directKeys.reduce((a,k) => a+(w['ref-serv-'+k]||0),0);
+  const alaServSum  = alaAguaSave + alaLuzSave + directKeys.reduce((a,k) => a+(w['ala-serv-'+k]||0),0);
+  w['ref-serv-direct'] = refServSum;
+  w['ala-serv-direct'] = alaServSum;
+
+  const refInsNew = (w['ref-ins-diesel']||0)+(w['ref-ins-quim']||0)+(w['ref-ins-herr']||0)+(w['ref-ins-otros']||0);
+  const alaInsNew = (w['ala-ins-diesel']||0)+(w['ala-ins-quim']||0)+(w['ala-ins-herr']||0)+(w['ala-ins-otros']||0);
+  const genIns = w['gen-ins'] || 0;
+  if (refInsNew > 0) w['ref-ins'] = refInsNew + genIns / 2;
+  if (alaInsNew > 0) w['ala-ins'] = alaInsNew + genIns / 2;
+
+  const nomRefDirect = w['nom-ref-direct'] || 0;
+  const nomAlaDirect = w['nom-ala-direct'] || 0;
+  if (nomRefDirect > 0) w['ref-nom-cw'] = nomRefDirect;
+  if (nomAlaDirect > 0) w['ala-nom-cw'] = nomAlaDirect;
+  if ((w['ref-nom-food']||0) > 0) w['ref-nom'] = w['ref-nom-food'];
+  if ((w['ala-nom-food']||0) > 0) w['ala-nom'] = w['ala-nom-food'];
+  // Personal General (mensual prorrateado) va a gen-nom-mes
+  if ((w['nom-gen-mes']||0) > 0) w['gen-nom-mes'] = (w['gen-nom-mes'] || 0) + (w['nom-gen-mes'] || 0);
+
+  if (foodTotal > 0) { w['ref-insf'] = foodPorSuc; w['ala-insf'] = foodPorSuc; }
+
+  w['ref-otros'] = (w['uber-ref']||0) + (w['ref-otros']||0);
+  w['ala-otros'] = (w['uber-ala']||0) + (w['ala-otros']||0);
+
+  w['det'] = ((w['det-ref']||0) > 0 || (w['det-ala']||0) > 0)
+    ? (w['det-ref']||0) + (w['det-ala']||0)
+    : (w['det'] || 0);
+  w['coches'] = ((w['coches-ref']||0) + (w['coches-ala']||0)) || w['coches'] || 0;
+  // Compute total mem-canc from split fields
+  w['mem-canc'] = (w['mem-canc-pago']||0) + (w['mem-canc-cli']||0) || w['mem-canc'] || 0;
+  w['gen-nom-mes'] = (w['gen-nom-mes'] || 0) + (w['nom-dani-mes'] || 0);
+
+  // Save notes, tags, and desglose breakdowns
+  w['nota-neg']  = (document.getElementById('f-nota-neg') || {}).value || '';
+  w['nota-pos']  = (document.getElementById('f-nota-pos') || {}).value || '';
+  w['nota-gen']  = (document.getElementById('f-nota-gen') || {}).value || '';
+  w['tags']      = getActiveTags();
+  w['_desglose'] = JSON.parse(JSON.stringify(desgloseData)); // deep copy
+
+  save();
+  showToast('✓ Semana guardada');
+  const msgEl = document.getElementById('save-msg');
+  msgEl.textContent = `Guardado: ${new Date().toLocaleTimeString('es-MX')}`;
+  msgEl.className = 'save-bar-msg saved';
+}
+
+// ── AGGREGATED (compatible old + new) ──
+function getAggregated(weeks) {
+  const s = { ing:0, cwRef:0, cwAla:0, foodRef:0, foodAla:0, mem:0, det:0,
+    refRenta:0, refServ:0, refCom:0, refIns:0, refNomCw:0, refNom:0, refInsf:0, refOtros:0, refTotal:0,
+    alaRenta:0, alaServ:0, alaCom:0, alaIns:0, alaNomCw:0, alaNom:0, alaInsf:0, alaOtros:0, alaTotal:0,
+    genNom:0, genCont:0, genMkt:0, genAdmin:0, genOtros:0, genTotal:0,
+    gastos:0, util:0, coches:0, memVend:0, memCanc:0, memAct:0, comandaSum:0, comandaCount:0 };
+
+  weeks.forEach(w => {
+    let rf = 7/30;
+    if (w.dateStart && w.dateEnd) {
+      const ds = new Date(w.dateStart), de = new Date(w.dateEnd);
+      const days = Math.round((de - ds)/86400000) + 1;
+      const mDays = new Date(ds.getFullYear(), ds.getMonth()+1, 0).getDate();
+      rf = days / mDays;
+    }
+    const wRentRef = Math.round((w['ref-renta-mes'] || 0) * rf);
+    const wRentAla = Math.round((w['ala-renta-mes'] || 0) * rf);
+    // Servicios: prefer direct, fallback monthly
+    const wServRef = w['ref-serv-direct'] > 0 ? w['ref-serv-direct'] : Math.round((w['ref-serv-mes'] || 0) * rf);
+    const wServAla = w['ala-serv-direct'] > 0 ? w['ala-serv-direct'] : Math.round((w['ala-serv-mes'] || 0) * rf);
+
+    s.cwRef   += w['cw-ref']   || 0;
+    s.cwAla   += w['cw-ala']   || 0;
+    s.foodRef += w['food-ref'] || 0;
+    s.foodAla += w['food-ala'] || 0;
+    s.mem     += w['mem']      || 0;
+    s.det     += (w['det-ref']||0) + (w['det-ala']||0) || w['det'] || 0;
+    // Detallados ya incluidos en cw-ref / cw-ala; NO se suman de nuevo
+    s.ing     += (w['cw-ref']||0)+(w['cw-ala']||0)+(w['food-ref']||0)+(w['food-ala']||0)+(w['mem']||0);
+    s.refRenta += wRentRef; s.alaRenta += wRentAla;
+    s.refServ  += wServRef;  s.alaServ  += wServAla;
+    s.refCom   += w['ref-com']    || 0; s.alaCom   += w['ala-com']    || 0;
+    s.refIns   += w['ref-ins']    || 0; s.alaIns   += w['ala-ins']    || 0;
+    s.refNomCw += w['ref-nom-cw'] || 0; s.alaNomCw += w['ala-nom-cw'] || 0;
+    s.refNom   += w['ref-nom']    || 0; s.alaNom   += w['ala-nom']    || 0;
+    s.refInsf  += w['ref-insf']   || 0; s.alaInsf  += w['ala-insf']   || 0;
+    s.refOtros += w['ref-otros']  || 0; s.alaOtros += w['ala-otros']  || 0;
+    const wGenNomPro = Math.round((w['gen-nom-mes'] || 0) * rf);
+    s.genNom   += wGenNomPro;
+    s.genCont  += w['gen-cont']  || 0;
+    s.genMkt   += w['gen-mkt']   || 0;
+    s.genAdmin += w['gen-admin'] || 0;
+    s.genOtros += w['gen-otros'] || 0;
+    const wGenTotal = wGenNomPro+(w['gen-cont']||0)+(w['gen-mkt']||0)+(w['gen-admin']||0)+(w['gen-otros']||0);
+    s.refTotal += wRentRef + wServRef + (w['ref-com']||0)+(w['ref-ins']||0)+(w['ref-nom-cw']||0)+(w['ref-nom']||0)+(w['ref-insf']||0)+(w['ref-otros']||0);
+    s.alaTotal += wRentAla + wServAla + (w['ala-com']||0)+(w['ala-ins']||0)+(w['ala-nom-cw']||0)+(w['ala-nom']||0)+(w['ala-insf']||0)+(w['ala-otros']||0);
+    s.genTotal += wGenTotal;
+    s.coches   += w['coches']   || 0;
+    s.memVend  += w['mem-vend'] || 0;
+    s.memCanc  += w['mem-canc'] || 0;
+    s.memAct   = w['mem-act']   || s.memAct;
+    // Support both new num-comandas and old comandas field
+    const numCmd = w['num-comandas'] || 0;
+    const cochesW = (w['coches-ref']||0)+(w['coches-ala']||0) || w['coches']||0;
+    if (numCmd > 0 && cochesW > 0) {
+      s.comandaSum += (numCmd / cochesW) * 100;
+      s.comandaCount++;
+    } else if (w['comandas']) {
+      s.comandaSum += w['comandas'];
+      s.comandaCount++;
+    }
+  });
+  s.gastos = s.refTotal + s.alaTotal + s.genTotal;
+  s.util   = s.ing - s.gastos;
+  s.nomina = s.refCom+s.alaCom+s.refNomCw+s.alaNomCw+s.refNom+s.alaNom+s.genNom;
+  return s;
+}
+
+// ── DASHBOARD ──
+function buildDashWeekSelect() {
+  const sel = document.getElementById('dash-week-select');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="all">Todas las semanas</option>';
+  data.weeks.forEach((w, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    // If label already includes week number, show it; otherwise fall back
+    opt.textContent = w.label || (w.dateStart ? `Sem ${isoWeek(new Date(w.dateStart))}` : `Semana ${i+1}`);
+    sel.appendChild(opt);
+  });
+  sel.value = (current && sel.querySelector(`option[value="${current}"]`)) ? current : 'all';
+}
+
+function renderDashboard() {
+  buildDashWeekSelect();
+  buildDashMonthSelect();
+  const weeks = getFilteredWeeks('dash-week-select', 'dash-month-select');
+  const mVal = (document.getElementById('dash-month-select') || {}).value || '';
+  const selVal = (document.getElementById('dash-week-select') || {}).value || 'all';
+
+  const labelEl = document.getElementById('dash-period-label');
+  if (labelEl) {
+    if (mVal) {
+      const mLabel = document.getElementById('dash-month-select').options[document.getElementById('dash-month-select').selectedIndex]?.text || '';
+      labelEl.textContent = `${mLabel} · ${weeks.length} semana(s)`;
+    } else if (selVal === 'all') {
+      labelEl.textContent = weeks.length > 0 ? `${weeks.length} semana(s) acumuladas` : '';
+    } else {
+      const w = weeks[0]; labelEl.textContent = w ? w.label : '';
+    }
+  }
+
+  if (weeks.length === 0) {
+    document.getElementById('nav-period').textContent = 'Sin datos';
+    ['kpi-ingreso','kpi-gasto','kpi-utilidad','kpi-margen-util','kpi-margen-nom','kpi-coches','kpi-comandas','kpi-mem-vend','kpi-mem-canc','kpi-mem-act'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.textContent = '—';
+    });
+    return;
+  }
+  const s = getAggregated(weeks);
+  const margenUtil = s.ing > 0 ? s.util / s.ing : null;
+  const margenNom  = s.ing > 0 ? s.nomina / s.ing : null;
+
+  const firstLabel = weeks[0]?.label || '';
+  const weekTag = firstLabel.startsWith('Sem ') ? firstLabel.split('·')[0].trim() : firstLabel.split('–')[0].trim();
+  document.getElementById('nav-period').textContent = weeks.length === 1
+    ? weekTag
+    : `${weeks.length} sems · ${weekTag} en adelante`;
+  document.getElementById('kpi-ingreso').textContent  = peso(s.ing);
+  document.getElementById('kpi-gasto').textContent    = peso(s.gastos);
+  const utilEl = document.getElementById('kpi-utilidad');
+  utilEl.textContent = peso(s.util);
+  utilEl.className = 'kpi-value ' + (s.util >= 0 ? 'gold' : 'red');
+  document.getElementById('kpi-margen-util').textContent = pct(margenUtil);
+  document.getElementById('kpi-margen-util').className   = 'kpi-value ' + (margenUtil >= 0.15 ? 'green' : margenUtil >= 0 ? '' : 'red');
+  document.getElementById('kpi-margen-nom').textContent  = pct(margenNom);
+  document.getElementById('kpi-coches').textContent      = s.coches.toLocaleString('es-MX');
+  document.getElementById('kpi-comandas').textContent    = s.comandaCount > 0 ? pct(s.comandaSum / s.comandaCount / 100) : '—';
+  document.getElementById('kpi-mem-vend').textContent    = s.memVend;
+  document.getElementById('kpi-mem-canc').textContent    = s.memCanc;
+  document.getElementById('kpi-mem-act').textContent     = s.memAct;
+
+  const bar = document.getElementById('bar-utilidad');
+  if (bar) bar.style.width = s.ing > 0 ? Math.max(0, Math.min(100, (s.util/s.ing)*100)) + '%' : '0%';
+
+  // ── Comparison vs previous week (only when a single week is selected)
+  const compDiv = document.getElementById('dash-comparison');
+  if (compDiv) {
+    const singleIdx = (selVal !== 'all' && !mVal) ? parseInt(selVal) : -1;
+    if (singleIdx > 0) {
+      compDiv.style.display = 'block';
+      const prev = data.weeks[singleIdx - 1];
+      const sp   = getAggregated([prev]);
+      document.getElementById('cmp-prev-label').textContent = prev.label || '';
+      const rows = [
+        ['Ingresos',   s.ing,    sp.ing,    true],
+        ['Gastos',     s.gastos, sp.gastos, false],
+        ['Utilidad',   s.util,   sp.util,   true],
+        ['Coches lavados', s.coches, sp.coches, true],
+        ['Nómina total', s.nomina, sp.nomina, false],
+        ['Insumos CW', s.refIns+s.alaIns, sp.refIns+sp.alaIns, false],
+        ['Membresías', s.mem, sp.mem, true],
+      ];
+      document.getElementById('cmp-vs-body').innerHTML =
+        `<div class="vs-row" style="background:#F8F8F8;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.8px">
+           <span class="vs-label">Concepto</span>
+           <span class="vs-curr">Esta semana</span>
+           <span class="vs-prev">Sem anterior</span>
+           <span class="vs-delta">Diferencia</span></div>` +
+        rows.map(([label, curr, prev, upGood]) => {
+          const diff = curr - prev;
+          const pct  = prev !== 0 ? ((diff/prev)*100).toFixed(1) : null;
+          const isGood = upGood ? diff >= 0 : diff <= 0;
+          const cls  = diff === 0 ? 'neutral' : (isGood ? 'up' : 'dn');
+          const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '─';
+          const fmt = typeof curr === 'number' && curr > 999 ? peso : v => v.toLocaleString('es-MX');
+          return `<div class="vs-row">
+            <span class="vs-label">${label}</span>
+            <span class="vs-curr">${peso(curr)}</span>
+            <span class="vs-prev">${peso(prev)}</span>
+            <span class="vs-delta ${cls}">${arrow} ${pct !== null ? pct+'%' : '—'}</span></div>`;
+        }).join('');
+      // Notes display
+      const w = data.weeks[singleIdx];
+      const notesDiv = document.getElementById('dash-notes-display');
+      const notesBody = document.getElementById('dash-notes-body');
+      const hasNotes = w['nota-neg'] || w['nota-pos'] || w['nota-gen'] || (w['tags'] && w['tags'].length);
+      if (notesDiv) notesDiv.style.display = hasNotes ? 'block' : 'none';
+      if (notesBody && hasNotes) {
+        const tagLabels = {'tag-lluvia':'🌧 Lluvia','tag-falta-personal':'👤 Falta personal','tag-falla-equipo':'🔧 Falla equipo','tag-anomalia':'⚠️ Anomalía','tag-pocos-lavadores':'🚗 Pocos lavadores','tag-promo':'🎯 Promoción','tag-evento':'🎉 Evento','tag-clima-ideal':'☀️ Clima ideal','tag-full-personal':'💪 Equipo completo'};
+        const tags = (w['tags']||[]).map(t => `<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--gold-light);color:var(--dark);border:1px solid var(--gold)">${tagLabels[t]||t}</span>`).join(' ');
+        notesBody.innerHTML = `
+          ${w['nota-neg'] ? `<div><strong style="color:var(--red);font-size:11px;text-transform:uppercase;letter-spacing:.8px">Factores negativos</strong><p style="margin-top:4px">${w['nota-neg']}</p></div>` : ''}
+          ${w['nota-pos'] ? `<div><strong style="color:var(--green);font-size:11px;text-transform:uppercase;letter-spacing:.8px">Factores positivos</strong><p style="margin-top:4px">${w['nota-pos']}</p></div>` : ''}
+          ${w['nota-gen'] ? `<div style="grid-column:1/-1"><strong style="color:var(--mid);font-size:11px;text-transform:uppercase;letter-spacing:.8px">Nota general</strong><p style="margin-top:4px">${w['nota-gen']}</p></div>` : ''}
+          ${tags ? `<div style="grid-column:1/-1"><strong style="color:var(--mid);font-size:11px;text-transform:uppercase;letter-spacing:.8px">Tags</strong><div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${tags}</div></div>` : ''}`;
+      }
+    } else {
+      compDiv.style.display = 'none';
+    }
+  }
+
+  // Income detail
+  let incHtml = [
+    ['Carwash Refugio', s.cwRef], ['Carwash Álamos', s.cwAla],
+    ['Food Refugio', s.foodRef], ['Food Álamos', s.foodAla],
+    ['Membresías', s.mem], ['Detallado', s.det],
+  ].map(r => `<div class="detail-row"><span class="label">${r[0]}</span><span class="amount">${peso(r[1])}</span></div>`).join('');
+  incHtml += `<div class="detail-row total-row"><span class="label">TOTAL INGRESOS</span><span class="amount">${peso(s.ing)}</span></div>`;
+  document.getElementById('detail-income').innerHTML = incHtml;
+
+  // Expense detail — grupos colapsables
+  function accGroup(id, bg, color, label, total, rows) {
+    const rowsHtml = rows.map(r =>
+      `<div class="detail-row"><span class="label">${r[0]}</span><span class="amount">${peso(r[1])}</span></div>`
+    ).join('');
+    // Restore open state if it was open before re-render
+    const wasOpen = document.getElementById('acc-body-' + id)?.classList.contains('open');
+    return `
+      <div class="acc-header${wasOpen ? ' open' : ''}" id="acc-hdr-${id}"
+           style="background:${bg};color:${color}" onclick="toggleGroup('${id}')">
+        <span class="acc-title">
+          <span class="acc-chevron">▶</span> ${label}
+          <span class="acc-hint">clic para ver detalle</span>
+        </span>
+        <span class="acc-total">${peso(total)}</span>
+      </div>
+      <div class="acc-body${wasOpen ? ' open' : ''}" id="acc-body-${id}">${rowsHtml}</div>`;
+  }
+  let expHtml = accGroup('ref', 'var(--green)', 'white', '🏠 Refugio', s.refTotal,
+    [['Renta',s.refRenta],['Servicios',s.refServ],['Comisiones',s.refCom],
+     ['Insumos CW',s.refIns],['Nómina CW',s.refNomCw],['Nómina Food',s.refNom],
+     ['Insumos Food',s.refInsf],['Gasto Opp / Otros',s.refOtros]]);
+  expHtml += accGroup('ala', '#1565C0', 'white', '🏠 Álamos', s.alaTotal,
+    [['Renta',s.alaRenta],['Servicios',s.alaServ],['Comisiones',s.alaCom],
+     ['Insumos CW',s.alaIns],['Nómina CW',s.alaNomCw],['Nómina Food',s.alaNom],
+     ['Insumos Food',s.alaInsf],['Gasto Opp / Otros',s.alaOtros]]);
+  expHtml += accGroup('gen', '#5E35B1', 'white', '🏢 Generales / Marca', s.genTotal,
+    [['Nómina admin',s.genNom],['Gasto general',s.genCont],
+     ['Marketing / Redes',s.genMkt],['Gastos admin',s.genAdmin],['Otros',s.genOtros]]);
+  expHtml += `<div class="detail-row total-row"><span class="label">TOTAL GASTOS</span><span class="amount">${peso(s.gastos)}</span></div>`;
+  document.getElementById('detail-expense').innerHTML = expHtml;
+}
+
+// ── HISTORIAL ──
+function renderHistorial() {
+  const tbody = document.getElementById('hist-body');
+  if (data.weeks.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--light)">Sin semanas registradas aún.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.weeks.map((w, i) => {
+    const ing = (w['cw-ref']||0)+(w['cw-ala']||0)+(w['food-ref']||0)+(w['food-ala']||0)+(w['mem']||0);
+    const s = getAggregated([w]);
+    const util = s.util;
+    const margen = ing > 0 ? (util/ing*100).toFixed(1)+'%' : '—';
+    const utilColor = util >= 0 ? 'var(--green)' : 'var(--red)';
+    return `<tr style="border-bottom:1px solid var(--border);${i%2===0?'':'background:var(--gray)'}">
+      <td style="padding:10px 16px;font-weight:600">${w.label || 'Semana '+(i+1)}</td>
+      <td style="padding:10px 16px;text-align:right;color:var(--green);font-weight:600">${peso(ing)}</td>
+      <td style="padding:10px 16px;text-align:right;color:var(--red)">${peso(s.gastos)}</td>
+      <td style="padding:10px 16px;text-align:right;font-weight:700;color:${utilColor}">${peso(util)}</td>
+      <td style="padding:10px 16px;text-align:right">${margen}</td>
+      <td style="padding:10px 16px;text-align:right">${(w['coches']||0).toLocaleString()}</td>
+      <td style="padding:10px 16px;text-align:center">
+        <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="editWeek(${i})">Editar</button>
+        <button class="btn btn-outline" style="padding:4px 10px;font-size:11px;color:var(--red);border-color:var(--red)" onclick="deleteWeek(${i})">Borrar</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function editWeek(i) {
+  currentWeekIdx = i;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab')[1].classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-input').classList.add('active');
+  buildWeekSelect(); loadWeek();
+}
+
+function deleteWeek(i) {
+  if (!confirm(`¿Borrar "${data.weeks[i].label}"?`)) return;
+  data.weeks.splice(i, 1);
+  currentWeekIdx = Math.max(0, i - 1);
+  save(); renderHistorial(); buildWeekSelect();
+  showToast('Semana eliminada');
+}
+
+function clearAll() {
+  if (!confirm('¿Borrar TODOS los datos? Esta acción no se puede deshacer.')) return;
+  data = { weeks: [] }; currentWeekIdx = -1;
+  save(); renderHistorial(); buildWeekSelect();
+  showToast('Todos los datos eliminados');
+}
+
+function exportBackup() {
+  const raw = localStorage.getItem('pc_financial_v2');
+  if (!raw) { showToast('Sin datos para exportar'); return; }
+  const blob = new Blob([raw], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'patocincoo-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('✓ Backup guardado');
+}
+
+function importBackup(inp) {
+  const file = inp.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!parsed.weeks && !parsed.semanas) throw new Error('Formato inválido');
+      if (!confirm('¿Importar backup? Se reemplazarán los datos actuales.')) return;
+      localStorage.setItem('pc_financial_v2', e.target.result);
+      location.reload();
+    } catch(err) {
+      alert('Error al importar: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  inp.value = '';
+}
+
+function exportCSV() {
+  const headers = ['Semana','Ingresos','Gastos','Utilidad','Margen','Coches'];
+  const rows = data.weeks.map(w => {
+    const s = getAggregated([w]);
+    return [w.label, s.ing, s.gastos, s.util, s.ing>0?(s.util/s.ing*100).toFixed(1)+'%':'0%', w['coches']||0].join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'PatoCinco_Financiero.csv'; a.click();
+  showToast('✓ CSV exportado');
+}
+
+function updateWeekDatesDisplay() {
+  const el = document.getElementById('week-dates');
+  if (!el) return;
+  const w = currentWeekIdx >= 0 ? data.weeks[currentWeekIdx] : null;
+  if (!w) { el.textContent = ''; return; }
+  const start = new Date(w.dateStart || w.date);
+  const end   = w.dateEnd ? new Date(w.dateEnd) : new Date(start.getTime() + 6*86400000);
+  const fmt   = d => d.toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'});
+  const days  = Math.round((end - start)/86400000) + 1;
+  el.textContent = `${fmt(start)} → ${fmt(end)} (${days} días)`;
+}
+
+// ── ACCORDION TOGGLE ──
+function toggleGroup(id) {
+  const hdr  = document.getElementById('acc-hdr-'  + id);
+  const body = document.getElementById('acc-body-' + id);
+  if (!hdr || !body) return;
+  const opening = !body.classList.contains('open');
+  hdr.classList.toggle('open', opening);
+  body.classList.toggle('open', opening);
+  // Update hint text
+  const hint = hdr.querySelector('.acc-hint');
+  if (hint) hint.textContent = opening ? 'clic para ocultar' : 'clic para ver detalle';
+}
+
+// ── MONTH SELECT BUILDER ──
+function buildMonthOptions(selectId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const current = sel.value;
+  // Keep first option
+  while (sel.options.length > 1) sel.remove(1);
+  // Collect unique year-month values
+  const months = {};
+  data.weeks.forEach(w => {
+    const d = w.dateStart || w.date;
+    if (!d) return;
+    const dt = new Date(d);
+    const key = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+    const label = dt.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+    months[key] = label.charAt(0).toUpperCase() + label.slice(1);
+  });
+  Object.keys(months).sort().forEach(k => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = months[k];
+    sel.appendChild(opt);
+  });
+  if (current && sel.querySelector(`option[value="${current}"]`)) sel.value = current;
+}
+
+function buildDashMonthSelect() { buildMonthOptions('dash-month-select'); }
+function buildChartSelects() {
+  // Sync week options from dash-week-select, preserving current selection
+  const src = document.getElementById('dash-week-select');
+  const dst = document.getElementById('chart-week-select');
+  if (src && dst) {
+    const current = dst.value;
+    dst.innerHTML = src.innerHTML;
+    if (current && dst.querySelector(`option[value="${current}"]`)) dst.value = current;
+  }
+  buildMonthOptions('chart-month-select');
+}
+
+// ── CHARTS ──
+const chartInstances = {};
+function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
+
+function getFilteredWeeks(weekSelId, monthSelId) {
+  const weekSel  = document.getElementById(weekSelId);
+  const monthSel = document.getElementById(monthSelId);
+  const wVal = weekSel ? weekSel.value : 'all';
+  const mVal = monthSel ? monthSel.value : '';
+  if (mVal) {
+    return data.weeks.filter(w => {
+      const d = w.dateStart || w.date;
+      if (!d) return false;
+      const dt = new Date(d);
+      return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}` === mVal;
+    });
+  }
+  if (wVal === 'all') return data.weeks;
+  return [data.weeks[parseInt(wVal)]].filter(Boolean);
+}
+
+function renderCharts() {
+  const weeks = getFilteredWeeks('chart-week-select', 'chart-month-select');
+  if (weeks.length === 0) return;
+  const s = getAggregated(weeks);
+
+  // ── 1. Gastos Donut
+  destroyChart('gastos-donut');
+  const ctxGD = document.getElementById('chart-gastos-donut');
+  if (ctxGD) {
+    chartInstances['gastos-donut'] = new Chart(ctxGD, {
+      type: 'doughnut',
+      data: {
+        labels: ['Renta Ref','Renta Ala','Servicios Ref','Servicios Ala','Nómina','Insumos CW','Insumos Food','Comisiones','Gastos Opp','Generales'],
+        datasets: [{
+          data: [s.refRenta,s.alaRenta,s.refServ,s.alaServ,
+                 s.refNomCw+s.alaNomCw+s.refNom+s.alaNom+s.genNom,
+                 s.refIns+s.alaIns, s.refInsf+s.alaInsf,
+                 s.refCom+s.alaCom,
+                 s.refOtros+s.alaOtros, s.genCont+s.genMkt+s.genAdmin+s.genOtros],
+          backgroundColor: ['#2E7D32','#1565C0','#43A047','#1E88E5','#5E35B1','#F57C00','#F9A825','#C62828','#6D4C41','#546E7A'],
+          borderWidth: 2, borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { font: { size: 11 }, padding: 10 } },
+          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed).toLocaleString('es-MX')}` } }
+        }
+      }
+    });
+  }
+
+  // ── 2. Ingresos Donut
+  destroyChart('ing-donut');
+  const ctxID = document.getElementById('chart-ing-donut');
+  if (ctxID) {
+    chartInstances['ing-donut'] = new Chart(ctxID, {
+      type: 'doughnut',
+      data: {
+        labels: ['CW Refugio','CW Álamos','Food Refugio','Food Álamos','Membresías'],
+        datasets: [{
+          data: [s.cwRef, s.cwAla, s.foodRef, s.foodAla, s.mem],
+          backgroundColor: ['#2E7D32','#1565C0','#43A047','#1E88E5','#C8960C'],
+          borderWidth: 2, borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { font: { size: 11 }, padding: 10 } },
+          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed).toLocaleString('es-MX')}` } }
+        }
+      }
+    });
+  }
+
+  // ── 3. Refugio vs Álamos horizontal bar
+  destroyChart('suc-bar');
+  const ctxSB = document.getElementById('chart-suc-bar');
+  if (ctxSB) {
+    const cats = ['Renta','Servicios','Nómina CW','Nómina Food','Comisiones','Insumos CW','Insumos Food','Gasto Opp'];
+    chartInstances['suc-bar'] = new Chart(ctxSB, {
+      type: 'bar',
+      data: {
+        labels: cats,
+        datasets: [
+          { label: 'Refugio', data: [s.refRenta,s.refServ,s.refNomCw,s.refNom,s.refCom,s.refIns,s.refInsf,s.refOtros], backgroundColor: 'rgba(46,125,50,0.75)', borderRadius: 4 },
+          { label: 'Álamos',  data: [s.alaRenta,s.alaServ,s.alaNomCw,s.alaNom,s.alaCom,s.alaIns,s.alaInsf,s.alaOtros], backgroundColor: 'rgba(21,101,192,0.75)', borderRadius: 4 }
+        ]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed.x).toLocaleString('es-MX')}` } }
+        },
+        scales: {
+          x: { ticks: { callback: v => '$'+Math.round(v/1000)+'k' } }
+        }
+      }
+    });
+  }
+
+  // ── 4. Tendencia semanal (line chart — all weeks individually)
+  destroyChart('trend-line');
+  const ctxTL = document.getElementById('chart-trend-line');
+  if (ctxTL && data.weeks.length > 0) {
+    const tWeeks = weeks.length > 1 ? weeks : data.weeks;
+    const labels = tWeeks.map(w => w.label ? w.label.split('·')[0].trim() : '?');
+    const ingArr    = tWeeks.map(w => (w['cw-ref']||0)+(w['cw-ala']||0)+(w['food-ref']||0)+(w['food-ala']||0)+(w['mem']||0));
+    const gastosArr = tWeeks.map(w => getAggregated([w]).gastos);
+    const utilArr   = tWeeks.map(w => { const sg = getAggregated([w]); return sg.util; });
+    chartInstances['trend-line'] = new Chart(ctxTL, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Ingresos', data: ingArr, borderColor: '#2E7D32', backgroundColor: 'rgba(46,125,50,0.1)', tension: 0.3, fill: true, pointRadius: 4 },
+          { label: 'Gastos',   data: gastosArr, borderColor: '#C62828', backgroundColor: 'rgba(198,40,40,0.08)', tension: 0.3, fill: true, pointRadius: 4 },
+          { label: 'Utilidad', data: utilArr, borderColor: '#C8960C', backgroundColor: 'rgba(200,150,12,0.1)', tension: 0.3, fill: false, pointRadius: 4, borderDash: [5,3] }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { callbacks: { label: ctx => ` $${Math.round(ctx.parsed.y).toLocaleString('es-MX')}` } }
+        },
+        scales: {
+          y: { ticks: { callback: v => '$'+Math.round(v/1000)+'k' } }
+        }
+      }
+    });
+  }
+
+  // ── Insights / Áreas de oportunidad ──
+  renderInsights(s, weeks);
+}
+
+function renderInsights(s, weeks) {
+  const el = document.getElementById('insight-body');
+  if (!el || !s) return;
+  const insights = [];
+
+  // Margen de utilidad
+  const margen = s.ing > 0 ? s.util / s.ing : 0;
+  if (margen < 0.10) {
+    insights.push({ type:'warn', icon:'🔴', title:'Margen de utilidad crítico', text:`El margen es ${(margen*100).toFixed(1)}%. Lo ideal es superar 15%. Revisa los gastos más grandes.` });
+  } else if (margen < 0.18) {
+    insights.push({ type:'info', icon:'🟡', title:'Margen de utilidad bajo', text:`Margen de ${(margen*100).toFixed(1)}%. Hay espacio para mejorar — objetivo 20%+.` });
+  } else {
+    insights.push({ type:'good', icon:'✅', title:'Margen de utilidad saludable', text:`${(margen*100).toFixed(1)}% — buen resultado. Mantén el control de costos.` });
+  }
+
+  // Nómina como % de ingresos
+  const pctNom = s.ing > 0 ? s.nomina / s.ing : 0;
+  if (pctNom > 0.45) {
+    insights.push({ type:'warn', icon:'👥', title:'Nómina muy alta', text:`La nómina representa el ${(pctNom*100).toFixed(1)}% de los ingresos. Lo recomendable es <40%. Revisa personal general y food.` });
+  } else if (pctNom > 0.38) {
+    insights.push({ type:'info', icon:'👥', title:'Nómina elevada', text:`Nómina al ${(pctNom*100).toFixed(1)}% de ingresos. Monitorea y busca eficiencias.` });
+  }
+
+  // Gastos Refugio vs Álamos
+  if (s.refTotal > 0 && s.alaTotal > 0) {
+    const diff = Math.abs(s.refTotal - s.alaTotal);
+    const pctDiff = diff / Math.max(s.refTotal, s.alaTotal);
+    if (pctDiff > 0.30) {
+      const mayor = s.refTotal > s.alaTotal ? 'Refugio' : 'Álamos';
+      insights.push({ type:'warn', icon:'⚖️', title:`Desequilibrio de gastos entre sucursales`, text:`${mayor} gasta ${(pctDiff*100).toFixed(0)}% más que la otra sucursal. Revisa insumos y nómina locales.` });
+    }
+  }
+
+  // Insumos CW altos
+  const pctIns = s.ing > 0 ? (s.refIns + s.alaIns) / s.ing : 0;
+  if (pctIns > 0.15) {
+    insights.push({ type:'warn', icon:'🧴', title:'Insumos CW elevados', text:`Representan el ${(pctIns*100).toFixed(1)}% de ingresos. Evalúa proveedores o cantidades.` });
+  }
+
+  // Churn de membresías
+  if (s.memAct > 0 && s.memCanc > 0) {
+    const churn = s.memCanc / s.memAct * 100;
+    if (churn > 10) {
+      insights.push({ type:'warn', icon:'❌', title:'Alta tasa de cancelación de membresías', text:`${churn.toFixed(1)}% de membresías activas canceladas. Analiza si es por falta de pago o insatisfacción.` });
+    } else if (churn > 5) {
+      insights.push({ type:'info', icon:'📉', title:'Tasa de cancelación moderada', text:`${churn.toFixed(1)}% cancelación. Considera estrategias de retención.` });
+    }
+  }
+
+  // Tendencia (si hay múltiples semanas)
+  if (weeks.length >= 3) {
+    const last3 = weeks.slice(-3);
+    const ingArr = last3.map(w => (w['cw-ref']||0)+(w['cw-ala']||0)+(w['food-ref']||0)+(w['food-ala']||0)+(w['mem']||0));
+    if (ingArr[2] > ingArr[1] && ingArr[1] > ingArr[0]) {
+      insights.push({ type:'good', icon:'📈', title:'Ingresos en crecimiento', text:'Los últimos 3 períodos muestran crecimiento sostenido. ¡Buen ritmo!' });
+    } else if (ingArr[2] < ingArr[1] && ingArr[1] < ingArr[0]) {
+      insights.push({ type:'warn', icon:'📉', title:'Tendencia de ingresos a la baja', text:'Los últimos 3 períodos muestran caída. Revisa las notas de cada semana para identificar causas.' });
+    }
+  }
+
+  // Generales altos
+  const pctGen = s.ing > 0 ? s.genTotal / s.ing : 0;
+  if (pctGen > 0.12) {
+    insights.push({ type:'info', icon:'🏢', title:'Gastos generales de marca altos', text:`${(pctGen*100).toFixed(1)}% de ingresos en generales. Revisa marketing y gastos administrativos.` });
+  }
+
+  if (insights.length === 0) {
+    insights.push({ type:'good', icon:'🎯', title:'Todo en orden', text:'No se detectaron alertas significativas en este período.' });
+  }
+
+  el.innerHTML = insights.map(i =>
+    `<div class="insight-item ${i.type}">
+       <span class="insight-icon">${i.icon}</span>
+       <div class="insight-text"><strong>${i.title}</strong><span>${i.text}</span></div>
+     </div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════════
+// ── DESGLOSE: multiple items per field ──
+// ══════════════════════════════════════════════════
+let desgloseData = {};        // { fieldId: [{desc, amount}] }
+let currentDesgloseField = null;
+
+function initFieldButtons() {
+  document.querySelectorAll('input[type=number]:not([readonly])').forEach(inp => {
+    if (!inp.id || inp.id.startsWith('modal-') || inp.id === 'scan-file-inp') return;
+    // Don't add twice
+    if (document.getElementById('dbtn-' + inp.id)) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'dbtn-' + inp.id;
+    btn.className = 'field-btn';
+    btn.title = 'Desglose / Escanear ticket';
+    btn.textContent = '📋';
+    btn.addEventListener('click', e => { e.stopPropagation(); openDesglose(inp.id); });
+    inp.insertAdjacentElement('afterend', btn);
+    refreshDesgloseBtn(inp.id);
+  });
+}
+
+function refreshDesgloseBtn(fieldId) {
+  const btn = document.getElementById('dbtn-' + fieldId);
+  if (!btn) return;
+  const items = desgloseData[fieldId] || [];
+  if (items.length > 0) {
+    btn.textContent = '📋 ' + items.length;
+    btn.classList.add('has-items');
+    btn.title = items.length + ' concepto(s) registrado(s)';
+  } else {
+    btn.textContent = '📋';
+    btn.classList.remove('has-items');
+    btn.title = 'Desglose / Escanear ticket';
+  }
+}
+
+function openDesglose(fieldId) {
+  currentDesgloseField = fieldId;
+  // Derive label from DOM
+  const inp = document.getElementById(fieldId);
+  let label = fieldId.replace(/^f-/,'').replace(/-/g,' ');
+  if (inp) {
+    const row = inp.closest('.form-row') || inp.closest('tr');
+    if (row) {
+      const lbl = row.querySelector('label') || row.querySelector('td.td-label');
+      if (lbl) label = lbl.textContent.replace(/↳/g,'').trim();
+    }
+  }
+  document.getElementById('desg-title').textContent = '📋 ' + label;
+  document.getElementById('scan-status').className = 'scan-status';
+  document.getElementById('scan-status').textContent = '';
+  document.getElementById('apikey-section').style.display = 'none';
+  renderDesgloseList();
+  document.getElementById('desg-modal').classList.add('open');
+}
+
+function closeDesglose() {
+  document.getElementById('desg-modal').classList.remove('open');
+}
+
+function renderDesgloseList() {
+  const items = desgloseData[currentDesgloseField] || [];
+  const scroll = document.getElementById('desg-scroll');
+  if (items.length === 0) {
+    scroll.innerHTML = '<p class="desg-empty">Sin conceptos aún.<br>Agrega uno manualmente o escanea un ticket 📷</p>';
+  } else {
+    scroll.innerHTML = items.map((it, i) => `
+      <div class="desg-item">
+        <input class="di-desc" type="text" placeholder="Descripción" value="${escHtml(it.desc)}"
+               oninput="desgloseData['${currentDesgloseField}'][${i}].desc=this.value">
+        <input class="di-amt" type="number" placeholder="0" value="${it.amount||''}"
+               oninput="desgloseData['${currentDesgloseField}'][${i}].amount=parseFloat(this.value)||0;updateDesgloseTotal()">
+        <button class="di-del" onclick="removeDesgloseRow(${i})">🗑</button>
+      </div>`).join('');
+  }
+  updateDesgloseTotal();
+}
+
+function addDesgloseRow(desc='', amount=0) {
+  if (!desgloseData[currentDesgloseField]) desgloseData[currentDesgloseField] = [];
+  desgloseData[currentDesgloseField].push({ desc, amount });
+  renderDesgloseList();
+  // Focus new desc input
+  setTimeout(() => {
+    const inputs = document.getElementById('desg-scroll').querySelectorAll('.di-desc');
+    if (inputs.length) inputs[inputs.length-1].focus();
+  }, 30);
+}
+
+function removeDesgloseRow(i) {
+  desgloseData[currentDesgloseField].splice(i, 1);
+  renderDesgloseList();
+}
+
+function updateDesgloseTotal() {
+  const items = desgloseData[currentDesgloseField] || [];
+  const total = items.reduce((s, it) => s + (parseFloat(it.amount)||0), 0);
+  document.getElementById('desg-total-disp').textContent = peso(Math.round(total));
+}
+
+function applyDesglose() {
+  const items = desgloseData[currentDesgloseField] || [];
+  const total = Math.round(items.reduce((s, it) => s + (parseFloat(it.amount)||0), 0));
+  const inp = document.getElementById(currentDesgloseField);
+  if (inp) { inp.value = total || ''; inp.dataset.base = total; recalc(); }
+  refreshDesgloseBtn(currentDesgloseField);
+  closeDesglose();
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════
+// ── SCAN: read ticket image with Claude Vision ──
+// ══════════════════════════════════════════════════
+function handleScanFile(e) {
+  const file = e.target.files[0]; if (!file) return;
+  e.target.value = '';
+  processScanFile(file);
+}
+function handleScanDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0]; if (!file || !file.type.startsWith('image/')) return;
+  processScanFile(file);
+}
+
+async function processScanFile(file) {
+  const apiKey = localStorage.getItem('pc_api_key');
+
+  if (apiKey) {
+    // Claude Vision (mejor resultado)
+    setScanStatus('loading', '🔍 Leyendo ticket con IA...');
+    try {
+      const b64data = await fileToBase64(file);
+      const [hdr, b64] = b64data.split(',');
+      const mime = hdr.match(/:(.*?);/)[1];
+      const result = await callClaudeVision(b64, mime);
+      if (result && result.items && result.items.length > 0) {
+        result.items.forEach(it => addDesgloseRow(it.desc || '', parseFloat(it.monto)||0));
+        setScanStatus('ok', '✓ ' + result.items.length + ' concepto(s) detectado(s). Revisa y ajusta si necesitas.');
+      } else if (result && result.total) {
+        addDesgloseRow('Total ticket', parseFloat(result.total)||0);
+        setScanStatus('ok', '✓ Total detectado: $' + result.total);
+      } else {
+        setScanStatus('err', '⚠ No se pudo leer. Prueba con foto más clara o agrega manualmente.');
+      }
+    } catch (err) {
+      setScanStatus('loading', '⚠ Reintentando con OCR gratuito...');
+      await scanWithTesseract(file);
+    }
+  } else {
+    // Tesseract.js (gratis, sin cuenta)
+    await scanWithTesseract(file);
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function scanWithTesseract(file) {
+  if (typeof Tesseract === 'undefined') {
+    setScanStatus('err', '❌ Tesseract no cargó. Verifica tu conexión e intenta de nuevo.');
+    return;
+  }
+  setScanStatus('loading', '🔍 Leyendo ticket... (puede tardar 10-20 seg)');
+  try {
+    const worker = await Tesseract.createWorker('spa+eng', 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          setScanStatus('loading', '🔍 Leyendo... ' + Math.round((m.progress||0)*100) + '%');
+        }
+      }
+    });
+    const { data: { text } } = await worker.recognize(file);
+    await worker.terminate();
+    const items = parseTicketText(text);
+    if (items.length > 0) {
+      items.forEach(it => addDesgloseRow(it.desc, it.amount));
+      setScanStatus('ok', '✓ ' + items.length + ' monto(s) detectado(s). Revisa las descripciones y ajusta si necesitas.');
+    } else {
+      setScanStatus('err', '⚠ No se encontraron montos claros. Intenta con mejor iluminación o agrega manualmente.');
+    }
+  } catch (err) {
+    setScanStatus('err', '❌ Error al leer imagen: ' + err.message);
+  }
+}
+
+function parseTicketText(rawText) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 1);
+  const items = [];
+  const priceRe = /\$?\s*(\d{1,6}(?:,\d{3})*(?:\.\d{1,2})?|\d{1,6}(?:\.\d{1,2})?)\s*$/;
+  const skipRe  = /^(fecha|date|hora|rfc|folio|cajero|ticket|gracias|iva|tasa|cambio|tarjeta|efectivo|tel[eé]|direc|sucursal|\d{2}[\/\-]\d{2})/i;
+  lines.forEach(line => {
+    if (skipRe.test(line)) return;
+    const m = line.match(priceRe);
+    if (!m) return;
+    const amount = parseFloat(m[1].replace(/,/g, ''));
+    if (!amount || amount < 1 || amount > 500000) return;
+    let desc = line.slice(0, line.lastIndexOf(m[0])).trim().replace(/^[\s\-\.\*#|]+|[\s\-\.\*]+$/g, '').trim();
+    if (!desc || desc.length < 2) desc = 'Concepto';
+    items.push({ desc, amount });
+  });
+  return items;
+}
+
+function setScanStatus(type, msg) {
+  const el = document.getElementById('scan-status');
+  el.className = 'scan-status ' + type;
+  el.textContent = msg;
+}
+
+async function callClaudeVision(b64, mimeType) {
+  const key = localStorage.getItem('pc_api_key');
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: mimeType, data: b64 } },
+        { type: 'text', text: 'Analiza este ticket/recibo/factura de México. Extrae todos los conceptos con sus montos individuales. Responde ÚNICAMENTE con JSON válido, sin texto adicional:\n{"total": 1234, "items": [{"desc": "Nombre del producto o servicio", "monto": 123}]}\nLos montos son números sin signos de peso.' }
+      ]}]
+    })
+  });
+  if (!resp.ok) throw new Error(resp.status + ' ' + resp.statusText);
+  const data = await resp.json();
+  const text = data.content?.[0]?.text || '';
+  const m = text.match(/\{[\s\S]*\}/);
+  return m ? JSON.parse(m[0]) : null;
+}
+
+function saveApiKey() {
+  const key = (document.getElementById('apikey-inp').value || '').trim();
+  if (!key) { showToast('⚠ Escribe la API Key'); return; }
+  localStorage.setItem('pc_api_key', key);
+  document.getElementById('apikey-section').style.display = 'none';
+  document.getElementById('apikey-inp').value = '';
+  showToast('✓ API Key guardada');
+  setScanStatus('ok', '✓ API Key guardada — ahora puedes escanear tickets');
+}
+
+// ── INIT ──
+buildWeekSelect();
+renderDashboard();
+if (data.weeks.length > 0) loadWeek();
+</script>
+</body>
+</html>
