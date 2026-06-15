@@ -115,6 +115,10 @@
   .cmp-header.purple { background: var(--purple); color: white; }
   .cmp-header.dark   { background: var(--dark); color: white; }
   .cmp-header.red    { background: var(--red); color: white; }
+  .cmp-header.white-black { background: white; color: #1A1A1A; border-bottom: 2px solid #E0E0E0; }
+  .cmp-header.white-gold  { background: white; color: var(--gold); border-bottom: 2px solid var(--gold); }
+  .form-card-header.white-blue { background: white; color: var(--blue); border-bottom: 2px solid var(--blue); }
+  .form-card-header.white-gold { background: white; color: var(--gold); border-bottom: 2px solid var(--gold); }
 
   table.cmp { width: 100%; border-collapse: collapse; }
   table.cmp thead th { padding: 9px 14px; font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; border-bottom: 2px solid rgba(0,0,0,.1); }
@@ -445,7 +449,7 @@
 
     <!-- Operaciones -->
     <div class="form-card">
-      <div class="form-card-header blue">Operaciones</div>
+      <div class="form-card-header white-blue">Operaciones</div>
       <div class="form-row sub-header-row"><label>Coches lavados</label></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-coches-ref" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-coches-ala" placeholder="0" oninput="recalc()"></div>
@@ -465,6 +469,162 @@
       <div class="form-row computed"><label>Margen Utilidad</label><input type="text" id="f-margen-util" readonly></div>
       <div class="form-row computed"><label>Margen Nómina</label><input type="text" id="f-margen-nom" readonly></div>
     </div>
+  </div>
+
+  <!-- ─── BLOQUE 3: Fijos ─── -->
+  <p class="section-title" style="margin-top:28px">Fijos</p>
+  <div class="cmp-wrap full">
+    <div class="cmp-header white-black">🏠 Fijos por sucursal</div>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th class="th-label" style="width:36%">Concepto</th>
+          <th class="th-ref" style="width:32%">REFUGIO</th>
+          <th class="th-ala" style="width:32%">ÁLAMOS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="sub-head"><td colspan="3">RENTA</td></tr>
+        <tr>
+          <td class="td-label">Renta mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-renta-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-renta-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Renta período (auto-prorrateado)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr class="sub-head"><td colspan="3">SERVICIOS</td></tr>
+        <tr>
+          <td class="td-label">Agua mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Agua período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Luz mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Luz período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Gas mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-gas-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-gas-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Gas período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-gas-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-gas-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Internet mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Internet período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-internet-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Spotify mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Spotify período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-spotify-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Basura mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-basura-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-basura-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Basura período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-basura-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-basura-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Otros fijos mensual</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-otros-mes" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-otros-mes" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Otros fijos período (auto)</td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-otros-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-otros-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
+        </tr>
+        <tr class="sub-total">
+          <td style="padding-left:18px">Subtotal Servicios</td>
+          <td style="text-align:right" id="f-ref-serv-subtotal">$0</td>
+          <td style="text-align:right" id="f-ala-serv-subtotal">$0</td>
+        </tr>
+        <tr class="total-row">
+          <td style="padding-left:18px">TOTAL FIJOS</td>
+          <td style="text-align:right" id="f-ref-rentaserv-total">$0</td>
+          <td style="text-align:right" id="f-ala-rentaserv-total">$0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── BLOQUE 4: Insumos CW ─── -->
+  <p class="section-title" style="margin-top:28px">Insumos Carwash</p>
+  <div class="cmp-wrap full">
+    <div class="cmp-header blue">🧴 Insumos CW por sucursal</div>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th class="th-label" style="width:36%">Insumo</th>
+          <th class="th-ref" style="width:32%">REFUGIO</th>
+          <th class="th-ala" style="width:32%">ÁLAMOS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">Diesel</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-diesel" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-diesel" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Químicos</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-quim" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-quim" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Herramientas</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-herr" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-herr" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr>
+          <td class="td-label">Otros insumos CW</td>
+          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-otros" placeholder="0" oninput="recalc()"></td>
+          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-otros" placeholder="0" oninput="recalc()"></td>
+        </tr>
+        <tr class="sub-head"><td colspan="3">INSUMOS GENERALES — se registran en Generales de Marca</td></tr>
+        <tr>
+          <td class="td-label">Insumos generales</td>
+          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-ins" placeholder="0" oninput="recalc()" style="width:200px"> <span style="font-size:11px;color:var(--light)"> → va a Generales, no se divide</span></td>
+        </tr>
+        <tr class="total-row">
+          <td style="padding-left:18px">TOTAL INSUMOS CW (por sucursal)</td>
+          <td style="text-align:right" id="f-ref-ins-total">$0</td>
+          <td style="text-align:right" id="f-ala-ins-total">$0</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- ─── BLOQUE 2: Insumos Food (compartidos ÷2) ─── -->
@@ -517,137 +677,6 @@
           <td style="padding-left:18px;font-weight:700">TOTAL FOOD</td>
           <td style="text-align:right;font-size:16px" id="f-food-total">$0</td>
           <td style="text-align:right;font-size:14px;color:var(--gold-mid)">÷2 = <span id="f-food-por-suc">$0</span> / sucursal</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ─── BLOQUE 3: Renta + Servicios ─── -->
-  <p class="section-title" style="margin-top:28px">Renta · Servicios</p>
-  <div class="cmp-wrap full">
-    <div class="cmp-header dark">🏠 Renta y Servicios por sucursal</div>
-    <table class="cmp">
-      <thead>
-        <tr>
-          <th class="th-label" style="width:36%">Concepto</th>
-          <th class="th-ref" style="width:32%">REFUGIO</th>
-          <th class="th-ala" style="width:32%">ÁLAMOS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="sub-head"><td colspan="3">RENTA</td></tr>
-        <tr>
-          <td class="td-label">Renta mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-renta-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-renta-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic">↳ Renta período (auto-prorrateado)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-renta" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr class="sub-head"><td colspan="3">SERVICIOS</td></tr>
-        <tr>
-          <td class="td-label">Agua mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-agua-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Agua período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-agua-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Luz mensual</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-luz-mes" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label" style="color:var(--gold);font-style:italic;padding-left:28px">↳ Luz período (auto)</td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ref-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-          <td class="td-auto"><input class="cmp-input" type="text" id="f-ala-serv-luz-pro" readonly style="background:var(--gold-light);color:var(--dark);border-left:3px solid var(--gold)"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Gas</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-gas" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-gas" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Internet</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-internet" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-internet" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Spotify</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-spotify" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-spotify" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Basura</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-basura" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-basura" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Otros servicios</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-serv-otros" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-serv-otros" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr class="sub-total">
-          <td style="padding-left:18px">Subtotal Servicios</td>
-          <td style="text-align:right" id="f-ref-serv-subtotal">$0</td>
-          <td style="text-align:right" id="f-ala-serv-subtotal">$0</td>
-        </tr>
-        <tr class="total-row">
-          <td style="padding-left:18px">TOTAL RENTA + SERVICIOS</td>
-          <td style="text-align:right" id="f-ref-rentaserv-total">$0</td>
-          <td style="text-align:right" id="f-ala-rentaserv-total">$0</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ─── BLOQUE 4: Insumos CW ─── -->
-  <p class="section-title" style="margin-top:28px">Insumos Carwash</p>
-  <div class="cmp-wrap full">
-    <div class="cmp-header blue">🧴 Insumos CW por sucursal</div>
-    <table class="cmp">
-      <thead>
-        <tr>
-          <th class="th-label" style="width:36%">Insumo</th>
-          <th class="th-ref" style="width:32%">REFUGIO</th>
-          <th class="th-ala" style="width:32%">ÁLAMOS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="td-label">Diesel</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-diesel" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-diesel" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Químicos</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-quim" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-quim" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Herramientas</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-herr" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-herr" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr>
-          <td class="td-label">Otros insumos CW</td>
-          <td class="td-ref"><input class="cmp-input ref" type="number" id="f-ref-ins-otros" placeholder="0" oninput="recalc()"></td>
-          <td class="td-ala"><input class="cmp-input ala" type="number" id="f-ala-ins-otros" placeholder="0" oninput="recalc()"></td>
-        </tr>
-        <tr class="sub-head"><td colspan="3">INSUMOS GENERALES — se registran en Generales de Marca</td></tr>
-        <tr>
-          <td class="td-label">Insumos generales</td>
-          <td class="td-global" colspan="2" style="text-align:right"><input class="cmp-input global" type="number" id="f-gen-ins" placeholder="0" oninput="recalc()" style="width:200px"> <span style="font-size:11px;color:var(--light)"> → va a Generales, no se divide</span></td>
-        </tr>
-        <tr class="total-row">
-          <td style="padding-left:18px">TOTAL INSUMOS CW (por sucursal)</td>
-          <td style="text-align:right" id="f-ref-ins-total">$0</td>
-          <td style="text-align:right" id="f-ala-ins-total">$0</td>
         </tr>
       </tbody>
     </table>
@@ -713,7 +742,7 @@
 
     <!-- Gasto Opp -->
     <div class="form-card">
-      <div class="form-card-header red">Gasto Oportunidad</div>
+      <div class="form-card-header white-gold">Gasto Oportunidad</div>
       <div class="form-row sub-header-row"><label>Uber</label></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Refugio</label><input type="number" id="f-uber-ref" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>&nbsp;&nbsp;↳ Álamos</label><input type="number" id="f-uber-ala" placeholder="0" oninput="recalc()"></div>
@@ -724,7 +753,7 @@
 
     <!-- Generales -->
     <div class="form-card">
-      <div class="form-card-header purple">Generales — Marca</div>
+      <div class="form-card-header white-gold">Generales — Marca</div>
       <div class="form-row"><label>Gasto general</label><input type="number" id="f-gen-cont" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>Marketing / Redes</label><input type="number" id="f-gen-mkt" placeholder="0" oninput="recalc()"></div>
       <div class="form-row"><label>Gastos administrativos</label><input type="number" id="f-gen-admin" placeholder="0" oninput="recalc()"></div>
@@ -981,8 +1010,12 @@ const INPUT_FIELDS = [
   'food-crem','food-mp','food-cafe','food-carne','food-costco','food-otros',
   // Renta
   'ref-renta-mes','ala-renta-mes',
-  // Servicios (Agua y Luz son mensuales prorrateadas; Gas, Internet, etc. son directos)
+  // Servicios (todos mensuales prorrateados al período)
   'ref-serv-agua-mes','ala-serv-agua-mes','ref-serv-luz-mes','ala-serv-luz-mes',
+  'ref-serv-gas-mes','ala-serv-gas-mes','ref-serv-internet-mes','ala-serv-internet-mes',
+  'ref-serv-spotify-mes','ala-serv-spotify-mes','ref-serv-basura-mes','ala-serv-basura-mes',
+  'ref-serv-otros-mes','ala-serv-otros-mes',
+  // legacy directos (backward compat con datos viejos)
   'ref-serv-gas','ref-serv-internet','ref-serv-spotify','ref-serv-basura','ref-serv-otros',
   'ala-serv-gas','ala-serv-internet','ala-serv-spotify','ala-serv-basura','ala-serv-otros',
   // Insumos CW
@@ -1218,19 +1251,25 @@ function confirmNewWeek() {
   const label = `Sem ${weekNum} · ${fmt(start)} – ${fmt(end)} ${end.getFullYear()}`;
   const newW = { label, date: start.toISOString(), dateStart: start.toISOString(), dateEnd: end.toISOString() };
   data.weeks.push(newW);
-  // Auto-fill fixed monthly costs from previous week
+  // Auto-fill fixed monthly costs from previous week (todos los fijos mensuales)
   if (data.weeks.length >= 2) {
     const prev = data.weeks[data.weeks.length - 2];
-    ['ref-renta-mes','ala-renta-mes','ref-serv-agua-mes','ala-serv-agua-mes',
-     'ref-serv-luz-mes','ala-serv-luz-mes'].forEach(k => {
+    ['ref-renta-mes','ala-renta-mes',
+     'ref-serv-agua-mes','ala-serv-agua-mes','ref-serv-luz-mes','ala-serv-luz-mes',
+     'ref-serv-gas-mes','ala-serv-gas-mes','ref-serv-internet-mes','ala-serv-internet-mes',
+     'ref-serv-spotify-mes','ala-serv-spotify-mes','ref-serv-basura-mes','ala-serv-basura-mes',
+     'ref-serv-otros-mes','ala-serv-otros-mes'].forEach(k => {
       if (prev[k]) newW[k] = prev[k];
     });
   }
   currentWeekIdx = data.weeks.length - 1;
   save(); buildWeekSelect(); clearForm(); updateWeekDatesDisplay(); closeModal();
   // clearForm() borra los inputs — restaurar los costos fijos copiados
-  const fixedKeys = ['ref-renta-mes','ala-renta-mes','ref-serv-agua-mes','ala-serv-agua-mes',
-                     'ref-serv-luz-mes','ala-serv-luz-mes'];
+  const fixedKeys = ['ref-renta-mes','ala-renta-mes',
+    'ref-serv-agua-mes','ala-serv-agua-mes','ref-serv-luz-mes','ala-serv-luz-mes',
+    'ref-serv-gas-mes','ala-serv-gas-mes','ref-serv-internet-mes','ala-serv-internet-mes',
+    'ref-serv-spotify-mes','ala-serv-spotify-mes','ref-serv-basura-mes','ala-serv-basura-mes',
+    'ref-serv-otros-mes','ala-serv-otros-mes'];
   const anyFixed = fixedKeys.some(k => newW[k]);
   fixedKeys.forEach(k => {
     if (newW[k]) {
@@ -1239,7 +1278,7 @@ function confirmNewWeek() {
     }
   });
   if (anyFixed) recalc();
-  showToast(anyFixed ? '✓ Nueva semana — Renta, Agua y Luz copiadas de semana anterior' : '✓ Nueva semana creada');
+  showToast(anyFixed ? '✓ Nueva semana — Fijos mensuales copiados de semana anterior' : '✓ Nueva semana creada');
 }
 
 function clearForm() {
@@ -1287,7 +1326,7 @@ function recalc() {
   set('f-ref-renta', rentRef > 0 ? peso(rentRef) : '');
   set('f-ala-renta', rentAla > 0 ? peso(rentAla) : '');
 
-  // ── Servicios: Agua y Luz son mensuales prorrateadas; el resto directos
+  // ── Servicios: todos mensuales prorrateados al período
   const refAguaPro = Math.round(v('f-ref-serv-agua-mes') * rf);
   const alaAguaPro = Math.round(v('f-ala-serv-agua-mes') * rf);
   const refLuzPro  = Math.round(v('f-ref-serv-luz-mes') * rf);
@@ -1296,12 +1335,24 @@ function recalc() {
   set('f-ala-serv-agua-pro', alaAguaPro > 0 ? peso(alaAguaPro) : '');
   set('f-ref-serv-luz-pro',  refLuzPro  > 0 ? peso(refLuzPro)  : '');
   set('f-ala-serv-luz-pro',  alaLuzPro  > 0 ? peso(alaLuzPro)  : '');
-  const directServKeys = ['gas','internet','spotify','basura','otros'];
-  const refServDirect = directServKeys.reduce((a, k) => a + v('f-ref-serv-' + k), 0);
-  const alaServDirect = directServKeys.reduce((a, k) => a + v('f-ala-serv-' + k), 0);
-  const servRef = refAguaPro + refLuzPro + refServDirect
+  const prorServKeys = ['gas','internet','spotify','basura','otros'];
+  let refServPro2 = 0, alaServPro2 = 0;
+  prorServKeys.forEach(k => {
+    const rMes = v('f-ref-serv-' + k + '-mes');
+    const aMes = v('f-ala-serv-' + k + '-mes');
+    const rPro = Math.round(rMes * rf);
+    const aPro = Math.round(aMes * rf);
+    // Fallback a valor directo legacy si no hay mensual
+    const rVal = rMes > 0 ? rPro : v('f-ref-serv-' + k);
+    const aVal = aMes > 0 ? aPro : v('f-ala-serv-' + k);
+    set('f-ref-serv-' + k + '-pro', rVal > 0 ? peso(rVal) : '');
+    set('f-ala-serv-' + k + '-pro', aVal > 0 ? peso(aVal) : '');
+    refServPro2 += rVal;
+    alaServPro2 += aVal;
+  });
+  const servRef = refAguaPro + refLuzPro + refServPro2
     || Math.round(v('f-ref-serv-mes') * rf); // legacy fallback
-  const servAla = alaAguaPro + alaLuzPro + alaServDirect
+  const servAla = alaAguaPro + alaLuzPro + alaServPro2
     || Math.round(v('f-ala-serv-mes') * rf);
   setText('f-ref-serv-subtotal', peso(servRef));
   setText('f-ala-serv-subtotal', peso(servAla));
@@ -1434,14 +1485,23 @@ function saveWeek() {
   const rentRef = Math.round((w['ref-renta-mes'] || 0) * rf);
   const rentAla = Math.round((w['ala-renta-mes'] || 0) * rf);
 
-  // Agua y Luz se prorratean; el resto son directos
+  // Todos los servicios fijos se prorratean al período
   const refAguaSave = Math.round((w['ref-serv-agua-mes'] || 0) * rf);
   const alaAguaSave = Math.round((w['ala-serv-agua-mes'] || 0) * rf);
   const refLuzSave  = Math.round((w['ref-serv-luz-mes']  || 0) * rf);
   const alaLuzSave  = Math.round((w['ala-serv-luz-mes']  || 0) * rf);
-  const directKeys  = ['gas','internet','spotify','basura','otros'];
-  const refServSum  = refAguaSave + refLuzSave + directKeys.reduce((a,k) => a+(w['ref-serv-'+k]||0),0);
-  const alaServSum  = alaAguaSave + alaLuzSave + directKeys.reduce((a,k) => a+(w['ala-serv-'+k]||0),0);
+  const prorServSaveKeys = ['gas','internet','spotify','basura','otros'];
+  let refServAddl = 0, alaServAddl = 0;
+  prorServSaveKeys.forEach(k => {
+    const rMes = w['ref-serv-' + k + '-mes'] || 0;
+    const aMes = w['ala-serv-' + k + '-mes'] || 0;
+    const rPro = rMes > 0 ? Math.round(rMes * rf) : (w['ref-serv-' + k] || 0);
+    const aPro = aMes > 0 ? Math.round(aMes * rf) : (w['ala-serv-' + k] || 0);
+    refServAddl += rPro;
+    alaServAddl += aPro;
+  });
+  const refServSum  = refAguaSave + refLuzSave + refServAddl;
+  const alaServSum  = alaAguaSave + alaLuzSave + alaServAddl;
   w['ref-serv-direct'] = refServSum;
   w['ala-serv-direct'] = alaServSum;
 
