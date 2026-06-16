@@ -145,7 +145,10 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
   </div>
   <div class="hdr-right">
     <label>Semana</label>
-    <input type="text" id="sem" value="" onchange="setSemana(this.value)">
+    <input type="text" id="sem" value="" onchange="document.getElementById('ptit')&&(document.getElementById('ptit').textContent='Semana '+this.value);document.getElementById('stit')&&(document.getElementById('stit').textContent='Tickets — Semana '+this.value);">
+    <input type="password" id="gkey-input" placeholder="API Key Gemini"
+      style="background:#222;color:#f8ba00;border:1px solid #444;border-radius:4px;padding:3px 8px;font-size:11px;width:120px;font-family:monospace"
+      onchange="localStorage.setItem('pc4_gkey',this.value);flash('✓ API Key guardada')">
     <span id="fmsg"></span>
   </div>
 </div>
@@ -630,10 +633,8 @@ function goTab(id){
   if(id==="coords"){renderCoords();renderLiquidaciones();document.getElementById("coord-sem-lbl").textContent="Semana "+document.getElementById("sem").value;}
   if(id==="flujo"){initFlujo();document.getElementById("flujo-sem-lbl").textContent="Semana "+document.getElementById("sem").value;}
 }
-document.getElementById("sem").addEventListener("input",function(){
-  document.getElementById("ptit").textContent="Semana "+this.value;
-  document.getElementById("stit").textContent="Tickets — Semana "+this.value;
-});
+// sem change handled via onchange attr
+
 
 function rowVisible(r){if(filtro==="all")return true;if(filtro==="sin")return !r.sucursal;return r.sucursal===filtro}
 function setF(f){filtro=f;document.querySelectorAll(".fbtn[data-f]").forEach(b=>b.classList.remove("on"));document.querySelector(`.fbtn[data-f="${f}"]`).classList.add("on");renderT()}
