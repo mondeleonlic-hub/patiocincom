@@ -185,3 +185,95 @@ table.cmp tbody tr.total-row td  { background: #111 !important; }
 /* ── Sub-tabs (sobres - coordinadores) ── */
 .stab-nav { border-bottom: 2px solid #e0ddd4; }
 .stab.on  { color: #C8960C; border-bottom-color: #C8960C; }
+
+/* ════════════════════════════════════════════════════════════════
+   iOS / IPHONE — World-class mobile experience
+   ════════════════════════════════════════════════════════════════ */
+
+/* Sin highlight al tocar */
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+
+/* Sin delay de 300ms en botones y links */
+button, a, label, select,
+.tab, .btn, .fbtn, .ph-btn, .fil-btn,
+[role="button"], [onclick] {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+/* Inputs: mínimo 16px para evitar zoom automático en iOS */
+input, select, textarea {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Botones: mínimo 44px de área táctil (Apple HIG) */
+.tab        { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.ph-btn     { min-height: 44px !important; }
+.fbtn       { min-height: 38px; display: inline-flex; align-items: center; }
+.fil-btn    { min-height: 38px; display: inline-flex; align-items: center; }
+
+/* Scroll suave en contenedores */
+.tabs-inner,
+.modal-box,
+.tw, .page {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Tabs inner: ocultar scrollbar en iOS pero permitir scroll */
+.tabs-inner::-webkit-scrollbar { display: none; }
+.tabs-inner { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Modal: centrado y teclado-aware en iPhone */
+.modal-overlay {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.modal-box {
+  max-height: 88dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Selects — apariencia nativa en iOS se ve mejor */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px !important;
+  -webkit-appearance: none;
+}
+
+/* Nav header: soporte para notch / Dynamic Island */
+nav, .hdr {
+  padding-left: max(32px, env(safe-area-inset-left));
+  padding-right: max(32px, env(safe-area-inset-right));
+}
+
+/* Página: padding en la zona segura inferior */
+.page, .pnl.on {
+  padding-bottom: max(28px, calc(env(safe-area-inset-bottom) + 16px));
+}
+
+/* Activo: feedback visual al tocar (simula :active nativo) */
+button:active, .tab:active, .fbtn:active, .fil-btn:active {
+  opacity: 0.7;
+  transform: scale(0.97);
+  transition: opacity 0.05s, transform 0.05s;
+}
+
+/* Responsive — móvil */
+@media (max-width: 768px) {
+  .tabs-inner { padding: 0 16px; }
+  nav, .hdr   { padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right)); }
+}
+
+/* ── Sin scroll horizontal en toda la app ── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  overscroll-behavior-x: none;
+}
