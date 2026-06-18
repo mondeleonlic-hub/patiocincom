@@ -260,10 +260,10 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .rsub{font-size:11px;color:var(--muted);margin-top:3px;}
 
 /* Status bar */
-#st{border-radius:8px;padding:10px 14px;font-size:12px;font-weight:500;margin-bottom:12px;}
+#st{border-radius:8px;padding:10px 14px;font-size:12px;font-weight:500;margin-bottom:12px;} #st:empty{padding:0;margin:0;}
 
 /* Filtros row */
-.filtros{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px;padding:10px 0;border-bottom:0.5px solid var(--border);}
+.filtros{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px;padding:8px 0;border-bottom:0.5px solid var(--border);}
 .filtros label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px;}
 #conteo{font-size:11px;color:var(--muted);margin-left:auto;font-weight:500;}
 
@@ -333,13 +333,14 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
   <!-- DATOS -->
   <div class="pnl" id="pnl-datos">
     <div class="ph">
-      <h2 id="ptit">Semana 19/2026 — datos cargados ✓</h2>
+      <h2 id="ptit">Sin datos cargados</h2>
       <div class="bg">
         <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">Subir reporte</button>
         <select class="ph-btn ph-outline" id="datos-sem-sel" onchange="cargarSemanaHistDatos()">
           <option value="">Semana actual</option>
         </select>
         <button class="ph-btn ph-dark" onclick="cerrarSemana()">Cerrar semana</button>
+        <button class="ph-btn" onclick="limpiarDatosSem()" style="background:#fff;color:#C62828;border:1.5px solid #C62828;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">Limpiar datos</button>
         <button class="ph-btn ph-navy" onclick="addRow()">+ Lavador</button>
       </div>
     </div>
@@ -512,7 +513,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
   <!-- SOBRES -->
   <div class="pnl" id="pnl-sobres">
     <div class="ph">
-      <h2 id="stit">Tickets — Semana 18/2026</h2>
+      <h2 id="stit">Tickets</h2>
       <div class="bg">
         <button class="fbtn on" id="fs-all" onclick="setFS('all')">Todos</button>
         <button class="fbtn ref" id="fs-ref" onclick="setFS('PC Refugio')">PC Refugio</button>
@@ -795,11 +796,17 @@ async function init(){
   if(savedRows && savedRows.length > 0){
     rows = savedRows.map(r=>applyPerfil(r));
   } else {
-    rows = S19.map(r=>({...r}));
-    sv("pc4_rows", rows);
+    rows = [];  // sin datos por default — usuario sube su reporte
   }
   // Siempre mostrar la semana guardada correctamente
   document.getElementById("sem").value = savedSem;
+  // Sincronizar títulos con la semana guardada
+  if(savedSem){
+    const ptit = document.getElementById("ptit");
+    if(ptit) ptit.textContent = "Semana " + savedSem + (rows.length ? " — datos cargados ✓" : "");
+    const stit = document.getElementById("stit");
+    if(stit) stit.textContent = "Tickets — Semana " + savedSem;
+  }
   sv("pc4_semana", savedSem);
 
   sv("pc4_perfiles", perfiles);
@@ -1311,6 +1318,19 @@ function tarjetaDeuda(nombre,d,saldada){
     </div>`
     :`<div style="margin-top:8px;font-size:11px;color:#38a169;font-weight:700">✓ Deuda saldada</div>`}`;
   return div;
+}
+
+
+async function limpiarDatosSem(){
+  if(!confirm("¿Limpiar la tabla de datos?\nEsto borra los lavadores y montos de la semana actual.\n(El historial y deudas no se borran)")) return;
+  rows = [];
+  await sv("pc4_rows", rows);
+  await sv("pc4_semana", "");
+  document.getElementById("sem").value = "";
+  const ptit = document.getElementById("ptit"); if(ptit) ptit.textContent = "Sin datos cargados";
+  const stit = document.getElementById("stit"); if(stit) stit.textContent = "Tickets";
+  renderT(); renderD(); renderSucursales();
+  flash("🗑 Datos limpiados");
 }
 
 async function recargarS19(){
