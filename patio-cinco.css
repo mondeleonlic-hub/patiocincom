@@ -1,0 +1,187 @@
+/* ═══════════════════════════════════════════════════════════════
+   PATIO CINCO — Diseño compartido
+   ───────────────────────────────────────────────────────────────
+   Este archivo controla el estilo de AMBAS apps:
+     • sobres.html  (nómina / tickets)
+     • dashboard.html (dashboard financiero)
+
+   Modifica aquí → se actualiza en las dos automáticamente.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tipografía global ── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+  background: #F0EFE9;
+  -webkit-font-smoothing: antialiased;
+}
+input, select, textarea, button { font-family: inherit; }
+
+/* ── Barra de navegación / header ── */
+nav  { background: #111; border-bottom: none; box-shadow: none; }
+.hdr { background: #111 !important; box-shadow: none !important; }
+
+
+/* ── Marca PATIO CINCO ── */
+.nav-brand-text   { font-size: 14px; letter-spacing: 4px; color: #fff; font-weight: 300; }
+.nav-brand-text b { font-weight: 900; color: #C8960C; }
+
+/* ── Nav period (dashboard) ── */
+.nav-period { font-size: 12px; font-weight: 500; letter-spacing: .3px; color: #C8960C; }
+
+/* ── Barra de pestañas ── */
+.tabs { background: #111; border-bottom: 1px solid #222; }
+.tabs-inner {
+  max-width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 0 40px;
+  overflow-x: auto;
+}
+
+/* ── Pestañas individuales ── */
+.tab {
+  padding: 14px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color .2s;
+  margin-bottom: -1px;
+}
+.tab:hover { color: #aaa; }
+.tab.on    { color: #C8960C; border-bottom-color: #C8960C; font-weight: 800; }
+
+/* ── Botones — pill style ── */
+.btn           { border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .3px; }
+.btn-gold      { background: #C8960C; color: #111; }
+.btn-dark      { background: #111; color: #fff; }
+.ph-btn        { border-radius: 20px !important; font-size: 12px !important; font-weight: 700 !important; }
+.ph-gold       { background: #C8960C !important; color: #fff !important; }
+.ph-dark       { background: #111 !important; color: #fff !important; }
+.fil-btn       { border-radius: 20px; font-size: 11px; font-weight: 700; }
+.fil-btn.on    { background: #C8960C; color: #fff; border-color: #C8960C; }
+.fil-btn:hover { border-color: #C8960C; color: #C8960C; }
+.fbtn          { border-radius: 20px; font-size: 11px; font-weight: 700; }
+.fbtn.on       { background: #C8960C; color: #fff; border-color: #C8960C; }
+
+/* ── Cards base — borde sutil, sin sombra ── */
+.card, .kpi-card, .detail-card, .form-card, .chart-card,
+.cmp-wrap, .cmp-vs, .insight-panel, .notes-card,
+.week-selector, .rcard, .hb, .dcard, .perf-card,
+.sobre-card, .sc {
+  border: 0.5px solid #e0ddd4;
+  box-shadow: none;
+}
+
+/* ── KPI cards (dashboard) ── */
+.kpi-card  { border-radius: 12px; padding: 18px 20px; }
+.kpi-label { font-size: 10px; font-weight: 500; letter-spacing: .5px; color: #888; margin-bottom: 6px; }
+.kpi-value { font-size: 26px; font-weight: 500; line-height: 1.1; }
+.kpi-sub   { font-size: 11px; color: #999; margin-top: 5px; font-weight: 400; }
+.kpi-bar   { height: 3px; background: #eee; border-radius: 2px; margin-top: 12px; }
+
+/* ── Resumen mini-cards (dashboard) ── */
+.res-card  { border: 0.5px solid #e0ddd4; border-radius: 10px; box-shadow: none; }
+.res-label { font-size: 10px; font-weight: 500; letter-spacing: .5px; color: #888; margin-bottom: 5px; }
+.res-val   { font-size: 20px; font-weight: 500; }
+.res-sub   { font-size: 11px; color: #999; font-weight: 400; }
+
+/* ── Resumen mini-cards (sobres) ── */
+.rcard     { border-radius: 10px; }
+.rl        { font-size: 10px; font-weight: 500; letter-spacing: .5px; text-transform: uppercase; }
+.rv        { font-size: 22px; font-weight: 500; line-height: 1.1; }
+.rsub      { font-size: 11px; font-weight: 400; }
+
+/* ── Card borders (detail/form/chart) — borde sutil ── */
+.detail-card, .form-card, .chart-card, .cmp-wrap, .cmp-vs,
+.insight-panel, .notes-card, .week-selector {
+  border: 0.5px solid #e0ddd4;
+  box-shadow: none;
+  border-radius: 12px;
+}
+
+/* ── Card headers — fondo blanco + letra en color ── */
+.detail-card-header, .form-card-header, .chart-card-header,
+.cmp-header, .cmp-vs-header, .insight-header, .notes-card-header {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  background: #fff !important;
+  color: #111 !important; /* default: negro */
+}
+
+/* Verde */
+.detail-card-header.green, .form-card-header.green,
+.chart-card-header.green,  .cmp-header.green  { color: #2E7D32 !important; }
+
+/* Rojo */
+.detail-card-header.red,   .form-card-header.red,
+.chart-card-header.red,    .cmp-header.red    { color: #C62828 !important; }
+
+/* Azul */
+.detail-card-header.blue,  .form-card-header.blue,
+.chart-card-header.blue,   .cmp-header.blue   { color: #1565C0 !important; }
+
+/* Morado */
+.detail-card-header.purple, .form-card-header.purple,
+.chart-card-header.purple,  .cmp-header.purple { color: #5E35B1 !important; }
+
+/* Dorado */
+.detail-card-header.gold,  .form-card-header.gold,
+.chart-card-header.gold,   .cmp-header.gold   { color: #C8960C !important; }
+
+/* Oscuro (dark) */
+.detail-card-header.dark,  .form-card-header.dark,
+.chart-card-header.dark,   .cmp-header.dark,
+.cmp-vs-header, .notes-card-header            { color: #111 !important; }
+
+/* Insight — naranja */
+.insight-header { color: #E65100 !important; }
+
+/* ── Tabla CMP (dashboard) ── */
+table.cmp thead th               { font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 10px 14px; }
+table.cmp thead th.th-label      { background: #111; color: #fff; }
+table.cmp td                     { font-size: 12px; padding: 7px 14px; }
+table.cmp tbody tr.total-row td  { background: #111 !important; }
+
+/* ── Save bar ── */
+.save-bar       { background: #111; }
+.save-kpi-label { letter-spacing: .5px; }
+
+/* ── Comparison inputs (dashboard) ── */
+.cmp-input { border-radius: 8px; font-size: 12px; }
+
+/* ── Week selector ── */
+.week-selector label  { font-weight: 500; font-size: 12px; }
+.week-selector select { border-radius: 20px; font-size: 12px; border: 1.5px solid #e0ddd4; background: #fff; padding: 7px 14px; }
+
+/* ── Section titles ── */
+.section-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: #aaa; margin-top: 24px; margin-bottom: 10px; }
+
+/* ── Toast ── */
+.toast { border-radius: 20px; font-size: 12px; font-weight: 500; }
+
+/* ── Modal ── */
+.modal-box     { border-radius: 16px; }
+.modal-title   { font-size: 16px; font-weight: 500; }
+.modal-section { font-size: 10px; letter-spacing: 1px; font-weight: 700; }
+.period-option { border-radius: 10px; font-size: 13px; }
+
+/* ── Rows de detalle / formulario (dashboard) ── */
+.detail-row            { font-size: 12px; }
+.detail-row .amount    { font-weight: 500; }
+.detail-row.total-row  { background: #111 !important; }
+.form-row label        { font-size: 12px; }
+.vs-row                { font-size: 12px; }
+
+/* ── Sub-tabs (sobres - coordinadores) ── */
+.stab-nav { border-bottom: 2px solid #e0ddd4; }
+.stab.on  { color: #C8960C; border-bottom-color: #C8960C; }

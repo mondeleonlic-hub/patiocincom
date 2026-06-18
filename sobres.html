@@ -246,24 +246,67 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 @media print{
   #print-area .s-bruto{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+/* ── DASHBOARD (Datos) REFRESH ─────────────────────────────────── */
+
+/* Resumen KPI cards */
+#resumen{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.rcard{
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:10px;padding:14px 18px;min-width:130px;flex:1;
+}
+.rl{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.rv{font-size:22px;font-weight:500;color:var(--text);line-height:1.1;}
+.rsub{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* Status bar */
+#st{border-radius:8px;padding:10px 14px;font-size:12px;font-weight:500;margin-bottom:12px;}
+
+/* Filtros row */
+.filtros{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px;padding:10px 0;border-bottom:0.5px solid var(--border);}
+.filtros label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px;}
+#conteo{font-size:11px;color:var(--muted);margin-left:auto;font-weight:500;}
+
+/* Table cells */
+.hidden{display:none;}
+.tc{text-align:right;font-weight:500;font-size:13px;white-space:nowrap;}
+.cp{color:#185FA5;}
+.cn2{color:#c0392b;}
+.cz{color:var(--muted);}
+
+/* Delete button */
+.xb{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;}
+.xb:hover{color:#c0392b;background:#fdecea;}
+
+/* Sucursal pills */
+.pill-ref{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:#e6f1fb;color:#185FA5;cursor:pointer;transition:opacity .15s;}
+.pill-ala{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:var(--gold-pale);color:var(--gold);cursor:pointer;transition:opacity .15s;}
+.pill-sin{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:#f0f0f0;color:#aaa;cursor:pointer;transition:opacity .15s;}
+.pill-ref:hover,.pill-ala:hover,.pill-sin:hover{opacity:.75;}
+
+/* Deuda cell */
+.deuda-cell{min-width:180px;max-width:220px;}
+.deuda-info{background:#fff8f8;border-radius:6px;padding:7px 10px;border-left:3px solid #e53e3e;}
+.deuda-concepto{font-size:11px;font-weight:700;color:#c0392b;margin-bottom:4px;letter-spacing:.2px;}
+.deuda-row{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:11px;color:#555;margin-bottom:2px;}
+.deuda-resta{font-size:10px;color:#888;margin-top:3px;font-weight:500;}
+.deuda-sin{font-size:13px;color:#ddd;}
+
+/* Table refresh */
+table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);}
+thead tr{background:#111;}
+thead th{color:#f8ba00;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:11px 12px;white-space:nowrap;border:none;}
+tbody tr:nth-child(even){background:#fafaf8;}
+tbody tr:hover{background:var(--gold-pale);}
+tbody td{padding:8px 12px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
+tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #111;background:#f7f6f3;color:#111;}
 </style>
+<link rel="stylesheet" href="patio-cinco.css">
 </head>
 <body>
 <div class="hdr">
   <div style="display:flex;align-items:center;">
-    <svg height="38" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
-      <path fill="#e0a614" d="M1799.77,509.66q46.68,0,76.32-36.92l40.6,41.8q-48.33,54.42-113.88,54.39t-108-41.41q-42.39-41.38-42.41-104.51t43.22-105.35q43.23-42.18,105.75-42.2,69.81,0,116.92,53.16l-39.4,44.67q-30-37.35-74.7-37.35-35.7,0-61.07,23.34t-25.36,62.92q0,39.57,23.91,63.52T1799.77,509.66Z"/>
-      <path fill="#e0a614" d="M2082.7,282H2146V565.68h-63.3Z"/>
-      <path fill="#e0a614" d="M2530.4,282h63.34V565.68H2530.4L2395.23,387.89V565.68h-63.34V282h59.27L2530.4,464.6Z"/>
-      <path fill="#e0a614" d="M2910,509.66q46.68,0,76.28-36.92l40.6,41.8Q2978.56,569,2913,568.93t-108-41.41q-42.45-41.38-42.44-104.51t43.25-105.35q43.23-42.18,105.74-42.2,69.82,0,116.89,53.16l-39.36,44.67q-30.09-37.35-74.7-37.35-35.7,0-61.07,23.34t-25.4,62.92q0,39.57,24,63.52T2910,509.66Z"/>
-      <path fill="#e0a614" d="M3431.56,526.53q-43.08,42-105.95,42t-106-42q-43-42-43-104.54t43-104.51q43-42,106-42t105.95,42q43,42,43,104.51T3431.56,526.53ZM3410,422.2q0-38-24.36-64.76t-59.84-26.77q-35.55,0-59.91,26.77t-24.33,64.76q0,37.92,24.33,64.54t59.91,26.6q35.49,0,59.84-26.6T3410,422.2Z"/>
-      <path fill="#ffffff" d="M212,358c0,48-26.74,79.7-66.78,79.7h-43a1.76,1.76,0,0,0-1.66,1.67v126a4,4,0,0,1-4.18,4.17H75.15A4,4,0,0,1,71,565.41V281.25a4,4,0,0,1,4.19-4.17H144C184.87,277.08,212,309.62,212,358Zm-29.64.41c0-33.79-17.12-55.48-42.13-55.48h-38a1.76,1.76,0,0,0-1.66,1.67V411.85a1.77,1.77,0,0,0,1.66,1.67h38C165.25,413.52,182.37,392.25,182.37,358.44Z"/>
-      <path fill="#ffffff" d="M912.07,281.67v17.52a3.93,3.93,0,0,1-4.19,4.17h-55a1.8,1.8,0,0,0-1.69,1.67V565.41a4,4,0,0,1-4.18,4.17H825.71a4,4,0,0,1-4.19-4.17V305a1.79,1.79,0,0,0-1.65-1.67H768.12a4,4,0,0,1-4.19-4.17V281.67a4,4,0,0,1,4.19-4.17H907.88A3.94,3.94,0,0,1,912.07,281.67Z"/>
-      <path fill="#ffffff" d="M1123.38,565.41V281.67a4,4,0,0,1,4.18-4.17h21.27a4,4,0,0,1,4.19,4.17V565.41a4,4,0,0,1-4.19,4.17h-21.27A4,4,0,0,1,1123.38,565.41Z"/>
-      <path fill="#ffffff" d="M1373,499.9V347.18c0-43.82,29.18-73,71.75-73,43,0,72.61,29.2,72.61,73V499.9c0,43.8-29.64,73-72.61,73C1402.22,572.92,1373,543.7,1373,499.9Zm114.72,1.67V345.93c0-27.12-17.52-45.89-43-45.89-25,0-42.14,18.77-42.14,45.89V501.57c0,26.7,17.12,45.47,42.14,45.47C1470.24,547,1487.76,528.27,1487.76,501.57Z"/>
-      <path fill="#ffffff" d="M504.68,281.25a4.22,4.22,0,0,0-4.59-3.75H475c-2.5,0-4.18,1.25-4.59,3.75L407.45,565c-.44,2.5.81,4.6,3.75,4.6h21.27a4.2,4.2,0,0,0,4.59-3.75l9.33-44.7h0L487.13,325.9c.4-1.67,1.28-1.67,1.68,0l40.06,195.23h0l9.17,44.7c.4,2.5,2.09,3.75,4.59,3.75h21.68c2.93,0,4.18-2.1,3.77-4.6Z"/>
-      <polygon fill="#ffffff" points="439.6 553.68 437.06 565.83 437.06 565.83 439.6 553.68"/>
-    </svg>
+    <img src="logo.png" height="26" style="display:block;vertical-align:middle;">
   </div>
   <div class="hdr-right">
     <label>Semana</label>
@@ -1046,15 +1089,19 @@ function renderResumen(){
   const tC=vis.reduce((s,r)=>s+num(r.comision),0);
   const tF=vis.reduce((s,r)=>s+num(r.food),0);
   const tM=vis.reduce((s,r)=>s+num(r.merch),0);
+  const tB=vis.reduce((s,r)=>s+num(r.bono),0);
   const nR=vis.filter(r=>r.sucursal==="PC Refugio").length;
   const nA=vis.filter(r=>r.sucursal==="PC Álamos").length;
+  const nD=vis.filter(r=>deudas[r.nombre]&&deudas[r.nombre].total>0).length;
   document.getElementById("resumen").innerHTML=`
-    <div class="rcard"><div class="rl">Total a pagar</div><div class="rv" style="color:#1c3a61">${fmt(tP)}</div></div>
-    <div class="rcard"><div class="rl">Comisiones</div><div class="rv">${fmt(tC)}</div></div>
-    <div class="rcard"><div class="rl">Food</div><div class="rv" style="color:#e53e3e">-${fmt(tF)}</div></div>
-    <div class="rcard"><div class="rl">Merch</div><div class="rv" style="color:#e53e3e">-${fmt(tM)}</div></div>
-    <div class="rcard"><div class="rl">PC Refugio</div><div class="rv" style="color:#185fa5">${nR} lav.</div></div>
-    <div class="rcard"><div class="rl">PC Álamos</div><div class="rv" style="color:#3b6d11">${nA} lav.</div></div>`;
+    <div class="rcard"><div class="rl">Total a pagar</div><div class="rv" style="color:#1c3a61">${fmt(tP)}</div><div class="rsub">${vis.length} lavadores</div></div>
+    <div class="rcard"><div class="rl">Comisiones brutas</div><div class="rv">${fmt(tC)}</div><div class="rsub">antes de descuentos</div></div>
+    <div class="rcard"><div class="rl">Food</div><div class="rv" style="color:#c0392b">-${fmt(tF)}</div><div class="rsub">descuento semana</div></div>
+    <div class="rcard"><div class="rl">Merch</div><div class="rv" style="color:#c0392b">-${fmt(tM)}</div></div>
+    ${tB>0?`<div class="rcard"><div class="rl">Bonos</div><div class="rv" style="color:#27ae60">+${fmt(tB)}</div></div>`:""}
+    <div class="rcard"><div class="rl">PC Refugio</div><div class="rv" style="color:#185FA5">${nR}</div><div class="rsub">lavadores</div></div>
+    <div class="rcard"><div class="rl">PC Álamos</div><div class="rv" style="color:#3b6d11">${nA}</div><div class="rsub">lavadores</div></div>
+    ${nD>0?`<div class="rcard" style="border-left:3px solid #e53e3e"><div class="rl">Con deuda</div><div class="rv" style="color:#c0392b">${nD}</div><div class="rsub">lavadores</div></div>`:""}`;
 }
 
 // ── SUCURSALES ────────────────────────────────────────────────────────────────

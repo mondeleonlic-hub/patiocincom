@@ -322,7 +322,85 @@
   .month-filter label { font-weight: 700; font-size: 13px; color: var(--mid); }
   .month-filter select { padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; color: var(--dark); background: var(--gray); font-family: Arial; cursor: pointer; }
   .month-filter select:focus { outline: 2px solid var(--gold); border-color: transparent; }
+
+  /* ── FORMATO REFRESH (PATIO CINCO style) ─────────────────────────── */
+
+  /* Fuente global */
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: #F0EFE9; }
+  * input, * select, * textarea, * button { font-family: inherit; }
+
+  /* Nav — brand refresh */
+  nav { background: #111; border-bottom: 1px solid #222; box-shadow: none; }
+  .nav-brand-text { font-size: 14px; letter-spacing: 4px; color: #fff; font-weight: 300; }
+  .nav-brand-text b { font-weight: 900; color: var(--gold); }
+  .nav-tab { font-weight: 500; font-size: 12px; letter-spacing: .5px; border-radius: 20px; padding: 7px 16px; }
+  .nav-tab.active { background: var(--gold); color: #111; font-weight: 700; }
+  .nav-period { font-size: 12px; font-weight: 500; letter-spacing: .3px; }
+
+  /* KPI cards */
+  .kpi-card { border: 0.5px solid #e0ddd4; border-radius: 12px; box-shadow: none; padding: 18px 20px; }
+  .kpi-label { font-size: 10px; font-weight: 500; letter-spacing: .5px; color: #888; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 500; line-height: 1.1; }
+  .kpi-sub { font-size: 11px; color: #999; margin-top: 5px; font-weight: 400; }
+  .kpi-bar { height: 3px; background: #eee; border-radius: 2px; margin-top: 12px; }
+
+  /* Resumen cards */
+  .res-card { border: 0.5px solid #e0ddd4; border-radius: 10px; box-shadow: none; }
+  .res-label { font-size: 10px; font-weight: 500; letter-spacing: .5px; color: #888; margin-bottom: 5px; }
+  .res-val { font-size: 20px; font-weight: 500; }
+  .res-sub { font-size: 11px; color: #999; font-weight: 400; }
+
+  /* Detail/form/chart cards */
+  .detail-card, .form-card, .chart-card, .cmp-wrap, .cmp-vs,
+  .insight-panel, .notes-card, .week-selector { border: 0.5px solid #e0ddd4; box-shadow: none; border-radius: 12px; }
+
+  /* Card headers — dark/gold unificado */
+  .detail-card-header, .form-card-header, .chart-card-header,
+  .cmp-header, .cmp-vs-header, .insight-header, .notes-card-header {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  }
+  /* Tablas cmp: header negro con gold */
+  table.cmp thead th { font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 10px 14px; }
+  table.cmp thead th.th-label { background: #111; color: #fff; }
+  table.cmp td { font-size: 12px; padding: 7px 14px; }
+  table.cmp tbody tr.total-row td { background: #111 !important; }
+
+  /* Save bar */
+  .save-bar { background: #111; }
+  .save-kpi-label { letter-spacing: .5px; }
+
+  /* Buttons */
+  .btn { border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .3px; }
+  .btn-gold { background: var(--gold); color: #111; }
+  .btn-dark { background: #111; color: #fff; }
+
+  /* Week selector */
+  .week-selector label { font-weight: 500; font-size: 12px; }
+  .week-selector select { border-radius: 20px; font-size: 12px; border: 1.5px solid #e0ddd4; background: #fff; padding: 7px 14px; }
+
+  /* Section titles */
+  .section-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: #aaa; margin-top: 24px; margin-bottom: 10px; }
+
+  /* Comparison inputs */
+  .cmp-input { border-radius: 8px; font-size: 12px; }
+
+  /* Toast */
+  .toast { border-radius: 20px; font-size: 12px; font-weight: 500; }
+
+  /* Modal */
+  .modal-box { border-radius: 16px; }
+  .modal-title { font-size: 16px; font-weight: 500; }
+  .modal-section { font-size: 10px; letter-spacing: 1px; font-weight: 700; }
+  .period-option { border-radius: 10px; font-size: 13px; }
+
+  /* Detail rows */
+  .detail-row { font-size: 12px; }
+  .detail-row .amount { font-weight: 500; }
+  .detail-row.total-row { background: #111 !important; }
+  .form-row label { font-size: 12px; }
+  .vs-row { font-size: 12px; }
 </style>
+<link rel="stylesheet" href="patio-cinco.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
@@ -331,28 +409,19 @@
 <!-- ══ NAV ══ -->
 <nav>
   <div class="nav-brand">
-    <svg height="38" viewBox="0 0 3531.21 842.25" xmlns="http://www.w3.org/2000/svg" style="display:block">
-      <path fill="#e0a614" d="M1799.77,509.66q46.68,0,76.32-36.92l40.6,41.8q-48.33,54.42-113.88,54.39t-108-41.41q-42.39-41.38-42.41-104.51t43.22-105.35q43.23-42.18,105.75-42.2,69.81,0,116.92,53.16l-39.4,44.67q-30-37.35-74.7-37.35-35.7,0-61.07,23.34t-25.36,62.92q0,39.57,23.91,63.52T1799.77,509.66Z"/>
-      <path fill="#e0a614" d="M2082.7,282H2146V565.68h-63.3Z"/>
-      <path fill="#e0a614" d="M2530.4,282h63.34V565.68H2530.4L2395.23,387.89V565.68h-63.34V282h59.27L2530.4,464.6Z"/>
-      <path fill="#e0a614" d="M2910,509.66q46.68,0,76.28-36.92l40.6,41.8Q2978.56,569,2913,568.93t-108-41.41q-42.45-41.38-42.44-104.51t43.25-105.35q43.23-42.18,105.74-42.2,69.82,0,116.89,53.16l-39.36,44.67q-30.09-37.35-74.7-37.35-35.7,0-61.07,23.34t-25.4,62.92q0,39.57,24,63.52T2910,509.66Z"/>
-      <path fill="#e0a614" d="M3431.56,526.53q-43.08,42-105.95,42t-106-42q-43-42-43-104.54t43-104.51q43-42,106-42t105.95,42q43,42,43,104.51T3431.56,526.53ZM3410,422.2q0-38-24.36-64.76t-59.84-26.77q-35.55,0-59.91,26.77t-24.33,64.76q0,37.92,24.33,64.54t59.91,26.6q35.49,0,59.84-26.6T3410,422.2Z"/>
-      <path fill="#ffffff" d="M212,358c0,48-26.74,79.7-66.78,79.7h-43a1.76,1.76,0,0,0-1.66,1.67v126a4,4,0,0,1-4.18,4.17H75.15A4,4,0,0,1,71,565.41V281.25a4,4,0,0,1,4.19-4.17H144C184.87,277.08,212,309.62,212,358Zm-29.64.41c0-33.79-17.12-55.48-42.13-55.48h-38a1.76,1.76,0,0,0-1.66,1.67V411.85a1.77,1.77,0,0,0,1.66,1.67h38C165.25,413.52,182.37,392.25,182.37,358.44Z"/>
-      <path fill="#ffffff" d="M912.07,281.67v17.52a3.93,3.93,0,0,1-4.19,4.17h-55a1.8,1.8,0,0,0-1.69,1.67V565.41a4,4,0,0,1-4.18,4.17H825.71a4,4,0,0,1-4.19-4.17V305a1.79,1.79,0,0,0-1.65-1.67H768.12a4,4,0,0,1-4.19-4.17V281.67a4,4,0,0,1,4.19-4.17H907.88A3.94,3.94,0,0,1,912.07,281.67Z"/>
-      <path fill="#ffffff" d="M1123.38,565.41V281.67a4,4,0,0,1,4.18-4.17h21.27a4,4,0,0,1,4.19,4.17V565.41a4,4,0,0,1-4.19,4.17h-21.27A4,4,0,0,1,1123.38,565.41Z"/>
-      <path fill="#ffffff" d="M1373,499.9V347.18c0-43.82,29.18-73,71.75-73,43,0,72.61,29.2,72.61,73V499.9c0,43.8-29.64,73-72.61,73C1402.22,572.92,1373,543.7,1373,499.9Zm114.72,1.67V345.93c0-27.12-17.52-45.89-43-45.89-25,0-42.14,18.77-42.14,45.89V501.57c0,26.7,17.12,45.47,42.14,45.47C1470.24,547,1487.76,528.27,1487.76,501.57Z"/>
-      <path fill="#ffffff" d="M504.68,281.25a4.22,4.22,0,0,0-4.59-3.75H475c-2.5,0-4.18,1.25-4.59,3.75L407.45,565c-.44,2.5.81,4.6,3.75,4.6h21.27a4.2,4.2,0,0,0,4.59-3.75l9.33-44.7h0L487.13,325.9c.4-1.67,1.28-1.67,1.68,0l40.06,195.23h0l9.17,44.7c.4,2.5,2.09,3.75,4.59,3.75h21.68c2.93,0,4.18-2.1,3.77-4.6Z"/>
-      <polygon fill="#ffffff" points="439.6 553.68 437.06 565.83 437.06 565.83 439.6 553.68"/>
-    </svg>
-  </div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
-    <button class="nav-tab" onclick="showPage('input')">Capturar semana</button>
-    <button class="nav-tab" onclick="showPage('graficas')">Gráficas</button>
-    <button class="nav-tab" onclick="showPage('historial')">Historial</button>
+    <img src="logo.png" height="26" style="display:block;vertical-align:middle;">
   </div>
   <div class="nav-period" id="nav-period">Cargando...</div>
 </nav>
+<div class="tabs">
+  <div class="tabs-inner">
+    <button class="tab on" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="tab" onclick="showPage('input')">Capturar semana</button>
+    <button class="tab" onclick="showPage('graficas')">Gráficas</button>
+    <button class="tab" onclick="showPage('historial')">Historial</button>
+    <button class="tab" onclick="showPage('inventario')">Inventario</button>
+  </div>
+</div>
 
 <!-- ══ PAGE: DASHBOARD ══ -->
 <div class="page active" id="page-dashboard">
@@ -830,27 +899,27 @@
   <div class="charts-grid">
     <!-- Donut: Mix de Ingresos -->
     <div class="chart-card">
-      <div class="chart-card-header" style="background:#C8960C;color:#1A1A1A">🍩 Mix de Ingresos</div>
+      <div class="chart-card-header" style="background:#fff;color:#C8960C">Mix de Ingresos</div>
       <div class="chart-canvas-wrap"><canvas id="chart-ing-donut"></canvas></div>
     </div>
     <!-- Donut: Distribución de Gastos -->
     <div class="chart-card">
-      <div class="chart-card-header" style="background:#1A1A1A;color:white">🍩 Distribución de Gastos</div>
+      <div class="chart-card-header" style="background:#fff;color:#1A1A1A">Distribución de Gastos</div>
       <div class="chart-canvas-wrap"><canvas id="chart-gastos-donut"></canvas></div>
     </div>
     <!-- Línea: Tendencia Ingresos, Gastos y Utilidad -->
     <div class="chart-card full">
-      <div class="chart-card-header" style="background:#1c3a61;color:white">📈 Tendencia Semanal — Ingresos · Gastos · Utilidad</div>
+      <div class="chart-card-header" style="background:#fff;color:#1c3a61">Tendencia Semanal — Ingresos · Gastos · Utilidad</div>
       <div class="chart-canvas-wrap tall"><canvas id="chart-trend-line"></canvas></div>
     </div>
     <!-- Barras: Margen de utilidad % por semana -->
     <div class="chart-card full">
-      <div class="chart-card-header" style="background:#2E7D32;color:white">📊 Margen de Utilidad % por Semana</div>
+      <div class="chart-card-header" style="background:#fff;color:#2E7D32">Margen de Utilidad % por Semana</div>
       <div class="chart-canvas-wrap"><canvas id="chart-margen-bar"></canvas></div>
     </div>
     <!-- Barras horizontales: Refugio vs Álamos gastos -->
     <div class="chart-card full">
-      <div class="chart-card-header" style="background:#5E35B1;color:white">🏠 Refugio vs Álamos — Gastos por Categoría</div>
+      <div class="chart-card-header" style="background:#fff;color:#5E35B1">Refugio vs Álamos — Gastos por Categoría</div>
       <div class="chart-canvas-wrap tall"><canvas id="chart-suc-bar"></canvas></div>
     </div>
   </div>
@@ -969,6 +1038,117 @@
     <div class="modal-actions" style="margin-top:20px">
       <button class="btn btn-outline" onclick="closeEditDates()">Cancelar</button>
       <button class="btn btn-gold" onclick="confirmEditDates()">Guardar fechas</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: INVENTARIO ══ -->
+<div class="page" id="page-inventario">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h2 style="font-size:18px;font-weight:700;color:#111;margin:0;letter-spacing:1px;">Inventario</h2>
+      <p style="font-size:11px;color:#999;margin:4px 0 0;letter-spacing:.5px;text-transform:uppercase;">Artículos · Costos · Existencias</p>
+    </div>
+    <button class="btn btn-dark" onclick="abrirModalInv()">+ Agregar artículo</button>
+  </div>
+
+  <!-- Resumen rápido -->
+  <div id="inv-resumen" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;"></div>
+
+  <!-- Tabla -->
+  <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;overflow:hidden;">
+    <table class="cmp" id="inv-tabla">
+      <thead>
+        <tr>
+          <th class="th-label" style="text-align:left;min-width:180px;">Artículo</th>
+          <th class="th-label" style="text-align:left;min-width:100px;">Categoría</th>
+          <th class="th-label" style="text-align:left;min-width:120px;">Proveedor</th>
+          <th style="background:#fff;color:#1565C0;text-align:right;min-width:110px;">Costo unitario</th>
+          <th style="background:#fff;color:#2E7D32;text-align:right;min-width:110px;">Costo paquete</th>
+          <th style="background:#fff;color:#555;text-align:center;min-width:90px;">Uds / paquete</th>
+          <th style="background:#fff;color:#C8960C;text-align:right;min-width:100px;">Existencia</th>
+          <th style="background:#fff;color:#555;text-align:center;min-width:80px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="inv-body"></tbody>
+    </table>
+    <div id="inv-empty" style="text-align:center;padding:40px;color:#bbb;font-size:13px;display:none;">
+      Sin artículos registrados — presiona <strong>+ Agregar artículo</strong> para comenzar.
+    </div>
+  </div>
+</div>
+
+<!-- Modal Inventario -->
+<div class="modal-overlay" id="inv-modal" onclick="if(event.target===this)cerrarModalInv()">
+  <div class="modal-box" style="width:440px;">
+    <div class="modal-title" id="inv-modal-title">Nuevo artículo</div>
+    <input type="hidden" id="inv-edit-idx" value="-1">
+
+    <div style="display:grid;gap:12px;margin-top:4px;">
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Artículo</label>
+        <input type="text" id="inv-nombre" placeholder="Ej: Shampoo concentrado" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Categoría</label>
+          <input type="text" id="inv-categoria" placeholder="Ej: Insumos, Merch..." style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Proveedor</label>
+          <input type="text" id="inv-proveedor" placeholder="Ej: Costco, distribuidor..." style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Costo unitario</label>
+          <input type="number" id="inv-costo-unit" placeholder="0.00" min="0" step="0.01" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;">
+        </div>
+        <div>
+          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Costo paquete</label>
+          <input type="number" id="inv-costo-paq" placeholder="0.00" min="0" step="0.01" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Unidades por paquete</label>
+          <input type="number" id="inv-uds-paq" placeholder="0" min="0" step="1" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;">
+        </div>
+        <div>
+          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Existencia actual</label>
+          <input type="number" id="inv-existencia" placeholder="0" min="0" step="1" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Notas</label>
+        <textarea id="inv-notas" placeholder="Proveedor, observaciones..." rows="2" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;resize:vertical;"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="btn btn-outline" onclick="cerrarModalInv()">Cancelar</button>
+      <button class="btn btn-dark" onclick="guardarArticuloInv()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: coincidencia inventario ↔ gasto -->
+<div class="modal-overlay" id="inv-match-modal">
+  <div class="modal-box" style="width:400px;">
+    <div style="font-size:13px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Compra detectada</div>
+    <div class="modal-title" style="font-size:15px;margin-bottom:6px;">
+      ¿Sumar al inventario?
+    </div>
+    <div style="background:#f7f6f3;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#555;">
+      El concepto <strong id="inv-match-desc" style="color:#111;"></strong> coincide con
+      <strong id="inv-match-nombre" style="color:#C8960C;"></strong> en tu inventario.
+    </div>
+    <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;">¿Cuántas unidades deseas agregar?</label>
+    <input type="number" id="inv-match-uds" value="1" min="1" step="1"
+      style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:16px;text-align:center;font-weight:700;">
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn btn-outline" onclick="omitirInvMatch()">No por ahora</button>
+      <button class="btn btn-dark" onclick="confirmarInvMatch()">✓ Agregar</button>
     </div>
   </div>
 </div>
@@ -1164,13 +1344,182 @@ function markUnsaved() {
 // ── NAVIGATION ──
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
   document.getElementById('page-' + id).classList.add('active');
-  event.target.classList.add('active');
+  event.target.classList.add('on');
   if (id === 'dashboard') renderDashboard();
   if (id === 'historial') renderHistorial();
   if (id === 'graficas') { buildChartSelects(); renderCharts(); }
+  if (id === 'inventario') renderInventario();
   // Note: buildChartSelects only on page entry; renderCharts on filter changes
+}
+
+// ══ INVENTARIO ══════════════════════════════════════════════════
+const INV_KEY = 'pc4_inventario';
+
+function getInventario() {
+  try { return JSON.parse(localStorage.getItem(INV_KEY) || '[]'); } catch { return []; }
+}
+function saveInventario(arr) { localStorage.setItem(INV_KEY, JSON.stringify(arr)); }
+const fmtInv = v => '$' + Number(v||0).toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+function renderInventario() {
+  const items = getInventario();
+  const tbody = document.getElementById('inv-body');
+  const empty = document.getElementById('inv-empty');
+  const tabla = document.getElementById('inv-tabla');
+  const resumen = document.getElementById('inv-resumen');
+
+  const totalArt = items.length;
+  const valorTotal = items.reduce((s,i) => s + (Number(i.costoUnit||0) * Number(i.existencia||0)), 0);
+  const sinStock = items.filter(i => Number(i.existencia||0) === 0).length;
+
+  resumen.innerHTML = [
+    {label:'Artículos', val: totalArt, color:'#111'},
+    {label:'Valor en inventario', val: fmtInv(valorTotal), color:'#2E7D32'},
+    {label:'Sin existencia', val: sinStock, color: sinStock > 0 ? '#C62828' : '#999'},
+  ].map(c=>`
+    <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:14px 20px;min-width:140px;flex:1;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;">${c.label}</div>
+      <div style="font-size:22px;font-weight:500;color:${c.color};">${c.val}</div>
+    </div>`).join('');
+
+  if (!items.length) {
+    tabla.style.display = 'none'; empty.style.display = 'block'; return;
+  }
+  tabla.style.display = ''; empty.style.display = 'none';
+
+  tbody.innerHTML = items.map((item, idx) => {
+    const cu = item.costoUnit ? Number(item.costoUnit)
+      : (item.costoPaq && item.udsPaq ? Number(item.costoPaq)/Number(item.udsPaq) : 0);
+    const stockColor = Number(item.existencia||0) === 0 ? '#C62828'
+      : Number(item.existencia||0) <= 5 ? '#E65100' : '#2E7D32';
+    return `<tr>
+      <td class="td-label" style="font-weight:600;color:#111;">${item.nombre||'—'}
+        ${item.notas?`<div style="font-size:10px;color:#bbb;font-weight:400;margin-top:2px;">${item.notas}</div>`:''}
+      </td>
+      <td><span style="background:#f0f0f0;color:#555;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${item.categoria||'—'}</span></td>
+      <td style="color:#555;font-size:12px;">${item.proveedor||'—'}</td>
+      <td style="text-align:right;color:#1565C0;font-weight:500;">${fmtInv(cu)}</td>
+      <td style="text-align:right;color:#2E7D32;font-weight:500;">${item.costoPaq?fmtInv(item.costoPaq):'—'}</td>
+      <td style="text-align:center;color:#555;">${item.udsPaq||'—'}</td>
+      <td style="text-align:right;font-weight:700;color:${stockColor};">${item.existencia??'—'}</td>
+      <td style="text-align:center;">
+        <button onclick="editarArticuloInv(${idx})" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px 5px;opacity:.6;" title="Editar">✏️</button>
+        <button onclick="eliminarArticuloInv(${idx})" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px 5px;opacity:.6;color:#C62828;" title="Eliminar">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirModalInv() {
+  document.getElementById('inv-edit-idx').value = -1;
+  document.getElementById('inv-modal-title').textContent = 'Nuevo artículo';
+  ['inv-nombre','inv-categoria','inv-proveedor','inv-notas'].forEach(id=>document.getElementById(id).value='');
+  ['inv-costo-unit','inv-costo-paq','inv-uds-paq','inv-existencia'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inv-modal').classList.add('open');
+  document.getElementById('inv-nombre').focus();
+}
+
+function editarArticuloInv(idx) {
+  const item = getInventario()[idx];
+  document.getElementById('inv-edit-idx').value = idx;
+  document.getElementById('inv-modal-title').textContent = 'Editar artículo';
+  document.getElementById('inv-nombre').value = item.nombre||'';
+  document.getElementById('inv-categoria').value = item.categoria||'';
+  document.getElementById('inv-proveedor').value = item.proveedor||'';
+  document.getElementById('inv-costo-unit').value = item.costoUnit||'';
+  document.getElementById('inv-costo-paq').value = item.costoPaq||'';
+  document.getElementById('inv-uds-paq').value = item.udsPaq||'';
+  document.getElementById('inv-existencia').value = item.existencia??'';
+  document.getElementById('inv-notas').value = item.notas||'';
+  document.getElementById('inv-modal').classList.add('open');
+}
+
+function cerrarModalInv() { document.getElementById('inv-modal').classList.remove('open'); }
+
+function guardarArticuloInv() {
+  const nombre = document.getElementById('inv-nombre').value.trim();
+  if (!nombre) { alert('El nombre del artículo es requerido.'); return; }
+  const item = {
+    nombre, categoria: document.getElementById('inv-categoria').value.trim(),
+    proveedor: document.getElementById('inv-proveedor').value.trim(),
+    costoUnit: document.getElementById('inv-costo-unit').value||null,
+    costoPaq:  document.getElementById('inv-costo-paq').value||null,
+    udsPaq:    document.getElementById('inv-uds-paq').value||null,
+    existencia: document.getElementById('inv-existencia').value!==''
+      ? Number(document.getElementById('inv-existencia').value) : null,
+    notas: document.getElementById('inv-notas').value.trim(),
+  };
+  const items = getInventario();
+  const idx = Number(document.getElementById('inv-edit-idx').value);
+  if (idx >= 0) { items[idx] = item; } else { items.push(item); }
+  saveInventario(items); cerrarModalInv(); renderInventario();
+  showToast(idx >= 0 ? '✓ Artículo actualizado' : '✓ Artículo agregado');
+}
+
+function eliminarArticuloInv(idx) {
+  if (!confirm('¿Eliminar este artículo?')) return;
+  const items = getInventario(); items.splice(idx, 1);
+  saveInventario(items); renderInventario(); showToast('Artículo eliminado');
+}
+
+// ── Detección: gasto ↔ inventario ─────────────────────────────
+let _invMatchQueue = [];   // lista de coincidencias pendientes
+let _invMatchField = null; // campo de desglose que disparó la revisión
+
+function checkInvMatches(fieldId) {
+  const desgItems = desgloseData[fieldId] || [];
+  const inv = getInventario();
+  if (!desgItems.length || !inv.length) return;
+
+  const matches = [];
+  desgItems.forEach(di => {
+    if (!di.desc) return;
+    const descL = di.desc.toLowerCase().trim();
+    inv.forEach((invItem, invIdx) => {
+      const nomL = (invItem.nombre || '').toLowerCase().trim();
+      if (!nomL) return;
+      // Coincide si la descripción contiene el nombre del artículo o viceversa
+      if (descL.includes(nomL) || nomL.includes(descL)) {
+        if (!matches.find(m => m.invIdx === invIdx)) {
+          matches.push({ invIdx, invNombre: invItem.nombre, desc: di.desc });
+        }
+      }
+    });
+  });
+
+  if (!matches.length) return;
+  _invMatchQueue = matches;
+  _invMatchField = fieldId;
+  _mostrarSiguienteMatch();
+}
+
+function _mostrarSiguienteMatch() {
+  if (!_invMatchQueue.length) return;
+  const m = _invMatchQueue[0];
+  document.getElementById('inv-match-desc').textContent = `"${m.desc}"`;
+  document.getElementById('inv-match-nombre').textContent = m.invNombre;
+  document.getElementById('inv-match-uds').value = 1;
+  document.getElementById('inv-match-modal').classList.add('open');
+}
+
+function confirmarInvMatch() {
+  const m = _invMatchQueue[0];
+  const uds = Number(document.getElementById('inv-match-uds').value) || 1;
+  const items = getInventario();
+  items[m.invIdx].existencia = (Number(items[m.invIdx].existencia || 0)) + uds;
+  saveInventario(items);
+  showToast(`+${uds} unidades → ${m.invNombre}`);
+  _cerrarMatchModal();
+}
+
+function omitirInvMatch() { _cerrarMatchModal(); }
+
+function _cerrarMatchModal() {
+  document.getElementById('inv-match-modal').classList.remove('open');
+  _invMatchQueue.shift();
+  if (_invMatchQueue.length) setTimeout(_mostrarSiguienteMatch, 300);
 }
 
 // ── WEEK SELECTOR ──
@@ -1865,8 +2214,8 @@ function renderHistorial() {
 
 function editWeek(i) {
   currentWeekIdx = i;
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-tab')[1].classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.tab')[1].classList.add('on');
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-input').classList.add('active');
   buildWeekSelect(); loadWeek();
@@ -2311,6 +2660,8 @@ function openDesglose(fieldId) {
 
 function closeDesglose() {
   document.getElementById('desg-modal').classList.remove('open');
+  // Revisar si algún concepto coincide con artículos del inventario
+  if (currentDesgloseField) checkInvMatches(currentDesgloseField);
 }
 
 function renderDesgloseList() {
