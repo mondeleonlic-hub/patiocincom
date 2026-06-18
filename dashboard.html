@@ -420,6 +420,7 @@
     <button class="tab" onclick="showPage('graficas')">Gráficas</button>
     <button class="tab" onclick="showPage('historial')">Historial</button>
     <button class="tab" onclick="showPage('inventario')">Inventario</button>
+    <button class="tab" onclick="showPage('performance')">Performance</button>
   </div>
 </div>
 
@@ -1078,6 +1079,78 @@
   </div>
 </div>
 
+
+<!-- ══ PAGE PERFORMANCE ══ -->
+<div class="page" id="page-performance" style="padding:28px 32px;max-width:1400px;margin:0 auto;">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#aaa;text-transform:uppercase;margin-bottom:4px;">Semana activa</div>
+      <div style="font-size:18px;font-weight:700;color:#111;letter-spacing:.5px;" id="perf-week-label">—</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="fbtn" id="perf-btn-s1" onclick="perfSetSuc(1)"
+        style="padding:7px 20px;border:1.5px solid #C8960C;background:#C8960C;color:#fff;font-size:11px;letter-spacing:1px;">
+        SUCURSAL 1
+      </button>
+      <button class="fbtn" id="perf-btn-s2" onclick="perfSetSuc(2)"
+        style="padding:7px 20px;border:1.5px solid #e0ddd4;background:#fff;color:#888;font-size:11px;letter-spacing:1px;">
+        SUCURSAL 2
+      </button>
+      <div style="width:1px;height:28px;background:#e0ddd4;margin:0 4px;"></div>
+      <button id="perf-edit-btn" onclick="perfToggleEdit()"
+        style="padding:7px 20px;border:1.5px solid #111;background:#111;color:#fff;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">
+        EDITAR
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;overflow:hidden;">
+    <div class="form-card-header" style="padding:14px 20px;border-bottom:1px solid #f0ede6;">
+      <span id="perf-suc-label">SUCURSAL 1</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="perf-table" style="width:100%;border-collapse:collapse;font-size:12px;min-width:900px;">
+        <thead>
+          <tr style="background:#faf9f7;border-bottom:1px solid #f0ede6;">
+            <th style="text-align:left;padding:10px 14px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">ALIAS</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">PUNTOS</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">LAVADOS</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">COMISIÓN</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">ESTRELLAS</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">HITS</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">LAV/DÍA</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">ENTREGAS %</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">CALIDAD</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">STRIKES</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">RETARDOS</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">FALTA</th>
+            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">FALTA JUST</th>
+          </tr>
+        </thead>
+        <tbody id="perf-tbody"></tbody>
+      </table>
+    </div>
+    <div id="perf-empty" style="padding:40px;text-align:center;color:#bbb;font-size:13px;display:none;">
+      Sin datos — presiona EDITAR para capturar
+    </div>
+  </div>
+
+  <!-- Botón guardar (solo en edit mode) -->
+  <div id="perf-save-bar" style="display:none;margin-top:16px;text-align:right;">
+    <button onclick="perfCancelEdit()"
+      style="padding:10px 24px;border:1.5px solid #e0ddd4;background:#fff;color:#666;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-right:8px;">
+      Cancelar
+    </button>
+    <button onclick="perfGuardar()"
+      style="padding:10px 28px;border:none;background:#C8960C;color:#fff;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;">
+      GUARDAR
+    </button>
+  </div>
+</div>
+
 <!-- Modal Inventario -->
 <div class="modal-overlay" id="inv-modal" onclick="if(event.target===this)cerrarModalInv()">
   <div class="modal-box" style="width:440px;">
@@ -1351,6 +1424,7 @@ function showPage(id) {
   if (id === 'historial') renderHistorial();
   if (id === 'graficas') { buildChartSelects(); renderCharts(); }
   if (id === 'inventario') renderInventario();
+  if (id === 'performance') renderPerformance();
   // Note: buildChartSelects only on page entry; renderCharts on filter changes
 }
 
@@ -2856,6 +2930,159 @@ function saveApiKey() {
   document.getElementById('apikey-inp').value = '';
   showToast('✓ API Key guardada');
   setScanStatus('ok', '✓ API Key guardada — ahora puedes escanear tickets');
+}
+
+
+// ══ PERFORMANCE ══════════════════════════════════════════════════════
+const PERF_KEY = 'pc4_perf';
+let perfSuc = 1;      // sucursal activa: 1 o 2
+let perfEditMode = false;
+
+const PERF_EMPLEADOS = {
+  1: ['Mogli','Cristian','Ivan','El güero','Arellano','Emma','Cesar','Antonio','Francisco','Uli','Charlie','Cheque'],
+  2: ['Jacobo','Poli','Mauri','Juan Lopez','Marvin','Toño','Jose Jr','Valente','Juaquin','Fercho']
+};
+
+const PERF_FIELDS = ['puntos','lavados','comision','estrellas','hits','lavDiarios','entregas','calidad','strikes','retardos','falta','faltaJust'];
+
+function getPerf() {
+  try { return JSON.parse(localStorage.getItem(PERF_KEY)) || {}; } catch(e) { return {}; }
+}
+function savePerf(obj) { localStorage.setItem(PERF_KEY, JSON.stringify(obj)); }
+
+function perfKey() { return `s${perfSuc}`; }
+
+function perfGetData() {
+  const all = getPerf();
+  const key = perfKey();
+  if (all[key] && all[key].length > 0) return all[key];
+  // Devolver filas vacías con los empleados de la sucursal
+  return PERF_EMPLEADOS[perfSuc].map(alias => ({
+    alias, puntos:'', lavados:'', comision:'', estrellas:'', hits:'',
+    lavDiarios:'', entregas:'', calidad:'', strikes:'', retardos:'', falta:'', faltaJust:''
+  }));
+}
+
+function perfSetSuc(n) {
+  if (perfEditMode) perfCancelEdit();
+  perfSuc = n;
+  document.getElementById('perf-btn-s1').style.background = n===1 ? '#C8960C' : '#fff';
+  document.getElementById('perf-btn-s1').style.color      = n===1 ? '#fff'    : '#888';
+  document.getElementById('perf-btn-s1').style.borderColor= n===1 ? '#C8960C' : '#e0ddd4';
+  document.getElementById('perf-btn-s2').style.background = n===2 ? '#C8960C' : '#fff';
+  document.getElementById('perf-btn-s2').style.color      = n===2 ? '#fff'    : '#888';
+  document.getElementById('perf-btn-s2').style.borderColor= n===2 ? '#C8960C' : '#e0ddd4';
+  document.getElementById('perf-suc-label').textContent = `SUCURSAL ${n}`;
+  renderPerformance();
+}
+
+function perfToggleEdit() {
+  if (perfEditMode) { perfGuardar(); return; }
+  perfEditMode = true;
+  document.getElementById('perf-edit-btn').textContent = 'GUARDAR';
+  document.getElementById('perf-save-bar').style.display = 'block';
+  renderPerfTable(perfGetData(), true);
+}
+
+function perfCancelEdit() {
+  perfEditMode = false;
+  document.getElementById('perf-edit-btn').textContent = 'EDITAR';
+  document.getElementById('perf-save-bar').style.display = 'none';
+  renderPerfTable(perfGetData(), false);
+}
+
+function perfGuardar() {
+  const tbody = document.getElementById('perf-tbody');
+  const rows = tbody.querySelectorAll('tr');
+  const data = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const alias = row.querySelector('td:first-child').textContent;
+    const obj = { alias };
+    PERF_FIELDS.forEach((f, i) => {
+      obj[f] = inputs[i] ? inputs[i].value : '';
+    });
+    data.push(obj);
+  });
+  const all = getPerf();
+  all[perfKey()] = data;
+  savePerf(all);
+  perfEditMode = false;
+  document.getElementById('perf-edit-btn').textContent = 'EDITAR';
+  document.getElementById('perf-save-bar').style.display = 'none';
+  renderPerfTable(data, false);
+  showToast('Performance guardado ✓');
+}
+
+function renderPerformance() {
+  // Week label
+  const weeks = data.weeks || [];
+  const lbl = weeks.length > 0 ? (weeks[0].label || '—') : '—';
+  const el = document.getElementById('perf-week-label');
+  if (el) el.textContent = lbl;
+  renderPerfTable(perfGetData(), false);
+}
+
+function perfColor(field, val) {
+  const v = parseFloat(val);
+  if (isNaN(v) || val === '') return '#999';
+  if (field === 'puntos')     return v >= 0 ? '#2E7D32' : '#C62828';
+  if (field === 'hits')       return v > 0  ? '#2E7D32' : '#999';
+  if (field === 'lavDiarios') return v > 0  ? '#2E7D32' : '#999';
+  if (field === 'entregas') {
+    if (v >= 70) return '#2E7D32';
+    if (v >= 50) return '#E65100';
+    return '#C62828';
+  }
+  if (['calidad','strikes','retardos','falta'].includes(field))
+    return v > 0 ? '#C62828' : '#2E7D32';
+  if (field === 'faltaJust') return '#888';
+  return '#111';
+}
+
+function perfFmt(field, val) {
+  if (val === '' || val === null || val === undefined) return '—';
+  if (field === 'comision') return val + '%';
+  if (field === 'entregas') return val + '%';
+  return val;
+}
+
+function renderPerfTable(rows, editMode) {
+  const tbody = document.getElementById('perf-tbody');
+  const emptyEl = document.getElementById('perf-empty');
+  if (!rows || rows.length === 0) {
+    tbody.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  const hasData = rows.some(r => PERF_FIELDS.some(f => r[f] !== '' && r[f] !== undefined));
+
+  tbody.innerHTML = rows.map((row, ri) => {
+    const bg = ri % 2 === 0 ? '#fff' : '#faf9f7';
+    const alias = `<td style="padding:9px 14px;font-weight:600;color:#111;border-bottom:1px solid #f5f3ee;white-space:nowrap;">${row.alias}</td>`;
+
+    const cells = PERF_FIELDS.map(f => {
+      const val = row[f] !== undefined ? row[f] : '';
+      if (editMode) {
+        const type = ['puntos','lavados','estrellas','hits','lavDiarios','entregas','calidad','strikes','retardos','falta','faltaJust'].includes(f) ? 'number' : 'text';
+        const step = f === 'estrellas' ? '0.1' : '1';
+        return `<td style="padding:4px 6px;border-bottom:1px solid #f5f3ee;text-align:center;">
+          <input type="${type}" step="${step}" value="${val}"
+            style="width:58px;border:1px solid #e0ddd4;border-radius:6px;padding:4px 6px;font-size:12px;text-align:center;font-family:inherit;outline:none;"
+            onfocus="this.style.borderColor='#C8960C'" onblur="this.style.borderColor='#e0ddd4'">
+        </td>`;
+      } else {
+        const color = perfColor(f, val);
+        return `<td style="padding:9px 10px;border-bottom:1px solid #f5f3ee;text-align:center;color:${color};font-weight:${['puntos'].includes(f)?'700':'500'};">
+          ${perfFmt(f, val)}
+        </td>`;
+      }
+    }).join('');
+
+    return `<tr style="background:${bg};">${alias}${cells}</tr>`;
+  }).join('');
 }
 
 // ── INIT ──
