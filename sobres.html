@@ -297,12 +297,12 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 
 /* Table refresh */
 table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);}
-thead tr{background:#111;}
-thead th{color:#f8ba00;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:11px 12px;white-space:nowrap;border:none;}
+thead tr{background:#f0ede6;}
+thead th{color:#555;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:11px 12px;white-space:nowrap;border:none;border-bottom:1.5px solid #e0ddd4;}
 tbody tr:nth-child(even){background:#fafaf8;}
 tbody tr:hover{background:var(--gold-pale);}
 tbody td{padding:8px 12px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
-tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #111;background:#f7f6f3;color:#111;}
+tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #e0ddd4;background:#f7f6f3;color:#111;}
 </style>
 <link rel="stylesheet" href="patio-cinco.css">
 </head>
@@ -603,7 +603,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     <div style="overflow-x:auto;margin-bottom:16px">
       <table id="flujo-tabla" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)">
         <thead>
-          <tr style="background:#000;color:#f8ba00;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">
+          <tr style="background:#f0ede6;color:#555;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid #e0ddd4">
             <th style="padding:10px 10px;text-align:left;min-width:120px">Día</th>
             <th style="padding:10px 8px;text-align:right;min-width:90px">PC Refugio</th>
             <th style="padding:10px 8px;text-align:center;width:60px">✓</th>
@@ -616,7 +616,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
         </thead>
         <tbody id="flujo-body"></tbody>
         <tfoot>
-          <tr style="background:#f8f8f8;font-weight:900;font-size:13px;border-top:2px solid #000">
+          <tr style="background:#f7f6f3;font-weight:900;font-size:13px;border-top:2px solid #e0ddd4">
             <td style="padding:10px">Subtotal</td>
             <td style="padding:10px;text-align:right;color:#1c3a61" id="fl-tot-ref">$0</td>
             <td colspan="2"></td>
@@ -2019,10 +2019,10 @@ function renderLiquidaciones(){
     const totalAbonos=(l.abonos||[]).reduce((s,a)=>s+a.monto,0);
     const saldo=totalPagar-totalAbonos;
     return`<div style="background:#fff;border-radius:10px;border:1px solid #eee;overflow:hidden;margin-bottom:10px">
-      <div style="background:#000;color:#f8ba00;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+      <div style="background:#f0ede6;color:#111;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e0ddd4">
         <div>
           <div style="font-weight:900;font-size:13px">${l.nombre}</div>
-          <div style="font-size:10px;color:#aaa">${l.periodo} · ${l.concepto}</div>
+          <div style="font-size:10px;color:#888">${l.periodo} · ${l.concepto}</div>
         </div>
         <div style="display:flex;gap:8px">
           <button onclick="imprimirLiquidacion(${i})" style="background:#f8ba00;color:#000;border:none;border-radius:5px;padding:5px 10px;font-weight:700;font-size:11px;cursor:pointer">Imprimir</button>
@@ -2738,32 +2738,31 @@ function renderCoordHist(){
   const el=document.getElementById("coord-hist");
   if(!coordHist.length){el.innerHTML='<p class="it">Sin historial aún.</p>';return;}
   el.innerHTML=coordHist.map((h,idx)=>`
-    <div class="hb" style="margin-bottom:8px;overflow:hidden">
-      <div class="hh" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Semana ${h.semana}</span>
+    <div class="hb" style="margin-bottom:10px;overflow:hidden;border-radius:12px">
+      <div class="hh" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#fff;border-bottom:1px solid #f0ede6">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#aaa;margin-bottom:2px">Semana</div>
+          <div style="font-size:14px;font-weight:700;color:#111">${h.semana}</div>
+        </div>
         <span style="display:flex;align-items:center;gap:8px">
-          <span style="color:#f8ba00;font-weight:900">${fmt(h.totalGeneral)}</span>
-          <span class="hf">${h.fecha}</span>
-          <button onclick="toggleCoordHistEdit(${idx})" style="background:#f8ba00;color:#000;border:none;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer">✏️</button>
-          <button onclick="eliminarCoordHist(${idx})" style="background:#e53e3e;color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer">✕</button>
+          <span style="font-size:16px;font-weight:700;color:#C8960C">${fmt(h.totalGeneral)}</span>
+          <span class="hf" style="color:#aaa;font-size:11px">${h.fecha}</span>
+          <button onclick="toggleCoordHistEdit(${idx})" style="background:#f5f3ee;color:#555;border:1px solid #e0ddd4;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer">✏️</button>
+          <button onclick="eliminarCoordHist(${idx})" style="background:#fff0f0;color:#e53e3e;border:1px solid #fdc5c5;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer">✕</button>
         </span>
       </div>
-      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:auto">
-        <thead><tr style="background:#222;color:#f8ba00">
-          <th style="padding:5px 10px;text-align:left">Nombre</th>
-          <th style="padding:5px 10px;text-align:right">Pago fijo</th>
-          <th style="padding:5px 10px;text-align:right">Extra</th>
-          <th style="padding:5px 10px;text-align:right">Comisión</th>
-          <th style="padding:5px 10px;text-align:right">Total</th>
-        </tr></thead>
-        <tbody>${h.coords.map((c,j)=>`<tr style="background:${j%2?"#fafafa":"#fff"};border-bottom:1px solid #f0f0f0">
-          <td style="padding:5px 10px;font-weight:700">${c.nombre}</td>
-          <td style="padding:5px 10px;text-align:right">${fmt(c.sueldo||0)}</td>
-          <td style="padding:5px 10px;text-align:right;color:${(c.extra||0)>0?"#38a169":"#aaa"}">${(c.extra||0)>0?fmt(c.extra):"—"}</td>
-          <td style="padding:5px 10px;text-align:right;color:${(c.comision||0)>0?"#1c3a61":"#aaa"}">${(c.comision||0)>0?fmt(c.comision):"—"}</td>
-          <td style="padding:5px 10px;text-align:right;font-weight:900;color:#1c3a61">${fmt(c.total)}</td>
-        </tr>`).join("")}</tbody>
-      </table>
+      <div style="padding:8px 0">
+        ${h.coords.map((c,j)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:${j<h.coords.length-1?"0.5px solid #f5f3ee":"none"}">
+          <div style="font-weight:700;font-size:13px;min-width:90px;color:#111">${c.nombre}</div>
+          <div style="display:flex;gap:10px;flex:1;flex-wrap:wrap">
+            <span style="font-size:11px;color:#888">Fijo <strong style="color:#111">${fmt(c.sueldo||0)}</strong></span>
+            ${(c.extra||0)>0?`<span style="font-size:11px;color:#888">Extra <strong style="color:#38a169">+${fmt(c.extra)}</strong></span>`:""}
+            ${(c.comision||0)>0?`<span style="font-size:11px;color:#888">Com. <strong style="color:#1565C0">${fmt(c.comision)}</strong></span>`:""}
+          </div>
+          <div style="font-weight:900;font-size:13px;color:#1c3a61;text-align:right;min-width:64px">${fmt(c.total)}</div>
+        </div>`).join("")}
+      </div>
       <div id="chedit-${idx}" style="display:none;border-top:2px solid #f8ba00;padding:12px;background:#fafafa">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:10px;text-transform:uppercase">Editar pagos — Semana ${h.semana}</div>
         ${h.coords.map((c,ci)=>`
@@ -3001,7 +3000,7 @@ function renderPerfTabla(){
   const lbl=document.getElementById("perf-sem-lbl");
   if(lbl)lbl.textContent="S"+sem;
   tabla.innerHTML=`
-    <thead><tr style="background:#000;color:#f8ba00;font-size:10px">
+    <thead><tr style="background:#f0ede6;color:#555;font-size:10px;border-bottom:1.5px solid #e0ddd4">
       <th style="padding:7px 10px;text-align:left;min-width:100px">Lavador</th>
       ${PERF_COLS.map(c=>`<th style="padding:7px 6px;text-align:right;min-width:${c.w}px">${c.label}</th>`).join("")}
     </tr></thead>
@@ -3247,7 +3246,7 @@ function renderHistPagos(){
   if(tablaEl){
     const cols=lav!=="all"?["Semana","Total lav."]:["Semana","Refugio","Álamos","Total"];
     tablaEl.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#000;color:#f8ba00">
+      <thead><tr style="background:#f0ede6;color:#555;border-bottom:1.5px solid #e0ddd4">
         ${cols.map(c=>`<th style="padding:7px 10px;text-align:${c==="Semana"?"left":"right"}">${c}</th>`).join("")}
       </tr></thead>
       <tbody>${semanas.map((h,i)=>{
