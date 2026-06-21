@@ -42,7 +42,7 @@ body{
 /* ── CONTENT / PANELS ── */
 #content{width:100%;}
 .pnl{display:none;}
-.pnl.on{display:block;padding:28px 40px;}
+.pnl.on{display:block;padding:32px 48px;max-width:1400px;margin:0 auto;}
 
 /* ── SUB-TABS (coordinadores) ── */
 .stab-nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:22px;}
@@ -53,9 +53,9 @@ body{
 .spnl.on{display:block;}
 
 /* ── PANEL HEADER ── */
-.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;padding-bottom:14px;border-bottom:1.5px solid var(--border);}
-.ph h2{font-size:18px;font-weight:800;color:var(--black);letter-spacing:2px;text-transform:uppercase;margin:0;}
-.ph h2 span{color:var(--gold);}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;padding-bottom:16px;border-bottom:0.5px solid #e0ddd4;}
+.ph h2{font-size:16px;font-weight:700;color:#111;letter-spacing:.3px;text-transform:none;margin:0;}
+.ph h2 span{color:#C8960C;}
 .bg{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
 
 /* ── BUTTONS ── */
@@ -68,10 +68,10 @@ body{
 .bg-pale{background:var(--gold-pale);color:var(--gold);border:1.5px solid var(--border-gold);}
 
 /* ── CARDS ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);}
+.card{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:18px 20px;box-shadow:none;}
 
 /* ── TABLES ── */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:0.5px solid #e0ddd4;overflow:hidden;}
 table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);}
 thead tr{background:var(--gold-pale);}
 thead th{color:var(--gold);font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:10px 12px;border-bottom:1.5px solid var(--border-gold);white-space:nowrap;}
@@ -95,7 +95,7 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .total-bar{background:var(--gold);color:#fff;font-weight:800;font-size:13px;letter-spacing:1px;padding:12px 16px;border-radius:var(--radius);margin-top:8px;display:flex;justify-content:space-between;align-items:center;}
 
 /* ── SOBRE / TICKET CARD ── */
-.sobre-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow);}
+.sobre-card{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:18px 20px;margin-bottom:12px;box-shadow:none;}
 
 /* ── DEUDA TAG ── */
 .tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.5px;}
@@ -128,12 +128,12 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 @media(max-width:900px){
   .hdr{padding:0 24px}
   .tabs-inner{padding:0 24px}
-  .pnl.on{padding:20px 24px}
+  .pnl.on{padding:24px 28px}
 }
 @media(max-width:600px){
   .hdr{padding:0 16px}
   .tabs-inner{padding:0 16px}
-  .pnl.on{padding:16px 16px}
+  .pnl.on{padding:20px 20px}
 }
 
 /* ── RESUMEN INDICADORES ── */
@@ -170,24 +170,24 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .ph-outline:focus{outline:none; box-shadow:0 0 0 2px rgba(200,150,12,.25);}
 
 /* ── HISTORIAL CARDS ── */
-.hb{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);}
-.hh{background:var(--black);color:var(--gold);padding:10px 14px;font-weight:700;font-size:12px;display:flex;justify-content:space-between;align-items:center;}
+.hb{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;margin-bottom:12px;overflow:hidden;box-shadow:none;}
+.hh{background:#f5f3ee;color:#111;padding:12px 16px;font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid #e0ddd4;}
 .hf{color:#888;font-weight:400;font-size:11px;}
 .nd{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;}
 .it{font-size:11px;color:var(--muted);margin:0 0 14px;}
-.tw{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:0.5px solid #e0ddd4;overflow:hidden;margin-bottom:16px;}
 
 /* ── BUTTON EXTRAS ── */
 .bo{background:#fff;color:#333;border:1.5px solid var(--border);}
 .bb{background:var(--navy);color:#fff;}
 
 /* ── SOBRE / TICKET CARD ── */
-.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;}
+.sc{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:18px 20px;margin-bottom:12px;box-shadow:none;display:flex;align-items:center;gap:12px;}
 .sn{font-weight:800;font-size:14px;min-width:100px;}
 .sr{margin-left:auto;font-weight:900;font-size:16px;color:var(--navy);}
 
 /* ── DEUDA CARD ── */
-.dcard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow);}
+.dcard{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:18px 20px;margin-bottom:12px;box-shadow:none;}
 .dname{font-weight:800;font-size:14px;margin-bottom:6px;}
 .deuda-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:12px;color:#555;}
 .dtag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;}
@@ -195,10 +195,10 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .dtag-green{background:#eafaf1;color:#27ae60;}
 
 /* ── ANALYTICS / SUCURSALES ── */
-.suc-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
-.suc-kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;text-align:center;box-shadow:var(--shadow);}
-.kpi-val{font-size:22px;font-weight:900;color:var(--navy);}
-.kpi-lab{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+.suc-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-bottom:24px;}
+.suc-kpi{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:18px 20px;box-shadow:none;}
+.kpi-val{font-size:26px;font-weight:500;color:#111;line-height:1.1;}
+.kpi-lab{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:6px;}
 
 /* ── FILTER BUTTONS ── */
 .fil-btn{padding:5px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;color:#555;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;}
@@ -208,6 +208,26 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 /* ── PERFORMANCE TABLE ── */
 .perf-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
 .perf-card h4{margin:0 0 10px;font-size:13px;font-weight:800;color:var(--black);}
+
+/* ── DEUDA CARDS ── */
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:8px;}
+.dsec{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#aaa;margin:20px 0 10px;padding-bottom:8px;border-bottom:0.5px solid #e0ddd4;}
+.dc{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:16px;position:relative;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.dc.td{border-left:3px solid #38a169;}
+.dc-borrar{position:absolute;top:10px;right:10px;background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;}
+.dc-borrar:hover{color:#e53e3e;background:#fdecea;}
+.dc-nom{font-size:15px;font-weight:900;color:#111;margin-bottom:12px;padding-right:24px;}
+.dc-campo{margin-bottom:8px;}
+.dc-campo label{display:block;font-size:10px;font-weight:700;letter-spacing:.5px;color:#888;text-transform:uppercase;margin-bottom:3px;}
+.dc-campo input,.dc-campo textarea{width:100%;font-size:13px;border:1px solid #e0ddd4;border-radius:6px;padding:6px 10px;font-family:inherit;background:#fafafa;color:#111;}
+.dc-campo textarea{min-height:40px;resize:vertical;}
+.dc-calc{background:#f7f6f3;border-radius:8px;padding:8px 12px;margin-top:10px;}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px;}
+.cl{color:#888;}
+.cv{font-weight:700;color:#111;}
+.rojo{color:#e53e3e!important;}
+.dc-status{border-top:0.5px solid #e0ddd4;margin-top:10px;padding-top:10px;}
+.dr{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;}
 
 /* ── RESUMEN CARDS (update) ── */
 #resumen{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
@@ -250,17 +270,21 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
   #print-area .s-bruto{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
-/* ── DASHBOARD (Datos) REFRESH ─────────────────────────────────── */
+/* ── KPI CARDS — mismo formato exacto que Dashboard ────────────── */
 
-/* Resumen KPI cards */
-#resumen{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+#resumen{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:24px;}
 .rcard{
-  background:var(--card);border:0.5px solid var(--border);
-  border-radius:10px;padding:14px 18px;min-width:130px;flex:1;
+  background:#fff;
+  border:0.5px solid #e0ddd4;
+  border-radius:12px;
+  padding:18px 20px;
+  flex:1;
+  min-width:130px;
+  box-shadow:none;
 }
-.rl{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
-.rv{font-size:22px;font-weight:500;color:var(--text);line-height:1.1;}
-.rsub{font-size:11px;color:var(--muted);margin-top:3px;}
+.rl{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:6px;}
+.rv{font-size:26px;font-weight:500;color:#111;line-height:1.1;}
+.rsub{font-size:11px;color:#999;margin-top:5px;font-weight:400;}
 
 /* Status bar */
 #st{border-radius:8px;padding:10px 14px;font-size:12px;font-weight:500;margin-bottom:12px;} #st:empty{padding:0;margin:0;}
@@ -313,7 +337,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
   </div>
   <div class="hdr-right">
     <label>Semana</label>
-    <input type="text" id="sem" value="" onchange="document.getElementById('ptit')&&(document.getElementById('ptit').textContent='Semana '+this.value);document.getElementById('stit')&&(document.getElementById('stit').textContent='Tickets — Semana '+this.value);">
+    <input type="text" id="sem" value="" onchange="syncSemana(this.value)">
     <input type="password" id="gkey-input" placeholder="API Key Gemini"
       style="background:#222;color:#f8ba00;border:1px solid #444;border-radius:4px;padding:3px 8px;font-size:11px;width:120px;font-family:monospace"
       onchange="localStorage.setItem('pc4_gkey',this.value);flash('✓ API Key guardada')">
@@ -338,7 +362,8 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     <div class="ph">
       <h2 id="ptit">Sin datos cargados</h2>
       <div class="bg">
-        <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">Subir reporte</button>
+        <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
+        <button class="ph-btn" onclick="abrirCapturaMaual()" style="background:#fff;color:#1565C0;border:1.5px solid #1565C0;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">✏️ Captura manual</button>
         <select class="ph-btn ph-outline" id="datos-sem-sel" onchange="cargarSemanaHistDatos()">
           <option value="">Semana actual</option>
         </select>
@@ -391,14 +416,10 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
       <h2>Analytics por Sucursal</h2>
       <div style="display:flex;gap:8px;align-items:center">
         <div style="display:flex;background:#f0f0f0;border-radius:8px;padding:3px;gap:2px">
-          <button onclick="setSucTab('pagos')" id="suctab-pagos"
-            style="background:#000;color:#f8ba00;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">💰 Pagos</button>
-          <button onclick="setSucTab('performance')" id="suctab-performance"
-            style="background:transparent;color:#666;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">⭐ Performance</button>
-          <button onclick="setSucTab('hist')" id="suctab-hist"
-            style="background:transparent;color:#666;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">📈 Histórico</button>
-          <button onclick="setSucTab('ranking')" id="suctab-ranking"
-            style="background:transparent;color:#666;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">🏆 Ranking</button>
+          <button onclick="setSucTab('pagos')" id="suctab-pagos" class="ph-btn ph-dark" style="border-radius:20px;font-size:11px;padding:5px 14px">💰 Pagos</button>
+          <button onclick="setSucTab('performance')" id="suctab-performance" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">⭐ Performance</button>
+          <button onclick="setSucTab('hist')" id="suctab-hist" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">📈 Histórico</button>
+          <button onclick="setSucTab('ranking')" id="suctab-ranking" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">🏆 Ranking</button>
         </div>
         <button class="btn by" onclick="renderSucursales()" style="padding:5px 10px">🔄</button>
       </div>
@@ -406,19 +427,19 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
 
     <!-- VISTA PAGOS -->
     <div id="suc-view-pagos">
-      <div id="suc-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
+      <div id="suc-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-        <div id="suc-chart-ref" style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px"></div>
-        <div id="suc-chart-ala" style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px"></div>
+        <div id="suc-chart-ref" style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px"></div>
+        <div id="suc-chart-ala" style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px"></div>
       </div>
-      <div id="suc-indicadores" style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px;margin-bottom:20px"></div>
+      <div id="suc-indicadores" style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:20px"></div>
     </div>
 
     <!-- VISTA PERFORMANCE -->
     <div id="suc-view-performance" style="display:none">
-      <div style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px;margin-bottom:16px">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-          <div style="font-weight:700;font-size:13px">Datos de Performance — <span id="perf-sem-lbl">S19/2026</span></div>
+          <div style="font-weight:700;font-size:13px">Datos de Performance — <span id="perf-sem-lbl" style="color:#C8960C">—</span></div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <select id="perf-suc-sel" onchange="renderPerfTabla()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px">
               <option value="PC Refugio">PC Refugio</option>
@@ -431,9 +452,9 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
             <button onclick="guardarPerf()" style="background:#000;color:#f8ba00;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer">Guardar semana</button>
           </div>
         </div>
-        <div style="overflow-x:auto"><table id="perf-tabla" style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px"></table></div>
+        <div class="tw"><table id="perf-tabla" style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px"></table></div>
       </div>
-      <div style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
         <div style="font-weight:700;font-size:13px;margin-bottom:10px">Historial de semanas</div>
         <div id="perf-hist"></div>
       </div>
@@ -441,7 +462,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
 
     <!-- VISTA HISTÓRICO pagos -->
     <div id="suc-view-hist" style="display:none">
-      <div style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px;margin-bottom:16px">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
           <div style="font-weight:700;font-size:13px">Tendencia de pagos</div>
           <select id="hist-suc-sel" onchange="renderHistPagos()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px">
@@ -455,7 +476,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
         </div>
         <div id="hist-pagos-chart" style="min-height:160px"></div>
       </div>
-      <div style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
         <div style="font-weight:700;font-size:13px;margin-bottom:10px">Tabla comparativa por semana</div>
         <div id="hist-pagos-tabla" style="overflow-x:auto"></div>
       </div>
@@ -464,7 +485,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     <!-- VISTA RANKING -->
     <div id="suc-view-ranking" style="display:none">
       <div id="ranking-alertas" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px"></div>
-      <div style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px;margin-bottom:16px">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
         <div style="font-weight:700;font-size:13px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
           <span>Ranking de ganancias</span>
           <select id="ranking-suc-sel" onchange="renderRanking()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px">
@@ -475,23 +496,12 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
         </div>
         <div id="ranking-lista"></div>
       </div>
-      <div style="background:#fff;border-radius:10px;border:1px solid #eee;padding:16px">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
         <div style="font-weight:700;font-size:13px;margin-bottom:12px">Mapa de calor — últimas semanas</div>
         <div id="ranking-heatmap" style="overflow-x:auto"></div>
       </div>
     </div>
 
-    <!-- Config colapsable -->
-    <details style="background:#fff;border-radius:10px;border:1px solid #eee;margin-top:16px">
-      <summary style="padding:14px 16px;font-weight:700;font-size:13px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">
-        ⚙️ Configuración de sucursal y % comisión
-        <button class="btn by" onclick="guardarSucursales();event.preventDefault()" style="font-size:11px;padding:4px 12px">Guardar</button>
-      </summary>
-      <div style="padding:0 16px 16px">
-        <p class="it" style="margin-top:8px">Configura una vez — se recuerda siempre.</p>
-        <div class="suc-grid" id="suc-grid"></div>
-      </div>
-    </details>
   </div>
 
   <!-- DEUDAS -->
@@ -533,7 +543,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
   <!-- COORDINADORES -->
   <div class="pnl" id="pnl-coords">
     <div class="ph">
-      <h2>Coordinadores — <span id="coord-sem-lbl">Semana 18/2026</span></h2>
+      <h2>Coordinadores — <span id="coord-sem-lbl" style="color:#C8960C">—</span></h2>
     </div>
 
     <!-- Sub-tabs -->
@@ -588,7 +598,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
   <!-- FLUJO DE EFECTIVO -->
   <div class="pnl on" id="pnl-flujo">
     <div class="ph">
-      <h2>Flujo de efectivo — <span id="flujo-sem-lbl">Semana 19/2026</span></h2>
+      <h2>Flujo de efectivo — <span id="flujo-sem-lbl" style="color:#C8960C">—</span></h2>
       <div class="bg">
         <select class="hist-select" id="flujo-sem-sel" onchange="cambiarSemanaFlujo()">
           <option value="">Semana actual</option>
@@ -600,8 +610,8 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     </div>
 
     <!-- TABLA DE FLUJO -->
-    <div style="overflow-x:auto;margin-bottom:16px">
-      <table id="flujo-tabla" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+    <div class="tw">
+      <table id="flujo-tabla" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;">
         <thead>
           <tr style="background:#f0ede6;color:#555;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid #e0ddd4">
             <th style="padding:10px 10px;text-align:left;min-width:120px">Día</th>
@@ -803,14 +813,8 @@ async function init(){
   }
   // Siempre mostrar la semana guardada correctamente
   document.getElementById("sem").value = savedSem;
-  // Sincronizar títulos con la semana guardada
-  if(savedSem){
-    const ptit = document.getElementById("ptit");
-    if(ptit) ptit.textContent = "Semana " + savedSem + (rows.length ? " — datos cargados ✓" : "");
-    const stit = document.getElementById("stit");
-    if(stit) stit.textContent = "Tickets — Semana " + savedSem;
-  }
-  sv("pc4_semana", savedSem);
+  // Sincronizar todos los labels con la semana guardada
+  syncSemana(savedSem);
 
   sv("pc4_perfiles", perfiles);
 
@@ -835,7 +839,16 @@ function calcT(r,n){
   return num(r.comision)-food-num(r.merch)-Math.abs(num(r.ahorro||0))+extra-getDesc(n);
 }
 function flash(m){const e=document.getElementById("fmsg");e.textContent=m;e.style.display="block";setTimeout(()=>e.style.display="none",3000)}
-function setSt(t,m){const e=document.getElementById("st");e.style.display="block";e.style.background={load:"#fffbe6",ok:"#f0fff4",err:"#fff5f5"}[t];e.style.color={load:"#7a5c00",ok:"#276749",err:"#c53030"}[t];e.textContent=m;if(t==="ok")setTimeout(()=>e.style.display="none",6000)}
+function setSt(t,m){
+  const e=document.getElementById("st");
+  e.style.display="block";
+  e.style.background={load:"#fffbe6",ok:"#f0fff4",err:"#fff5f5"}[t];
+  e.style.color={load:"#7a5c00",ok:"#276749",err:"#c53030"}[t];
+  e.style.border={load:"1px solid #f8e99e",ok:"1px solid #c3e6cd",err:"1px solid #fdb5b5"}[t];
+  e.style.borderRadius="10px";e.style.display="flex";e.style.justifyContent="space-between";e.style.alignItems="flex-start";e.style.gap="8px";
+  e.innerHTML=`<span>${m}</span><button onclick="document.getElementById('st').style.display='none'" style="background:none;border:none;font-size:16px;cursor:pointer;color:inherit;line-height:1;padding:0;flex-shrink:0">✕</button>`;
+  if(t==="ok")setTimeout(()=>e.style.display="none",6000);
+}
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>goTab(b.dataset.t)));
@@ -846,10 +859,21 @@ function goTab(id){
   document.getElementById("pnl-"+id).classList.add("on");
   if(id==="sobres")renderS();if(id==="hist")renderH();
   if(id==="deudas")renderD();if(id==="sucursales")renderSucursales();
-  if(id==="coords"){renderCoords();renderLiquidaciones();document.getElementById("coord-sem-lbl").textContent="Semana "+document.getElementById("sem").value;goSubTab("pagos");}
-  if(id==="flujo"){initFlujo();document.getElementById("flujo-sem-lbl").textContent="Semana "+document.getElementById("sem").value;}
+  if(id==="coords"){renderCoords();renderLiquidaciones();syncSemana(document.getElementById("sem").value);goSubTab("pagos");}
+  if(id==="flujo"){initFlujo();syncSemana(document.getElementById("sem").value);}
 }
-// sem change handled via onchange attr
+// ── SYNC SEMANA — actualiza todos los labels al cambiar la semana ────────────
+function syncSemana(v){
+  const s=v||"";
+  const lbl=s?"Semana "+s:"—";
+  const el=id=>document.getElementById(id);
+  if(el("ptit"))el("ptit").textContent=s?"Semana "+s+" — datos cargados ✓":"Sin datos cargados";
+  if(el("stit"))el("stit").textContent=s?"Tickets — Semana "+s:"Tickets";
+  if(el("flujo-sem-lbl"))el("flujo-sem-lbl").textContent=lbl;
+  if(el("coord-sem-lbl"))el("coord-sem-lbl").textContent=lbl;
+  if(el("perf-sem-lbl"))el("perf-sem-lbl").textContent=s?"S"+s:"—";
+  sv("pc4_semana",s);
+}
 
 // ── SUB-TABS (Coordinadores) ───────────────────────────────────────────────
 function goSubTab(id){
@@ -920,7 +944,12 @@ Devuelve SOLO este JSON (sin markdown, sin texto extra):
       ]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
     });
     const raw=await res.text();
-    if(!res.ok){setSt("err","❌ Error API: "+raw.slice(0,200));return}
+    if(!res.ok){
+      const code=JSON.parse(raw)?.error?.code;
+      if(code===429)setSt("err","⚠️ Cuota de Gemini agotada. Usa el botón <strong>+ Lavador</strong> para capturar manualmente, o espera unos minutos e intenta de nuevo. Los datos ya cargados están intactos.");
+      else setSt("err","❌ Error API ("+code+"): revisa tu API Key de Gemini.");
+      return;
+    }
     const data=JSON.parse(raw);
     const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
     const parsed=JSON.parse(text.replace(/```json\n?|\n?```/g,"").trim());
@@ -1179,7 +1208,7 @@ function renderSucursales(){
     {label:"Lavadores activos",val:rows.filter(r=>r.nombre).length,color:"#888",bg:"#f5f5f5"},
   ];
   kpiEl.innerHTML=kpiData.map(k=>`
-    <div style="background:${k.bg};border-radius:10px;border:1px solid #eee;padding:14px 16px">
+    <div style="background:${k.bg};border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
       <div style="font-size:10px;color:${k.color=="#000"?"#333":k.color};font-weight:600;text-transform:uppercase;margin-bottom:4px">${k.label}</div>
       <div style="font-size:22px;font-weight:900;color:${k.color}">${k.val}</div>
     </div>`).join("");
@@ -1323,6 +1352,47 @@ function tarjetaDeuda(nombre,d,saldada){
   return div;
 }
 
+
+// ── CAPTURA MANUAL (fallback sin Gemini) ─────────────────────────────────────
+function abrirCapturaMaual(){
+  const overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px";
+  overlay.innerHTML=`
+    <div style="background:#fff;border-radius:16px;padding:24px;width:min(520px,100%);max-height:90vh;overflow-y:auto;font-family:inherit">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700;color:#111">✏️ Captura manual</div>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#aaa">✕</button>
+      </div>
+      <p style="font-size:12px;color:#888;margin-bottom:12px">Una línea por lavador. Formato: <strong>Nombre, Autos, Comisión</strong><br>Ejemplo: <code>Fercho, 9, 477</code></p>
+      <textarea id="cm-txt" rows="14" placeholder="Fercho, 9, 477&#10;Jacobo, 28, 1916&#10;Jose Jr, 37, 2700&#10;Juan Lopez, 36, 2641" style="width:100%;font-size:13px;border:1px solid #e0ddd4;border-radius:8px;padding:10px;font-family:monospace;resize:vertical;box-sizing:border-box"></textarea>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="padding:8px 20px;border-radius:20px;border:1px solid #e0ddd4;background:#fff;cursor:pointer;font-size:12px;font-weight:700">Cancelar</button>
+        <button onclick="procesarCapturaManual()" style="padding:8px 20px;border-radius:20px;border:none;background:#111;color:#fff;cursor:pointer;font-size:12px;font-weight:700">Cargar datos →</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function procesarCapturaManual(){
+  const txt=document.getElementById("cm-txt")?.value||"";
+  const nuevos=[];
+  txt.split("\n").forEach(line=>{
+    line=line.trim();if(!line)return;
+    const parts=line.split(",").map(s=>s.trim());
+    if(parts.length<1||!parts[0])return;
+    const nombre=parts[0];
+    const autos=+parts[1]||0;
+    const comision=+parts[2]||0;
+    const p=perfiles[nombre]||{sucursal:"",pct:40};
+    nuevos.push({nombre,sucursal:p.sucursal||"",pct:p.pct||40,autos,comision,food:0,merch:0,bono:0,ahorro:0,extra:0,extraConcepto:"",pagoTot:0,pagoPago:0});
+  });
+  if(!nuevos.length){alert("No se reconocieron datos. Usa el formato: Nombre, Autos, Comisión");return;}
+  rows=[...rows,...nuevos.filter(n=>!rows.find(r=>r.nombre===n.nombre))];
+  rows=rows.map(r=>applyPerfil(r));
+  sv("pc4_rows",rows);
+  renderT();setSt("ok",`✓ ${nuevos.length} lavadores cargados manualmente`);
+  document.querySelector("div[style*='rgba(0,0,0,.5)']")?.remove();
+}
 
 async function limpiarDatosSem(){
   if(!confirm("¿Limpiar la tabla de datos?\nEsto borra los lavadores y montos de la semana actual.\n(El historial y deudas no se borran)")) return;
@@ -1954,7 +2024,7 @@ function renderH(){
   if(!historial.length){d.innerHTML='<p class="nd">Sin historial aún.</p>';return}
   d.innerHTML=historial.map(h=>`<div class="hb">
     <div class="hh"><span>Semana ${h.semana}</span><span class="hf">${h.fecha}</span></div>
-    <div style="overflow-x:auto"><table style="min-width:auto"><thead><tr>
+    <div class="tw" style="margin:0;border-radius:0;border:none;border-top:0.5px solid #e0ddd4"><table style="min-width:auto"><thead><tr>
       <th>Nombre</th><th>Sucursal</th><th>%</th><th>Autos</th><th>Comisión</th>
       <th>Food</th><th>Merch</th><th>Bono</th><th>Deuda</th><th>Concepto</th><th>Pago</th><th>Total</th>
     </tr></thead><tbody>
@@ -2018,7 +2088,7 @@ function renderLiquidaciones(){
     const totalPagar=sueldo+totalCom;
     const totalAbonos=(l.abonos||[]).reduce((s,a)=>s+a.monto,0);
     const saldo=totalPagar-totalAbonos;
-    return`<div style="background:#fff;border-radius:10px;border:1px solid #eee;overflow:hidden;margin-bottom:10px">
+    return`<div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;overflow:hidden;margin-bottom:12px">
       <div style="background:#f0ede6;color:#111;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e0ddd4">
         <div>
           <div style="font-weight:900;font-size:13px">${l.nombre}</div>
@@ -2445,7 +2515,7 @@ function renderFlujoTabla(){
           style="width:16px;height:16px;accent-color:#000;cursor:pointer;margin-top:4px">
       </td>
       <td style="padding:8px;vertical-align:top">
-        <input type="text" value="${d.ref.staff||""}" placeholder="Styben"
+        <input type="text" value="${d.ref.staff||""}" placeholder="COORD"
           oninput="ufd(${i},'ref.staff',this.value)"
           style="width:100%;border:none;background:transparent;font-size:12px;font-family:inherit;outline:none">
       </td>
@@ -2455,7 +2525,7 @@ function renderFlujoTabla(){
           style="width:16px;height:16px;accent-color:#000;cursor:pointer;margin-top:4px">
       </td>
       <td style="padding:8px;vertical-align:top">
-        <input type="text" value="${d.ala.staff||""}" placeholder="Hugo"
+        <input type="text" value="${d.ala.staff||""}" placeholder="COORD"
           oninput="ufd(${i},'ala.staff',this.value)"
           style="width:100%;border:none;background:transparent;font-size:12px;font-family:inherit;outline:none">
       </td>
@@ -2579,7 +2649,7 @@ function renderFlujoHist(){
       <div id="fhdit-${idx}" style="display:none;border-top:2px solid #f8ba00;padding:12px;background:#fafafa">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Editar días — Semana ${h.semana}</div>
         ${(h.dias||[]).map((d,di)=>`
-          <div style="background:#fff;border:1px solid #eee;border-radius:6px;padding:10px;margin-bottom:8px">
+          <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:12px 14px;margin-bottom:8px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
               <input type="text" value="${d.dia||""}" onchange="editFlujoHistDia(${idx},${di},'dia',this.value)" style="font-weight:700;font-size:13px;border:1px solid #ddd;border-radius:4px;padding:4px 8px;width:180px">
               <button onclick="eliminarFlujoHistDia(${idx},${di})" style="background:#e53e3e;color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer">✕</button>
@@ -2766,7 +2836,7 @@ function renderCoordHist(){
       <div id="chedit-${idx}" style="display:none;border-top:2px solid #f8ba00;padding:12px;background:#fafafa">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:10px;text-transform:uppercase">Editar pagos — Semana ${h.semana}</div>
         ${h.coords.map((c,ci)=>`
-          <div style="background:#fff;border:1px solid #eee;border-radius:6px;padding:10px;margin-bottom:8px">
+          <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:12px 14px;margin-bottom:8px">
             <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#1c3a61">${c.nombre}</div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
               <div>
@@ -2823,7 +2893,7 @@ function setSucTab(tab){
   ["pagos","performance","hist","ranking"].forEach(t=>{
     const btn=document.getElementById("suctab-"+t);
     const view=document.getElementById("suc-view-"+t);
-    if(btn){btn.style.background=t===tab?"#000":"transparent";btn.style.color=t===tab?"#f8ba00":"#666";}
+    if(btn){btn.style.background=t===tab?"#111":"#f0ede6";btn.style.color=t===tab?"#fff":"#555";}
     if(view)view.style.display=t===tab?"block":"none";
   });
   if(tab==="performance"){renderPerfTabla();renderPerfHist();}
@@ -3085,7 +3155,12 @@ Devuelve SOLO este JSON (sin markdown, sin texto extra):
       ]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
     });
     const raw=await res.text();
-    if(!res.ok){setSt("err","❌ Error API: "+raw.slice(0,200));return;}
+    if(!res.ok){
+      const code2=JSON.parse(raw)?.error?.code;
+      if(code2===429)setSt("err","⚠️ Cuota de Gemini agotada. Captura los datos de Performance manualmente en la tabla de abajo.");
+      else setSt("err","❌ Error API Performance ("+code2+").");
+      return;
+    }
     const data=JSON.parse(raw);
     const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
     const parsed=JSON.parse(text.replace(/```json\n?|\n?```/g,"").trim());
@@ -3125,7 +3200,7 @@ function renderPerfHist(){
   if(!el)return;
   if(!perfHist.length){el.innerHTML='<p class="it">Sin historial aún. Guarda una semana primero.</p>';return;}
   el.innerHTML=perfHist.map((h,idx)=>`
-    <div style="border:1px solid #eee;border-radius:8px;margin-bottom:8px;overflow:hidden">
+    <div style="border:0.5px solid #e0ddd4;border-radius:12px;margin-bottom:8px;overflow:hidden">
       <div style="background:#1a1a1a;color:#f8ba00;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12px">
         <span><b>S${h.semana}</b> · ${h.suc}</span>
         <span style="display:flex;gap:8px;align-items:center">
