@@ -600,7 +600,8 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     <div class="ph">
       <h2>Flujo de efectivo — <span id="flujo-sem-lbl" style="color:#C8960C">—</span></h2>
       <div class="bg">
-        <select class="hist-select" id="flujo-sem-sel" onchange="cambiarSemanaFlujo()">
+        <span style="font-size:11px;font-weight:700;color:#888;letter-spacing:.5px;text-transform:uppercase;">📅 Ver semana:</span>
+        <select class="ph-btn ph-outline" id="flujo-sem-sel" onchange="cambiarSemanaFlujo()" title="Selecciona una semana para ver su flujo de efectivo">
           <option value="">Semana actual</option>
         </select>
         <button class="btn bn" onclick="cargarSemanaFlujoVacia()">Semana completa</button>
@@ -2008,13 +2009,9 @@ function cerrarSemana(){
   const nextNum = parseInt(parts[0]) + 1;
   const nextSem = nextNum + "/" + (parts[1] || "2026");
   sv("pc4_deudas",deudas);sv("pc4_hist",historial);
-  popularSelectores();sv("pc4_rows",rows);sv("pc4_semana",nextSem);
+  popularSelectores();sv("pc4_rows",rows);
   document.getElementById("sem").value = nextSem;
-  // Actualizar labels
-  const flujoLbl = document.getElementById("flujo-sem-lbl");
-  if(flujoLbl) flujoLbl.textContent = "Semana " + nextSem;
-  const coordLbl = document.getElementById("coord-sem-lbl");
-  if(coordLbl) coordLbl.textContent = "Semana " + nextSem;
+  syncSemana(nextSem); // sincroniza todos los labels + guarda pc4_semana
   renderT();renderD();flash("✓ Semana "+sem+" cerrada — ahora en semana "+nextSem);
 }
 
@@ -2349,10 +2346,15 @@ function cargarSemanaFlujoVacia(){
 function cambiarSemanaFlujo(){
   const sel = document.getElementById("flujo-sem-sel");
   const val = sel ? sel.value : "";
+  const lbl = document.getElementById("flujo-sem-lbl");
   if(!val){
+    // Volver a semana actual
     flujoDias = ld("pc4_flujo_dias",[]);
     if(!flujoDias.length) cargarSemanaFlujoVacia();
     else renderFlujoTabla();
+    // Restaurar label con semana actual
+    const curSem = document.getElementById("sem").value;
+    if(lbl) lbl.textContent = curSem ? "Semana "+curSem : "—";
     return;
   }
   const idx = parseInt(val.replace("hist_",""));
@@ -2360,7 +2362,12 @@ function cambiarSemanaFlujo(){
   if(hist[idx] && hist[idx].flujoDias){
     flujoDias = hist[idx].flujoDias;
     renderFlujoTabla();
-    flash("Semana hist. cargada");
+    // Actualizar label con semana del historial
+    const semHist = hist[idx].semana || hist[idx].label || ("Semana "+(idx+1));
+    if(lbl) lbl.textContent = "Semana "+semHist+" (hist.)";
+    flash("Cargado: semana "+semHist);
+  } else {
+    flash("Sin datos de flujo para esa semana");
   }
 }
 
@@ -3357,6 +3364,9 @@ init().then(()=>{
   document.querySelectorAll(".tab").forEach(b=>b.classList.remove("on"));
   const ft=document.querySelector('.tab[data-t="flujo"]');
   if(ft)ft.classList.add("on");
+  // Sincronizar todos los labels con la semana real guardada
+  const semVal=document.getElementById("sem").value;
+  if(semVal)syncSemana(semVal);
 });
 // Rellenar campo de API key si está guardada (esto sí puede quedar en localStorage)
 const _k=localStorage.getItem("pc4_gkey");
