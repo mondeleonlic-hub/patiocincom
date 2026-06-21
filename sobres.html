@@ -364,6 +364,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
       <div class="bg">
         <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
         <button class="ph-btn" onclick="abrirCapturaMaual()" style="background:#fff;color:#1565C0;border:1.5px solid #1565C0;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">✏️ Captura manual</button>
+        <button class="ph-btn" onclick="cargarS25()" style="background:#fff;color:#2E7D32;border:1.5px solid #2E7D32;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">📋 Cargar S25</button>
         <select class="ph-btn ph-outline" id="datos-sem-sel" onchange="cargarSemanaHistDatos()">
           <option value="">Semana actual</option>
         </select>
@@ -681,6 +682,36 @@ const S19 = [
   {nombre:"Javier",     sucursal:"PC Refugio",pct:30, autos:27, comision:2861, food:615, merch:25, bono:0,   ahorro:0},
   {nombre:"OMAR",       sucursal:"PC Refugio",pct:40, autos:9,  comision:592,  food:0,   merch:0,  bono:0,   ahorro:0},
   {nombre:"Uli",        sucursal:"PC Refugio",pct:35, autos:62, comision:3675, food:734, merch:25, bono:0,   ahorro:0},
+];
+
+// ── DATOS SEMANA 25/2026 (leídos del PDF) ────────────────────────────────────
+const S25 = [
+  // PC ÁLAMOS
+  {nombre:"Emma",       sucursal:"PC Álamos", pct:40, autos:6,  comision:512,  food:0, merch:24,  bono:0, ahorro:0},
+  {nombre:"Jacobo",     sucursal:"PC Álamos", pct:40, autos:31, comision:2072, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Jose Jr",    sucursal:"PC Álamos", pct:40, autos:39, comision:2880, food:0, merch:24,  bono:0, ahorro:0},
+  {nombre:"Juan Lopez", sucursal:"PC Álamos", pct:45, autos:45, comision:3268, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Juaquin",    sucursal:"PC Álamos", pct:30, autos:7,  comision:342,  food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Marvin",     sucursal:"PC Álamos", pct:45, autos:49, comision:3966, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Mauri",      sucursal:"PC Álamos", pct:40, autos:42, comision:2784, food:0, merch:24,  bono:0, ahorro:0},
+  {nombre:"Poli",       sucursal:"PC Álamos", pct:40, autos:19, comision:1188, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Toño",       sucursal:"PC Álamos", pct:40, autos:43, comision:4579, food:0, merch:72,  bono:0, ahorro:0},
+  {nombre:"Valente",    sucursal:"PC Álamos", pct:35, autos:40, comision:2429, food:0, merch:0,   bono:0, ahorro:0},
+  // PC REFUGIO
+  {nombre:"Antonio",    sucursal:"PC Refugio",pct:30, autos:36, comision:2187, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Arellano",   sucursal:"PC Refugio",pct:40, autos:53, comision:3612, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Cesar",      sucursal:"PC Refugio",pct:30, autos:41, comision:2494, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Charlie",    sucursal:"PC Refugio",pct:30, autos:47, comision:2574, food:0, merch:48,  bono:0, ahorro:0},
+  {nombre:"El güero",   sucursal:"PC Refugio",pct:45, autos:49, comision:3967, food:0, merch:304, bono:0, ahorro:0},
+  {nombre:"Emma",       sucursal:"PC Refugio",pct:35, autos:44, comision:3064, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Francisco",  sucursal:"PC Refugio",pct:30, autos:42, comision:2064, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Geras",      sucursal:"PC Refugio",pct:40, autos:1,  comision:92,   food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Güero",      sucursal:"PC Refugio",pct:40, autos:1,  comision:60,   food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Ivan",       sucursal:"PC Refugio",pct:40, autos:14, comision:900,  food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Lupis",      sucursal:"PC Refugio",pct:40, autos:21, comision:1458, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Mauri",      sucursal:"PC Refugio",pct:40, autos:3,  comision:238,  food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Mogli",      sucursal:"PC Refugio",pct:40, autos:5,  comision:2942, food:0, merch:0,   bono:0, ahorro:0},
+  {nombre:"Uli",        sucursal:"PC Refugio",pct:30, autos:38, comision:1965, food:0, merch:0,   bono:0, ahorro:0},
 ];
 
 // Perfiles permanentes (sucursal+% que se recuerdan entre semanas)
@@ -1415,6 +1446,16 @@ async function recargarS19(){
   sv("pc4_semana","19/2026");
   renderT(); renderD(); renderSucursales();
   flash("✅ Datos S19/2026 cargados — 21 lavadores");
+}
+
+async function cargarS25(){
+  if(!confirm("¿Cargar datos de Semana 25/2026?\nEsto reemplaza los datos actuales.\n(Las deudas y el historial no se borran)"))return;
+  rows = S25.map(r=>({...r}));
+  await sv("pc4_rows", rows);
+  document.getElementById("sem").value="25/2026";
+  syncSemana("25/2026");
+  renderT(); renderD(); renderSucursales(); renderResumen();
+  flash("✅ Semana 25/2026 cargada — 24 lavadores (10 Álamos + 14 Refugio)");
 }
 
 function exportarDatos(){
