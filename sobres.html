@@ -364,7 +364,8 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
       <div class="bg">
         <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
         <button class="ph-btn" onclick="abrirCapturaMaual()" style="background:#fff;color:#1565C0;border:1.5px solid #1565C0;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">✏️ Captura manual</button>
-        <button class="ph-btn" onclick="cargarS25()" style="background:#fff;color:#2E7D32;border:1.5px solid #2E7D32;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">📋 Cargar S25</button>
+        <button class="ph-btn" onclick="cargarS25()" style="background:#fff;color:#2E7D32;border:1.5px solid #2E7D32;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">📋 S25</button>
+        <button class="ph-btn" onclick="cargarS26()" style="background:#2E7D32;color:#fff;border:1.5px solid #2E7D32;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">📋 S26</button>
         <select class="ph-btn ph-outline" id="datos-sem-sel" onchange="cargarSemanaHistDatos()">
           <option value="">Semana actual</option>
         </select>
@@ -682,6 +683,35 @@ const S19 = [
   {nombre:"Javier",     sucursal:"PC Refugio",pct:30, autos:27, comision:2861, food:615, merch:25, bono:0,   ahorro:0},
   {nombre:"OMAR",       sucursal:"PC Refugio",pct:40, autos:9,  comision:592,  food:0,   merch:0,  bono:0,   ahorro:0},
   {nombre:"Uli",        sucursal:"PC Refugio",pct:35, autos:62, comision:3675, food:734, merch:25, bono:0,   ahorro:0},
+];
+
+// ── DATOS SEMANA 26/2026 (leídos del PDF) ────────────────────────────────────
+const S26 = [
+  // PC ÁLAMOS
+  {nombre:"El güero",   sucursal:"PC Álamos", pct:40, autos:3,  comision:216,  food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Francisco",  sucursal:"PC Álamos", pct:30, autos:3,  comision:177,  food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Jacobo",     sucursal:"PC Álamos", pct:40, autos:51, comision:3272, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Jose Jr",    sucursal:"PC Álamos", pct:40, autos:34, comision:2530, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Juan Lopez", sucursal:"PC Álamos", pct:45, autos:50, comision:3929, food:0,   merch:48,  bono:0, ahorro:0},
+  {nombre:"Juaquin",    sucursal:"PC Álamos", pct:30, autos:31, comision:1497, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Marvin",     sucursal:"PC Álamos", pct:45, autos:53, comision:3829, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Mauri",      sucursal:"PC Álamos", pct:40, autos:48, comision:3266, food:0,   merch:274, bono:0, ahorro:0},
+  {nombre:"Mogli",      sucursal:"PC Álamos", pct:40, autos:2,  comision:980,  food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Poli",       sucursal:"PC Álamos", pct:40, autos:46, comision:3060, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Toño",       sucursal:"PC Álamos", pct:45, autos:54, comision:5016, food:100, merch:200, bono:0, ahorro:0},
+  {nombre:"Valente",    sucursal:"PC Álamos", pct:35, autos:46, comision:2732, food:0,   merch:32,  bono:0, ahorro:0},
+  // PC REFUGIO
+  {nombre:"Antonio",    sucursal:"PC Refugio",pct:30, autos:56, comision:2763, food:363, merch:0,   bono:0, ahorro:0},
+  {nombre:"Arellano",   sucursal:"PC Refugio",pct:45, autos:49, comision:3603, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Cesar",      sucursal:"PC Refugio",pct:30, autos:50, comision:3073, food:0,   merch:24,  bono:0, ahorro:0},
+  {nombre:"Charlie",    sucursal:"PC Refugio",pct:30, autos:39, comision:3727, food:623, merch:24,  bono:0, ahorro:0},
+  {nombre:"El güero",   sucursal:"PC Refugio",pct:40, autos:46, comision:3496, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Emma",       sucursal:"PC Refugio",pct:40, autos:32, comision:4573, food:212, merch:96,  bono:0, ahorro:0},
+  {nombre:"Francisco",  sucursal:"PC Refugio",pct:30, autos:42, comision:2753, food:39,  merch:0,   bono:0, ahorro:0},
+  {nombre:"Lupis",      sucursal:"PC Refugio",pct:40, autos:63, comision:4148, food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Mogli",      sucursal:"PC Refugio",pct:40, autos:1,  comision:94,   food:0,   merch:0,   bono:0, ahorro:0},
+  {nombre:"Oscarin",    sucursal:"PC Refugio",pct:40, autos:21, comision:1380, food:0,   merch:272, bono:0, ahorro:0},
+  {nombre:"Uli",        sucursal:"PC Refugio",pct:30, autos:45, comision:2527, food:1514,merch:24,  bono:0, ahorro:0},
 ];
 
 // ── DATOS SEMANA 25/2026 (leídos del PDF) ────────────────────────────────────
@@ -1456,6 +1486,16 @@ async function cargarS25(){
   syncSemana("25/2026");
   renderT(); renderD(); renderSucursales(); renderResumen();
   flash("✅ Semana 25/2026 cargada — 24 lavadores (10 Álamos + 14 Refugio)");
+}
+
+async function cargarS26(){
+  if(!confirm("¿Cargar datos de Semana 26/2026?\nEsto reemplaza los datos actuales.\n(Las deudas y el historial no se borran)"))return;
+  rows = S26.map(r=>({...r}));
+  await sv("pc4_rows", rows);
+  document.getElementById("sem").value="26/2026";
+  syncSemana("26/2026");
+  renderT(); renderD(); renderSucursales(); renderResumen();
+  flash("✅ Semana 26/2026 cargada — 23 lavadores (12 Álamos + 11 Refugio)");
 }
 
 function exportarDatos(){
@@ -2662,8 +2702,8 @@ function calcFlujoTotales(){
 
 function guardarFlujo(){
   const sem=document.getElementById("sem").value;
-  const totRef=flujoDias.reduce((s,d)=>s+(d.ref.monto||0)-(d.ref.gasto||0),0);
-  const totAla=flujoDias.reduce((s,d)=>s+(d.ala.monto||0)-(d.ala.gasto||0),0);
+  const totRef=flujoDias.reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0),0);
+  const totAla=flujoDias.reduce((s,d)=>s+montoAla(d)-(d.ala.gasto||0),0);
   const entry={semana:sem,fecha:new Date().toLocaleDateString("es-MX"),dias:[...flujoDias],totRef,totAla,total:totRef+totAla};
   flujoHist=[entry,...flujoHist].slice(0,30);
   sv("pc4_flujo",flujoHist);
@@ -2759,18 +2799,22 @@ function editFlujoHistDia(hIdx,dIdx,campo,val){
   const parts=campo.split(".");
   if(parts.length===2){if(!d[parts[0]])d[parts[0]]={};d[parts[0]][parts[1]]=val;}
   else{d[campo]=val;}
-  // recalc totals
+  // recalc totals usando cortes (estructura real) + monto editado manualmente si existe
   const h=flujoHist[hIdx];
-  h.totRef=h.dias.reduce((s,x)=>s+(x.ref?.monto||0)-(x.ref?.gasto||0),0);
-  h.totAla=h.dias.reduce((s,x)=>s+(x.ala?.monto||0)-(x.ala?.gasto||0),0);
+  const mRef=x=>sumaCortes(x.ref?.cortes)+(x.ref?.monto||0);
+  const mAla=x=>sumaCortes(x.ala?.cortes)+(x.ala?.monto||0);
+  h.totRef=h.dias.reduce((s,x)=>s+mRef(x)-(x.ref?.gasto||0),0);
+  h.totAla=h.dias.reduce((s,x)=>s+mAla(x)-(x.ala?.gasto||0),0);
   h.total=h.totRef+h.totAla;
 }
 
 function eliminarFlujoHistDia(hIdx,dIdx){
   flujoHist[hIdx].dias.splice(dIdx,1);
   const h=flujoHist[hIdx];
-  h.totRef=h.dias.reduce((s,x)=>s+(x.ref?.monto||0)-(x.ref?.gasto||0),0);
-  h.totAla=h.dias.reduce((s,x)=>s+(x.ala?.monto||0)-(x.ala?.gasto||0),0);
+  const mRef=x=>sumaCortes(x.ref?.cortes)+(x.ref?.monto||0);
+  const mAla=x=>sumaCortes(x.ala?.cortes)+(x.ala?.monto||0);
+  h.totRef=h.dias.reduce((s,x)=>s+mRef(x)-(x.ref?.gasto||0),0);
+  h.totAla=h.dias.reduce((s,x)=>s+mAla(x)-(x.ala?.gasto||0),0);
   h.total=h.totRef+h.totAla;
   sv("pc4_flujo",flujoHist);
   renderFlujoHist();
