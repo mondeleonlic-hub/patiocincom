@@ -380,7 +380,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
         <button class="ph-btn ph-navy" onclick="addRow()">+ Lavador</button>
       </div>
     </div>
-    <input type="file" id="fi" accept="image/*,application/pdf" style="display:none" onchange="onFile(this)">
+    <input type="file" id="fi" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="onFile(this)">
     <input type="file" id="fi-import" accept=".json" style="display:none" onchange="importarDatos(this)">
     <div id="st"></div>
     <div class="filtros">
@@ -390,7 +390,13 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
       <button class="fbtn ala" data-f="PC Álamos" onclick="setF('PC Álamos')">PC Álamos</button>
       <button class="fbtn" data-f="sin" onclick="setF('sin')">Sin asignar</button>
       <span id="conteo"></span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <input id="busq-inp" type="search" placeholder="🔍 Buscar lavador..." oninput="busquedaGlobal(this.value)"
+          style="border:1.5px solid #e0ddd4;border-radius:20px;padding:5px 14px;font-size:12px;font-family:inherit;outline:none;width:180px">
+        <button class="fbtn" onclick="exportarCSV()" title="Exportar a Excel/CSV" style="white-space:nowrap">⬇ CSV</button>
+      </div>
     </div>
+    <div id="busq-modal" style="display:none;margin-bottom:12px"></div>
     <div class="resumen" id="resumen"></div>
     <div class="tw">
       <table>
@@ -648,6 +654,12 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
           </tr>
         </tfoot>
       </table>
+    </div>
+
+    <!-- GRÁFICA DE FLUJO DIARIO (#5) -->
+    <div id="flujo-chart-wrap" style="margin:16px 0;background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:16px;display:none">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:12px">📊 Ingresos diarios</div>
+      <canvas id="flujo-chart" height="160" style="width:100%"></canvas>
     </div>
 
     <!-- HISTORIAL -->
@@ -1008,33 +1020,31 @@ function onFile(inp){
 
 async function runOCR(b64,mime){
   setSt("load","🔍 Leyendo reporte con IA...");
-  const prompt=`Analiza este reporte semanal de lavadores de Patio Cinco.
+  const prompt=`Extrae datos de nómina de este reporte de Patio Cinco. Devuelve SOLO JSON válido.
 
-El reporte tiene 4 tablas:
-1. COMISIONES: columnas NOTAS (sucursal), COLABORADOR, %, $ COMISIÓN, # coches (autos), BONO
-2. FOOD (primera tabla): COLABORADOR, $ FOOD — montos positivos solo para lavadores
-3. MERCH: COLABORADOR, $ MERCH
-4. Segunda tabla de FOOD (coordinadores) — IGNORA ESTA
+INSTRUCCIONES:
+1. En la tabla COMISIONES, lee ÚNICAMENTE las filas "Total [Nombre]" (son las filas resumen que suman todos los porcentajes de cada persona). Ignora filas individuales de porcentaje y "Suma total".
+2. Sucursal: "PC Álamos" si está bajo sección ALAMOS, "PC Refugio" si está bajo REFUGIO.
+3. pct: porcentaje MÁS ALTO que tenga ese colaborador (30/35/40/45).
+4. autos: número de # coches de la fila "Total [Nombre]".
+5. comision: $ COMISIÓN de la fila "Total [Nombre]" (sin $ ni comas, solo número).
+6. food: monto en tabla FOOD para ese colaborador (número positivo, sin $ ni comas). Si no aparece: 0.
+7. merch: monto en tabla MERCH para ese colaborador (sin $ ni comas). Si no aparece: 0.
+8. bono: valor de columna BONO en COMISIONES. Si no hay: 0.
+9. ahorro: 0 siempre.
 
-REGLAS CRÍTICAS:
-- Lee TODOS los lavadores de COMISIONES. IGNORA filas "Total", "Suma total" y encabezados.
-- La columna NOTAS o encabezados de sección indican sucursal:
-  * "ALAMOS" o "ÁLAMOS" → "PC Álamos"
-  * "REFUGIO" → "PC Refugio"
-- PORCENTAJE: Lee el valor EXACTO de la columna "%" para cada lavador. Lee el número tal como aparece: 30, 35, 40, 45, etc. Si la celda está vacía o es 0%, usa 0.
-- AUTOS: Lee el valor EXACTO de la columna "# coches" para cada lavador.
-- Si un mismo lavador aparece en MÚLTIPLES FILAS (diferentes sucursales o diferentes %):
-  * COMBÍNALOS en UN SOLO objeto
-  * SUMA autos y comisiones de todas sus filas
-  * USA el % de la fila con más autos (o el más alto si hay empate)
-  * USA la sucursal de la fila con más autos
-- Para food: usa el monto positivo de la tabla FOOD. Si no aparece, food=0
-- Para merch: usa el monto de MERCH. Si no aparece, merch=0
-- Para bono: valor positivo (verde) en columna BONO de COMISIONES. Si no hay, bono=0
-- Los montos son números sin $ ni comas. Los decimales usan punto.
+EJEMPLO de salida (estos son datos de ejemplo, no los reales):
+{"lavadores":[
+{"nombre":"Juan Lopez","sucursal":"PC Álamos","pct":45,"autos":50,"comision":3929,"food":0,"merch":48,"bono":0,"ahorro":0},
+{"nombre":"Uli","sucursal":"PC Refugio","pct":30,"autos":45,"comision":2527,"food":1514,"merch":0,"bono":0,"ahorro":0}
+]}
 
-Devuelve SOLO este JSON (sin markdown, sin texto extra):
-{"lavadores":[{"nombre":"","sucursal":"PC Refugio o PC Álamos","pct":30,"autos":0,"comision":0,"food":0,"merch":0,"bono":0}]}`;
+REGLAS DEL JSON:
+- Solo números en campos numéricos (sin $, sin comas, sin texto)
+- Decimales con punto: 2731.75 no 2.731,75
+- Strings entre comillas dobles
+- Sin comas al final del último elemento
+- Devuelve SOLO el JSON, sin explicaciones ni markdown`;
 
   try{
   const parsed=await callGemini(b64,mime,prompt);
@@ -1115,7 +1125,7 @@ Devuelve SOLO este JSON (sin markdown, sin texto extra):
   }catch(e){
     if(e.message==="QUOTA_429")setSt("err","⚠️ Cuota agotada en todos los modelos Gemini. Espera unos minutos y vuelve a subir el PDF — los datos ya cargados están intactos.");
     else if(e.message?.startsWith("API_"))setSt("err","❌ Error API ("+e.message+"): revisa tu API Key de Gemini.");
-    else setSt("err","❌ "+e.message);
+    else { setSt("err","❌ "+e.message+" — revisa la Consola (F12) para ver la respuesta de Gemini."); }
   }
 }
 
@@ -1148,7 +1158,10 @@ function renderT(){
     </div>`:`<span class="deuda-sin">—</span>`;
 
     tr.innerHTML=`
-      <td><input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:100px"></td>
+      <td style="position:relative">
+        <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:82px">
+        ${row.nombre?`<button onclick="verPerfilLavador('${esc(row.nombre)}')" title="Ver historial de ${esc(row.nombre)}" style="background:none;border:none;cursor:pointer;font-size:11px;color:#C8960C;padding:0;vertical-align:middle">📈</button>`:""}
+      </td>
       <td>${sucLabel}</td>
       <td><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
       <td><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:58px;text-align:center"></td>
@@ -1217,18 +1230,42 @@ async function callGemini(b64, mime, prompt){
       }
       const data=JSON.parse(raw);
       const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
-      // Extraer el bloque JSON más externo — tolerante a texto extra antes/después
-      const clean=text.replace(/```json\n?|\n?```/g,"").trim();
-      const start=clean.indexOf("{");
-      const end=clean.lastIndexOf("}");
-      if(start===-1||end===-1)throw new Error("Gemini no devolvió JSON válido");
-      return JSON.parse(clean.slice(start,end+1));
+      return _parseGeminiJSON(text);
     }catch(e){
       if(e.message==="QUOTA_429"){lastErr=e;continue;}
       throw e;
     }
   }
   throw lastErr||new Error("QUOTA_429");
+}
+
+// ── PARSER DE JSON DE GEMINI — tolerante a errores comunes ──────────────────
+function _parseGeminiJSON(text){
+  // 1. quitar markdown
+  let s=text.replace(/```json\n?|\n?```/g,"").replace(/```/g,"").trim();
+  // 2. encontrar bloque JSON más externo
+  const st=s.indexOf("{"), en=s.lastIndexOf("}");
+  if(st===-1||en===-1)throw new Error("Gemini no devolvió JSON — reintenta");
+  s=s.slice(st,en+1);
+  // 3. limpiar problemas comunes en los valores numéricos:
+  //    "$3,272.00" → 3272  |  "3,272" → 3272  |  "$216" → 216
+  s=s.replace(/":\s*"\$?([\d,]+\.?\d*)"/g,(m,n)=>'":'+n.replace(/,/g,""));
+  // 4. quitar $ sueltos delante de números  "$216.00" → 216
+  s=s.replace(/:\s*\$([0-9]/g,": $1");
+  // 5. comas en miles dentro de valores numéricos  3,272 → 3272
+  s=s.replace(/(\d),(\d{3})(?=[,}\]\s])/g,"$1$2");
+  // 6. intentar parsear; si falla, reparar JSON truncado
+  try{ return JSON.parse(s); }
+  catch(e){
+    // buscar el último objeto completo antes del corte
+    const last=s.lastIndexOf("},");
+    if(last>0){
+      try{ return JSON.parse(s.slice(0,last+1)+"]}"); }catch{}
+    }
+    // si nada funciona, loguear para depuración y relanzar
+    console.error("JSON inválido de Gemini:",s.slice(0,400));
+    throw new Error("JSON inválido: "+e.message+"\n(pos ~"+s.slice(0,700).length+")");
+  }
 }
 
 // ── DEBOUNCE (Fix #4) — acumula cambios y guarda cada 700ms ─────────────────
@@ -1269,18 +1306,93 @@ function renderResumen(){
   const tF=vis.reduce((s,r)=>s+num(r.food),0);
   const tM=vis.reduce((s,r)=>s+num(r.merch),0);
   const tB=vis.reduce((s,r)=>s+num(r.bono),0);
-  const nR=vis.filter(r=>r.sucursal==="PC Refugio").length;
-  const nA=vis.filter(r=>r.sucursal==="PC Álamos").length;
+  const rowsRef=vis.filter(r=>r.sucursal==="PC Refugio");
+  const rowsAla=vis.filter(r=>r.sucursal==="PC Álamos");
+  const nR=rowsRef.length, nA=rowsAla.length;
   const nD=vis.filter(r=>deudas[r.nombre]&&deudas[r.nombre].total>0).length;
+  const tAutos=vis.reduce((s,r)=>s+num(r.autos),0);
+
+  // ── Flujo para calcular margen nómina/ingresos ──
+  const fd=flujoDias||[];
+  const totIngRef=fd.reduce((s,d)=>s+montoRef(d),0);
+  const totIngAla=fd.reduce((s,d)=>s+montoAla(d),0);
+  const nomRef=rowsRef.reduce((s,r)=>s+calcT(r,r.nombre),0);
+  const nomAla=rowsAla.reduce((s,r)=>s+calcT(r,r.nombre),0);
+  const margenRef=totIngRef>0?Math.round(nomRef/totIngRef*100):null;
+  const margenAla=totIngAla>0?Math.round(nomAla/totIngAla*100):null;
+  const margenColor=p=>p===null?"#999":p>45?"#c0392b":p>35?"#d4850a":"#27ae60";
+
+  // ── Ranking top 3 por autos ──
+  const sorted=[...vis].sort((a,b)=>num(b.autos)-num(a.autos));
+  const medals=["🥇","🥈","🥉"];
+  const rankHTML=sorted.slice(0,3).map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px;border-bottom:${i<2?"0.5px solid #f0ede8":"none"}">
+      <span style="font-size:14px">${medals[i]}</span>
+      <span style="font-weight:600;color:#111;flex:1">${r.nombre}</span>
+      <span style="color:#555">${num(r.autos)} autos</span>
+      <span style="color:#1c3a61;font-weight:700;margin-left:6px">${fmt(calcT(r,r.nombre))}</span>
+    </div>`).join("");
+
   document.getElementById("resumen").innerHTML=`
-    <div class="rcard"><div class="rl">Total a pagar</div><div class="rv" style="color:#1c3a61">${fmt(tP)}</div><div class="rsub">${vis.length} lavadores</div></div>
+    <div class="rcard"><div class="rl">Total a pagar</div><div class="rv" style="color:#1c3a61">${fmt(tP)}</div><div class="rsub">${vis.length} lavadores · ${tAutos} autos</div></div>
     <div class="rcard"><div class="rl">Comisiones brutas</div><div class="rv">${fmt(tC)}</div><div class="rsub">antes de descuentos</div></div>
     <div class="rcard"><div class="rl">Food</div><div class="rv" style="color:#c0392b">-${fmt(tF)}</div><div class="rsub">descuento semana</div></div>
     <div class="rcard"><div class="rl">Merch</div><div class="rv" style="color:#c0392b">-${fmt(tM)}</div></div>
     ${tB>0?`<div class="rcard"><div class="rl">Bonos</div><div class="rv" style="color:#27ae60">+${fmt(tB)}</div></div>`:""}
-    <div class="rcard"><div class="rl">PC Refugio</div><div class="rv" style="color:#185FA5">${nR}</div><div class="rsub">lavadores</div></div>
-    <div class="rcard"><div class="rl">PC Álamos</div><div class="rv" style="color:#3b6d11">${nA}</div><div class="rsub">lavadores</div></div>
-    ${nD>0?`<div class="rcard" style="border-left:3px solid #e53e3e"><div class="rl">Con deuda</div><div class="rv" style="color:#c0392b">${nD}</div><div class="rsub">lavadores</div></div>`:""}`;
+    <div class="rcard">
+      <div class="rl">PC Refugio</div>
+      <div class="rv" style="color:#185FA5">${nR}</div>
+      <div class="rsub">${margenRef!==null?`<span style="font-weight:700;color:${margenColor(margenRef)}">${margenRef}% nómina/ingresos</span>`:"lavadores"}</div>
+    </div>
+    <div class="rcard">
+      <div class="rl">PC Álamos</div>
+      <div class="rv" style="color:#3b6d11">${nA}</div>
+      <div class="rsub">${margenAla!==null?`<span style="font-weight:700;color:${margenColor(margenAla)}">${margenAla}% nómina/ingresos</span>`:"lavadores"}</div>
+    </div>
+    ${nD>0?`<div class="rcard" style="border-left:3px solid #e53e3e"><div class="rl">Con deuda</div><div class="rv" style="color:#c0392b">${nD}</div><div class="rsub">lavadores</div></div>`:""}
+    ${sorted.length>=3?`<div class="rcard" style="min-width:220px;flex:2"><div class="rl" style="margin-bottom:8px">🏆 Top 3 esta semana</div>${rankHTML}</div>`:""}`;
+
+  // ── Botón WhatsApp ──
+  _renderWABtn(vis,tP,sorted);
+}
+
+function _renderWABtn(vis,tP,sorted){
+  let btn=document.getElementById("wa-btn");
+  if(!btn){
+    btn=document.createElement("button");
+    btn.id="wa-btn";
+    btn.className="ph-btn";
+    btn.style.cssText="background:#25D366;color:#fff;gap:6px;margin-top:8px;width:100%";
+    btn.innerHTML="📲 Compartir resumen por WhatsApp";
+    btn.onclick=compartirWhatsApp;
+    const res=document.getElementById("resumen");
+    res.after(btn);
+  }
+}
+
+function compartirWhatsApp(){
+  const sem=document.getElementById("sem").value||"—";
+  const vis=rows.filter(r=>rowVisible(r));
+  const tP=vis.reduce((s,r)=>s+calcT(r,r.nombre),0);
+  const tAutos=vis.reduce((s,r)=>s+num(r.autos),0);
+  const nR=vis.filter(r=>r.sucursal==="PC Refugio").length;
+  const nA=vis.filter(r=>r.sucursal==="PC Álamos").length;
+  const top3=[...vis].sort((a,b)=>num(b.autos)-num(a.autos)).slice(0,3);
+  const medals=["🥇","🥈","🥉"];
+  const fmtWA=n=>"$"+Math.round(n).toLocaleString("es-MX");
+  const txt=
+`📊 *Semana ${sem} — Patio Cinco*
+━━━━━━━━━━━━━━━━
+💰 Total nómina: *${fmtWA(tP)}*
+🚗 Total autos: *${tAutos}*
+👥 PC Refugio: ${nR} lavadores
+👥 PC Álamos: ${nA} lavadores
+
+🏆 *Top 3 de la semana:*
+${top3.map((r,i)=>`${medals[i]} ${r.nombre} — ${num(r.autos)} autos — ${fmtWA(calcT(r,r.nombre))}`).join("\n")}
+━━━━━━━━━━━━━━━━`;
+  const url="https://wa.me/?text="+encodeURIComponent(txt);
+  window.open(url,"_blank");
 }
 
 // ── SUCURSALES ────────────────────────────────────────────────────────────────
@@ -2782,6 +2894,10 @@ function calcFlujoTotales(){
   if(er)er.textContent=fmt(totRef);
   if(ea)ea.textContent=fmt(totAla);
   if(et)et.textContent=fmt(tot);
+  // Actualizar gráfica (#5)
+  if(typeof renderFlujoChart==="function")renderFlujoChart();
+  // Actualizar margen en resumen (#6)
+  if(typeof renderResumen==="function"&&rows.length)renderResumen();
 }
 
 function guardarFlujo(){
@@ -3541,6 +3657,192 @@ init().then(()=>{
 // Rellenar campo de API key si está guardada (esto sí puede quedar en localStorage)
 const _k=localStorage.getItem("pc4_gkey");
 if(_k)document.getElementById("gkey-input").value=_k;
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MEJORA #5 — Gráfica de flujo diario (Chart.js)
+// ══════════════════════════════════════════════════════════════════════════════
+let _flujoChart=null;
+function renderFlujoChart(){
+  const wrap=document.getElementById("flujo-chart-wrap");
+  const canvas=document.getElementById("flujo-chart");
+  if(!wrap||!canvas||!flujoDias||!flujoDias.length){if(wrap)wrap.style.display="none";return;}
+  wrap.style.display="block";
+  const labels=flujoDias.map(d=>d.dia||"—");
+  const dataRef=flujoDias.map(d=>Math.round(montoRef(d)-(d.ref.gasto||0)));
+  const dataAla=flujoDias.map(d=>Math.round(montoAla(d)-(d.ala.gasto||0)));
+  if(_flujoChart){_flujoChart.destroy();_flujoChart=null;}
+  if(typeof Chart==="undefined"){
+    const sc=document.createElement("script");
+    sc.src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js";
+    sc.onload=()=>_buildFlujoChart(canvas,labels,dataRef,dataAla);
+    document.head.appendChild(sc);
+  } else { _buildFlujoChart(canvas,labels,dataRef,dataAla); }
+}
+function _buildFlujoChart(canvas,labels,dataRef,dataAla){
+  _flujoChart=new Chart(canvas,{
+    type:"bar",
+    data:{
+      labels,
+      datasets:[
+        {label:"PC Refugio",data:dataRef,backgroundColor:"#185FA5",borderRadius:4},
+        {label:"PC Álamos", data:dataAla,backgroundColor:"#3b6d11",borderRadius:4}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:"top",labels:{boxWidth:10,font:{size:11}}},tooltip:{callbacks:{label:ctx=>" "+fmt(ctx.raw)}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{ticks:{callback:v=>"$"+Math.round(v/1000)+"k",font:{size:10}},grid:{color:"#f0f0f0"}}}
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MEJORA #9 — Búsqueda global de lavadores
+// ══════════════════════════════════════════════════════════════════════════════
+function busquedaGlobal(q){
+  q=(q||"").trim().toLowerCase();
+  const modal=document.getElementById("busq-modal");
+  if(!modal)return;
+  if(!q){modal.style.display="none";return;}
+  modal.style.display="block";
+  const hist=ld("pc4_hist",[]);
+  const resultados=[];
+  // semana actual
+  rows.forEach(r=>{if(normN(r.nombre).includes(normN(q))){resultados.push({sem:ld("pc4_semana","actual"),row:r});}});
+  // historial
+  hist.forEach(h=>{(h.rows||[]).forEach(r=>{if(normN(r.nombre).includes(normN(q))){resultados.push({sem:h.semana||h.label,row:r});}});});
+  modal.innerHTML=`
+    <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:16px;max-height:320px;overflow-y:auto">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+        ${resultados.length} resultado${resultados.length!==1?"s":""} para "${q}"
+        <button onclick="document.getElementById('busq-modal').style.display='none';document.getElementById('busq-inp').value=''"
+          style="float:right;background:none;border:none;cursor:pointer;font-size:14px;color:#aaa">✕</button>
+      </div>
+      ${resultados.length?resultados.map(({sem,row})=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid #f0ede8;font-size:12px">
+          <span style="min-width:80px;color:#888">Sem ${sem}</span>
+          <span style="font-weight:700;flex:1">${row.nombre}</span>
+          <span class="pill-${row.sucursal==="PC Refugio"?"ref":"ala"}">${row.sucursal==="PC Refugio"?"Refugio":"Álamos"}</span>
+          <span style="color:#555">${num(row.autos)} autos</span>
+          <span style="color:#1c3a61;font-weight:700">${fmt(calcT(row,row.nombre))}</span>
+        </div>`).join("")
+      :'<div style="text-align:center;color:#aaa;padding:20px">Sin resultados</div>'}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MEJORA #1 — Perfil histórico de lavador (click en nombre)
+// ══════════════════════════════════════════════════════════════════════════════
+function verPerfilLavador(nombre){
+  const hist=ld("pc4_hist",[]);
+  const semActual=ld("pc4_semana","");
+  const rowActual=rows.find(r=>normN(r.nombre)===normN(nombre));
+  const datos=[];
+  if(rowActual)datos.push({sem:semActual||"Actual",row:rowActual});
+  hist.forEach(h=>{const r=(h.rows||[]).find(r=>normN(r.nombre)===normN(nombre));if(r)datos.push({sem:h.semana||h.label,row:r});});
+  if(!datos.length){flash("Sin historial para "+nombre);return;}
+  datos.reverse(); // cronológico
+  const maxAutos=Math.max(...datos.map(d=>num(d.row.autos)));
+  const promAutos=Math.round(datos.reduce((s,d)=>s+num(d.row.autos),0)/datos.length);
+  const promPago=Math.round(datos.reduce((s,d)=>s+calcT(d.row,d.row.nombre),0)/datos.length);
+  const body=document.body;
+  const ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px";
+  ov.innerHTML=`
+    <div style="background:#fff;border-radius:16px;width:min(560px,100%);max-height:85vh;overflow-y:auto;font-family:inherit">
+      <div style="background:#111;color:#fff;padding:16px 20px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:16px;font-weight:700">${nombre}</div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">${datos[0]?.row?.sucursal||""} · ${datos.length} semanas registradas</div>
+        </div>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer">✕</button>
+      </div>
+      <div style="padding:16px 20px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+          <div style="background:#f7f6f3;border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Prom. autos</div>
+            <div style="font-size:22px;font-weight:500;color:#111">${promAutos}</div>
+          </div>
+          <div style="background:#f7f6f3;border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Prom. pago</div>
+            <div style="font-size:22px;font-weight:500;color:#1c3a61">${fmt(promPago)}</div>
+          </div>
+          <div style="background:#f7f6f3;border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Mejor semana</div>
+            <div style="font-size:22px;font-weight:500;color:#27ae60">${maxAutos} autos</div>
+          </div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Historial semana a semana</div>
+        ${datos.map(({sem,row})=>{
+          const pago=calcT(row,row.nombre);
+          const barW=maxAutos>0?Math.round(num(row.autos)/maxAutos*100):0;
+          return`<div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+              <span style="color:#888">Sem ${sem}</span>
+              <span style="font-weight:700">${num(row.autos)} autos · <span style="color:#1c3a61">${fmt(pago)}</span></span>
+            </div>
+            <div style="background:#f0f0f0;border-radius:4px;height:6px">
+              <div style="background:#C8960C;border-radius:4px;height:100%;width:${barW}%"></div>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+  body.appendChild(ov);
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MEJORA #14 — Exportar semana a CSV (compatible con Excel)
+// ══════════════════════════════════════════════════════════════════════════════
+function exportarCSV(){
+  const sem=ld("pc4_semana","semana");
+  const vis=rows.filter(r=>rowVisible(r));
+  const cols=["Nombre","Sucursal","%","Autos","Comisión","Food","Merch","Bono","Ahorro","Extra","Total a Pagar"];
+  const esc2=v=>typeof v==="string"&&v.includes(",")?"\""+v+"\"":v;
+  const lines=[cols.join(",")];
+  vis.forEach(r=>{
+    const t=calcT(r,r.nombre);
+    lines.push([r.nombre,r.sucursal,r.pct,r.autos,r.comision,r.food,r.merch,r.bono,r.ahorro||0,r.extra||0,Math.round(t)].map(esc2).join(","));
+  });
+  // totales
+  lines.push(["","","","",
+    vis.reduce((s,r)=>s+num(r.comision),0),
+    vis.reduce((s,r)=>s+num(r.food),0),
+    vis.reduce((s,r)=>s+num(r.merch),0),
+    vis.reduce((s,r)=>s+num(r.bono),0),
+    "","TOTAL",
+    vis.reduce((s,r)=>s+calcT(r,r.nombre),0)
+  ].join(","));
+  const blob=new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8;"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`patio-cinco-sem${sem.replace("/","-")}.csv`;
+  a.click();
+  flash("✅ CSV descargado — ábrelo en Excel o Numbers");
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MEJORA #17 — PWA manifest + service worker básico
+// ══════════════════════════════════════════════════════════════════════════════
+(function initPWA(){
+  // Manifest dinámico
+  const mf={name:"Patio Cinco",short_name:"PC Sobres",start_url:"./sobres.html",display:"standalone",background_color:"#111111",theme_color:"#C8960C",icons:[{src:"https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Car/3D/car_3d.png",sizes:"512x512",type:"image/png"}]};
+  const mfBlob=new Blob([JSON.stringify(mf)],{type:"application/manifest+json"});
+  const mfUrl=URL.createObjectURL(mfBlob);
+  const link=document.createElement("link");link.rel="manifest";link.href=mfUrl;document.head.appendChild(link);
+  // Service worker (caché offline)
+  if("serviceWorker" in navigator){
+    const swCode=`
+const CACHE='pc5-v1';
+const URLS=[self.location.href];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(URLS))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+    const swBlob=new Blob([swCode],{type:"application/javascript"});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+  }
+})();
+
 </script>
 </body>
 </html>
