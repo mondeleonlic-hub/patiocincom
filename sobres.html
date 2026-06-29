@@ -669,7 +669,14 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
 
   <!-- HISTORIAL -->
   <div class="pnl" id="pnl-hist">
-    <h2 style="font-size:14px;font-weight:900;margin-bottom:12px">Historial</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h2 style="font-size:14px;font-weight:900">Historial</h2>
+      <button onclick="recuperarS25EnHistorial()" class="ph-btn"
+        style="background:#fff;color:#185FA5;border:1.5px solid #185FA5;font-size:11px;padding:5px 12px;border-radius:20px"
+        title="Recuperar semana 25 que falta en el historial">
+        🔍 Recuperar S25
+      </button>
+    </div>
     <div id="hc"></div>
   </div>
 </div>
@@ -1678,6 +1685,51 @@ async function cargarS25(){
   syncSemana("25/2026");
   renderT(); renderD(); renderSucursales(); renderResumen();
   flash("✅ Semana 25/2026 cargada — 24 lavadores (10 Álamos + 14 Refugio)");
+}
+
+async function recuperarS25EnHistorial(){
+  // Verificar si ya existe en el historial
+  const hist = ld("pc4_hist",[]);
+  const yaExiste = hist.some(h => String(h.semana).trim() === "25/2026");
+  if(yaExiste){
+    flash("ℹ️ Semana 25/2026 ya existe en el historial");
+    renderH(); showPage("hist");
+    return;
+  }
+  if(!confirm(
+    "¿Recuperar Semana 25/2026 en el historial?\n\n" +
+    "Esto insertará los datos de nómina de S25 (24 lavadores) " +
+    "en el historial entre S24 y S26.\n" +
+    "El flujo de efectivo de esa semana NO se puede recuperar automáticamente — " +
+    "puedes agregarlo manualmente en el panel Flujo → Historial."
+  ))return;
+
+  // Calcular total de cada lavador
+  const rowsS25 = S25.map(r => {
+    const t = (r.comision||0) - (r.food||0) - (r.merch||0) - (r.ahorro||0) + (r.bono||0) + (r.extra||0);
+    return {...r, total: t};
+  });
+
+  const entrada = {
+    semana: "25/2026",
+    fecha: "PDF recuperado",
+    rows: rowsS25
+  };
+
+  // Insertar en posición correcta (ordenado por número de semana, más reciente primero)
+  const semNum = s => {
+    const p = String(s||"").split("/");
+    return parseInt(p[1]||0)*100 + parseInt(p[0]||0);
+  };
+  const pos = hist.findIndex(h => semNum(h.semana) < semNum("25/2026"));
+  if(pos === -1) hist.push(entrada);
+  else hist.splice(pos, 0, entrada);
+
+  historial = hist.slice(0,52);
+  await sv("pc4_hist", historial);
+  renderH();
+  flash("✅ Semana 25/2026 recuperada en el historial — 24 lavadores");
+  showPage("hist");
 }
 
 async function cargarS26(){
