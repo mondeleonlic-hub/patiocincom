@@ -372,7 +372,6 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
       <h2 id="ptit">Sin datos cargados</h2>
       <div class="bg">
         <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
-        <button class="ph-btn" onclick="abrirCapturaMaual()" style="background:#fff;color:#1565C0;border:1.5px solid #1565C0;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">✏️ Captura manual</button>
         <select class="ph-btn ph-outline" id="datos-sem-sel" onchange="cargarSemanaHistDatos()">
           <option value="">Semana actual</option>
         </select>
@@ -667,7 +666,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
 <script>
 // ── DATOS HISTÓRICOS (solo para recuperación de emergencia) ──────────────────
 // ⚠️  NO agregar más arrays S__ aquí. Para cargar una semana nueva usa
-//     "📷 Subir reporte" (OCR) o "✏️ Captura manual" desde el panel Datos.
+//     "📷 Subir reporte" (OCR) desde el panel Datos.
 // ── DATOS SEMANA 18 (leídos del PDF) ─────────────────────────────────────────
 const S19 = [
   // PC ÁLAMOS
@@ -1114,7 +1113,7 @@ Devuelve SOLO este JSON (sin markdown, sin texto extra):
       ?`✓ ${rows.length} lavadores cargados — ${sinSuc} sin sucursal detectada (revisa Analytics por Sucursal)`
       :`✓ ${rows.length} lavadores cargados con sucursal asignada automáticamente`);
   }catch(e){
-    if(e.message==="QUOTA_429")setSt("err","⚠️ Cuota de Gemini agotada. Usa ✏️ <strong>Captura manual</strong> o espera unos minutos. Los datos ya cargados están intactos.");
+    if(e.message==="QUOTA_429")setSt("err","⚠️ Cuota agotada en todos los modelos Gemini. Espera unos minutos y vuelve a subir el PDF — los datos ya cargados están intactos.");
     else if(e.message?.startsWith("API_"))setSt("err","❌ Error API ("+e.message+"): revisa tu API Key de Gemini.");
     else setSt("err","❌ "+e.message);
   }
@@ -1188,27 +1187,44 @@ function ufSucursal(i){
   }
   sv("pc4_rows",rows);renderT();
 }
-// ── GEMINI HELPER (Fix #5) — única implementación ───────────────────────────
+// ── GEMINI HELPER — con fallback automático entre modelos ───────────────────
+const _GEMINI_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+];
 async function callGemini(b64, mime, prompt){
   const GKEY=localStorage.getItem("pc4_gkey")||"";
   if(!GKEY)throw new Error("Falta API Key de Gemini — guárdala en el campo del header");
-  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GKEY}`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({contents:[{parts:[
-      {inline_data:{mime_type:mime,data:b64}},
-      {text:prompt}
-    ]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
-  });
-  const raw=await res.text();
-  if(!res.ok){
-    const code=JSON.parse(raw)?.error?.code;
-    if(code===429)throw new Error("QUOTA_429");
-    throw new Error("API_"+code);
+  let lastErr=null;
+  for(const model of _GEMINI_MODELS){
+    try{
+      setSt("load",`🔍 Leyendo con ${model}...`);
+      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GKEY}`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({contents:[{parts:[
+          {inline_data:{mime_type:mime,data:b64}},
+          {text:prompt}
+        ]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
+      });
+      const raw=await res.text();
+      if(!res.ok){
+        const parsed=JSON.parse(raw);
+        const code=parsed?.error?.code;
+        // 429 = quota agotada → probar siguiente modelo
+        if(code===429){lastErr=new Error("QUOTA_429");continue;}
+        throw new Error("API_"+code);
+      }
+      const data=JSON.parse(raw);
+      const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
+      return JSON.parse(text.replace(/```json\n?|\n?```/g,"").trim());
+    }catch(e){
+      if(e.message==="QUOTA_429"){lastErr=e;continue;}
+      throw e;
+    }
   }
-  const data=JSON.parse(raw);
-  const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
-  return JSON.parse(text.replace(/```json\n?|\n?```/g,"").trim());
+  throw lastErr||new Error("QUOTA_429");
 }
 
 // ── DEBOUNCE (Fix #4) — acumula cambios y guarda cada 700ms ─────────────────
