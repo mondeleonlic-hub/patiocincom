@@ -3120,9 +3120,8 @@ function guardarFlujoHistEdit(idx){
   // Recalcular totales correctos antes de guardar
   _recalcFlujoEntry(flujoHist[idx]);
   sv("pc4_flujo",flujoHist);
-  renderFlujoHist();
   flash("✅ Semana "+flujoHist[idx].semana+" guardada — Total: "+fmt(flujoHist[idx].total));
-  setTimeout(()=>{const p=document.getElementById("fhdit-"+idx);if(p)p.style.display="block";},10);
+  renderFlujoHist(); // cierra todos los paneles de edición
 }
 
 function renderCoords(){
