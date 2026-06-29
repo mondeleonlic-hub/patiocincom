@@ -1206,19 +1206,23 @@ async function callGemini(b64, mime, prompt){
         body:JSON.stringify({contents:[{parts:[
           {inline_data:{mime_type:mime,data:b64}},
           {text:prompt}
-        ]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
+        ]}],generationConfig:{temperature:0,maxOutputTokens:8192}})
       });
       const raw=await res.text();
       if(!res.ok){
-        const parsed=JSON.parse(raw);
-        const code=parsed?.error?.code;
-        // 429 = quota agotada → probar siguiente modelo
-        if(code===429){lastErr=new Error("QUOTA_429");continue;}
-        throw new Error("API_"+code);
+        let errCode;
+        try{errCode=JSON.parse(raw)?.error?.code;}catch{}
+        if(errCode===429){lastErr=new Error("QUOTA_429");continue;}
+        throw new Error("API_"+(errCode||res.status));
       }
       const data=JSON.parse(raw);
       const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
-      return JSON.parse(text.replace(/```json\n?|\n?```/g,"").trim());
+      // Extraer el bloque JSON más externo — tolerante a texto extra antes/después
+      const clean=text.replace(/```json\n?|\n?```/g,"").trim();
+      const start=clean.indexOf("{");
+      const end=clean.lastIndexOf("}");
+      if(start===-1||end===-1)throw new Error("Gemini no devolvió JSON válido");
+      return JSON.parse(clean.slice(start,end+1));
     }catch(e){
       if(e.message==="QUOTA_429"){lastErr=e;continue;}
       throw e;
