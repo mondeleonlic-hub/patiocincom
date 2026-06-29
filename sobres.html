@@ -2911,73 +2911,123 @@ function guardarFlujo(){
   renderFlujoHist();
 }
 
+// ── helper: recalcula totRef/totAla/total de una entrada del historial ────────
+function _recalcFlujoEntry(h){
+  const mR=x=>(sumaCortes(x.ref?.cortes)||(x.ref?.monto||0));
+  const mA=x=>(sumaCortes(x.ala?.cortes)||(x.ala?.monto||0));
+  h.totRef=Math.round((h.dias||[]).reduce((s,x)=>s+mR(x)-(x.ref?.gasto||0),0));
+  h.totAla=Math.round((h.dias||[]).reduce((s,x)=>s+mA(x)-(x.ala?.gasto||0),0));
+  h.total=h.totRef+h.totAla;
+}
+
+function recalcularTodosLosTotalesFlujo(){
+  if(!confirm(`¿Recalcular los totales de las ${flujoHist.length} semanas guardadas?\nEsto corrige los totales mal calculados usando los montos diarios que capturaste.`))return;
+  flujoHist.forEach(h=>_recalcFlujoEntry(h));
+  sv("pc4_flujo",flujoHist);
+  renderFlujoHist();
+  flash("✅ Totales recalculados en "+flujoHist.length+" semanas");
+}
+
 function renderFlujoHist(){
   const el=document.getElementById("flujo-hist");
   if(!el)return;
   if(!flujoHist.length){el.innerHTML='<p class="it">Sin semanas guardadas.</p>';return;}
-  el.innerHTML=flujoHist.map((h,idx)=>`
-    <div style="background:#fff;border-radius:8px;border:1px solid #eee;margin-bottom:8px;overflow:hidden">
-      <div style="padding:12px;display:flex;justify-content:space-between;align-items:center">
+
+  // Botón global de recalculo arriba del historial
+  const btnRecalc=`<button onclick="recalcularTodosLosTotalesFlujo()"
+    style="background:#185FA5;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;margin-bottom:10px">
+    🔄 Recalcular todos los totales</button>`;
+
+  el.innerHTML=btnRecalc+flujoHist.map((h,idx)=>{
+    // Mostrar total recalculado en tiempo real para detectar diferencias
+    const mR=x=>(sumaCortes(x.ref?.cortes)||(x.ref?.monto||0));
+    const mA=x=>(sumaCortes(x.ala?.cortes)||(x.ala?.monto||0));
+    const realRef=Math.round((h.dias||[]).reduce((s,x)=>s+mR(x)-(x.ref?.gasto||0),0));
+    const realAla=Math.round((h.dias||[]).reduce((s,x)=>s+mA(x)-(x.ala?.gasto||0),0));
+    const realTot=realRef+realAla;
+    const storedTot=h.total||0;
+    const diff=Math.abs(realTot-storedTot)>1;
+    return`
+    <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;margin-bottom:10px;overflow:hidden">
+      <div style="padding:12px 14px;display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-weight:700;font-size:13px">Semana ${h.semana}</div>
+          <div style="font-weight:700;font-size:13px;color:#111">Semana ${h.semana}</div>
           <div style="font-size:10px;color:#888">${h.fecha} · ${h.dias?.length||0} días</div>
+          ${diff?`<div style="font-size:10px;color:#e53e3e;margin-top:2px">⚠️ Total guardado (${fmt(storedTot)}) difiere del calculado — guarda para corregir</div>`:""}
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <div style="text-align:right">
-            <div style="font-size:11px;color:#1c3a61">Refugio: ${fmt(h.totRef||0)}</div>
-            <div style="font-size:11px;color:#38a169">Álamos: ${fmt(h.totAla||0)}</div>
-            <div style="font-weight:900;font-size:14px">Total: ${fmt(h.total||0)}</div>
+            <div style="font-size:11px;color:#1c3a61">Refugio: ${fmt(realRef)}</div>
+            <div style="font-size:11px;color:#38a169">Álamos: ${fmt(realAla)}</div>
+            <div style="font-weight:900;font-size:14px">Total: ${fmt(realTot)}</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px">
-            <button onclick="toggleFlujoHistEdit(${idx})" style="background:#f8ba00;color:#000;border:none;border-radius:4px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer">✏️ Editar</button>
-            <button onclick="eliminarFlujoHist(${idx})" style="background:#e53e3e;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer">✕ Borrar</button>
+            <button onclick="toggleFlujoHistEdit(${idx})" style="background:#f8ba00;color:#000;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✏️ Editar</button>
+            <button onclick="eliminarFlujoHist(${idx})" style="background:#e53e3e;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✕ Borrar</button>
           </div>
         </div>
       </div>
-      <div id="fhdit-${idx}" style="display:none;border-top:2px solid #f8ba00;padding:12px;background:#fafafa">
-        <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase">Editar días — Semana ${h.semana}</div>
-        ${(h.dias||[]).map((d,di)=>`
+      <div id="fhdit-${idx}" style="display:none;border-top:2px solid #f8ba00;padding:14px;background:#fafafa">
+        <!-- Editar número de semana -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:0.5px solid #e0ddd4">
+          <span style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase">Semana:</span>
+          <input type="text" value="${h.semana||""}" onchange="editFlujoHistSemana(${idx},this.value)"
+            style="font-weight:700;font-size:14px;border:1.5px solid #C8960C;border-radius:6px;padding:4px 10px;width:100px;color:#C8960C;text-align:center">
+          <span style="font-size:10px;color:#aaa">(ej. 25/2026)</span>
+        </div>
+        ${(h.dias||[]).map((d,di)=>{
+          const dRef=Math.round(mR(d)); const dAla=Math.round(mA(d));
+          return`
           <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:12px 14px;margin-bottom:8px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <input type="text" value="${d.dia||""}" onchange="editFlujoHistDia(${idx},${di},'dia',this.value)" style="font-weight:700;font-size:13px;border:1px solid #ddd;border-radius:4px;padding:4px 8px;width:180px">
+              <input type="text" value="${d.dia||""}" onchange="editFlujoHistDia(${idx},${di},'dia',this.value)"
+                style="font-weight:700;font-size:13px;border:1px solid #ddd;border-radius:4px;padding:4px 8px;width:180px">
               <button onclick="eliminarFlujoHistDia(${idx},${di})" style="background:#e53e3e;color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer">✕</button>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div>
-                <div style="font-size:10px;font-weight:700;color:#1c3a61;margin-bottom:4px">PC REFUGIO</div>
+                <div style="font-size:10px;font-weight:700;color:#1c3a61;margin-bottom:4px">PC REFUGIO · ${fmt(dRef)}</div>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
                   <label style="font-size:10px;width:55px">Monto</label>
-                  <input type="number" value="${d.ref?.monto||0}" onchange="editFlujoHistDia(${idx},${di},'ref.monto',+this.value)" style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right">
+                  <input type="number" value="${dRef||0}" onchange="editFlujoHistDia(${idx},${di},'ref.monto',+this.value)"
+                    style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right">
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
                   <label style="font-size:10px;width:55px">Gasto</label>
-                  <input type="number" value="${d.ref?.gasto||0}" onchange="editFlujoHistDia(${idx},${di},'ref.gasto',+this.value)" style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right">
+                  <input type="number" value="${d.ref?.gasto||0}" onchange="editFlujoHistDia(${idx},${di},'ref.gasto',+this.value)"
+                    style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right;color:#e53e3e">
                 </div>
                 <div style="display:flex;gap:6px;align-items:center">
                   <label style="font-size:10px;width:55px">Concepto</label>
-                  <input type="text" value="${d.ref?.gastoNota||""}" onchange="editFlujoHistDia(${idx},${di},'ref.gastoNota',this.value)" style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px">
+                  <input type="text" value="${d.ref?.gastoNota||""}" onchange="editFlujoHistDia(${idx},${di},'ref.gastoNota',this.value)"
+                    style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px">
                 </div>
               </div>
               <div>
-                <div style="font-size:10px;font-weight:700;color:#38a169;margin-bottom:4px">PC ÁLAMOS</div>
+                <div style="font-size:10px;font-weight:700;color:#38a169;margin-bottom:4px">PC ÁLAMOS · ${fmt(dAla)}</div>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
                   <label style="font-size:10px;width:55px">Monto</label>
-                  <input type="number" value="${d.ala?.monto||0}" onchange="editFlujoHistDia(${idx},${di},'ala.monto',+this.value)" style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right">
+                  <input type="number" value="${dAla||0}" onchange="editFlujoHistDia(${idx},${di},'ala.monto',+this.value)"
+                    style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right">
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
                   <label style="font-size:10px;width:55px">Gasto</label>
-                  <input type="number" value="${d.ala?.gasto||0}" onchange="editFlujoHistDia(${idx},${di},'ala.gasto',+this.value)" style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right">
+                  <input type="number" value="${d.ala?.gasto||0}" onchange="editFlujoHistDia(${idx},${di},'ala.gasto',+this.value)"
+                    style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px;text-align:right;color:#e53e3e">
                 </div>
                 <div style="display:flex;gap:6px;align-items:center">
                   <label style="font-size:10px;width:55px">Concepto</label>
-                  <input type="text" value="${d.ala?.gastoNota||""}" onchange="editFlujoHistDia(${idx},${di},'ala.gastoNota',this.value)" style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px">
+                  <input type="text" value="${d.ala?.gastoNota||""}" onchange="editFlujoHistDia(${idx},${di},'ala.gastoNota',this.value)"
+                    style="width:90px;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:3px 6px">
                 </div>
               </div>
             </div>
-          </div>`).join("")}
-        <button onclick="guardarFlujoHistEdit(${idx})" style="background:#000;color:#f8ba00;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px">Guardar cambios</button>
+          </div>`;}).join("")}
+        <button onclick="guardarFlujoHistEdit(${idx})"
+          style="background:#111;color:#f8ba00;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px">
+          Guardar cambios</button>
       </div>
-    </div>`).join("");
+    </div>`;}).join("");
 }
 
 
@@ -2994,38 +3044,32 @@ function eliminarFlujoHist(idx){
   renderFlujoHist();
 }
 
+function editFlujoHistSemana(idx, val){
+  flujoHist[idx].semana = val.trim();
+}
+
 function editFlujoHistDia(hIdx,dIdx,campo,val){
   const d=flujoHist[hIdx].dias[dIdx];
   const parts=campo.split(".");
   if(parts.length===2){if(!d[parts[0]])d[parts[0]]={};d[parts[0]][parts[1]]=val;}
   else{d[campo]=val;}
-  // recalc totals usando cortes (estructura real) + monto editado manualmente si existe
-  const h=flujoHist[hIdx];
-  const mRef=x=>sumaCortes(x.ref?.cortes)+(x.ref?.monto||0);
-  const mAla=x=>sumaCortes(x.ala?.cortes)+(x.ala?.monto||0);
-  h.totRef=h.dias.reduce((s,x)=>s+mRef(x)-(x.ref?.gasto||0),0);
-  h.totAla=h.dias.reduce((s,x)=>s+mAla(x)-(x.ala?.gasto||0),0);
-  h.total=h.totRef+h.totAla;
+  _recalcFlujoEntry(flujoHist[hIdx]);
 }
 
 function eliminarFlujoHistDia(hIdx,dIdx){
   flujoHist[hIdx].dias.splice(dIdx,1);
-  const h=flujoHist[hIdx];
-  const mRef=x=>sumaCortes(x.ref?.cortes)+(x.ref?.monto||0);
-  const mAla=x=>sumaCortes(x.ala?.cortes)+(x.ala?.monto||0);
-  h.totRef=h.dias.reduce((s,x)=>s+mRef(x)-(x.ref?.gasto||0),0);
-  h.totAla=h.dias.reduce((s,x)=>s+mAla(x)-(x.ala?.gasto||0),0);
-  h.total=h.totRef+h.totAla;
+  _recalcFlujoEntry(flujoHist[hIdx]);
   sv("pc4_flujo",flujoHist);
   renderFlujoHist();
-  // reabrir panel
   setTimeout(()=>{const p=document.getElementById("fhdit-"+hIdx);if(p)p.style.display="block";},10);
 }
 
 function guardarFlujoHistEdit(idx){
+  // Recalcular totales correctos antes de guardar
+  _recalcFlujoEntry(flujoHist[idx]);
   sv("pc4_flujo",flujoHist);
   renderFlujoHist();
-  flash("✓ Cambios guardados");
+  flash("✅ Semana "+flujoHist[idx].semana+" guardada — Total: "+fmt(flujoHist[idx].total));
   setTimeout(()=>{const p=document.getElementById("fhdit-"+idx);if(p)p.style.display="block";},10);
 }
 
