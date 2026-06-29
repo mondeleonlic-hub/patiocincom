@@ -1251,7 +1251,7 @@ function _parseGeminiJSON(text){
   //    "$3,272.00" → 3272  |  "3,272" → 3272  |  "$216" → 216
   s=s.replace(/":\s*"\$?([\d,]+\.?\d*)"/g,(m,n)=>'":'+n.replace(/,/g,""));
   // 4. quitar $ sueltos delante de números  "$216.00" → 216
-  s=s.replace(/:\s*\$([0-9]/g,": $1");
+  s=s.replace(/:\s*\$([0-9])/g,": $1");
   // 5. comas en miles dentro de valores numéricos  3,272 → 3272
   s=s.replace(/(\d),(\d{3})(?=[,}\]\s])/g,"$1$2");
   // 6. intentar parsear; si falla, reparar JSON truncado
