@@ -657,9 +657,9 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     </div>
 
     <!-- GRÁFICA DE FLUJO DIARIO (#5) -->
-    <div id="flujo-chart-wrap" style="margin:16px 0;background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:16px;display:none">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:12px">📊 Ingresos diarios</div>
-      <canvas id="flujo-chart" height="160" style="width:100%"></canvas>
+    <div id="flujo-chart-wrap" style="margin:6px 0;background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:8px 12px;display:none">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#aaa;margin-bottom:4px">📊 Ingresos diarios</div>
+      <div style="position:relative;height:90px"><canvas id="flujo-chart"></canvas></div>
     </div>
 
     <!-- HISTORIAL -->
@@ -3786,8 +3786,8 @@ function _buildFlujoChart(canvas,labels,dataRef,dataAla){
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:true,position:"top",labels:{boxWidth:10,font:{size:11}}},tooltip:{callbacks:{label:ctx=>" "+fmt(ctx.raw)}}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{ticks:{callback:v=>"$"+Math.round(v/1000)+"k",font:{size:10}},grid:{color:"#f0f0f0"}}}
+      plugins:{legend:{display:true,position:"top",labels:{boxWidth:8,font:{size:9},padding:6}},tooltip:{callbacks:{label:ctx=>" "+fmt(ctx.raw)}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:0}},y:{ticks:{callback:v=>"$"+Math.round(v/1000)+"k",font:{size:8}},grid:{color:"#f0f0f0"}}}
     }
   });
 }
