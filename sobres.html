@@ -187,6 +187,28 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .dtag-red{background:#fdecea;color:#c0392b;}
 .dtag-green{background:#eafaf1;color:#27ae60;}
 
+/* ── AHORROS ── */
+.ah-card{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:0;margin-bottom:10px;overflow:hidden;}
+.ah-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;gap:8px;}
+.ah-name{font-weight:800;font-size:14px;color:#111;}
+.ah-saldo{font-size:18px;font-weight:700;color:#27ae60;}
+.ah-saldo.zero{color:#ccc;}
+.ah-tag{display:inline-block;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;}
+.ah-tag-ref{background:#e8f0fe;color:#185FA5;}
+.ah-tag-ala{background:#eafaf1;color:#1B5E20;}
+.ah-body{display:none;border-top:1px solid #f0efe9;padding:0 18px 14px;}
+.ah-body.open{display:block;}
+.ah-week{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f5f5f5;font-size:12px;color:#555;}
+.ah-week:last-child{border-bottom:none;}
+.ah-week-sem{font-weight:600;color:#888;min-width:90px;}
+.ah-week-amt{font-weight:700;color:#27ae60;}
+.ah-week-amt.zero{color:#ccc;font-weight:400;}
+.ah-retiro-btn{background:#c0392b;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
+.ah-retiro-btn:hover{background:#a93226;}
+.ah-kpi{background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:14px 16px;text-align:center;}
+.ah-kpi-val{font-size:22px;font-weight:700;color:#27ae60;}
+.ah-kpi-lbl{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-top:4px;}
+
 /* ── ANALYTICS / SUCURSALES ── */
 .suc-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-bottom:24px;}
 .suc-kpi{background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;padding:18px 20px;box-shadow:none;}
@@ -360,6 +382,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
   <button class="tab" data-t="sobres">Tickets</button>
   <button class="tab" data-t="coords">Coordinadores</button>
   <button class="tab" data-t="deudas">Deudas</button>
+  <button class="tab" data-t="ahorros">Ahorros</button>
   <button class="tab" data-t="sucursales">Analytics</button>
   <button class="tab" data-t="hist">Historial</button>
   </div>
@@ -535,6 +558,24 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     <div class="dsec" style="margin-top:20px"><span style="color:#aaa">Saldadas</span></div>
     <div class="dg" id="dg-saldadas"></div>
     <p id="sin-saldadas" style="font-size:11px;color:#ccc;display:none">Ninguna.</p>
+  </div>
+
+  <!-- AHORROS -->
+  <div class="pnl" id="pnl-ahorros">
+    <div class="ph">
+      <h2>Ahorros de Lavadores</h2>
+      <div class="bg">
+        <button class="btn by" onclick="renderAhorros()">↻ Actualizar</button>
+      </div>
+    </div>
+    <p class="it">Saldo acumulado de ahorro/abono por lavador, calculado de todas las semanas del historial más la semana actual.</p>
+    <div id="ahorros-filtros" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="fbtn on" id="ah-all" onclick="setFiltroAh('all')">Todos</button>
+      <button class="fbtn ref" id="ah-ref" onclick="setFiltroAh('PC Refugio')">PC Refugio</button>
+      <button class="fbtn ala" id="ah-ala" onclick="setFiltroAh('PC Álamos')">PC Álamos</button>
+    </div>
+    <div id="ahorros-resumen" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px"></div>
+    <div id="ahorros-lista"></div>
   </div>
 
   <!-- SOBRES -->
@@ -981,6 +1022,7 @@ function goTab(id){
   document.getElementById("pnl-"+id).classList.add("on");
   if(id==="sobres")renderS();if(id==="hist")renderH();
   if(id==="deudas")renderD();if(id==="sucursales")renderSucursales();
+  if(id==="ahorros")renderAhorros();
   if(id==="coords"){renderCoords();renderLiquidaciones();syncSemana(document.getElementById("sem").value);goSubTab("pagos");}
   if(id==="flujo"){initFlujo();syncSemana(document.getElementById("sem").value);}
 }
@@ -3823,6 +3865,136 @@ function busquedaGlobal(q){
         </div>`).join("")
       :'<div style="text-align:center;color:#aaa;padding:20px">Sin resultados</div>'}
     </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AHORROS — Historial de ahorro/abono acumulado por lavador
+// ══════════════════════════════════════════════════════════════════════════════
+let _filtroAh = "all";
+
+function setFiltroAh(f){
+  _filtroAh = f;
+  ["all","PC Refugio","PC Álamos"].forEach(v=>{
+    const id = v==="all"?"ah-all":v==="PC Refugio"?"ah-ref":"ah-ala";
+    const btn=document.getElementById(id);
+    if(btn) btn.classList.toggle("on", v===f);
+  });
+  renderAhorros();
+}
+
+function renderAhorros(){
+  const hist = ld("pc4_hist",[]);
+  const semActual = ld("pc4_semana","Actual");
+
+  // Construir mapa: nombre → {sucursal, semanas:[{sem, monto}], total}
+  const mapa = {};
+
+  // Semana actual
+  rows.forEach(r=>{
+    if(!r.nombre) return;
+    const monto = num(r.ahorro)||0;
+    if(!mapa[r.nombre]) mapa[r.nombre]={sucursal:r.sucursal,semanas:[],total:0};
+    if(monto>0){
+      mapa[r.nombre].semanas.push({sem:semActual||"Actual",monto});
+      mapa[r.nombre].total+=monto;
+    }
+    mapa[r.nombre].sucursal=r.sucursal;
+  });
+
+  // Historial
+  hist.forEach(h=>{
+    (h.rows||[]).forEach(r=>{
+      if(!r.nombre) return;
+      const monto = num(r.ahorro)||0;
+      if(!mapa[r.nombre]) mapa[r.nombre]={sucursal:r.sucursal,semanas:[],total:0};
+      if(monto>0){
+        mapa[r.nombre].semanas.push({sem:h.semana||h.label||"—",monto});
+        mapa[r.nombre].total+=monto;
+      }
+      if(!mapa[r.nombre].sucursal) mapa[r.nombre].sucursal=r.sucursal;
+    });
+  });
+
+  // Filtrar y ordenar por saldo desc
+  let lista = Object.entries(mapa)
+    .filter(([n,d])=> _filtroAh==="all" || d.sucursal===_filtroAh)
+    .sort((a,b)=>b[1].total-a[1].total);
+
+  // KPIs resumen
+  const totalGeneral = lista.reduce((s,[,d])=>s+d.total,0);
+  const conSaldo = lista.filter(([,d])=>d.total>0).length;
+  const maxSaldo = lista[0]?.[1]?.total||0;
+  const maxNombre = lista[0]?.[0]||"—";
+
+  document.getElementById("ahorros-resumen").innerHTML=`
+    <div class="ah-kpi"><div class="ah-kpi-val">${fmt(totalGeneral)}</div><div class="ah-kpi-lbl">Total en cajas</div></div>
+    <div class="ah-kpi"><div class="ah-kpi-val">${conSaldo}</div><div class="ah-kpi-lbl">Lavadores ahorrando</div></div>
+    <div class="ah-kpi"><div class="ah-kpi-val">${fmt(maxSaldo)}</div><div class="ah-kpi-lbl">Mayor saldo · ${maxNombre}</div></div>
+  `;
+
+  if(!lista.length){
+    document.getElementById("ahorros-lista").innerHTML=`<p style="text-align:center;color:#ccc;padding:30px;font-size:13px">Sin ahorros registrados${_filtroAh!=="all"?" en "+_filtroAh:""}.</p>`;
+    return;
+  }
+
+  document.getElementById("ahorros-lista").innerHTML = lista.map(([nombre,d],i)=>{
+    const tagCls = d.sucursal==="PC Refugio"?"ah-tag-ref":"ah-tag-ala";
+    const tagLbl = d.sucursal==="PC Refugio"?"Refugio":"Álamos";
+    const semHtml = d.semanas.length
+      ? [...d.semanas].reverse().map(s=>`
+          <div class="ah-week">
+            <span class="ah-week-sem">Sem ${s.sem}</span>
+            <span class="ah-week-amt${s.monto===0?" zero":""}">${s.monto>0?"+"+fmt(s.monto):"—"}</span>
+          </div>`).join("")
+      : `<div style="color:#ccc;font-size:12px;padding:10px 0">Sin ahorros registrados</div>`;
+
+    return `
+      <div class="ah-card">
+        <div class="ah-header" onclick="toggleAh(${i})">
+          <div>
+            <span class="ah-name">${nombre}</span>
+            <span class="ah-tag ${tagCls}">${tagLbl}</span>
+            <span style="font-size:11px;color:#aaa;margin-left:8px">${d.semanas.length} sem</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="ah-saldo${d.total===0?" zero":""}">${fmt(d.total)}</span>
+            ${d.total>0?`<button class="ah-retiro-btn" onclick="event.stopPropagation();registrarRetiroAh('${nombre}',${d.total})">Retiro</button>`:""}
+            <span style="color:#ccc;font-size:16px" id="ah-chev-${i}">▾</span>
+          </div>
+        </div>
+        <div class="ah-body" id="ah-body-${i}">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#aaa;padding:10px 0 6px">Historial semana a semana</div>
+          ${semHtml}
+          ${d.total>0?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid #f0efe9">
+            <span style="font-size:11px;font-weight:700;color:#888">SALDO TOTAL</span>
+            <span style="font-size:15px;font-weight:900;color:#27ae60">${fmt(d.total)}</span>
+          </div>`:""}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function toggleAh(i){
+  const body=document.getElementById("ah-body-"+i);
+  const chev=document.getElementById("ah-chev-"+i);
+  if(!body)return;
+  const open=body.classList.toggle("open");
+  if(chev)chev.textContent=open?"▴":"▾";
+}
+
+function registrarRetiroAh(nombre, saldoActual){
+  const monto = prompt(`Retiro de ahorro para ${nombre}\nSaldo actual: ${fmt(saldoActual)}\n\n¿Cuánto retira?`);
+  if(!monto||isNaN(+monto)||+monto<=0) return;
+  const retiro=Math.min(+monto, saldoActual);
+  // Descuenta del registro actual en rows
+  const r=rows.find(r=>normN(r.nombre)===normN(nombre));
+  if(r){
+    r.ahorro=Math.max(0,(num(r.ahorro)||0)-retiro);
+    svQ("pc4_rows",rows);
+    renderT();
+  }
+  flash(`✅ Retiro de ${fmt(retiro)} registrado para ${nombre}`);
+  setTimeout(()=>renderAhorros(),400);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
