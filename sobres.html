@@ -1601,23 +1601,47 @@ function svQ(k,v){
   if(_svTimer)clearTimeout(_svTimer);
   _svTimer=setTimeout(()=>{ sv(k,v); _svTimer=null; }, 700);
 }
+// Recalcula y actualiza la celda TOTAL de la fila i (sin reconstruir toda la tabla)
+function updateTotalCell(i){
+  const trs=document.querySelectorAll("#tb tr");
+  if(!trs[i]) return;
+  const row=rows[i];
+  const desc=getDesc(row.nombre);
+  const t=calcT(row,row.nombre);
+  const bg   =t>0?"#f0fff4":t<0?"#fff5f5":"#fafaf8";
+  const bord =t>0?"#38a169":t<0?"#e53e3e":"#eee";
+  const color=t>0?"#276749":t<0?"#c53030":"#888";
+  // Desglose (misma lógica que renderT)
+  const effectiveFood=num(row.bono)>0?0:num(row.food);
+  const parts=[];
+  if(num(row.comision))              parts.push({v:num(row.comision),lbl:"com",sign:"+"});
+  if(effectiveFood>0)                parts.push({v:effectiveFood,lbl:"food",sign:"-"});
+  if(num(row.merch)>0)               parts.push({v:num(row.merch),lbl:"merch",sign:"-"});
+  if(Math.abs(num(row.ahorro||0))>0) parts.push({v:Math.abs(num(row.ahorro||0)),lbl:"ahorro",sign:"-"});
+  if(desc>0)                         parts.push({v:desc,lbl:"deuda",sign:"-"});
+  if(num(row.extra||0)>0)            parts.push({v:num(row.extra||0),lbl:"extra",sign:"+"});
+  const desglose=parts.length>1
+    ?`<div style="font-size:9px;color:#aaa;margin-top:3px;line-height:1.4">${parts.map((p,pi)=>`<span style="color:${p.sign==="-"?"#e53e3e":"#38a169"}">${pi===0?"":p.sign}${Math.round(p.v).toLocaleString("es-MX")} <span style="color:#ccc">${p.lbl}</span></span>`).join(" ")}</div>`:""
+  const tds=trs[i].querySelectorAll("td");
+  const totalTd=tds[tds.length-2]; // penúltimo td (último es el botón ✕)
+  if(totalTd){
+    totalTd.style.background=bg;
+    totalTd.style.borderLeft=`2px solid ${bord}`;
+    totalTd.innerHTML=`<div style="font-size:14px;font-weight:900;color:${color}">${fmt(t)}</div>${desglose}`;
+  }
+}
 function uf(i,f,v){
   rows[i][f]=v;
   svQ("pc4_rows",rows); // usa debounce — no HTTP en cada tecla
-  // solo actualizar la celda de total de esa fila, sin reconstruir la tabla
+  updateTotalCell(i);
+  // actualizar color del input según valor (0=autos,1=comision,2=food,3=merch,4=bono,5=ahorro,6=extra)
   const trs=document.querySelectorAll("#tb tr");
   if(trs[i]){
-    const t=calcT(rows[i],rows[i].nombre);
-    const tc=t>0?"cp":t<0?"cn2":"cz";
-    const cell=trs[i].querySelector(".tc");
-    if(cell){cell.textContent=fmt(t);cell.className="tc "+tc;}
-    // actualizar color del input food/merch/bono según valor
     const inputs=trs[i].querySelectorAll("input[type=number]");
-    // inputs: 0=autos, 1=comision, 2=food, 3=merch, 4=bono, 5=ahorro
     if(f==="food"  &&inputs[2]) inputs[2].style.color=v>0?"#e53e3e":"";
     if(f==="merch" &&inputs[3]) inputs[3].style.color=v>0?"#e53e3e":"";
-    if(f==="bono"  &&inputs[4]) inputs[4].style.color=v>0?"#38a169":"";
-    if(f==="extra" &&inputs[4]) inputs[4].style.color=v>0?"#38a169":"";
+    if(f==="bono"  &&inputs[4]){inputs[4].style.color=v>0?"#38a169":"";updateTotalCell(i);}// bono afecta food
+    if(f==="extra" &&inputs[6]) inputs[6].style.color=v>0?"#38a169":"";
     if(f==="ahorro"&&inputs[5]) inputs[5].style.color=v>0?"#1c3a61":"";
   }
   utg();renderResumen();
@@ -2335,17 +2359,41 @@ function abrirNuevaDeuda(prefill){
     deudas[nombre]={concepto,total,numPagos,pagoActual:proxima?0:1,montoPorPago:total/numPagos};
     sv("pc4_deudas",deudas);
     // Limpiar merch del row si: vino del botón "📋→ A deuda" (lockNombre)
-    // O si el monto de la deuda coincide exactamente con el merch del lavador
-    {const _ri=rows.findIndex(r=>r.nombre===nombre);
-    if(_ri>=0){
-      const _m=num(rows[_ri].merch);
+    // O si el monto coincide con el merch del lavador
+    // *** Itera TODAS las filas del nombre (dual-sucursal tiene 2 filas) ***
+    {let _changed=false;
+    rows.forEach((r,_ri)=>{
+      if(r.nombre!==nombre) return;
+      const _m=num(r.merch);
       if((prefill&&prefill.lockNombre)||(_m>0&&Math.abs(_m-total)<0.01)){
-        rows[_ri].merch=0;sv("pc4_rows",rows);
+        rows[_ri].merch=0;_changed=true;
       }
-    }}
+    });
+    if(_changed)sv("pc4_rows",rows);}
     modal.remove();renderD();renderT();
     flash("✓ Deuda de "+nombre+" registrada"+(proxima?" — empieza la próxima semana":""));
   };
+}
+
+// ── MERGE: combina filas del mismo nombre en 1 para tickets ─────────────────
+// (lavadores en 2 sucursales generan 2 rows → 1 ticket combinado)
+function mergeRows(act){
+  const seen=new Set();
+  return act.reduce((res,row)=>{
+    const k=normN(row.nombre);
+    if(seen.has(k))return res;
+    seen.add(k);
+    const todas=act.filter(r=>normN(r.nombre)===k);
+    if(todas.length===1){res.push(row);return res;}
+    const totalAutos=todas.reduce((s,r)=>s+num(r.autos),0);
+    const totalCom  =todas.reduce((s,r)=>s+num(r.comision),0);
+    // food/merch/bono/ahorro/extra: del row que los tenga (Refugio los tiene)
+    const base=todas.find(r=>num(r.food)||num(r.merch)||num(r.bono)||Math.abs(num(r.ahorro||0))||num(r.extra||0))||todas[0];
+    res.push({...base,autos:totalAutos,comision:totalCom,sucursal:"",
+      _suc_lines:todas.map(r=>({suc:r.sucursal==="PC Álamos"?"Álamos":"Refugio",autos:num(r.autos),com:num(r.comision)}))
+    });
+    return res;
+  },[]);
 }
 
 // ── IMPRESIÓN TÉRMICA 58mm ────────────────────────────────────────────────────
@@ -2391,12 +2439,13 @@ function bsobreTermica(row, sem){
   </div>
   ${SEP}
   <div style="text-align:center;font-size:28px;font-weight:900;padding:8px 12px 2px;color:#000;line-height:1.1">${row.nombre}</div>
-  ${row.sucursal?`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;letter-spacing:1px;padding:0 12px">${row.sucursal}</div>`:""}
-  ${row.autos?`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:2px 12px 2px">${row.autos} autos</div>`:""}
-  ${(()=>{const _ot=rows.filter(r=>normN(r.nombre)===normN(row.nombre)&&r.sucursal!==row.sucursal);return _ot.length?_ot.map(r=>`<div style="text-align:center;font-size:10px;color:#666;font-weight:700;padding:0 12px">+ ${r.sucursal==="PC Álamos"?"Álamos":"Refugio"}: ${r.autos} autos · ${fmt(num(r.comision))}</div>`).join(""):"";})()}
+  ${row._suc_lines
+    ? row._suc_lines.map(l=>`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;padding:0 12px">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
+    : `${row.sucursal?`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;letter-spacing:1px;padding:0 12px">${row.sucursal}</div>`:""}${row.autos?`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:2px 12px 2px">${row.autos} autos</div>`:""}`
+  }
   ${SEP}
   <div style="background:#f8ba00;padding:8px 12px;display:flex;flex-direction:column;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact">
-    <div style="font-size:8px;font-weight:700;letter-spacing:2px;color:#000;text-transform:uppercase;text-align:center;margin-bottom:2px">COMISION BRUTA</div>
+    <div style="font-size:8px;font-weight:700;letter-spacing:2px;color:#000;text-transform:uppercase;text-align:center;margin-bottom:2px">${row._suc_lines?"COMISIÓN TOTAL":"COMISIÓN BRUTA"}</div>
     <div style="font-size:24px;font-weight:900;color:#000;text-align:center">${fmt(com)}</div>
   </div>
   ${dc?`${SEP}<div style="padding:4px 12px 2px">${dc}</div>${SEP}`:`${SEP}`}
@@ -2415,6 +2464,7 @@ function printTermica(){
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir.");return;}
   const sem=document.getElementById("sem").value;
+  act=mergeRows(act); // 1 ticket por lavador
 
   // Generar cola con todos los sobres
   colaImpresion = act.map(r=>({nombre:r.nombre, html:bsobreTermica(r,sem)}));
@@ -2568,21 +2618,14 @@ function bsobre(row,sem){
       if(resta>0)dc+=`<div class="sr ssm"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
     }
   }
-  // Detectar si este lavador también trabajó en otra sucursal
-  const _otras=rows.filter(r=>normN(r.nombre)===normN(row.nombre)&&r.sucursal!==row.sucursal);
-  const _dobleTag=_otras.length
-    ? _otras.map(r=>{
-        const sc=r.sucursal==="PC Álamos"?"Álamos":"Refugio";
-        return `<div class="s-suc" style="color:#C8960C;font-size:9px">+ ${sc}: ${r.autos} autos · ${fmt(num(r.comision))}</div>`;
-      }).join("")
-    : "";
+  const _sucHead=row._suc_lines
+    ? row._suc_lines.map(l=>`<div class="s-suc" style="font-size:10px">${l.suc}: <b>${l.autos}</b> autos · ${fmt(l.com)}</div>`).join("")
+    : `${row.sucursal?`<div class="s-suc">${row.sucursal}</div>`:""}${row.autos?`<div class="s-autos">${row.autos} autos</div>`:""}`;
   return`<div class="sobre"><div class="s-head">
     <div class="s-brand"><span>PATIO </span><b>CINCO</b></div>
     <div class="s-week">LAVADORES · S${sem}</div>
     <div class="s-nombre">${row.nombre}</div>
-    ${row.sucursal?`<div class="s-suc">${row.sucursal}</div>`:""}
-    ${row.autos?`<div class="s-autos">${row.autos} autos</div>`:""}
-    ${_dobleTag}
+    ${_sucHead}
   </div>
   <div class="s-bruto"><span class="s-bruto-lbl">Comisión bruta</span><span class="s-bruto-val">${fmt(bruto)}</span></div>
   ${dc?`<div class="s-body">${dc}</div>`:""}
@@ -2595,6 +2638,7 @@ function renderS(){
   let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){g.innerHTML='<p class="nd">Sin datos.</p>';return;}
+  act=mergeRows(act); // 1 ticket por lavador aunque trabaje en 2 sucursales
   g.innerHTML=act.map(r=>bsobre(r,sem)).join("");
   // agregar click a cada sobre
   g.querySelectorAll(".sobre").forEach((el,i)=>{
@@ -2620,8 +2664,9 @@ function renderS(){
 function printSeleccionado(){
   if(!sobreSeleccionado) return;
   const sem=document.getElementById("sem").value;
-  const row=rows.find(r=>r.nombre===sobreSeleccionado);
-  if(!row) return;
+  const allMatch=rows.filter(r=>normN(r.nombre)===normN(sobreSeleccionado)&&(num(r.comision)>0||num(r.autos)>0));
+  if(!allMatch.length) return;
+  const row=mergeRows(allMatch)[0]; // ticket combinado si es dual-sucursal
   const pa=document.getElementById("print-area");
   pa.style.cssText="display:block;position:fixed;top:0;left:0;width:58mm;background:#fff;padding:0;z-index:9999";
   pa.innerHTML=bsobreTermica(row,sem)+
@@ -2640,6 +2685,7 @@ function printSobres(){
   let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir con este filtro.");return;}
+  act=mergeRows(act); // 1 ticket por lavador
   const pa=document.getElementById("print-area");
   pa.innerHTML=act.map(r=>bsobre(r,sem)).join("")+
     `<div style="position:fixed;bottom:16px;right:16px;z-index:999;display:flex;gap:8px" id="print-btns">
@@ -2656,6 +2702,7 @@ async function guardarTicketsHTML(){
   let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){flash("Sin tickets para guardar");return;}
+  act=mergeRows(act); // 1 ticket por lavador
 
   flash("⏳ Cargando herramientas...");
 
