@@ -1381,6 +1381,7 @@ function renderT(){
     const show=rowVisible(row);if(show)vis++;
     const isDoble=dobles.has(i);
     const tr=document.createElement("tr");
+    tr.dataset.rowIdx=i; // permite encontrar la fila exacta aunque haya filas combinadas intercaladas
     if(!show)tr.classList.add("hidden");
     if(isDoble)tr.style.background="#fffbf0";
 
@@ -1603,8 +1604,9 @@ function svQ(k,v){
 }
 // Recalcula y actualiza la celda TOTAL de la fila i (sin reconstruir toda la tabla)
 function updateTotalCell(i){
-  const trs=document.querySelectorAll("#tb tr");
-  if(!trs[i]) return;
+  // Usar data-row-idx para encontrar la fila correcta aunque haya filas combinadas intercaladas
+  const tr=document.querySelector(`#tb tr[data-row-idx="${i}"]`);
+  if(!tr) return;
   const row=rows[i];
   const desc=getDesc(row.nombre);
   const t=calcT(row,row.nombre);
@@ -1622,7 +1624,7 @@ function updateTotalCell(i){
   if(num(row.extra||0)>0)            parts.push({v:num(row.extra||0),lbl:"extra",sign:"+"});
   const desglose=parts.length>1
     ?`<div style="font-size:9px;color:#aaa;margin-top:3px;line-height:1.4">${parts.map((p,pi)=>`<span style="color:${p.sign==="-"?"#e53e3e":"#38a169"}">${pi===0?"":p.sign}${Math.round(p.v).toLocaleString("es-MX")} <span style="color:#ccc">${p.lbl}</span></span>`).join(" ")}</div>`:""
-  const tds=trs[i].querySelectorAll("td");
+  const tds=tr.querySelectorAll("td");
   const totalTd=tds[tds.length-2]; // penúltimo td (último es el botón ✕)
   if(totalTd){
     totalTd.style.background=bg;
@@ -1635,9 +1637,9 @@ function uf(i,f,v){
   svQ("pc4_rows",rows); // usa debounce — no HTTP en cada tecla
   updateTotalCell(i);
   // actualizar color del input según valor (0=autos,1=comision,2=food,3=merch,4=bono,5=ahorro,6=extra)
-  const trs=document.querySelectorAll("#tb tr");
-  if(trs[i]){
-    const inputs=trs[i].querySelectorAll("input[type=number]");
+  const _tr=document.querySelector(`#tb tr[data-row-idx="${i}"]`);
+  if(_tr){
+    const inputs=_tr.querySelectorAll("input[type=number]");
     if(f==="food"  &&inputs[2]) inputs[2].style.color=v>0?"#e53e3e":"";
     if(f==="merch" &&inputs[3]) inputs[3].style.color=v>0?"#e53e3e":"";
     if(f==="bono"  &&inputs[4]){inputs[4].style.color=v>0?"#38a169":"";updateTotalCell(i);}// bono afecta food
