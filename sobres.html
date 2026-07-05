@@ -2423,7 +2423,7 @@ function bsobreTermica(row, sem){
   if(entrena>0) dc+=`<div style="${rowS}"><span>${row.extraConcepto||"Extra"}</span><span>+${fmt(entrena)}</span></div>`;
   if(d&&d.total>0){
     if(d.pagoActual===0){
-      dc+=`<div style="font-size:8px;font-family:'Courier New',monospace"><span>Deuda pend. (no cobrada)</span></div>`;
+      dc+=`<div style="${rowS}"><span>${d.concepto||"Deuda"} (no cobrada esta sem.)</span><span>${fmt(d.total)}</span></div>`;
     } else if(desc>0){
       dc+=`<div style="${rowS}"><span>${d.concepto||"Deuda"}${pagoLabel}</span><span>-${fmt(desc)}</span></div>`;
       if(resta>0)dc+=`<div style="font-size:8px;font-family:'Courier New',monospace;display:flex;justify-content:space-between"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
@@ -2615,7 +2615,7 @@ function bsobre(row,sem){
   if(entrena>0) dc+=`<div class="sr" style="color:#38a169"><span class="sl2">${row.extraConcepto||"Extra"}</span><span class="sv">+${fmt(entrena)}</span></div>`;
   if(d&&d.total>0){
     if(d.pagoActual===0){
-      dc+=`<div class="sr ssm"><span>Deuda pend. (no cobrada esta semana)</span><span>${fmt(d.total)}</span></div>`;
+      dc+=`<div class="sr ssm"><span>${d.concepto||"Deuda"} (no cobrada esta semana)</span><span>${fmt(d.total)}</span></div>`;
     } else if(desc>0){
       dc+=`<div class="sr"><span class="sl2">${d.concepto||"Deuda"}${pagoLabel}</span><span class="sv">-${fmt(desc)}</span></div>`;
       if(resta>0)dc+=`<div class="sr ssm"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
