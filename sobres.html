@@ -441,8 +441,18 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
         </tr></thead>
         <tbody id="tb"></tbody>
         <tfoot><tr>
-          <td colspan="11">TOTAL GENERAL</td>
-          <td id="tg" style="text-align:right">$0.00</td><td></td>
+          <td style="font-weight:900;color:#111">TOTALES</td>
+          <td></td><td></td>
+          <td id="tg-autos" style="text-align:center;font-weight:700;color:#555">0</td>
+          <td id="tg-com"   style="text-align:right;font-weight:700;color:#555">$0</td>
+          <td id="tg-food"  style="text-align:right;font-weight:700;color:#c0392b">$0</td>
+          <td id="tg-merch" style="text-align:right;font-weight:700;color:#c0392b">$0</td>
+          <td id="tg-bono"  style="text-align:right;font-weight:700;color:#38a169">$0</td>
+          <td id="tg-aho"   style="text-align:right;font-weight:700;color:#1c3a61">$0</td>
+          <td id="tg-ext"   style="text-align:right;font-weight:700;color:#38a169">$0</td>
+          <td></td>
+          <td id="tg"       style="text-align:right;font-weight:900;font-size:14px;color:#111">$0</td>
+          <td></td>
         </tr></tfoot>
       </table>
     </div>
@@ -1183,13 +1193,27 @@ REGLAS DEL JSON:
 function renderT(){
   const tb=document.getElementById("tb");tb.innerHTML="";
   let vis=0;
+
+  // Detectar lavadores en dos sucursales
+  const porNombre={};
+  rows.forEach((row,i)=>{
+    const k=normN(row.nombre);
+    if(!k)return;
+    if(!porNombre[k]) porNombre[k]=[];
+    porNombre[k].push(i);
+  });
+  const dobles=new Set(Object.values(porNombre).filter(arr=>arr.length>1).flat());
+
   rows.forEach((row,i)=>{
     const d=deudas[row.nombre];
     const desc=getDesc(row.nombre);
     const t=calcT(row,row.nombre);
     const tc=t>0?"cp":t<0?"cn2":"cz";
     const show=rowVisible(row);if(show)vis++;
-    const tr=document.createElement("tr");if(!show)tr.classList.add("hidden");
+    const isDoble=dobles.has(i);
+    const tr=document.createElement("tr");
+    if(!show)tr.classList.add("hidden");
+    if(isDoble)tr.style.cssText="background:#fffbf0;border-left:3px solid #f8ba00;";
 
     const sucLabel=row.sucursal==="PC Refugio"
       ?`<span class="pill-ref" style="cursor:pointer" title="Clic para cambiar" onclick="ufSucursal(${i})">Refugio</span>`
@@ -1234,6 +1258,52 @@ function renderT(){
       <td class="tc ${tc}">${fmt(t)}</td>
       <td><button class="xb" onclick="rr(${i})">✕</button></td>`;
     tb.appendChild(tr);
+
+    // Si es el ÚLTIMO de su grupo doble → insertar fila combinada
+    if(isDoble && show){
+      const k=normN(row.nombre);
+      const grupo=porNombre[k];
+      const esUltimo=grupo[grupo.length-1]===i;
+      if(esUltimo){
+        const gRows=grupo.map(idx=>rows[idx]).filter(r=>rowVisible(r));
+        if(gRows.length>1){
+          const tAutos=gRows.reduce((s,r)=>s+num(r.autos),0);
+          const tCom  =gRows.reduce((s,r)=>s+num(r.comision),0);
+          const tFood =gRows.reduce((s,r)=>s+num(r.food),0);
+          const tMerch=gRows.reduce((s,r)=>s+num(r.merch),0);
+          const tBono =gRows.reduce((s,r)=>s+num(r.bono),0);
+          const tAho  =gRows.reduce((s,r)=>s+num(r.ahorro),0);
+          const tExt  =gRows.reduce((s,r)=>s+num(r.extra||0),0);
+          const tTotal=gRows.reduce((s,r)=>s+calcT(r,r.nombre),0);
+          const autosDesc=gRows.map(r=>{
+            const sl=r.sucursal==="PC Refugio"?"Ref":"Áls";
+            return `${num(r.autos)} ${sl}`;
+          }).join(" + ");
+          const comDesc=gRows.map(r=>{
+            const sl=r.sucursal==="PC Refugio"?"Ref":"Áls";
+            return `${fmt(num(r.comision))} ${sl}`;
+          }).join(" + ");
+          const sum=document.createElement("tr");
+          sum.style.cssText="background:#fffbf0;border-top:1px dashed #f8ba00;border-bottom:2px solid #f8ba00;font-weight:700;";
+          sum.innerHTML=`
+            <td style="font-size:11px;color:#7a5c00;font-weight:800">↳ ${row.nombre}<br><span style="font-size:9px;font-weight:400;color:#aaa">2 sucursales</span></td>
+            <td><span class="pill-ref" style="margin-right:2px">Ref</span><span class="pill-ala">Áls</span></td>
+            <td><span style="font-size:10px;color:#888">—</span></td>
+            <td style="text-align:center;font-size:12px">${tAutos}<br><span style="font-size:9px;color:#aaa;font-weight:400">${autosDesc}</span></td>
+            <td style="text-align:right;font-size:12px">${fmt(tCom)}<br><span style="font-size:9px;color:#aaa;font-weight:400">${comDesc}</span></td>
+            <td style="text-align:right;color:#c0392b">${tFood>0?fmt(tFood):"—"}</td>
+            <td style="text-align:right;color:#c0392b">${tMerch>0?fmt(tMerch):"—"}</td>
+            <td style="text-align:right;color:#38a169">${tBono>0?fmt(tBono):"—"}</td>
+            <td style="text-align:right;color:#1c3a61">${tAho>0?fmt(tAho):"—"}</td>
+            <td style="text-align:right;color:#38a169">${tExt>0?"+"+fmt(tExt):"—"}</td>
+            <td></td>
+            <td style="text-align:right;font-size:14px;font-weight:900;color:${tTotal>=0?"#111":"#c0392b"}">${fmt(tTotal)}</td>
+            <td></td>`;
+          if(!show)sum.classList.add("hidden");
+          tb.appendChild(sum);
+        }
+      }
+    }
   });
   document.getElementById("conteo").textContent=vis+" lavador"+(vis!==1?"es":"");
   utg();renderResumen();
@@ -1348,7 +1418,18 @@ function uf(i,f,v){
 }
 function addRow(){rows.push({nombre:"",sucursal:"",autos:"",comision:"",food:"",merch:"",bono:"",ahorro:"",extra:0,extraConcepto:"",pct:40});sv("pc4_rows",rows);renderT()}
 function rr(i){takeSnapshot();rows.splice(i,1);sv("pc4_rows",rows);renderT()}
-function utg(){document.getElementById("tg").textContent=fmt(rows.filter(r=>rowVisible(r)).reduce((s,r)=>s+calcT(r,r.nombre),0))}
+function utg(){
+  const vis=rows.filter(r=>rowVisible(r));
+  const g=id=>document.getElementById(id);
+  g("tg").textContent       = fmt(vis.reduce((s,r)=>s+calcT(r,r.nombre),0));
+  g("tg-autos").textContent = vis.reduce((s,r)=>s+num(r.autos),0);
+  g("tg-com").textContent   = fmt(vis.reduce((s,r)=>s+num(r.comision),0));
+  g("tg-food").textContent  = fmt(vis.reduce((s,r)=>s+num(r.food),0));
+  g("tg-merch").textContent = fmt(vis.reduce((s,r)=>s+num(r.merch),0));
+  g("tg-bono").textContent  = fmt(vis.reduce((s,r)=>s+num(r.bono),0));
+  g("tg-aho").textContent   = fmt(vis.reduce((s,r)=>s+num(r.ahorro),0));
+  g("tg-ext").textContent   = fmt(vis.reduce((s,r)=>s+num(r.extra||0),0));
+}
 function renderResumen(){
   const vis=rows.filter(r=>rowVisible(r));
   const tP=vis.reduce((s,r)=>s+calcT(r,r.nombre),0);
@@ -1786,13 +1867,17 @@ async function cargarS26(){
 }
 
 // ── DATOS SEMANA 27/2026 (leídos del PDF) ────────────────────────────────────
+// MERCH: Diego Diego 304, Jose Jr 224, Juan Lopez 24, Mauri 48, Toño 24 → Álamos
+//        Juaquin 554, Emma 280, Antonio 24 → Refugio
+// FOOD (descuentos a lavadores): Charlie 271.20, Emma 50, Jacobo 100, Uli 435.40 → Refugio
+// FOOD Álamos (Benji/Javier/Montse/Yaz) → van a coordinadores, no a lavadores
 const S27 = [
   // PC ÁLAMOS (10 lavadores)
   {nombre:"Diego Diego", sucursal:"PC Álamos", pct:40, autos:11, comision:728,    food:0,      merch:304, bono:0, ahorro:0},
   {nombre:"Jacobo",      sucursal:"PC Álamos", pct:40, autos:27, comision:1509.5, food:0,      merch:0,   bono:0, ahorro:0},
   {nombre:"Jose Jr",     sucursal:"PC Álamos", pct:40, autos:33, comision:2008,   food:0,      merch:224, bono:0, ahorro:0},
   {nombre:"Juan Lopez",  sucursal:"PC Álamos", pct:45, autos:36, comision:2652,   food:0,      merch:24,  bono:0, ahorro:0},
-  {nombre:"Juaquin",     sucursal:"PC Álamos", pct:30, autos:6,  comision:330,    food:0,      merch:554, bono:0, ahorro:0},
+  {nombre:"Juaquin",     sucursal:"PC Álamos", pct:30, autos:6,  comision:330,    food:0,      merch:0,   bono:0, ahorro:0},
   {nombre:"Marvin",      sucursal:"PC Álamos", pct:45, autos:38, comision:2583,   food:0,      merch:0,   bono:0, ahorro:0},
   {nombre:"Mauri",       sucursal:"PC Álamos", pct:40, autos:19, comision:1038,   food:0,      merch:48,  bono:0, ahorro:0},
   {nombre:"Poli",        sucursal:"PC Álamos", pct:40, autos:9,  comision:523,    food:0,      merch:0,   bono:0, ahorro:0},
@@ -1808,7 +1893,7 @@ const S27 = [
   {nombre:"Francisco",   sucursal:"PC Refugio",pct:35, autos:41, comision:2621.5, food:0,      merch:0,   bono:0, ahorro:0},
   {nombre:"Jacobo",      sucursal:"PC Refugio",pct:30, autos:4,  comision:201,    food:100,    merch:0,   bono:0, ahorro:0},
   {nombre:"Juan Carlos", sucursal:"PC Refugio",pct:30, autos:2,  comision:93,     food:0,      merch:0,   bono:0, ahorro:0},
-  {nombre:"Juaquin",     sucursal:"PC Refugio",pct:30, autos:16, comision:723,    food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Juaquin",     sucursal:"PC Refugio",pct:30, autos:16, comision:723,    food:0,      merch:554, bono:0, ahorro:0},
   {nombre:"Lupis",       sucursal:"PC Refugio",pct:40, autos:22, comision:2002,   food:0,      merch:0,   bono:0, ahorro:0},
   {nombre:"Uli",         sucursal:"PC Refugio",pct:30, autos:13, comision:1054,   food:435.40, merch:0,   bono:0, ahorro:0},
   {nombre:"Valente",     sucursal:"PC Refugio",pct:35, autos:1,  comision:70,     food:0,      merch:0,   bono:0, ahorro:0},
