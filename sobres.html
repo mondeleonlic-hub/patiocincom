@@ -352,10 +352,10 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 /* Table refresh */
 table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);}
 thead tr{background:#f0ede6;}
-thead th{color:#555;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:11px 12px;white-space:nowrap;border:none;border-bottom:1.5px solid #e0ddd4;}
+thead th{color:#555;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 6px;white-space:nowrap;border:none;border-bottom:1.5px solid #e0ddd4;}
 tbody tr:nth-child(even){background:#fafaf8;}
 tbody tr:hover{background:var(--gold-pale);}
-tbody td{padding:8px 12px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
+tbody td{padding:6px 6px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
 tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #e0ddd4;background:#f7f6f3;color:#111;}
 </style>
 <link rel="stylesheet" href="patio-cinco.css">
@@ -425,17 +425,17 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
     <div class="tw">
       <table>
         <thead><tr>
-          <th style="min-width:110px">Nombre</th>
-          <th style="min-width:100px">Sucursal</th>
-          <th style="min-width:50px">%</th>
-          <th style="min-width:60px">Autos</th>
-          <th style="min-width:92px">Comisión</th>
-          <th style="min-width:82px">Food</th>
-          <th style="min-width:82px">Merch</th>
-          <th style="min-width:82px">Bono</th>
-          <th style="min-width:90px">Ahorro/Abono</th>
-          <th style="min-width:160px">Extra / Concepto</th>
-          <th style="min-width:215px">Deuda</th>
+          <th style="min-width:96px">Nombre</th>
+          <th style="min-width:74px">Sucursal</th>
+          <th style="min-width:40px">%</th>
+          <th style="min-width:50px">Autos</th>
+          <th style="min-width:80px">Comisión</th>
+          <th style="min-width:68px">Food</th>
+          <th style="min-width:68px">Merch</th>
+          <th style="min-width:68px">Bono</th>
+          <th style="min-width:72px">Ahorro</th>
+          <th style="min-width:72px">Extra</th>
+          <th style="min-width:180px">Deuda</th>
           <th style="min-width:96px;text-align:right">Total a pagar</th>
           <th></th>
         </tr></thead>
@@ -1257,35 +1257,32 @@ function renderT(){
       : "";
 
     tr.innerHTML=`
-      <td style="position:relative;${isDoble?"border-left:3px solid #f8ba00;":""}">
-        <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:82px">
+      <td style="position:relative;${isDoble?"border-left:3px solid #f8ba00;":""}padding:5px 7px">
+        <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:70px">
         ${row.nombre?`<button onclick="verPerfilLavador('${esc(row.nombre)}')" title="Ver historial de ${esc(row.nombre)}" style="background:none;border:none;cursor:pointer;font-size:11px;color:#C8960C;padding:0;vertical-align:middle">📈</button>`:""}
         ${dobleTag}
       </td>
-      <td>${sucLabel}</td>
-      <td><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
-      <td><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:58px;text-align:center"></td>
-      <td><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:84px;text-align:right"></td>
-      <td><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:76px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
-      <td style="white-space:nowrap">
-        <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:72px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}">
-        ${num(row.merch)>100&&!(d&&d.total>0)?`<button onclick="merchADeuda(${i})" title="Merch >$100 — convertir en deuda" style="display:block;margin-top:3px;background:#fff3cd;border:1px solid #f8ba00;border-radius:5px;cursor:pointer;font-size:10px;font-weight:800;padding:3px 7px;color:#7a5c00;white-space:nowrap">📋→ A deuda</button>`:""}
+      <td style="padding:5px 4px">${sucLabel}</td>
+      <td style="padding:5px 4px"><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
+      <td style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:46px;text-align:center"></td>
+      <td style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:74px;text-align:right"></td>
+      <td style="padding:5px 4px"><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:62px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
+      <td style="padding:5px 4px;white-space:nowrap">
+        <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:60px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}">
+        ${num(row.merch)>100&&!(d&&d.total>0)?`<button onclick="merchADeuda(${i})" title="Merch >$100 — convertir en deuda" style="display:block;margin-top:3px;background:#fff3cd;border:1px solid #f8ba00;border-radius:5px;cursor:pointer;font-size:10px;font-weight:800;padding:2px 5px;color:#7a5c00;white-space:nowrap">📋→ A deuda</button>`:""}
       </td>
-      <td><input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:76px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}"></td>
-      <td><input type="number" value="${row.ahorro||""}" oninput="uf(${i},'ahorro',this.value)" style="width:80px;text-align:right;color:${Math.abs(num(row.ahorro||0))>0?"#1c3a61":"inherit"}" placeholder="0" title="Siempre se descuenta (positivo o negativo)"></td>
-      <td>
-        <div style="display:flex;align-items:center;gap:4px">
-          <input type="number" min="0" step="0.5" value="${row.extra||""}" oninput="uf(${i},'extra',+this.value)" style="width:72px;text-align:right;color:${(row.extra>0)?'#38a169':'inherit'}" placeholder="$0">
-          <input type="text" value="${row.extraConcepto||''}" oninput="uf(${i},'extraConcepto',this.value)" style="width:80px;font-size:10px;color:#888;border:none;border-bottom:1px dashed #ddd;background:transparent;font-family:inherit;outline:none;padding:1px 0" placeholder="concepto">
-        </div>
-        ${(row.extra>0)?`<div style="font-size:10px;color:#38a169;font-weight:700;text-align:right">+${fmt(row.extra)}</div>`:""}
+      <td style="padding:5px 4px"><input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:62px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}"></td>
+      <td style="padding:5px 4px"><input type="number" value="${row.ahorro||""}" oninput="uf(${i},'ahorro',this.value)" style="width:64px;text-align:right;color:${Math.abs(num(row.ahorro||0))>0?"#1c3a61":"inherit"}" placeholder="0" title="Siempre se descuenta (positivo o negativo)"></td>
+      <td style="padding:5px 4px">
+        <input type="number" min="0" step="0.5" value="${row.extra||""}" oninput="uf(${i},'extra',+this.value)" style="width:64px;text-align:right;color:${(row.extra>0)?'#38a169':'inherit'}" placeholder="$0" title="Doble clic: agregar concepto">
+        <div ondblclick="editarConceptoExtra(${i})" style="font-size:9px;color:${row.extraConcepto?'#38a169':'#ccc'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64px;cursor:pointer" title="${esc(row.extraConcepto||'Doble clic para agregar concepto')}">${esc(row.extraConcepto||'+ concepto')}</div>
       </td>
-      <td class="deuda-cell">${deudaCell}</td>
-      <td style="text-align:right;padding:8px 12px;background:${t>0?"#f0fff4":t<0?"#fff5f5":"#fafaf8"};border-left:2px solid ${t>0?"#38a169":t<0?"#e53e3e":"#eee"}">
-        <div style="font-size:15px;font-weight:900;color:${t>0?"#276749":t<0?"#c53030":"#888"}">${fmt(t)}</div>
+      <td class="deuda-cell" style="padding:5px 7px">${deudaCell}</td>
+      <td style="text-align:right;padding:6px 8px;background:${t>0?"#f0fff4":t<0?"#fff5f5":"#fafaf8"};border-left:2px solid ${t>0?"#38a169":t<0?"#e53e3e":"#eee"}">
+        <div style="font-size:14px;font-weight:900;color:${t>0?"#276749":t<0?"#c53030":"#888"}">${fmt(t)}</div>
         ${desglose}
       </td>
-      <td><button class="xb" onclick="rr(${i})">✕</button></td>`;
+      <td style="padding:5px 4px"><button class="xb" onclick="rr(${i})">✕</button></td>`;
     tb.appendChild(tr);
 
     // Si es el ÚLTIMO de su grupo doble → insertar fila combinada
@@ -1345,6 +1342,12 @@ function renderT(){
 }
 
 function ufNombre(i,v){rows[i].nombre=v;sv("pc4_rows",rows);renderT();}
+function editarConceptoExtra(i){
+  const v=prompt("Concepto del extra para "+rows[i].nombre+":",rows[i].extraConcepto||"");
+  if(v===null)return;
+  rows[i].extraConcepto=v.trim();
+  sv("pc4_rows",rows);renderT();
+}
 function ufSucursal(i){
   const ciclo={"PC Refugio":"PC Álamos","PC Álamos":"","":"PC Refugio"};
   rows[i].sucursal=ciclo[rows[i].sucursal]??"PC Refugio";
@@ -2118,10 +2121,20 @@ function abrirNuevaDeuda(prefill){
     <div id="nd-prev" style="background:#fff5f5;border:1px solid #fcc;border-radius:6px;padding:8px 10px;font-size:11px;margin-bottom:10px;${prefill.total?"":"display:none"}">
       Por pago: <strong style="color:#e53e3e" id="nd-mpp">${prefill.total?fmt(prefill.total):"—"}</strong>
     </div>
-    <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer;font-size:12px;background:#f0fff4;border:1px solid #9ae6b4;border-radius:6px;padding:8px 10px">
-      <input type="checkbox" id="nd-proxima" style="width:15px;height:15px;accent-color:#38a169">
-      <span><strong>Empezar la próxima semana</strong> — esta semana no se descuenta nada</span>
-    </label>
+    <div style="margin-bottom:14px">
+      <label style="font-size:10px;font-weight:700;color:#888;display:block;margin-bottom:6px;text-transform:uppercase">¿Cuándo empieza a cobrar?</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button type="button" id="nd-btn-esta" onclick="ndSetProxima(false)"
+          style="padding:9px 6px;border-radius:7px;border:2px solid #38a169;background:#38a169;color:#fff;cursor:pointer;font-weight:700;font-size:12px;transition:all .15s">
+          ✅ Esta semana
+        </button>
+        <button type="button" id="nd-btn-prox" onclick="ndSetProxima(true)"
+          style="padding:9px 6px;border-radius:7px;border:2px solid #ddd;background:#fff;color:#888;cursor:pointer;font-weight:700;font-size:12px;transition:all .15s">
+          ⏭ Próxima semana
+        </button>
+      </div>
+      <input type="hidden" id="nd-proxima" value="0">
+    </div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button onclick="this.closest('div[style*=fixed]').remove()" style="padding:8px 14px;border-radius:5px;border:1px solid #ddd;background:#fff;cursor:pointer;font-weight:700;font-size:12px">Cancelar</button>
       <button onclick="guardarDeuda()" style="padding:8px 14px;border-radius:5px;border:none;background:#f8ba00;color:#000;cursor:pointer;font-weight:700;font-size:12px">Guardar deuda</button>
@@ -2130,12 +2143,24 @@ function abrirNuevaDeuda(prefill){
   function upd(){const t=parseFloat(document.getElementById("nd-tot").value)||0,p=parseInt(document.getElementById("nd-pag").value)||1;const pr=document.getElementById("nd-prev");if(t>0){pr.style.display="block";document.getElementById("nd-mpp").textContent=fmt(t/p)}else pr.style.display="none"}
   document.getElementById("nd-tot").addEventListener("input",upd);
   document.getElementById("nd-pag").addEventListener("input",upd);
+  window.ndSetProxima=function(esProxima){
+    document.getElementById("nd-proxima").value=esProxima?"1":"0";
+    const bEsta=document.getElementById("nd-btn-esta");
+    const bProx=document.getElementById("nd-btn-prox");
+    if(esProxima){
+      bEsta.style.cssText="padding:9px 6px;border-radius:7px;border:2px solid #ddd;background:#fff;color:#888;cursor:pointer;font-weight:700;font-size:12px;transition:all .15s";
+      bProx.style.cssText="padding:9px 6px;border-radius:7px;border:2px solid #805ad5;background:#805ad5;color:#fff;cursor:pointer;font-weight:700;font-size:12px;transition:all .15s";
+    } else {
+      bEsta.style.cssText="padding:9px 6px;border-radius:7px;border:2px solid #38a169;background:#38a169;color:#fff;cursor:pointer;font-weight:700;font-size:12px;transition:all .15s";
+      bProx.style.cssText="padding:9px 6px;border-radius:7px;border:2px solid #ddd;background:#fff;color:#888;cursor:pointer;font-weight:700;font-size:12px;transition:all .15s";
+    }
+  };
   window.guardarDeuda=function(){
     const nombre=document.getElementById("nd-nom").value;
     const concepto=document.getElementById("nd-con").value.trim();
     const total=parseFloat(document.getElementById("nd-tot").value)||0;
     const numPagos=parseInt(document.getElementById("nd-pag").value)||1;
-    const proxima=document.getElementById("nd-proxima").checked;
+    const proxima=document.getElementById("nd-proxima").value==="1";
     if(!nombre){alert("Selecciona un lavador");return}
     if(total<=0){alert("El monto debe ser mayor a 0");return}
     // pagoActual:0 = no descuenta esta semana, al cerrar semana avanza a 1
