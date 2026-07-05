@@ -397,6 +397,7 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
         <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
         <select class="ph-btn ph-outline" id="datos-sem-sel" onchange="cargarSemanaHistDatos()">
           <option value="">Semana actual</option>
+          <option value="__s27">📄 Cargar S27 del PDF</option>
         </select>
         <button class="ph-btn ph-dark" onclick="cerrarSemana()">Cerrar semana</button>
         <button class="ph-btn" onclick="limpiarDatosSem()" style="background:#fff;color:#C62828;border:1.5px solid #C62828;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">Limpiar datos</button>
@@ -1784,6 +1785,45 @@ async function cargarS26(){
   flash("✅ Semana 26/2026 cargada — 23 lavadores (12 Álamos + 11 Refugio)");
 }
 
+// ── DATOS SEMANA 27/2026 (leídos del PDF) ────────────────────────────────────
+const S27 = [
+  // PC ÁLAMOS (10 lavadores)
+  {nombre:"Diego Diego", sucursal:"PC Álamos", pct:40, autos:11, comision:728,    food:0,      merch:304, bono:0, ahorro:0},
+  {nombre:"Jacobo",      sucursal:"PC Álamos", pct:40, autos:27, comision:1509.5, food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Jose Jr",     sucursal:"PC Álamos", pct:40, autos:33, comision:2008,   food:0,      merch:224, bono:0, ahorro:0},
+  {nombre:"Juan Lopez",  sucursal:"PC Álamos", pct:45, autos:36, comision:2652,   food:0,      merch:24,  bono:0, ahorro:0},
+  {nombre:"Juaquin",     sucursal:"PC Álamos", pct:30, autos:6,  comision:330,    food:0,      merch:554, bono:0, ahorro:0},
+  {nombre:"Marvin",      sucursal:"PC Álamos", pct:45, autos:38, comision:2583,   food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Mauri",       sucursal:"PC Álamos", pct:40, autos:19, comision:1038,   food:0,      merch:48,  bono:0, ahorro:0},
+  {nombre:"Poli",        sucursal:"PC Álamos", pct:40, autos:9,  comision:523,    food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Toño",        sucursal:"PC Álamos", pct:45, autos:41, comision:3448.5, food:0,      merch:24,  bono:0, ahorro:0},
+  {nombre:"Valente",     sucursal:"PC Álamos", pct:35, autos:29, comision:1648,   food:0,      merch:0,   bono:0, ahorro:0},
+  // PC REFUGIO (13 lavadores)
+  {nombre:"Antonio",     sucursal:"PC Refugio",pct:35, autos:18, comision:1273,   food:0,      merch:24,  bono:0, ahorro:0},
+  {nombre:"Arellano",    sucursal:"PC Refugio",pct:45, autos:52, comision:3445,   food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Cesar",       sucursal:"PC Refugio",pct:35, autos:23, comision:1439.5, food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Charlie",     sucursal:"PC Refugio",pct:30, autos:37, comision:1815,   food:271.20, merch:0,   bono:0, ahorro:0},
+  {nombre:"El güero",    sucursal:"PC Refugio",pct:40, autos:38, comision:2234.5, food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Emma",        sucursal:"PC Refugio",pct:40, autos:43, comision:2667,   food:50,     merch:280, bono:0, ahorro:0},
+  {nombre:"Francisco",   sucursal:"PC Refugio",pct:35, autos:41, comision:2621.5, food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Jacobo",      sucursal:"PC Refugio",pct:30, autos:4,  comision:201,    food:100,    merch:0,   bono:0, ahorro:0},
+  {nombre:"Juan Carlos", sucursal:"PC Refugio",pct:30, autos:2,  comision:93,     food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Juaquin",     sucursal:"PC Refugio",pct:30, autos:16, comision:723,    food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Lupis",       sucursal:"PC Refugio",pct:40, autos:22, comision:2002,   food:0,      merch:0,   bono:0, ahorro:0},
+  {nombre:"Uli",         sucursal:"PC Refugio",pct:30, autos:13, comision:1054,   food:435.40, merch:0,   bono:0, ahorro:0},
+  {nombre:"Valente",     sucursal:"PC Refugio",pct:35, autos:1,  comision:70,     food:0,      merch:0,   bono:0, ahorro:0},
+];
+
+async function cargarS27(){
+  if(!confirm("¿Cargar datos de Semana 27/2026?\nEsto reemplaza los datos actuales.\n(Las deudas y el historial no se borran)"))return;
+  rows = S27.map(r=>({...r}));
+  await sv("pc4_rows", rows);
+  document.getElementById("sem").value="27/2026";
+  syncSemana("27/2026");
+  renderT(); renderD(); renderSucursales(); renderResumen();
+  flash("✅ Semana 27/2026 cargada — 23 lavadores (10 Álamos + 13 Refugio)");
+}
+
 function exportarDatos(){
   const data = {
     version: "PC5",
@@ -2750,11 +2790,13 @@ function cambiarSemanaFlujo(){
 function cargarSemanaHistDatos(){
   const sel = document.getElementById("datos-sem-sel");
   const val = sel ? sel.value : "";
-  if(!val){ 
+  if(!val){
     // restore current week
     if(typeof renderT === "function") renderT();
     return;
   }
+  // Semanas hardcodeadas desde PDF
+  if(val==="__s27"){ sel.value=""; cargarS27(); return; }
   const idx = parseInt(val.replace("hist_",""));
   const hist = ld("pc4_hist",[]);
   if(hist[idx]){
