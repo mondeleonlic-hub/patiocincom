@@ -1067,16 +1067,148 @@ function rowVisible(r){if(filtro==="all")return true;if(filtro==="sin")return !r
 function setF(f){filtro=f;document.querySelectorAll(".fbtn[data-f]").forEach(b=>b.classList.remove("on"));document.querySelector(`.fbtn[data-f="${f}"]`).classList.add("on");renderT()}
 function setFS(f){filtroS=f;["all","ref","ala"].forEach(k=>document.getElementById("fs-"+k).classList.remove("on"));({all:"fs-all","PC Refugio":"fs-ref","PC Álamos":"fs-ala"})[f]&&document.getElementById(({all:"fs-all","PC Refugio":"fs-ref","PC Álamos":"fs-ala"})[f]).classList.add("on");renderS()}
 
-// ── OCR ───────────────────────────────────────────────────────────────────────
+// ── PDF / OCR ────────────────────────────────────────────────────────────────
+let _pdfJsReady=false;
+async function _loadPdfJs(){
+  if(_pdfJsReady)return;
+  await new Promise((res,rej)=>{
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload=()=>{
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc=
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      _pdfJsReady=true; res();
+    };
+    s.onerror=()=>rej(new Error("No se pudo cargar PDF.js"));
+    document.head.appendChild(s);
+  });
+}
+
 function onFile(inp){
-  const file=inp.files&&inp.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    const b64=e.target.result.split(",")[1];
-    const mime=file.type||"image/png";
-    runOCR(b64,mime);
-  };
-  r.readAsDataURL(file);inp.value="";
+  const file=inp.files&&inp.files[0]; if(!file)return; inp.value="";
+  const isPDF=file.name.toLowerCase().endsWith('.pdf');
+  if(isPDF){
+    const r=new FileReader();
+    r.onload=async e=>{ await runPDFextract(new Uint8Array(e.target.result)); };
+    r.readAsArrayBuffer(file);
+  } else {
+    const r=new FileReader();
+    r.onload=e=>{ runOCR(e.target.result.split(",")[1], file.type||"image/png"); };
+    r.readAsDataURL(file);
+  }
+}
+
+// ── EXTRACTOR DE TEXTO (PDF.js, sin IA) ──────────────────────────────────────
+async function runPDFextract(data){
+  setSt("load","📄 Leyendo PDF...");
+  try{
+    await _loadPdfJs();
+    const pdf=await pdfjsLib.getDocument({data}).promise;
+    let allItems=[];
+    for(let p=1;p<=pdf.numPages;p++){
+      const page=await pdf.getPage(p);
+      const tc=await page.getTextContent();
+      tc.items.forEach(item=>allItems.push({
+        str:item.str.trim(), x:item.transform[4], y:item.transform[5]
+      }));
+    }
+    // Orden: arriba→abajo, izquierda→derecha
+    allItems.sort((a,b)=>Math.abs(b.y-a.y)>3?b.y-a.y:a.x-b.x);
+
+    setSt("load","🔍 Analizando lavadores...");
+    const newRows=parsePatioCincoText(allItems);
+    if(!newRows.length){setSt("err","❌ No se encontraron lavadores. Verifica el formato del PDF.");return;}
+
+    rows=newRows;
+    rows.forEach(r=>{
+      if(r.nombre&&r.sucursal){
+        if(!perfiles[r.nombre])perfiles[r.nombre]={sucursal:r.sucursal,pct:r.pct};
+        else{perfiles[r.nombre].sucursal=r.sucursal;perfiles[r.nombre].pct=r.pct;}
+      }
+    });
+    sv("pc4_perfiles",perfiles); sv("pc4_rows",rows);
+    renderT();renderD();renderSucursales();renderResumen();
+    const cnt=Object.values(rows.reduce((a,r)=>{const k=normN(r.nombre);a[k]=(a[k]||0)+1;return a},{})).filter(v=>v>1).length;
+    setSt("ok",`✅ ${rows.length} lavadores cargados${cnt?` (${cnt} en 2 sucursales)`:"" }`);
+  }catch(e){
+    setSt("err","❌ Error PDF: "+e.message);console.error(e);
+  }
+}
+
+// ── PARSER DE TEXTO PATIO CINCO (sin IA) ─────────────────────────────────────
+function parsePatioCincoText(allItems){
+  // Texto completo para COMISIONES y FOOD
+  const fullText=allItems.map(i=>i.str).join('\n');
+  const lines=fullText.split('\n').map(l=>l.trim()).filter(l=>l);
+
+  // 1. COMISIONES: detectar "Total [Nombre] $X autos"
+  const comisiones=[];
+  let suc=null, pcts=[];
+  for(const line of lines){
+    if(/^ALAMOS\b/i.test(line)){suc='PC Álamos';continue;}
+    if(/^REFUGIO\b/i.test(line)){suc='PC Refugio';continue;}
+    // Acumular porcentajes
+    [...line.matchAll(/\b(\d{2})%\b/g)].forEach(m=>{ if(suc)pcts.push(+m[1]); });
+    // Fila de total
+    const tm=line.match(/^Total\s+([A-ZÁÉÍÓÚÜÑ][a-záéíóúüñA-Z\s]+?)\s+\$([\d,]+\.?\d*)\s+(\d+)/);
+    if(tm&&suc){
+      comisiones.push({
+        nombre:tm[1].trim(), sucursal:suc,
+        pct:pcts.length?Math.max(...pcts):40,
+        autos:+tm[3],
+        comision:parseFloat(tm[2].replace(/,/g,''))
+      });
+      pcts=[];
+    }
+  }
+
+  // 2. FOOD: patrón "Nombre $X -$X" (el -$ es único de food)
+  const food={};
+  for(const line of lines){
+    const m=line.match(/([A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+(?:\s+[A-Za-záéíóúüñ]+)*)\s+\$([\d,]+\.?\d*)\s+-\$/);
+    if(m) food[normN(m[1].trim())]=parseFloat(m[2].replace(/,/g,''));
+  }
+
+  // 3. MERCH: columna derecha (x > 55% del ancho de página)
+  const maxX=Math.max(...allItems.map(i=>i.x));
+  const merchItems=allItems.filter(i=>i.x>maxX*0.55 && i.x<maxX*0.85);
+  // Agrupar en líneas por y
+  const mLines={};
+  for(const item of merchItems){
+    const y=Math.round(item.y);
+    if(!mLines[y])mLines[y]=[];
+    mLines[y].push(item.str);
+  }
+  const merch={};
+  const lavNorms=new Set(comisiones.map(c=>normN(c.nombre)));
+  for(const lineArr of Object.values(mLines)){
+    const str=lineArr.join(' ').trim();
+    const m=str.match(/^([A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+(?:\s+[A-Za-záéíóúüñ]+)*)\s+\$([\d,]+\.?\d*)/);
+    if(m){
+      const key=normN(m[1].trim());
+      if(lavNorms.has(key)&&!/^(suma|total|efectivo|tarjeta|metodo|bono)/i.test(m[1])){
+        merch[key]=parseFloat(m[2].replace(/,/g,''));
+      }
+    }
+  }
+
+  // 4. Construir filas (UNA POR SUCURSAL — lavadores dobles quedan como 2 filas)
+  const result=comisiones.map(c=>({
+    nombre:c.nombre, sucursal:c.sucursal, pct:c.pct,
+    autos:c.autos, comision:c.comision,
+    food:food[normN(c.nombre)]||0,
+    merch:merch[normN(c.nombre)]||0,
+    bono:0, ahorro:'', extra:0, extraConcepto:''
+  }));
+
+  // 5. Para lavadores en 2 sucursales: food/merch solo en fila Refugio
+  const cnt={};
+  result.forEach(r=>{const k=normN(r.nombre);cnt[k]=(cnt[k]||0)+1;});
+  result.forEach(r=>{
+    if(cnt[normN(r.nombre)]>1&&r.sucursal==='PC Álamos'){r.food=0;r.merch=0;}
+  });
+
+  return result;
 }
 
 async function runOCR(b64,mime){
@@ -1132,29 +1264,8 @@ REGLAS DEL JSON:
       };
     }).filter(l=>l.nombre&&normN(l.nombre)!=="total"&&normN(l.nombre)!=="suma total");
 
-    // ── Paso 2: combinar lavadores duplicados (misma persona, diferente sucursal o %) ──
-    const merged={};
-    rawList.forEach(l=>{
-      const key=normN(l.nombre);
-      if(!merged[key]){
-        merged[key]={...l};
-      } else {
-        const m=merged[key];
-        // La sucursal con más autos es la principal
-        const mAutos=num(m.autos)||0, lAutos=num(l.autos)||0;
-        if(lAutos>mAutos){
-          m.sucursal=l.sucursal;
-          m.pct=l.pct;  // usar % de la fila dominante
-        }
-        m.autos    = mAutos + lAutos;
-        m.comision = (num(m.comision)||0) + (num(l.comision)||0);
-        m.food     = (num(m.food)||0)     + (num(l.food)||0);
-        m.merch    = (num(m.merch)||0)    + (num(l.merch)||0);
-        m.bono     = (num(m.bono)||0)     + (num(l.bono)||0);
-      }
-    });
-
-    rows = Object.values(merged).map(l=>({
+    // Mantener filas separadas por sucursal (NO fusionar dobles)
+    rows = rawList.map(l=>({
       nombre:       l.nombre,
       sucursal:     l.sucursal,
       pct:          l.pct,
