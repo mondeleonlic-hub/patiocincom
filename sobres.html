@@ -1170,13 +1170,14 @@ function parsePatioCincoText(visualLines){
   const allX=visualLines.flatMap(l=>l.items.map(i=>i.x));
   const pageW=Math.max(...allX)||600;
 
-  // Umbrales de columna (calibrados con pageW≈723 del PDF real)
-  const COM_END      =pageW*0.45; // fin COMISIONES (~325)
-  const FOOD_NEG_MIN =pageW*0.50; // inicio zona ítem "-$" food (~361)
-  const FOOD_NEG_MAX =pageW*0.65; // fin zona ítem "-$" food (~470)
-  const FOOD_NAME_MIN=pageW*0.44; // inicio nombres en columna FOOD (~318)
-  const MERCH_MIN    =pageW*0.67; // inicio columna MERCH (~484)
-  const MERCH_MAX    =pageW*0.81; // fin columna MERCH (~586)
+  // Umbrales de columna (calibrados para ambas versiones del PDF ERP)
+  // COM_END en 40% mantiene los nombres de food (x≈317-330) FUERA de la col. izquierda
+  const COM_END      =pageW*0.40; // fin COMISIONES (todo dato de lavador está aquí)
+  const FOOD_NEG_MIN =pageW*0.50; // inicio zona ítem "-$" food
+  const FOOD_NEG_MAX =pageW*0.65; // fin zona ítem "-$" food
+  const FOOD_NAME_MIN=pageW*0.40; // inicio nombres en columna FOOD (=COM_END)
+  const MERCH_MIN    =pageW*0.65; // inicio columna MERCH (primer token del nombre)
+  const MERCH_MAX    =pageW*0.82; // fin columna MERCH
 
   // ── 1. COMISIONES ────────────────────────────────────────────────────────────
   // Estructura: sección "ALAMOS" o "REFUGIO", luego filas de detalle con nombre+%,
