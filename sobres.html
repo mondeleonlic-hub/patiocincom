@@ -2440,7 +2440,8 @@ function bsobreTermica(row, sem){
   ${SEP}
   <div style="text-align:center;font-size:28px;font-weight:900;padding:8px 12px 2px;color:#000;line-height:1.1">${row.nombre}</div>
   ${row._suc_lines
-    ? row._suc_lines.map(l=>`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;padding:0 12px">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
+    ? row._suc_lines.map(l=>`<div style="text-align:center;font-size:10px;color:#555;font-weight:700;padding:0 12px;line-height:1.7">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
+      +`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:3px 12px 2px">Total: ${row.autos} autos</div>`
     : `${row.sucursal?`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;letter-spacing:1px;padding:0 12px">${row.sucursal}</div>`:""}${row.autos?`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:2px 12px 2px">${row.autos} autos</div>`:""}`
   }
   ${SEP}
@@ -2619,7 +2620,8 @@ function bsobre(row,sem){
     }
   }
   const _sucHead=row._suc_lines
-    ? row._suc_lines.map(l=>`<div class="s-suc" style="font-size:10px">${l.suc}: <b>${l.autos}</b> autos · ${fmt(l.com)}</div>`).join("")
+    ? row._suc_lines.map(l=>`<div class="s-suc" style="font-size:10px">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
+      +`<div class="s-autos">${row.autos} autos</div>`
     : `${row.sucursal?`<div class="s-suc">${row.sucursal}</div>`:""}${row.autos?`<div class="s-autos">${row.autos} autos</div>`:""}`;
   return`<div class="sobre"><div class="s-head">
     <div class="s-brand"><span>PATIO </span><b>CINCO</b></div>
@@ -2627,7 +2629,7 @@ function bsobre(row,sem){
     <div class="s-nombre">${row.nombre}</div>
     ${_sucHead}
   </div>
-  <div class="s-bruto"><span class="s-bruto-lbl">Comisión bruta</span><span class="s-bruto-val">${fmt(bruto)}</span></div>
+  <div class="s-bruto"><span class="s-bruto-lbl">${row._suc_lines?"Comisión total":"Comisión bruta"}</span><span class="s-bruto-val">${fmt(bruto)}</span></div>
   ${dc?`<div class="s-body">${dc}</div>`:""}
   <div class="s-total"><span>TOTAL</span><span>${fmt(total)}</span></div></div>`;
 }
