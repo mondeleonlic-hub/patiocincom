@@ -1139,6 +1139,19 @@ async function runPDFextract(data){
         else{perfiles[r.nombre].sucursal=r.sucursal;perfiles[r.nombre].pct=r.pct;}
       }
     });
+
+    // Auto-detectar número de semana del encabezado del PDF
+    // Busca texto como "SEMANA 27/2026" o "(SEMANA 27/2026)"
+    for(const l of visualLines){
+      const txt=l.items.map(i=>i.str).join(' ');
+      const sm=txt.match(/SEMANA\s+(\d{1,2}\/\d{4})/i);
+      if(sm){
+        document.getElementById("sem").value=sm[1];
+        syncSemana(sm[1]);
+        break;
+      }
+    }
+
     sv("pc4_perfiles",perfiles); sv("pc4_rows",rows);
     renderT();renderD();renderSucursales();renderResumen();
     const dobles=Object.values(rows.reduce((a,r)=>{const k=normN(r.nombre);a[k]=(a[k]||0)+1;return a},{})).filter(v=>v>1).length;
@@ -1412,13 +1425,13 @@ function renderT(){
 
     tr.innerHTML=`
       <td style="position:relative;${isDoble?"border-left:3px solid #f8ba00;":""}padding:5px 7px">
-        <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:70px">
+        <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:90px">
         ${row.nombre?`<button onclick="verPerfilLavador('${esc(row.nombre)}')" title="Ver historial de ${esc(row.nombre)}" style="background:none;border:none;cursor:pointer;font-size:11px;color:#C8960C;padding:0;vertical-align:middle">📈</button>`:""}
         ${dobleTag}
       </td>
       <td style="padding:5px 4px">${sucLabel}</td>
       <td style="padding:5px 4px"><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
-      <td style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:46px;text-align:center"></td>
+      <td style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:54px;text-align:center"></td>
       <td style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:74px;text-align:right"></td>
       <td style="padding:5px 4px"><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:62px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
       <td style="padding:5px 4px;white-space:nowrap">
@@ -2320,10 +2333,15 @@ function abrirNuevaDeuda(prefill){
     // pagoActual:0 = no descuenta esta semana, al cerrar semana avanza a 1
     deudas[nombre]={concepto,total,numPagos,pagoActual:proxima?0:1,montoPorPago:total/numPagos};
     sv("pc4_deudas",deudas);
-    if(prefill&&prefill.lockNombre){
-      const ri=rows.findIndex(r=>r.nombre===nombre);
-      if(ri>=0){rows[ri].merch=0;sv("pc4_rows",rows);}
-    }
+    // Limpiar merch del row si: vino del botón "📋→ A deuda" (lockNombre)
+    // O si el monto de la deuda coincide exactamente con el merch del lavador
+    {const _ri=rows.findIndex(r=>r.nombre===nombre);
+    if(_ri>=0){
+      const _m=num(rows[_ri].merch);
+      if((prefill&&prefill.lockNombre)||(_m>0&&Math.abs(_m-total)<0.01)){
+        rows[_ri].merch=0;sv("pc4_rows",rows);
+      }
+    }}
     modal.remove();renderD();renderT();
     flash("✓ Deuda de "+nombre+" registrada"+(proxima?" — empieza la próxima semana":""));
   };
@@ -2373,7 +2391,8 @@ function bsobreTermica(row, sem){
   ${SEP}
   <div style="text-align:center;font-size:28px;font-weight:900;padding:8px 12px 2px;color:#000;line-height:1.1">${row.nombre}</div>
   ${row.sucursal?`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;letter-spacing:1px;padding:0 12px">${row.sucursal}</div>`:""}
-  ${row.autos?`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:2px 12px 4px">${row.autos} autos</div>`:""}
+  ${row.autos?`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:2px 12px 2px">${row.autos} autos</div>`:""}
+  ${(()=>{const _ot=rows.filter(r=>normN(r.nombre)===normN(row.nombre)&&r.sucursal!==row.sucursal);return _ot.length?_ot.map(r=>`<div style="text-align:center;font-size:10px;color:#666;font-weight:700;padding:0 12px">+ ${r.sucursal==="PC Álamos"?"Álamos":"Refugio"}: ${r.autos} autos · ${fmt(num(r.comision))}</div>`).join(""):"";})()}
   ${SEP}
   <div style="background:#f8ba00;padding:8px 12px;display:flex;flex-direction:column;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact">
     <div style="font-size:8px;font-weight:700;letter-spacing:2px;color:#000;text-transform:uppercase;text-align:center;margin-bottom:2px">COMISION BRUTA</div>
@@ -2548,12 +2567,21 @@ function bsobre(row,sem){
       if(resta>0)dc+=`<div class="sr ssm"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
     }
   }
+  // Detectar si este lavador también trabajó en otra sucursal
+  const _otras=rows.filter(r=>normN(r.nombre)===normN(row.nombre)&&r.sucursal!==row.sucursal);
+  const _dobleTag=_otras.length
+    ? _otras.map(r=>{
+        const sc=r.sucursal==="PC Álamos"?"Álamos":"Refugio";
+        return `<div class="s-suc" style="color:#C8960C;font-size:9px">+ ${sc}: ${r.autos} autos · ${fmt(num(r.comision))}</div>`;
+      }).join("")
+    : "";
   return`<div class="sobre"><div class="s-head">
     <div class="s-brand"><span>PATIO </span><b>CINCO</b></div>
     <div class="s-week">LAVADORES · S${sem}</div>
     <div class="s-nombre">${row.nombre}</div>
     ${row.sucursal?`<div class="s-suc">${row.sucursal}</div>`:""}
     ${row.autos?`<div class="s-autos">${row.autos} autos</div>`:""}
+    ${_dobleTag}
   </div>
   <div class="s-bruto"><span class="s-bruto-lbl">Comisión bruta</span><span class="s-bruto-val">${fmt(bruto)}</span></div>
   ${dc?`<div class="s-body">${dc}</div>`:""}
