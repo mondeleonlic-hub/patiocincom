@@ -1008,9 +1008,10 @@ function esc(v){return String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;"
 function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").replace(/[éèë]/g,"e").replace(/[íìï]/g,"i").replace(/[óòö]/g,"o").replace(/[úùü]/g,"u").replace(/ñ/g,"n").trim()}
 function getDesc(n){const d=deudas[n];if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;return d.montoPorPago||d.total/d.numPagos||0}
 function calcT(r,n){
+  // Si tiene bono, el bono cubre el food (no se descuenta food)
   const food = num(r.bono)>0 ? 0 : num(r.food);
   const extra=num(r.extra||0);
-  return num(r.comision)-food-num(r.merch)-Math.abs(num(r.ahorro||0))+extra-getDesc(n);
+  return num(r.comision)-food-num(r.merch)-Math.abs(num(r.ahorro||0))+num(r.bono)+extra-getDesc(n);
 }
 function flash(m){const e=document.getElementById("fmsg");e.textContent=m;e.style.display="block";setTimeout(()=>e.style.display="none",3000)}
 function setSt(t,m){
@@ -1221,9 +1222,13 @@ function renderT(){
       ?`<span class="pill-ala" style="cursor:pointer" title="Clic para cambiar" onclick="ufSucursal(${i})">Álamos</span>`
       :`<span class="pill-sin" style="cursor:pointer" title="Clic para asignar" onclick="ufSucursal(${i})">—</span>`;
 
-    const dobleTag = isDoble
-      ? `<span style="display:block;font-size:9px;font-weight:700;color:#C8960C;letter-spacing:.3px;margin-top:2px">↕ 2 sucursales</span>`
-      : "";
+    const dobleTag = isDoble ? (()=>{
+      const k2=normN(row.nombre);
+      const otras=porNombre[k2].filter(idx=>idx!==i).map(idx=>rows[idx]);
+      const sc=s=>s==="PC Refugio"?"Refugio":s==="PC Álamos"?"Álamos":"—";
+      const otrasStr=otras.map(r=>`<span style="color:#888">${sc(r.sucursal)}: <b>${num(r.autos)}</b> autos · ${fmt(num(r.comision))}</span>`).join("<br>");
+      return `<div style="font-size:9px;font-weight:700;color:#C8960C;letter-spacing:.3px;margin-top:3px;line-height:1.6">↕ 2 sucursales<br>${otrasStr}</div>`;
+    })() : "";
 
     let deudaCell=d&&d.total>0?`<div class="deuda-info">
       <div class="deuda-concepto">${d.concepto||"Deuda"}</div>
@@ -1236,9 +1241,11 @@ function renderT(){
     </div>`:`<span class="deuda-sin">—</span>`;
 
     // Desglose del total para mostrar en la celda
+    // (food sólo se descuenta si no hay bono — igual que calcT)
+    const effectiveFood = num(row.bono)>0 ? 0 : num(row.food);
     const parts=[];
     if(num(row.comision)) parts.push({v:num(row.comision),lbl:"com",sign:"+"});
-    if(num(row.food)>0)   parts.push({v:num(row.food),lbl:"food",sign:"-"});
+    if(effectiveFood>0)   parts.push({v:effectiveFood,lbl:"food",sign:"-"});
     if(num(row.merch)>0)  parts.push({v:num(row.merch),lbl:"merch",sign:"-"});
     if(Math.abs(num(row.ahorro||0))>0) parts.push({v:Math.abs(num(row.ahorro||0)),lbl:"ahorro",sign:"-"});
     if(desc>0)            parts.push({v:desc,lbl:"deuda",sign:"-"});
@@ -1262,7 +1269,7 @@ function renderT(){
       <td><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:76px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
       <td style="white-space:nowrap">
         <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:72px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}">
-        ${num(row.merch)>0&&!(d&&d.total>0)?`<button onclick="merchADeuda(${i})" title="Convertir merch en deuda" style="background:#fff3cd;border:1px solid #f8ba00;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700;padding:2px 5px;margin-left:3px;color:#7a5c00">→💰</button>`:""}
+        ${num(row.merch)>100&&!(d&&d.total>0)?`<button onclick="merchADeuda(${i})" title="Merch >$100 — convertir en deuda" style="display:block;margin-top:3px;background:#fff3cd;border:1px solid #f8ba00;border-radius:5px;cursor:pointer;font-size:10px;font-weight:800;padding:3px 7px;color:#7a5c00;white-space:nowrap">📋→ A deuda</button>`:""}
       </td>
       <td><input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:76px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}"></td>
       <td><input type="number" value="${row.ahorro||""}" oninput="uf(${i},'ahorro',this.value)" style="width:80px;text-align:right;color:${Math.abs(num(row.ahorro||0))>0?"#1c3a61":"inherit"}" placeholder="0" title="Siempre se descuenta (positivo o negativo)"></td>
@@ -1291,35 +1298,41 @@ function renderT(){
         if(gRows.length>1){
           const tAutos=gRows.reduce((s,r)=>s+num(r.autos),0);
           const tCom  =gRows.reduce((s,r)=>s+num(r.comision),0);
-          const tFood =gRows.reduce((s,r)=>s+num(r.food),0);
+          const tFood =gRows.reduce((s,r)=>s+(num(r.bono)>0?0:num(r.food)),0);
           const tMerch=gRows.reduce((s,r)=>s+num(r.merch),0);
           const tBono =gRows.reduce((s,r)=>s+num(r.bono),0);
           const tAho  =gRows.reduce((s,r)=>s+num(r.ahorro),0);
           const tExt  =gRows.reduce((s,r)=>s+num(r.extra||0),0);
           const tTotal=gRows.reduce((s,r)=>s+calcT(r,r.nombre),0);
-          const autosDesc=gRows.map(r=>{
-            const sl=r.sucursal==="PC Refugio"?"Ref":"Áls";
-            return `${num(r.autos)} ${sl}`;
-          }).join(" + ");
-          const comDesc=gRows.map(r=>{
-            const sl=r.sucursal==="PC Refugio"?"Ref":"Áls";
-            return `${fmt(num(r.comision))} ${sl}`;
-          }).join(" + ");
+          // Construir desglose claro por sucursal
+          const refRow=gRows.find(r=>r.sucursal==="PC Refugio");
+          const alaRow=gRows.find(r=>r.sucursal==="PC Álamos");
+          const desgSuc=gRows.map(r=>{
+            const sTag=r.sucursal==="PC Refugio"
+              ?`<span class="pill-ref">Refugio</span>`
+              :`<span class="pill-ala">Álamos</span>`;
+            return `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">${sTag}<span style="font-size:11px;font-weight:700">${num(r.autos)} autos</span><span style="font-size:11px;color:#888">${fmt(num(r.comision))}</span></div>`;
+          }).join("");
+
           const sum=document.createElement("tr");
-          sum.style.cssText="background:#fffbf0;border-top:1px dashed #f8ba00;border-bottom:2px solid #f8ba00;font-weight:700;";
+          sum.style.cssText="background:#fff8e8;border-top:2px dashed #f8ba00;border-bottom:2px solid #e0c84a;";
           sum.innerHTML=`
-            <td style="font-size:11px;color:#7a5c00;font-weight:800">↳ ${row.nombre}<br><span style="font-size:9px;font-weight:400;color:#aaa">2 sucursales</span></td>
-            <td><span class="pill-ref" style="margin-right:2px">Ref</span><span class="pill-ala">Áls</span></td>
-            <td><span style="font-size:10px;color:#888">—</span></td>
-            <td style="text-align:center;font-size:12px">${tAutos}<br><span style="font-size:9px;color:#aaa;font-weight:400">${autosDesc}</span></td>
-            <td style="text-align:right;font-size:12px">${fmt(tCom)}<br><span style="font-size:9px;color:#aaa;font-weight:400">${comDesc}</span></td>
-            <td style="text-align:right;color:#c0392b">${tFood>0?fmt(tFood):"—"}</td>
-            <td style="text-align:right;color:#c0392b">${tMerch>0?fmt(tMerch):"—"}</td>
-            <td style="text-align:right;color:#38a169">${tBono>0?fmt(tBono):"—"}</td>
-            <td style="text-align:right;color:#1c3a61">${tAho>0?fmt(tAho):"—"}</td>
-            <td style="text-align:right;color:#38a169">${tExt>0?"+"+fmt(tExt):"—"}</td>
+            <td colspan="2" style="padding:10px 14px;border-left:4px solid #f8ba00">
+              <div style="font-size:12px;font-weight:900;color:#7a5c00;margin-bottom:6px">↕ ${row.nombre} — 2 sucursales</div>
+              ${desgSuc}
+            </td>
+            <td style="text-align:center;font-weight:700;font-size:13px;color:#555">${tAutos}<br><span style="font-size:9px;font-weight:400;color:#aaa">autos</span></td>
+            <td style="text-align:right;font-weight:700;font-size:13px">${fmt(tCom)}<br><span style="font-size:9px;font-weight:400;color:#aaa">comisión</span></td>
+            <td style="text-align:right;color:#c0392b;font-weight:700">${tFood>0?"-"+fmt(tFood):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">food</span></td>
+            <td style="text-align:right;color:#c0392b;font-weight:700">${tMerch>0?"-"+fmt(tMerch):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">merch</span></td>
+            <td style="text-align:right;color:#38a169;font-weight:700">${tBono>0?"+"+fmt(tBono):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">bono</span></td>
+            <td style="text-align:right;color:#1c3a61;font-weight:700">${tAho>0?"-"+fmt(tAho):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">ahorro</span></td>
+            <td style="text-align:right;color:#38a169;font-weight:700">${tExt>0?"+"+fmt(tExt):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">extra</span></td>
             <td></td>
-            <td style="text-align:right;font-size:14px;font-weight:900;color:${tTotal>=0?"#111":"#c0392b"}">${fmt(tTotal)}</td>
+            <td style="text-align:right;padding:10px 12px;background:${tTotal>=0?"#f0fff4":"#fff5f5"};border-left:3px solid ${tTotal>=0?"#38a169":"#e53e3e"}">
+              <div style="font-size:16px;font-weight:900;color:${tTotal>=0?"#276749":"#c53030"}">${fmt(tTotal)}</div>
+              <div style="font-size:9px;color:#aaa;margin-top:2px">TOTAL COMBINADO</div>
+            </td>
             <td></td>`;
           if(!show)sum.classList.add("hidden");
           tb.appendChild(sum);
