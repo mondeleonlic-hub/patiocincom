@@ -1213,13 +1213,17 @@ function renderT(){
     const isDoble=dobles.has(i);
     const tr=document.createElement("tr");
     if(!show)tr.classList.add("hidden");
-    if(isDoble)tr.style.cssText="background:#fffbf0;border-left:3px solid #f8ba00;";
+    if(isDoble)tr.style.background="#fffbf0";
 
     const sucLabel=row.sucursal==="PC Refugio"
       ?`<span class="pill-ref" style="cursor:pointer" title="Clic para cambiar" onclick="ufSucursal(${i})">Refugio</span>`
       :row.sucursal==="PC Álamos"
       ?`<span class="pill-ala" style="cursor:pointer" title="Clic para cambiar" onclick="ufSucursal(${i})">Álamos</span>`
       :`<span class="pill-sin" style="cursor:pointer" title="Clic para asignar" onclick="ufSucursal(${i})">—</span>`;
+
+    const dobleTag = isDoble
+      ? `<span style="display:block;font-size:9px;font-weight:700;color:#C8960C;letter-spacing:.3px;margin-top:2px">↕ 2 sucursales</span>`
+      : "";
 
     let deudaCell=d&&d.total>0?`<div class="deuda-info">
       <div class="deuda-concepto">${d.concepto||"Deuda"}</div>
@@ -1231,10 +1235,25 @@ function renderT(){
       }
     </div>`:`<span class="deuda-sin">—</span>`;
 
+    // Desglose del total para mostrar en la celda
+    const parts=[];
+    if(num(row.comision)) parts.push({v:num(row.comision),lbl:"com",sign:"+"});
+    if(num(row.food)>0)   parts.push({v:num(row.food),lbl:"food",sign:"-"});
+    if(num(row.merch)>0)  parts.push({v:num(row.merch),lbl:"merch",sign:"-"});
+    if(Math.abs(num(row.ahorro||0))>0) parts.push({v:Math.abs(num(row.ahorro||0)),lbl:"ahorro",sign:"-"});
+    if(desc>0)            parts.push({v:desc,lbl:"deuda",sign:"-"});
+    if(num(row.extra||0)>0) parts.push({v:num(row.extra||0),lbl:"extra",sign:"+"});
+    const desglose = parts.length>1
+      ? `<div style="font-size:9px;color:#aaa;margin-top:3px;line-height:1.4">
+          ${parts.map((p,pi)=>`<span style="color:${p.sign==="-"?"#e53e3e":"#38a169"}">${pi===0?"":p.sign}${Math.round(p.v).toLocaleString("es-MX")} <span style="color:#ccc">${p.lbl}</span></span>`).join(" ")}
+         </div>`
+      : "";
+
     tr.innerHTML=`
-      <td style="position:relative">
+      <td style="position:relative;${isDoble?"border-left:3px solid #f8ba00;":""}">
         <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:82px">
         ${row.nombre?`<button onclick="verPerfilLavador('${esc(row.nombre)}')" title="Ver historial de ${esc(row.nombre)}" style="background:none;border:none;cursor:pointer;font-size:11px;color:#C8960C;padding:0;vertical-align:middle">📈</button>`:""}
+        ${dobleTag}
       </td>
       <td>${sucLabel}</td>
       <td><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
@@ -1255,7 +1274,10 @@ function renderT(){
         ${(row.extra>0)?`<div style="font-size:10px;color:#38a169;font-weight:700;text-align:right">+${fmt(row.extra)}</div>`:""}
       </td>
       <td class="deuda-cell">${deudaCell}</td>
-      <td class="tc ${tc}">${fmt(t)}</td>
+      <td style="text-align:right;padding:8px 12px;background:${t>0?"#f0fff4":t<0?"#fff5f5":"#fafaf8"};border-left:2px solid ${t>0?"#38a169":t<0?"#e53e3e":"#eee"}">
+        <div style="font-size:15px;font-weight:900;color:${t>0?"#276749":t<0?"#c53030":"#888"}">${fmt(t)}</div>
+        ${desglose}
+      </td>
       <td><button class="xb" onclick="rr(${i})">✕</button></td>`;
     tb.appendChild(tr);
 
