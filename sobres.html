@@ -1104,9 +1104,11 @@ async function runPDFextract(data){
   try{
     await _loadPdfJs();
     const pdf=await pdfjsLib.getDocument({data}).promise;
-    let rawItems=[];
+    let rawItems=[], detectedPageW=0;
     for(let p=1;p<=pdf.numPages;p++){
       const page=await pdf.getPage(p);
+      const vp=page.getViewport({scale:1});
+      if(vp.width>detectedPageW) detectedPageW=vp.width;
       const tc=await page.getTextContent();
       tc.items.forEach(item=>{
         if(item.str&&item.str.trim())
@@ -1129,7 +1131,7 @@ async function runPDFextract(data){
     visualLines.forEach(l=>l.items.sort((a,b)=>a.x-b.x));
 
     setSt("load","🔍 Analizando lavadores...");
-    const newRows=parsePatioCincoText(visualLines);
+    const newRows=parsePatioCincoText(visualLines,detectedPageW);
     if(!newRows.length){setSt("err","❌ No se encontraron lavadores. Verifica el formato del PDF.");return;}
 
     rows=newRows;
@@ -1166,9 +1168,12 @@ async function runPDFextract(data){
 //   COMISIONES (x < 45%): "ALAMOS/REFUGIO Nombre NN% $X N" → "Total Nombre $X N"
 //   FOOD (x 50-65%):       "-$XX.XX" ítem negativo en la misma línea que el Total
 //   MERCH (x 67-81%):      "Nombre $XX.XX" en columna independiente
-function parsePatioCincoText(visualLines){
+function parsePatioCincoText(visualLines,forcedPageW){
   const allX=visualLines.flatMap(l=>l.items.map(i=>i.x));
-  const pageW=Math.max(...allX)||600;
+  // Usa el ancho real de la página (de PDF.js viewport) si está disponible.
+  // max(allX) subestima el ancho cuando el texto derecho no llega al margen,
+  // provocando que COM_END quede muy corto y excluya la columna de autos.
+  const pageW=forcedPageW||Math.max(...allX)||600;
 
   // Umbrales de columna (calibrados para ambas versiones del PDF ERP)
   // COM_END en 40% mantiene los nombres de food (x≈317-330) FUERA de la col. izquierda
@@ -1225,10 +1230,19 @@ function parsePatioCincoText(visualLines){
   // lavador con food. El nombre está en los ítems a la izquierda del "-$".
   const foodMap={};
   for(const l of visualLines){
-    const negItem=l.items.find(i=>i.str.startsWith('-$')&&i.x>FOOD_NEG_MIN&&i.x<FOOD_NEG_MAX);
+    // Acepta tanto "-$150" (PDFs anteriores) como "-150" (PDFs S28+)
+    const negItem=l.items.find(i=>
+      (i.str.startsWith('-$')||/^-[\d,]+(\.\d+)?$/.test(i.str))
+      &&i.x>FOOD_NEG_MIN&&i.x<FOOD_NEG_MAX
+    );
     if(!negItem) continue;
-    const foodAmt=parseFloat(negItem.str.replace('-$','').replace(/,/g,''));
-    const nameItems=l.items.filter(i=>i.x>FOOD_NAME_MIN&&i.x<negItem.x&&!i.str.startsWith('$'));
+    const foodAmt=parseFloat(negItem.str.replace(/[-$,]/g,''));
+    // Excluir números sueltos (monto positivo de food) del nombre
+    const nameItems=l.items.filter(i=>
+      i.x>FOOD_NAME_MIN&&i.x<negItem.x&&
+      !i.str.startsWith('$')&&
+      !/^[\d,]+(\.\d+)?$/.test(i.str)
+    );
     const nombre=nameItems.map(i=>i.str).join(' ').trim();
     if(nombre&&!isNaN(foodAmt)) foodMap[normN(nombre)]=foodAmt;
   }
