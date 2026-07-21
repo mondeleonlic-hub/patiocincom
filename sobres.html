@@ -1131,7 +1131,9 @@ async function runPDFextract(data){
     visualLines.forEach(l=>l.items.sort((a,b)=>a.x-b.x));
 
     setSt("load","🔍 Analizando lavadores...");
-    const newRows=parsePatioCincoText(visualLines,detectedPageW);
+    const newRows=isCRMFormat(visualLines)
+      ? parseCRMText(visualLines,detectedPageW)
+      : parsePatioCincoText(visualLines,detectedPageW);
     if(!newRows.length){setSt("err","❌ No se encontraron lavadores. Verifica el formato del PDF.");return;}
 
     rows=newRows;
@@ -1280,6 +1282,69 @@ function parsePatioCincoText(visualLines,forcedPageW){
   });
 
   return result;
+}
+
+// ── DETECCIÓN DE FORMATO CRM ──────────────────────────────────────────────────
+function isCRMFormat(visualLines){
+  for(const l of visualLines){
+    const txt=l.items.map(i=>i.str).join(' ');
+    if(/COMISIONES\s*\(SEMANA|#\s*COCHES/i.test(txt)) return true;
+  }
+  return false;
+}
+
+// ── PARSER EL CLUB CRM ────────────────────────────────────────────────────────
+// Formato: SUCURSAL | COLABORADOR | % | COMISIÓN | # COCHES
+//          + columna FOOD separada con deducción -$X
+//          + columna MERCH separada (coordinadores, se omite en lavadores)
+function parseCRMText(visualLines,pageW){
+  const comisiones=[], foodMap={}, pctMap={};
+  let suc=null;
+
+  for(const l of visualLines){
+    const allText=l.items.map(i=>i.str).join(' ').trim();
+    if(!allText) continue;
+    // Saltar encabezados y totales de sección
+    if(/^(SUCURSAL|COLABORADOR|COMISI[OÓ]N|#\s*COCHES|BONO\s+COLABORADOR|Suma\s+total|sin\s+LA|FOOD\s*\(|MERCH\s*\()/i.test(allText)) continue;
+
+    // Detectar cambio de sucursal
+    if(/^ALAMOS\b/i.test(allText)) suc='PC Álamos';
+    else if(/^REFUGIO\b/i.test(allText)) suc='PC Refugio';
+    if(!suc) continue;
+
+    // 1. Food: buscar deducción "-$X" en la línea (antes que Total para capturar líneas mixtas)
+    const negM=allText.match(/([A-Za-záéíóúüñÁÉÍÓÚÜÑ][^\d$-]*?)\s+\$([\d,]+\.?\d*)\s+-\$([\d,]+\.?\d*)/);
+    if(negM){
+      const nombre=negM[1].trim();
+      const foodAmt=parseFloat(negM[2].replace(/,/g,''));
+      if(nombre&&!isNaN(foodAmt)&&!/(Total|Suma|FOOD|MERCH|BONO)/i.test(nombre))
+        foodMap[normN(nombre)]=foodAmt;
+    }
+
+    if(/^Total\b/i.test(allText)){
+      // 2. Fila Total: "Total Nombre $X.XX N [...]"
+      const tm=allText.match(/^Total\s+([A-Za-záéíóúüñÁÉÍÓÚÜÑ].+?)\s+\$([\d,]+\.?\d*)\s+(\d+)/);
+      if(tm){
+        const nombre=tm[1].trim();
+        const comision=parseFloat(tm[2].replace(/,/g,''));
+        const autos=parseInt(tm[3]);
+        const pct=pctMap[normN(nombre)]||30;
+        if(comision>0||autos>0)
+          comisiones.push({nombre,sucursal:suc,pct,comision,autos});
+      }
+    } else {
+      // 3. Fila de detalle: "Nombre NN% $X N" → guardar pct
+      const pm=allText.match(/^(?:ALAMOS\s+|REFUGIO\s+)?([A-Za-záéíóúüñÁÉÍÓÚÜÑ].+?)\s+(\d+)%/);
+      if(pm) pctMap[normN(pm[1].trim())]=parseInt(pm[2]);
+    }
+  }
+
+  return comisiones.map(c=>({
+    nombre:c.nombre, sucursal:c.sucursal, pct:c.pct,
+    autos:c.autos, comision:c.comision,
+    food:foodMap[normN(c.nombre)]||0,
+    merch:0, bono:0, ahorro:'', extra:0, extraConcepto:''
+  }));
 }
 
 async function runOCR(b64,mime){
