@@ -1455,6 +1455,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       <button class="dash-subnav-btn" onclick="dash_showPage('historial')">Historial</button>
       <button class="dash-subnav-btn" onclick="dash_showPage('inventario')">Inventario</button>
       <button class="dash-subnav-btn" onclick="dash_showPage('performance')">Performance</button>
+      <span id="dash-fb-badge" style="margin-left:auto;padding:4px 10px;font-size:10px;font-weight:700;letter-spacing:.5px;color:#888;align-self:center">☁ Conectando…</span>
     </div>
   </div>
   <!-- ══ FINANZAS CONTENT ══ -->
@@ -6236,7 +6237,88 @@ if (newData) {
 }
 let currentWeekIdx = dashData.weeks.length > 0 ? dashData.weeks.length - 1 : -1;
 
-function dash_save() { localStorage.setItem(STORE_KEY, JSON.stringify(dashData)); }
+function dash_save() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(dashData));
+  _dash_saveToFb();
+}
+
+// ── FIREBASE SYNC (panel Finanzas) ────────────────────────────────────────────
+const _DASH_FB_CFG = {
+  apiKey: "AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",
+  authDomain: "montseflow.firebaseapp.com",
+  projectId: "montseflow",
+  storageBucket: "montseflow.firebasestorage.app",
+  messagingSenderId: "249314346746",
+  appId: "1:249314346746:web:0d39b74f90dad6eff22b43"
+};
+let _dashFbDb=null, _dashFbReady=false, _dashFbWriting=false, _dashFbTimer=null, _dashFbUnsub=null;
+
+function _dashLoadScript(src){
+  return new Promise((res,rej)=>{
+    if(document.querySelector(`script[src="${src}"]`)){res();return;}
+    const s=document.createElement('script');
+    s.src=src; s.onload=res; s.onerror=rej;
+    document.head.appendChild(s);
+  });
+}
+
+async function _dashInitFirebase(){
+  try{
+    await _dashLoadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
+    await _dashLoadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js');
+    const app=firebase.apps.length?firebase.app():firebase.initializeApp(_DASH_FB_CFG);
+    _dashFbDb=firebase.firestore();
+    _dashFbDb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+    _dashFbReady=true;
+    _dash_startListener();
+    _dashSetSyncBadge(true);
+  }catch(e){
+    console.warn('Finanzas Firebase init:',e);
+    _dashSetSyncBadge(false);
+  }
+}
+
+function _dash_startListener(){
+  if(!_dashFbDb||_dashFbUnsub) return;
+  _dashFbUnsub=_dashFbDb.collection('pc_financial').doc('main').onSnapshot(snap=>{
+    if(_dashFbWriting||!snap.exists) return;
+    const incoming=snap.data();
+    if(!incoming||!incoming.weeks) return;
+    // Only update if newer than local
+    if(incoming.updatedAt && dashData._updatedAt && incoming.updatedAt <= dashData._updatedAt) return;
+    dashData=incoming;
+    delete dashData.updatedAt; // avoid polluting dashData structure
+    currentWeekIdx = dashData.weeks.length > 0 ? dashData.weeks.length - 1 : -1;
+    localStorage.setItem(STORE_KEY, JSON.stringify(dashData));
+    // Refresh UI if finanzas panel is open
+    if(document.getElementById('pnl-finanzas')?.classList.contains('on')){
+      dash_buildDashWeekSelect();
+      dash_buildInputWeekSelect();
+      dash_renderDashboard();
+    }
+    _dashSetSyncBadge(true, '☁ Sincronizado');
+  },err=>console.warn('FB listener finanzas:',err));
+}
+
+function _dash_saveToFb(){
+  if(!_dashFbDb||!_dashFbReady) return;
+  clearTimeout(_dashFbTimer);
+  _dashFbTimer=setTimeout(()=>{
+    _dashFbWriting=true;
+    const payload={...dashData, updatedAt:new Date().toISOString()};
+    _dashFbDb.collection('pc_financial').doc('main').set(payload)
+      .then(()=>{ setTimeout(()=>{_dashFbWriting=false;},800); _dashSetSyncBadge(true,'☁ Guardado'); })
+      .catch(e=>{ console.warn('FB save finanzas:',e); _dashFbWriting=false; _dashSetSyncBadge(false,'⚠ Error sync'); });
+  }, 700);
+}
+
+function _dashSetSyncBadge(ok, msg){
+  const badge=document.getElementById('dash-fb-badge');
+  if(!badge) return;
+  badge.textContent = msg || (ok ? '☁ Sync' : '⚠ Sin sync');
+  badge.style.color = ok ? '#2E7D32' : '#C62828';
+}
+// ── END FIREBASE SYNC ─────────────────────────────────────────────────────────
 
 // ── HELPERS ──
 function dash_peso(n) {
@@ -8098,6 +8180,7 @@ function dash_init() {
   dash_buildInputWeekSelect();  // builds week-select (Capturar page)
   dash_renderDashboard();
   if (dashData.weeks.length > 0) dash_loadWeek();
+  _dashInitFirebase();          // connect to Firebase for cross-device sync
 }
 
 // ── END DASH JS ──────────────────────────────────────────────────────────────
