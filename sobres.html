@@ -219,7 +219,7 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .hf{color:#888;font-weight:400;font-size:11px;}
 .nd{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;}
 .it{font-size:11px;color:var(--muted);margin:0 0 14px;}
-.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:0.5px solid #e0ddd4;overflow:hidden;margin-bottom:16px;}
+.tw{border-radius:12px;border:0.5px solid #e0ddd4;margin-bottom:16px;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;}
 
 /* ── BUTTON EXTRAS ── */
 .bo{background:#fff;color:#333;border:1.5px solid var(--border);}
@@ -343,7 +343,8 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .fd-inp-nota{width:60px;border:none;border-bottom:1px dashed #e0e0e0;background:transparent;font-size:10px;color:#aaa;font-family:inherit;outline:none;padding:2px 0}
 .fd-inp-gasto{width:80px;border:none;border-bottom:1px dashed #ddd;background:transparent;font-size:11px;text-align:right;color:#e53e3e;font-family:inherit;outline:none}
 .fd-inp-concepto{width:100%;border:none;border-bottom:1px dashed #e0e0e0;background:transparent;font-size:10px;color:#888;font-family:inherit;outline:none}
-.fd-chk{width:16px;height:16px;accent-color:#000;cursor:pointer;margin-top:4px}
+.fd-chk{width:20px;height:20px;accent-color:#000;cursor:pointer;margin-top:2px}
+@media(max-width:768px){.fd-chk{width:28px;height:28px;margin-top:0}}
 .fd-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;line-height:1;margin-top:4px}
 .fd-elim-corte{background:none;border:none;color:#ddd;cursor:pointer;font-size:12px;padding:0;line-height:1}
 .fd-add-corte{margin-top:3px;background:none;border:1px dashed #ccc;border-radius:4px;color:#aaa;font-size:10px;cursor:pointer;padding:1px 6px;width:100%}
@@ -4685,30 +4686,9 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     {t:"sucursales", icon:"sucursales", label:"Analytics"},
     {t:"hist",       icon:"hist",       label:"Historial"},
   ];
-  const MOB_IDS=new Set([...MAIN_TABS,...MORE_TABS].map(x=>x.t));
-
-  // Build bottom nav
-  const nav=document.createElement("nav");
-  nav.className="mob-nav";
-  MAIN_TABS.forEach(({t,icon,label})=>{
-    const btn=document.createElement("button");
-    btn.className="mob-nav-item";btn.dataset.mt=t;
-    btn.innerHTML=`${SVG[icon]}<span>${label}</span>`;
-    btn.addEventListener("click",()=>{closeMas();goTab(t);syncMobNav(t);});
-    nav.appendChild(btn);
-  });
-  // "Más" button
-  const masBtn=document.createElement("button");
-  masBtn.className="mob-nav-item";masBtn.id="mob-mas-btn";
-  masBtn.innerHTML=`${SVG.mas}<span>Más</span>`;
-  masBtn.addEventListener("click",()=>window.toggleMas&&window.toggleMas());
-  nav.appendChild(masBtn);
-  document.body.appendChild(nav);
-
-  // Build overlay + sheet
+  // 1. Build overlay + sheet FIRST (so closeMas/toggleMas can close them)
   const overlay=document.createElement("div");
   overlay.className="mas-overlay";
-  overlay.addEventListener("click",closeMas);
   const sheet=document.createElement("div");
   sheet.className="mas-sheet";
   sheet.id="mas-sheet";
@@ -4716,37 +4696,56 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
   const grid=document.getElementById("mas-grid");
-  MORE_TABS.forEach(({t,icon,label})=>{
-    const btn=document.createElement("button");
-    btn.className="mas-item";btn.dataset.mt=t;
-    btn.innerHTML=`${SVG[icon]}<span>${label}</span>`;
-    btn.addEventListener("click",()=>{closeMas();goTab(t);syncMobNav(t);});
-    grid.appendChild(btn);
-  });
 
+  // 2. Define window functions BEFORE any addEventListener that references them
+  window.closeMas=function(){overlay.classList.remove("open");sheet.classList.remove("open");};
+  window.toggleMas=function(){
+    const isOpen=sheet.classList.contains("open");
+    if(isOpen){window.closeMas();}else{overlay.classList.add("open");sheet.classList.add("open");}
+  };
   window.syncMobNav=function(activeId){
     document.querySelectorAll(".mob-nav-item[data-mt]").forEach(b=>b.classList.toggle("on",b.dataset.mt===activeId));
     document.querySelectorAll(".mas-item[data-mt]").forEach(b=>b.classList.toggle("on",b.dataset.mt===activeId));
-    // "Más" button gets gold if a more-tab is active
     const masInMore=MORE_TABS.some(x=>x.t===activeId);
     const masBtnEl=document.getElementById("mob-mas-btn");
     if(masBtnEl)masBtnEl.classList.toggle("on",masInMore);
   };
 
-  window.toggleMas=function(){
-    const isOpen=sheet.classList.contains("open");
-    if(isOpen){closeMas();}else{overlay.classList.add("open");sheet.classList.add("open");}
-  };
-  window.closeMas=function(){overlay.classList.remove("open");sheet.classList.remove("open");};
+  // 3. Build bottom nav (can now safely reference window.toggleMas)
+  const nav=document.createElement("nav");
+  nav.className="mob-nav";
+  MAIN_TABS.forEach(({t,icon,label})=>{
+    const btn=document.createElement("button");
+    btn.className="mob-nav-item";btn.dataset.mt=t;
+    btn.innerHTML=`${SVG[icon]}<span>${label}</span>`;
+    btn.addEventListener("click",()=>{window.closeMas();goTab(t);window.syncMobNav(t);});
+    nav.appendChild(btn);
+  });
+  const masBtn=document.createElement("button");
+  masBtn.className="mob-nav-item";masBtn.id="mob-mas-btn";
+  masBtn.innerHTML=`${SVG.mas}<span>Más</span>`;
+  masBtn.addEventListener("click",window.toggleMas);
+  nav.appendChild(masBtn);
+  document.body.appendChild(nav);
 
-  // Sync on initial load
+  // 4. Fill "Más" grid and wire overlay close
+  overlay.addEventListener("click",window.closeMas);
+  MORE_TABS.forEach(({t,icon,label})=>{
+    const btn=document.createElement("button");
+    btn.className="mas-item";btn.dataset.mt=t;
+    btn.innerHTML=`${SVG[icon]}<span>${label}</span>`;
+    btn.addEventListener("click",()=>{window.closeMas();goTab(t);window.syncMobNav(t);});
+    grid.appendChild(btn);
+  });
+
+  // 5. Sync initial active tab
   const initTab=document.querySelector(".tab.on");
-  if(initTab)syncMobNav(initTab.dataset.t);
+  if(initTab)window.syncMobNav(initTab.dataset.t);
 })();
 
 // Patch goTab to also update mobile nav
 const _origGoTab=goTab;
-window.goTab=function(id){_origGoTab(id);if(typeof syncMobNav==="function")syncMobNav(id);};
+window.goTab=function(id){_origGoTab(id);if(typeof window.syncMobNav==="function")window.syncMobNav(id);};
 </script>
 </body>
 </html>
