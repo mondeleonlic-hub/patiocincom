@@ -4701,7 +4701,7 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   const masBtn=document.createElement("button");
   masBtn.className="mob-nav-item";masBtn.id="mob-mas-btn";
   masBtn.innerHTML=`${SVG.mas}<span>Más</span>`;
-  masBtn.addEventListener("click",toggleMas);
+  masBtn.addEventListener("click",()=>window.toggleMas&&window.toggleMas());
   nav.appendChild(masBtn);
   document.body.appendChild(nav);
 
