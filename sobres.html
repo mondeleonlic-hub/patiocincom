@@ -133,8 +133,59 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 @media(max-width:600px){
   .hdr{padding:0 16px}
   .tabs-inner{padding:0 16px}
-  .pnl.on{padding:20px 20px}
+  .pnl.on{padding:16px 14px;padding-bottom:90px}
 }
+
+/* ── MOBILE BOTTOM NAV ── */
+@media(max-width:768px){
+  .tabs{display:none}
+  #gkey-input,#undo-btn,.hdr label{display:none!important}
+  .hdr{height:50px}
+}
+.mob-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:#111;border-top:1px solid #2a2a2a;
+  padding:6px 0 max(8px,env(safe-area-inset-bottom)) 0;
+}
+@media(max-width:768px){.mob-nav{display:flex}}
+.mob-nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  border:none;background:transparent;cursor:pointer;
+  color:#555;font-family:inherit;font-size:9px;font-weight:700;
+  letter-spacing:.3px;text-transform:uppercase;padding:4px 2px;
+  transition:color .15s;
+}
+.mob-nav-item svg{width:22px;height:22px}
+.mob-nav-item.on{color:#C8960C}
+.mob-nav-item:active{opacity:.7}
+
+/* ── MOBILE MÁS SHEET ── */
+.mas-overlay{
+  display:none;position:fixed;inset:0;z-index:199;
+  background:rgba(0,0,0,.55);
+}
+.mas-overlay.open{display:block}
+.mas-sheet{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:#1a1a1a;border-radius:18px 18px 0 0;
+  border-top:1px solid #333;
+  padding:10px 0 max(24px,env(safe-area-inset-bottom)) 0;
+  transform:translateY(100%);transition:transform .25s ease;
+}
+.mas-sheet.open{transform:translateY(0)}
+.mas-handle{width:36px;height:4px;background:#444;border-radius:2px;margin:0 auto 14px}
+.mas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0 8px}
+.mas-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  border:none;background:transparent;cursor:pointer;
+  color:#888;font-family:inherit;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.3px;
+  padding:16px 8px;border-radius:10px;transition:all .15s;
+}
+.mas-item svg{width:26px;height:26px;color:#666}
+.mas-item:active{background:#252525}
+.mas-item.on{color:#C8960C}.mas-item.on svg{color:#C8960C}
 
 /* ── PH BUTTONS (uniform pill style) ── */
 .ph-btn{
@@ -4607,6 +4658,95 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   }
 })();
 
+
+
+// ── MOBILE BOTTOM NAV ─────────────────────────────────────────────────────────
+(function(){
+  const SVG={
+    flujo:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-3-4.5c0 1.38 1.34 2.5 3 2.5s3-1.12 3-2.5-1.34-2.5-3-2.5-3-1.12-3-2.5S10.66 7 12 7s3 1.12 3 2.5"/></svg>`,
+    datos:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>`,
+    sobres:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>`,
+    deudas:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/><line x1="15" y1="15" x2="17" y2="15"/><line x1="19" y1="15" x2="21" y2="15"/></svg>`,
+    coords:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    ahorros:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 3.87 7 13 7 13s7-9.13 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`,
+    sucursales:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+    hist:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+    mas:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>`,
+  };
+  const MAIN_TABS=[
+    {t:"flujo",  icon:"flujo",  label:"Flujo"},
+    {t:"datos",  icon:"datos",  label:"Datos"},
+    {t:"sobres", icon:"sobres", label:"Tickets"},
+    {t:"deudas", icon:"deudas", label:"Deudas"},
+  ];
+  const MORE_TABS=[
+    {t:"coords",     icon:"coords",     label:"Coords"},
+    {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
+    {t:"sucursales", icon:"sucursales", label:"Analytics"},
+    {t:"hist",       icon:"hist",       label:"Historial"},
+  ];
+  const MOB_IDS=new Set([...MAIN_TABS,...MORE_TABS].map(x=>x.t));
+
+  // Build bottom nav
+  const nav=document.createElement("nav");
+  nav.className="mob-nav";
+  MAIN_TABS.forEach(({t,icon,label})=>{
+    const btn=document.createElement("button");
+    btn.className="mob-nav-item";btn.dataset.mt=t;
+    btn.innerHTML=`${SVG[icon]}<span>${label}</span>`;
+    btn.addEventListener("click",()=>{closeMas();goTab(t);syncMobNav(t);});
+    nav.appendChild(btn);
+  });
+  // "Más" button
+  const masBtn=document.createElement("button");
+  masBtn.className="mob-nav-item";masBtn.id="mob-mas-btn";
+  masBtn.innerHTML=`${SVG.mas}<span>Más</span>`;
+  masBtn.addEventListener("click",toggleMas);
+  nav.appendChild(masBtn);
+  document.body.appendChild(nav);
+
+  // Build overlay + sheet
+  const overlay=document.createElement("div");
+  overlay.className="mas-overlay";
+  overlay.addEventListener("click",closeMas);
+  const sheet=document.createElement("div");
+  sheet.className="mas-sheet";
+  sheet.id="mas-sheet";
+  sheet.innerHTML=`<div class="mas-handle"></div><div class="mas-grid" id="mas-grid"></div>`;
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
+  const grid=document.getElementById("mas-grid");
+  MORE_TABS.forEach(({t,icon,label})=>{
+    const btn=document.createElement("button");
+    btn.className="mas-item";btn.dataset.mt=t;
+    btn.innerHTML=`${SVG[icon]}<span>${label}</span>`;
+    btn.addEventListener("click",()=>{closeMas();goTab(t);syncMobNav(t);});
+    grid.appendChild(btn);
+  });
+
+  window.syncMobNav=function(activeId){
+    document.querySelectorAll(".mob-nav-item[data-mt]").forEach(b=>b.classList.toggle("on",b.dataset.mt===activeId));
+    document.querySelectorAll(".mas-item[data-mt]").forEach(b=>b.classList.toggle("on",b.dataset.mt===activeId));
+    // "Más" button gets gold if a more-tab is active
+    const masInMore=MORE_TABS.some(x=>x.t===activeId);
+    const masBtnEl=document.getElementById("mob-mas-btn");
+    if(masBtnEl)masBtnEl.classList.toggle("on",masInMore);
+  };
+
+  window.toggleMas=function(){
+    const isOpen=sheet.classList.contains("open");
+    if(isOpen){closeMas();}else{overlay.classList.add("open");sheet.classList.add("open");}
+  };
+  window.closeMas=function(){overlay.classList.remove("open");sheet.classList.remove("open");};
+
+  // Sync on initial load
+  const initTab=document.querySelector(".tab.on");
+  if(initTab)syncMobNav(initTab.dataset.t);
+})();
+
+// Patch goTab to also update mobile nav
+const _origGoTab=goTab;
+window.goTab=function(id){_origGoTab(id);if(typeof syncMobNav==="function")syncMobNav(id);};
 </script>
 </body>
 </html>
