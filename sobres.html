@@ -2414,6 +2414,68 @@ const _cache = {};
 // Cola de escrituras pendientes (para no perder datos si hay lag)
 const _pending = {};
 
+// ── FIREBASE SYNC (todos los datos, un solo lugar) ───────────────────────────
+const _SOB_FB_CFG = {
+  apiKey: "AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",
+  authDomain: "montseflow.firebaseapp.com",
+  projectId: "montseflow",
+  storageBucket: "montseflow.firebasestorage.app",
+  messagingSenderId: "249314346746",
+  appId: "1:249314346746:web:0d39b74f90dad6eff22b43"
+};
+let _sobFbDb=null, _sobFbReady=false;
+const _sobFbTimers={};
+const _SOB_KEYS = Object.keys(GS_KEY_MAP);
+
+function _sobLoadScript(src){
+  return new Promise((res,rej)=>{
+    if(document.querySelector(`script[src="${src}"]`)){res();return;}
+    const s=document.createElement('script');
+    s.src=src; s.onload=res; s.onerror=rej;
+    document.head.appendChild(s);
+  });
+}
+
+async function _sobInitFirebase(){
+  if(_sobFbReady) return;
+  try{
+    await _sobLoadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
+    await _sobLoadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js');
+    const app=firebase.apps.length?firebase.app():firebase.initializeApp(_SOB_FB_CFG);
+    _sobFbDb=firebase.firestore();
+    _sobFbDb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+    _sobFbReady=true;
+  }catch(e){ console.warn('Sobres Firebase init error:',e); }
+}
+
+// Cada key vive en su propio documento (pc_sobres/<key>) para no
+// acercarse al límite de 1MB por documento de Firestore (el historial
+// de 52 semanas + todo lo demás combinado podía pasarse de ese límite,
+// causando que el guardado fallara en silencio).
+async function _sobLoadFromFirebase(){
+  if(!_sobFbReady||!_sobFbDb) return {};
+  const out={};
+  try{
+    const snaps=await Promise.all(_SOB_KEYS.map(k=>_sobFbDb.collection('pc_sobres').doc(k).get()));
+    snaps.forEach((snap,idx)=>{
+      const k=_SOB_KEYS[idx];
+      if(snap.exists){ const d=snap.data(); out[k]=d.data; }
+    });
+  }catch(e){ console.warn('FB read error:',e); }
+  return out;
+}
+
+function _sobSaveToFirebase(k){
+  if(!_sobFbReady||!_sobFbDb) return;
+  if(!k){ _SOB_KEYS.forEach(kk=>{ if(_cache[kk]!==undefined) _sobSaveToFirebase(kk); }); return; }
+  if(_cache[k]===undefined) return;
+  clearTimeout(_sobFbTimers[k]);
+  _sobFbTimers[k]=setTimeout(()=>{
+    _sobFbDb.collection('pc_sobres').doc(k).set({data:_cache[k], updatedAt:new Date().toISOString()})
+      .catch(e=>console.warn('FB write error ('+k+'):',e));
+  },800);
+}
+
 // ── SISTEMA DE UNDO (Fix #3) ──────────────────────────────────────────────────
 const _snapshots = [];
 const MAX_SNAPSHOTS = 10;
@@ -2451,6 +2513,7 @@ async function sv(k, v) {
   if (!sheet) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} return; }
   _cache[k] = v;
   _pending[k] = v;
+  _sobSaveToFirebase(k);  // sync a Firebase (fuente principal)
   try {
     await fetch(GS_URL, {
       method: "POST",
@@ -2493,20 +2556,39 @@ async function init(){
   document.getElementById("fmsg").style.display="block";
   document.getElementById("fmsg").textContent="⏳ Cargando datos...";
 
-  // Precargar todos los datos desde Google Sheets en paralelo
-  await Promise.all([
-    gsLoad("pc4_deudas",{}).then(v=>{ deudas=v; _cache["pc4_deudas"]=v; }),
-    gsLoad("pc4_hist",[]).then(v=>{ historial=v; _cache["pc4_hist"]=v; }),
-    gsLoad("pc4_perfiles",PERFILES_DEFAULT).then(v=>{ perfiles=v; _cache["pc4_perfiles"]=v; }),
-    gsLoad("pc4_rows",null).then(v=>{ _cache["pc4_rows"]=v; }),
-    gsLoad("pc4_semana","").then(v=>{ _cache["pc4_semana"]=v; }),
-    gsLoad("pc4_coords",[]).then(v=>{ coords=v; _cache["pc4_coords"]=v; }),
-    gsLoad("pc4_coord_hist",[]).then(v=>{ coordHist=v; _cache["pc4_coord_hist"]=v; }),
-    gsLoad("pc4_liquidaciones",[]).then(v=>{ _cache["pc4_liquidaciones"]=v; }),
-    gsLoad("pc4_flujo",[]).then(v=>{ _cache["pc4_flujo"]=v; }),
-    gsLoad("pc4_flujo_dias",[]).then(v=>{ _cache["pc4_flujo_dias"]=v; }),
-    gsLoad("pc4_perf_hist",[]).then(v=>{ _cache["pc4_perf_hist"]=v; }),
-  ]);
+  // 1. Inicializar Firebase (fuente principal de datos)
+  await _sobInitFirebase();
+
+  // 2. Intentar cargar de Firebase primero (sync entre dispositivos)
+  const fbData = await _sobLoadFromFirebase();
+  const hasFbData = fbData && Object.keys(fbData).length > 0;
+
+  if(hasFbData){
+    // Datos encontrados en Firebase → usar directamente
+    _SOB_KEYS.forEach(k=>{ if(fbData[k]!==undefined){ _cache[k]=fbData[k]; try{localStorage.setItem(k,JSON.stringify(fbData[k]));}catch(_){} }});
+    deudas    = _cache["pc4_deudas"]     || {};
+    historial = _cache["pc4_hist"]       || [];
+    perfiles  = _cache["pc4_perfiles"]   || PERFILES_DEFAULT;
+    coords    = _cache["pc4_coords"]     || [];
+    coordHist = _cache["pc4_coord_hist"] || [];
+  } else {
+    // Sin datos en Firebase → cargar de GS y migrar
+    await Promise.all([
+      gsLoad("pc4_deudas",{}).then(v=>{ deudas=v; _cache["pc4_deudas"]=v; }),
+      gsLoad("pc4_hist",[]).then(v=>{ historial=v; _cache["pc4_hist"]=v; }),
+      gsLoad("pc4_perfiles",PERFILES_DEFAULT).then(v=>{ perfiles=v; _cache["pc4_perfiles"]=v; }),
+      gsLoad("pc4_rows",null).then(v=>{ _cache["pc4_rows"]=v; }),
+      gsLoad("pc4_semana","").then(v=>{ _cache["pc4_semana"]=v; }),
+      gsLoad("pc4_coords",[]).then(v=>{ coords=v; _cache["pc4_coords"]=v; }),
+      gsLoad("pc4_coord_hist",[]).then(v=>{ coordHist=v; _cache["pc4_coord_hist"]=v; }),
+      gsLoad("pc4_liquidaciones",[]).then(v=>{ _cache["pc4_liquidaciones"]=v; }),
+      gsLoad("pc4_flujo",[]).then(v=>{ _cache["pc4_flujo"]=v; }),
+      gsLoad("pc4_flujo_dias",[]).then(v=>{ _cache["pc4_flujo_dias"]=v; }),
+      gsLoad("pc4_perf_hist",[]).then(v=>{ _cache["pc4_perf_hist"]=v; }),
+    ]);
+    // Migrar a Firebase para que próximas cargas sean más rápidas
+    _sobSaveToFirebase();
+  }
 
   Object.entries(PERFILES_DEFAULT).forEach(([n,v])=>{if(!perfiles[n])perfiles[n]=v;});
 
@@ -2539,7 +2621,7 @@ function num(s){return parseFloat(String(s||"").replace(/[$,\s]/g,""))||0}
 function fmt(n){return(parseFloat(n)||0).toLocaleString("es-MX",{style:"currency",currency:"MXN"})}
 function esc(v){return String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")}
 function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").replace(/[éèë]/g,"e").replace(/[íìï]/g,"i").replace(/[óòö]/g,"o").replace(/[úùü]/g,"u").replace(/ñ/g,"n").trim()}
-function getDesc(n){const d=deudas[n];if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;return d.montoPorPago||d.total/d.numPagos||0}
+function getDesc(n){const d=deudas[n];if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;if(d.pagoActual>d.numPagos)return 0;return d.montoPorPago||d.total/d.numPagos||0}
 function calcT(r,n){
   // Si tiene bono, el bono cubre el food (no se descuenta food)
   const food = num(r.bono)>0 ? 0 : num(r.food);
@@ -3016,6 +3098,8 @@ function renderT(){
       <div class="deuda-row"><span>Total:</span><strong style="color:#e53e3e">${fmt(d.total)}</strong></div>
       ${d.pagoActual===0
         ? `<div class="deuda-row" style="color:#38a169"><span>⏳ Inicia la próxima semana</span></div>`
+        : d.pagoActual>d.numPagos
+        ? `<div class="deuda-row" style="color:#38a169"><span>✓ Deuda completada — cierra semana para limpiar</span></div>`
         : `<div class="deuda-row"><span>Esta semana (Pago ${d.pagoActual}/${d.numPagos}):</span><strong style="color:#e53e3e">-${fmt(desc)}</strong></div>
            <div class="deuda-resta">Saldo tras pago: ${fmt(Math.max(0,d.total-desc*(d.pagoActual||1)))}</div>`
       }
@@ -3093,6 +3177,7 @@ function renderT(){
           }).join("");
 
           const sum=document.createElement("tr");
+          sum.dataset.combinedFor=normN(row.nombre);
           sum.style.cssText="background:#fff8e8;border-top:2px dashed #f8ba00;border-bottom:2px solid #e0c84a;";
           sum.innerHTML=`
             <td colspan="2" style="padding:10px 14px;border-left:4px solid #f8ba00">
@@ -3244,10 +3329,42 @@ function updateTotalCell(i){
     totalTd.innerHTML=`<div style="font-size:14px;font-weight:900;color:${color}">${fmt(t)}</div>${desglose}`;
   }
 }
+function updateCombinedRow(nombre){
+  const k=normN(nombre);
+  const sumTr=document.querySelector(`#tb tr[data-combined-for="${k}"]`);
+  if(!sumTr) return;
+  const grupo=rows.map((r,i)=>({r,i})).filter(({r})=>normN(r.nombre)===k);
+  const gRows=grupo.map(({r})=>r).filter(r=>rowVisible(r));
+  if(gRows.length<2){sumTr.remove();return;}
+  const tAutos=gRows.reduce((s,r)=>s+num(r.autos),0);
+  const tCom  =gRows.reduce((s,r)=>s+num(r.comision),0);
+  const tFood =gRows.reduce((s,r)=>s+(num(r.bono)>0?0:num(r.food)),0);
+  const tMerch=gRows.reduce((s,r)=>s+num(r.merch),0);
+  const tBono =gRows.reduce((s,r)=>s+num(r.bono),0);
+  const tAho  =gRows.reduce((s,r)=>s+num(r.ahorro),0);
+  const tExt  =gRows.reduce((s,r)=>s+num(r.extra||0),0);
+  const tTotal=gRows.reduce((s,r)=>s+calcT(r,r.nombre),0);
+  // Actualizar celdas de la fila combinada
+  const tds=sumTr.querySelectorAll("td");
+  if(tds[2]) tds[2].innerHTML=`${tAutos}<br><span style="font-size:9px;font-weight:400;color:#aaa">autos</span>`;
+  if(tds[3]) tds[3].innerHTML=`${fmt(tCom)}<br><span style="font-size:9px;font-weight:400;color:#aaa">comisión</span>`;
+  if(tds[4]) tds[4].innerHTML=`${tFood>0?"-"+fmt(tFood):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">food</span>`;
+  if(tds[5]) tds[5].innerHTML=`${tMerch>0?"-"+fmt(tMerch):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">merch</span>`;
+  if(tds[6]) tds[6].innerHTML=`${tBono>0?"+"+fmt(tBono):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">bono</span>`;
+  if(tds[7]) tds[7].innerHTML=`${tAho>0?"-"+fmt(tAho):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">ahorro</span>`;
+  if(tds[8]) tds[8].innerHTML=`${tExt>0?"+"+fmt(tExt):"—"}<br><span style="font-size:9px;font-weight:400;color:#aaa">extra</span>`;
+  const totalTd=tds[10];
+  if(totalTd){
+    totalTd.style.background=tTotal>=0?"#f0fff4":"#fff5f5";
+    totalTd.style.borderLeft=`3px solid ${tTotal>=0?"#38a169":"#e53e3e"}`;
+    totalTd.innerHTML=`<div style="font-size:16px;font-weight:900;color:${tTotal>=0?"#276749":"#c53030"}">${fmt(tTotal)}</div><div style="font-size:9px;color:#aaa;margin-top:2px">TOTAL COMBINADO</div>`;
+  }
+}
 function uf(i,f,v){
   rows[i][f]=v;
   svQ("pc4_rows",rows); // usa debounce — no HTTP en cada tecla
   updateTotalCell(i);
+  if(rows[i].nombre) updateCombinedRow(rows[i].nombre);
   // actualizar color del input según valor (0=autos,1=comision,2=food,3=merch,4=bono,5=ahorro,6=extra)
   const _tr=document.querySelector(`#tb tr[data-row-idx="${i}"]`);
   if(_tr){
@@ -4401,9 +4518,10 @@ function cerrarSemana(){
     if(d.total>0){
       if(d.pagoActual===0){
         d.pagoActual=1;
+      } else if(d.pagoActual>=d.numPagos){
+        d.total=0; // ya se completaron todos los pagos
       } else {
         d.pagoActual=(d.pagoActual||1)+1;
-        if(d.pagoActual>d.numPagos)d.total=0;
       }
     }
   }
@@ -4411,7 +4529,7 @@ function cerrarSemana(){
   arr.unshift({semana:sem,fecha:new Date().toLocaleDateString("es-MX"),
     rows:rows.map(r=>{const desc=getDesc(r.nombre);const d=deudas[r.nombre];return{...r,total:calcT(r,r.nombre),deudaDesc:desc,deudaCon:d?.concepto||"",pagoPago:d?.pagoActual||1,pagoTot:d?.numPagos||1}})});
   historial=arr.slice(0,52); // Fix #6: un año completo
-  rows=rows.map(r=>({nombre:r.nombre,sucursal:r.sucursal,pct:r.pct,autos:"",comision:"",food:"",merch:"",bono:""}));
+  rows=rows.map(r=>({nombre:r.nombre,sucursal:r.sucursal,pct:r.pct,autos:"",comision:"",food:"",merch:"",bono:"",ahorro:r.ahorro||"",extraConcepto:r.extraConcepto||""}));
   const parts = sem.split("/");
   const nextNum = parseInt(parts[0]) + 1;
   const nextSem = nextNum + "/" + (parts[1] || "2026");
@@ -6271,6 +6389,13 @@ async function _dashInitFirebase(){
     _dashFbDb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
     _dashFbReady=true;
     _dash_startListener();
+    // Migrar datos locales a Firebase si el doc no existe todavía
+    _dashFbDb.collection('pc_financial').doc('main').get().then(snap=>{
+      if(!snap.exists && dashData && dashData.weeks && dashData.weeks.length > 0){
+        _dashSetSyncBadge(true,'☁ Migrando...');
+        _dash_saveToFb();
+      }
+    }).catch(()=>{});
     _dashSetSyncBadge(true);
   }catch(e){
     console.warn('Finanzas Firebase init:',e);
