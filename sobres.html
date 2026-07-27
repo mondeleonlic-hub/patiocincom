@@ -172,12 +172,14 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
   position:fixed;bottom:0;left:0;right:0;z-index:300;
   background:#1a1a1a;border-radius:18px 18px 0 0;
   border-top:1px solid #333;
-  padding:10px 0 max(24px,env(safe-area-inset-bottom)) 0;
+  max-height:min(75vh,560px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:10px 0 max(28px,calc(env(safe-area-inset-bottom) + 12px)) 0;
   transform:translateY(100%);transition:transform .25s ease;
 }
 .mas-sheet.open{transform:translateY(0)}
-.mas-handle{width:36px;height:4px;background:#444;border-radius:2px;margin:0 auto 14px}
-.mas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0 8px}
+.mas-handle{width:36px;height:4px;background:#444;border-radius:2px;margin:0 auto 6px;position:sticky;top:0}
+.mas-title{color:#666;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-align:center;margin:0 0 12px}
+.mas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 8px}
 .mas-item{
   display:flex;flex-direction:column;align-items:center;gap:6px;
   border:none;background:transparent;cursor:pointer;
@@ -188,6 +190,42 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .mas-item svg{width:26px;height:26px;color:#666}
 .mas-item:active{background:#252525}
 .mas-item.on{color:#C8960C}.mas-item.on svg{color:#C8960C}
+
+/* ── TABLA NÓMINA → TARJETAS EN MÓVIL ── */
+@media(max-width:768px){
+  #pnl-datos .tw{overflow:visible;border:none;background:transparent;margin-bottom:12px}
+  #pnl-datos .tw>table{border-spacing:0}
+  #pnl-datos .tw>table thead{display:none}
+  #pnl-datos .tw>table,#pnl-datos .tw>table tbody,#pnl-datos .tw>table tfoot,#pnl-datos .tw>table tr{display:block;width:100%}
+  #pnl-datos .tw>table tr{
+    background:#fff;border:0.5px solid #e0ddd4;border-radius:12px;
+    margin-bottom:10px;padding:4px 14px;box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  #pnl-datos .tw>table tr[data-combined-for]{background:#fff8e8;border:2px solid #f8ba00}
+  #pnl-datos .tw>table tfoot tr{background:#111;border-color:#111}
+  #pnl-datos .tw>table td{
+    display:flex!important;align-items:center;justify-content:space-between;gap:10px;
+    padding:8px 0!important;border-bottom:1px solid #f2f0ea;background:none!important;
+    border-left:none!important;text-align:right;min-width:0!important;
+  }
+  #pnl-datos .tw>table tfoot td{border-bottom-color:#333;color:#fff!important}
+  #pnl-datos .tw>table td:empty{display:none!important}
+  #pnl-datos .tw>table td:last-child{border-bottom:none}
+  #pnl-datos .tw>table td[data-label]:not([data-label=""])::before{
+    content:attr(data-label);
+    font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    color:#999;text-align:left;flex-shrink:0;
+  }
+  #pnl-datos .tw>table tfoot td[data-label]::before{color:#888}
+  #pnl-datos .tw>table td[data-label="Nombre"]{flex-direction:column;align-items:stretch;border-bottom:2px solid #f0ede4;padding-bottom:12px!important;margin-bottom:2px}
+  #pnl-datos .tw>table td[data-label="Nombre"]::before{margin-bottom:6px}
+  #pnl-datos .tw>table td input[type=number],#pnl-datos .tw>table td input[type=text]{width:auto!important;max-width:130px;flex:1;text-align:right;font-size:14px;padding:4px 2px}
+  #pnl-datos .tw>table td[data-label="Nombre"] input[type=text]{width:100%!important;max-width:none;text-align:left;font-size:15px;font-weight:700}
+  #pnl-datos .tw>table td[data-label="Deuda"],#pnl-datos .tw>table td[data-label="Extra"]{flex-direction:column;align-items:stretch}
+  #pnl-datos .tw>table td[data-label="Deuda"]::before,#pnl-datos .tw>table td[data-label="Extra"]::before{margin-bottom:6px}
+  #pnl-datos .tw>table td[data-label="Total a pagar"]{padding-top:12px!important;margin-top:2px;border-top:2px solid #f0ede4;border-bottom:none;font-size:16px}
+  #pnl-datos .tw>table td[data-label="TOTAL"]{font-size:16px;color:#fff!important;font-weight:900}
+}
 
 /* ── PH BUTTONS (uniform pill style) ── */
 .ph-btn{
@@ -1154,18 +1192,18 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
         </tr></thead>
         <tbody id="tb"></tbody>
         <tfoot><tr>
-          <td style="font-weight:900;color:#111">TOTALES</td>
-          <td></td><td></td>
-          <td id="tg-autos" style="text-align:center;font-weight:700;color:#555">0</td>
-          <td id="tg-com"   style="text-align:right;font-weight:700;color:#555">$0</td>
-          <td id="tg-food"  style="text-align:right;font-weight:700;color:#c0392b">$0</td>
-          <td id="tg-merch" style="text-align:right;font-weight:700;color:#c0392b">$0</td>
-          <td id="tg-bono"  style="text-align:right;font-weight:700;color:#38a169">$0</td>
-          <td id="tg-aho"   style="text-align:right;font-weight:700;color:#1c3a61">$0</td>
-          <td id="tg-ext"   style="text-align:right;font-weight:700;color:#38a169">$0</td>
-          <td></td>
-          <td id="tg"       style="text-align:right;font-weight:900;font-size:14px;color:#111">$0</td>
-          <td></td>
+          <td data-label="" style="font-weight:900;color:#111">TOTALES</td>
+          <td data-label=""></td><td data-label=""></td>
+          <td data-label="Autos" id="tg-autos" style="text-align:center;font-weight:700;color:#555">0</td>
+          <td data-label="Comisión" id="tg-com"   style="text-align:right;font-weight:700;color:#555">$0</td>
+          <td data-label="Food" id="tg-food"  style="text-align:right;font-weight:700;color:#c0392b">$0</td>
+          <td data-label="Merch" id="tg-merch" style="text-align:right;font-weight:700;color:#c0392b">$0</td>
+          <td data-label="Bono" id="tg-bono"  style="text-align:right;font-weight:700;color:#38a169">$0</td>
+          <td data-label="Ahorro" id="tg-aho"   style="text-align:right;font-weight:700;color:#1c3a61">$0</td>
+          <td data-label="Extra" id="tg-ext"   style="text-align:right;font-weight:700;color:#38a169">$0</td>
+          <td data-label=""></td>
+          <td data-label="TOTAL" id="tg"       style="text-align:right;font-weight:900;font-size:14px;color:#111">$0</td>
+          <td data-label=""></td>
         </tr></tfoot>
       </table>
     </div>
@@ -3122,32 +3160,32 @@ function renderT(){
       : "";
 
     tr.innerHTML=`
-      <td style="position:relative;${isDoble?"border-left:3px solid #f8ba00;":""}padding:5px 7px">
+      <td data-label="Nombre" style="position:relative;${isDoble?"border-left:3px solid #f8ba00;":""}padding:5px 7px">
         <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:90px">
         ${row.nombre?`<button onclick="verPerfilLavador('${esc(row.nombre)}')" title="Ver historial de ${esc(row.nombre)}" style="background:none;border:none;cursor:pointer;font-size:11px;color:#C8960C;padding:0;vertical-align:middle">📈</button>`:""}
         ${dobleTag}
       </td>
-      <td style="padding:5px 4px">${sucLabel}</td>
-      <td style="padding:5px 4px"><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
-      <td style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:54px;text-align:center"></td>
-      <td style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:74px;text-align:right"></td>
-      <td style="padding:5px 4px"><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:62px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
-      <td style="padding:5px 4px;white-space:nowrap">
+      <td data-label="Sucursal" style="padding:5px 4px">${sucLabel}</td>
+      <td data-label="%" style="padding:5px 4px"><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
+      <td data-label="Autos" style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:54px;text-align:center"></td>
+      <td data-label="Comisión" style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:74px;text-align:right"></td>
+      <td data-label="Food" style="padding:5px 4px"><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:62px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
+      <td data-label="Merch" style="padding:5px 4px;white-space:nowrap">
         <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:60px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}">
         ${num(row.merch)>100&&!(d&&d.total>0)?`<button onclick="merchADeuda(${i})" title="Merch >$100 — convertir en deuda" style="display:block;margin-top:3px;background:#fff3cd;border:1px solid #f8ba00;border-radius:5px;cursor:pointer;font-size:10px;font-weight:800;padding:2px 5px;color:#7a5c00;white-space:nowrap">📋→ A deuda</button>`:""}
       </td>
-      <td style="padding:5px 4px"><input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:62px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}"></td>
-      <td style="padding:5px 4px"><input type="number" value="${row.ahorro||""}" oninput="uf(${i},'ahorro',this.value)" style="width:64px;text-align:right;color:${Math.abs(num(row.ahorro||0))>0?"#1c3a61":"inherit"}" placeholder="0" title="Siempre se descuenta (positivo o negativo)"></td>
-      <td style="padding:5px 4px">
+      <td data-label="Bono" style="padding:5px 4px"><input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:62px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}"></td>
+      <td data-label="Ahorro" style="padding:5px 4px"><input type="number" value="${row.ahorro||""}" oninput="uf(${i},'ahorro',this.value)" style="width:64px;text-align:right;color:${Math.abs(num(row.ahorro||0))>0?"#1c3a61":"inherit"}" placeholder="0" title="Siempre se descuenta (positivo o negativo)"></td>
+      <td data-label="Extra" style="padding:5px 4px">
         <input type="number" min="0" step="0.5" value="${row.extra||""}" oninput="uf(${i},'extra',+this.value)" style="width:64px;text-align:right;color:${(row.extra>0)?'#38a169':'inherit'}" placeholder="$0" title="Doble clic: agregar concepto">
         <div ondblclick="editarConceptoExtra(${i})" style="font-size:9px;color:${row.extraConcepto?'#38a169':'#ccc'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64px;cursor:pointer" title="${esc(row.extraConcepto||'Doble clic para agregar concepto')}">${esc(row.extraConcepto||'+ concepto')}</div>
       </td>
-      <td class="deuda-cell" style="padding:5px 7px">${deudaCell}</td>
-      <td style="text-align:right;padding:6px 8px;background:${t>0?"#f0fff4":t<0?"#fff5f5":"#fafaf8"};border-left:2px solid ${t>0?"#38a169":t<0?"#e53e3e":"#eee"}">
+      <td class="deuda-cell" data-label="Deuda" style="padding:5px 7px">${deudaCell}</td>
+      <td data-label="Total a pagar" style="text-align:right;padding:6px 8px;background:${t>0?"#f0fff4":t<0?"#fff5f5":"#fafaf8"};border-left:2px solid ${t>0?"#38a169":t<0?"#e53e3e":"#eee"}">
         <div style="font-size:14px;font-weight:900;color:${t>0?"#276749":t<0?"#c53030":"#888"}">${fmt(t)}</div>
         ${desglose}
       </td>
-      <td style="padding:5px 4px"><button class="xb" onclick="rr(${i})">✕</button></td>`;
+      <td data-label="" style="padding:5px 4px"><button class="xb" onclick="rr(${i})">✕</button></td>`;
     tb.appendChild(tr);
 
     // Si es el ÚLTIMO de su grupo doble → insertar fila combinada
@@ -6278,38 +6316,40 @@ async function dash_gsGet(key) {
   }
 }
 
+// Calcula nómina/food/autos por sucursal a partir de un arreglo de rows (Sobres)
+function _dash_calcNominaDeRows(rowsArr){
+  let nomRef=0, nomAla=0, foodRef=0, foodAla=0, cochesRef=0, cochesAla=0;
+  (rowsArr||[]).forEach(r => {
+    const suc = (r.sucursal||'').toLowerCase();
+    const pago = (r.comision||0) - (r.food||0) - (r.merch||0) - Math.abs(r.ahorro||0) + (r.bono||0);
+    const esRef = suc.includes('ref');
+    const esAla = suc.includes('ala') || suc.includes('álamos') || suc.includes('alamos');
+    if (esRef)      { nomRef += pago; foodRef += (r.food||0); cochesRef += (r.autos||0); }
+    else if (esAla) { nomAla += pago; foodAla += (r.food||0); cochesAla += (r.autos||0); }
+  });
+  return {nomRef,nomAla,foodRef,foodAla,cochesRef,cochesAla};
+}
+
 async function dash_syncDesdeSobres() {
   const btn = document.getElementById('sync-sobres-btn');
   const msg = document.getElementById('sync-msg');
   btn.disabled = true; btn.textContent = '⏳ Sincronizando…';
   msg.style.display = 'none';
   try {
-    // Pull current week rows + historial from Sobres GS backend
-    const [rows, semana] = await Promise.all([
-      dash_gsGet('pc4_rows'),
-      dash_gsGet('pc4_semana')
-    ]);
-    if (!rows || !Array.isArray(rows) || rows.length === 0) {
-      dash_showToast('⚠ Sin datos en Sobres — abre sobres.html y carga una semana primero');
+    // Usa los datos de Sobres ya cargados en esta misma página (sin fetch — instantáneo y siempre al día)
+    const rowsActuales = (typeof rows !== 'undefined' && Array.isArray(rows)) ? rows : [];
+    const semanaActual = document.getElementById('sem')?.value || '';
+    if (!rowsActuales.length) {
+      dash_showToast('⚠ Sin datos en Sobres — ve a la pestaña Nómina y carga una semana primero');
       btn.disabled = false; btn.textContent = '⬇ Sync Sobres';
       return;
     }
-    // Compute payroll totals by sucursal from pc4_rows
-    let nomRef=0, nomAla=0, foodRef=0, foodAla=0, cochesRef=0, cochesAla=0;
-    rows.forEach(r => {
-      const suc = (r.sucursal||'').toLowerCase();
-      const pago = (r.comision||0) - (r.food||0) - (r.merch||0) - (r.ahorro||0) + (r.bono||0);
-      const esRef = suc.includes('ref');
-      const esAla = suc.includes('ala') || suc.includes('álamos') || suc.includes('alamos');
-      if (esRef)      { nomRef += pago; foodRef += (r.food||0); cochesRef += (r.autos||0); }
-      else if (esAla) { nomAla += pago; foodAla += (r.food||0); cochesAla += (r.autos||0); }
-    });
-    // Pre-fill the current week fields
     if (currentWeekIdx < 0) {
       dash_showToast('⚠ Crea una semana en el Dashboard primero, luego sincroniza');
       btn.disabled = false; btn.textContent = '⬇ Sync Sobres';
       return;
     }
+    const {nomRef,nomAla,foodRef,foodAla,cochesRef,cochesAla} = _dash_calcNominaDeRows(rowsActuales);
     const fields = {
       'nom-ref-direct': Math.round(nomRef),
       'nom-ala-direct': Math.round(nomAla),
@@ -6329,7 +6369,7 @@ async function dash_syncDesdeSobres() {
       }
     }
     dash_recalc();
-    msg.innerHTML = `✅ Sincronizado desde Sobres (${semana||'semana actual'}) · ${rows.length} lavadores · Refugio: $${nomRef.toLocaleString('es-MX')} · Álamos: $${nomAla.toLocaleString('es-MX')} · Coches: ${cochesRef+cochesAla}`;
+    msg.innerHTML = `✅ Sincronizado desde Sobres (${semanaActual||'semana actual'}) · ${rowsActuales.length} lavadores · Refugio: $${nomRef.toLocaleString('es-MX')} · Álamos: $${nomAla.toLocaleString('es-MX')} · Coches: ${cochesRef+cochesAla}`;
     msg.style.display = 'block';
     dash_markUnsaved();
     dash_showToast('✅ Datos de Sobres importados');
@@ -6337,6 +6377,32 @@ async function dash_syncDesdeSobres() {
     dash_showToast('Error al conectar con Sobres: ' + e.message);
   }
   btn.disabled = false; btn.textContent = '⬇ Sync Sobres';
+}
+
+// Auto-importar historial completo de Sobres como semanas de Finanzas
+// (solo nómina/food/autos — ingresos como car wash/membresías siguen siendo captura manual,
+// ese dato no existe en Sobres). Se ejecuta una sola vez si Finanzas está vacío.
+function dash_autoImportHistorial(){
+  if(dashData.weeks && dashData.weeks.length>0) return false; // ya tiene datos, no tocar
+  const hist = (typeof historial!=='undefined' && historial.length) ? historial : [];
+  if(!hist.length) return false;
+  const ordenado=[...hist].reverse(); // historial viene del más reciente al más viejo → invertir a cronológico
+  ordenado.forEach(h=>{
+    const {nomRef,nomAla,foodRef,foodAla,cochesRef,cochesAla}=_dash_calcNominaDeRows(h.rows||[]);
+    dashData.weeks.push({
+      label: 'Sem '+(h.semana||'?'),
+      date: h.fecha||new Date().toISOString(),
+      dateStart: h.fecha||new Date().toISOString(),
+      dateEnd: h.fecha||new Date().toISOString(),
+      'nom-ref-direct': Math.round(nomRef), 'nom-ala-direct': Math.round(nomAla),
+      'ref-nom-food': Math.round(foodRef), 'ala-nom-food': Math.round(foodAla),
+      'coches-ref': cochesRef, 'coches-ala': cochesAla,
+      _autoImportado: true,
+    });
+  });
+  currentWeekIdx = dashData.weeks.length-1;
+  dash_save();
+  return true;
 }
 
 // ── DATA STORE ──
@@ -8299,6 +8365,9 @@ function dash_invCalcUnit() {
 function dash_init() {
   if (dash_init._done) return;
   dash_init._done = true;
+  // Si Finanzas está vacío pero Sobres ya tiene historial, importar nómina automáticamente
+  // (evita la pantalla "Sin datos" — ingresos/rentas siguen siendo captura manual)
+  if(dash_autoImportHistorial()) dash_showToast('✓ Nómina importada de Sobres — agrega ingresos y gastos fijos cuando puedas');
   dash_initAccumulator();
   dash_initFieldButtons();
   dash_buildDashWeekSelect();   // builds dash-week-select (Dashboard view)
@@ -8324,24 +8393,24 @@ function dash_init() {
       finanzas:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h4M7 12h10"/></svg>`,
   };
   const MAIN_TABS=[
-    {t:"flujo",  icon:"flujo",  label:"Flujo"},
-    {t:"datos",  icon:"datos",  label:"Datos"},
-    {t:"sobres", icon:"sobres", label:"Tickets"},
-    {t:"deudas", icon:"deudas", label:"Deudas"},
+    {t:"datos",    icon:"datos",    label:"Nómina"},
+    {t:"flujo",    icon:"flujo",    label:"Flujo"},
+    {t:"deudas",   icon:"deudas",   label:"Deudas"},
+    {t:"finanzas", icon:"finanzas", label:"Finanzas"},
   ];
   const MORE_TABS=[
+    {t:"sobres",     icon:"sobres",     label:"Tickets"},
     {t:"coords",     icon:"coords",     label:"Coords"},
     {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
     {t:"sucursales", icon:"sucursales", label:"Analytics"},
-    {t:"hist",       icon:"hist",       label:"Historial"},
-    {t:"finanzas",   icon:"finanzas",   label:"Finanzas"}];
+    {t:"hist",       icon:"hist",       label:"Historial"}];
   // 1. Build overlay + sheet FIRST (so closeMas/toggleMas can close them)
   const overlay=document.createElement("div");
   overlay.className="mas-overlay";
   const sheet=document.createElement("div");
   sheet.className="mas-sheet";
   sheet.id="mas-sheet";
-  sheet.innerHTML=`<div class="mas-handle"></div><div class="mas-grid" id="mas-grid"></div>`;
+  sheet.innerHTML=`<div class="mas-handle"></div><div class="mas-title">Más opciones</div><div class="mas-grid" id="mas-grid"></div>`;
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
   const grid=document.getElementById("mas-grid");
