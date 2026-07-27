@@ -6,6 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<meta http-equiv="refresh" content="0; url=sobres.html">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Patio Cinco">
@@ -13,63 +14,21 @@
 <title>Patio Cinco</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;width:100%;overflow:hidden;background:#000;font-family:-apple-system,Arial,sans-serif}
-  #shell{display:flex;flex-direction:column;height:100%;height:100dvh;padding-top:env(safe-area-inset-top)}
-  #frames{flex:1;position:relative;overflow:hidden}
-  #frames>.fw{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;opacity:0;pointer-events:none;transition:opacity .15s ease}
-  #frames>.fw.active{opacity:1;pointer-events:all}
-  iframe{width:100%;height:100%;border:none;background:#f0f0f0;display:block}
-  #nav{display:flex;background:#111;border-top:1px solid #333;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
-  .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;cursor:pointer;color:#555;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;-webkit-tap-highlight-color:transparent;min-height:56px}
-  .nb.on{color:#C8960C}
-  .nb-icon{font-size:20px;line-height:1}
-  #splash{position:fixed;inset:0;background:#C8960C;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
-  #splash.hide{opacity:0;pointer-events:none}
+  html,body{height:100%;width:100%;overflow:hidden;background:#C8960C;font-family:-apple-system,Arial,sans-serif}
+  #splash{position:fixed;inset:0;background:#C8960C;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999}
   .dot{width:6px;height:6px;background:#111;border-radius:50%;margin-top:28px;animation:pulse 1s infinite}
   @keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
 </style>
 </head>
 <body>
-
-<!-- ── SPLASH ── -->
+<!-- index.html ya no separa Dashboard/Sobres en dos apps: todo vive fusionado en sobres.html
+     (panel Finanzas incluido). Esta página solo redirige — es el start_url del PWA/manifest. -->
 <div id="splash">
   <img src="p-logo.png" style="width:180px;height:auto;">
   <div class="dot"></div>
 </div>
-
-<!-- ── SHELL ── -->
-<div id="shell">
-  <div id="frames">
-    <div class="fw active" id="fw-d">
-      <iframe src="dashboard.html" title="Dashboard Financiero"></iframe>
-    </div>
-    <div class="fw" id="fw-s">
-      <iframe src="sobres.html" title="Sobres"></iframe>
-    </div>
-  </div>
-
-  <nav id="nav">
-    <button class="nb on" id="nb-d" onclick="go('d',this)">
-      <span class="nb-icon">📊</span>
-      Dashboard
-    </button>
-    <button class="nb" id="nb-s" onclick="go('s',this)">
-      <span class="nb-icon">✉️</span>
-      Sobres
-    </button>
-  </nav>
-</div>
-
 <script>
-function go(id, btn) {
-  document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
-  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
-  document.getElementById('fw-' + id).classList.add('active');
-  btn.classList.add('on');
-}
-window.addEventListener('load', () => {
-  setTimeout(() => document.getElementById('splash').classList.add('hide'), 1500);
-});
+location.replace('sobres.html');
 </script>
 </body>
 </html>
