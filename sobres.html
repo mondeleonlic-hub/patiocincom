@@ -61,7 +61,7 @@ body{
 .spnl.on{display:block;animation:pcFadeIn .25s cubic-bezier(.32,.72,0,1);}
 
 /* ── PANEL HEADER ── */
-.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;padding-bottom:16px;border-bottom:0.5px solid #e0ddd4;}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;padding-bottom:12px;border-bottom:0.5px solid #e0ddd4;}
 .ph h2{font-size:16px;font-weight:700;color:#111;letter-spacing:.3px;text-transform:none;margin:0;}
 .ph h2 span{color:#C8960C;}
 .bg{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
@@ -229,10 +229,13 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
   #pnl-datos .tw>table tfoot td[data-label]::before{color:#888}
   #pnl-datos .tw>table td[data-label="Nombre"]{flex-direction:column;align-items:stretch;border-bottom:2px solid #f0ede4;padding-bottom:12px!important;margin-bottom:2px}
   #pnl-datos .tw>table td[data-label="Nombre"]::before{margin-bottom:6px}
-  #pnl-datos .tw>table td input[type=number],#pnl-datos .tw>table td input[type=text]{width:auto!important;max-width:130px;flex:1;text-align:right;font-size:14px;padding:4px 2px}
+  #pnl-datos .tw>table td input[type=number],#pnl-datos .tw>table td input[type=text]{width:auto!important;max-width:130px;flex:1;min-width:0;text-align:right;font-size:14px;padding:4px 2px}
+  #pnl-datos .tw>table td input[type=number]::-webkit-outer-spin-button,
+  #pnl-datos .tw>table td input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  #pnl-datos .tw>table td input[type=number]{-moz-appearance:textfield}
   #pnl-datos .tw>table td[data-label="Nombre"] input[type=text]{width:100%!important;max-width:none;text-align:left;font-size:15px;font-weight:700}
-  #pnl-datos .tw>table td[data-label="Deuda"],#pnl-datos .tw>table td[data-label="Extra"]{flex-direction:column;align-items:stretch}
-  #pnl-datos .tw>table td[data-label="Deuda"]::before,#pnl-datos .tw>table td[data-label="Extra"]::before{margin-bottom:6px}
+  #pnl-datos .tw>table td[data-label="Deuda"],#pnl-datos .tw>table td[data-label="Extra"],#pnl-datos .tw>table td[data-label="Merch"],#pnl-datos .tw>table td[data-label="Bono"]{flex-direction:column;align-items:stretch}
+  #pnl-datos .tw>table td[data-label="Deuda"]::before,#pnl-datos .tw>table td[data-label="Extra"]::before,#pnl-datos .tw>table td[data-label="Merch"]::before,#pnl-datos .tw>table td[data-label="Bono"]::before{margin-bottom:6px}
   #pnl-datos .tw>table td[data-label="Total a pagar"]{padding-top:12px!important;margin-top:2px;border-top:2px solid #f0ede4;border-bottom:none;font-size:16px}
   #pnl-datos .tw>table td[data-label="TOTAL"]{font-size:16px;color:#fff!important;font-weight:900}
 }
@@ -240,9 +243,9 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 /* ── PH BUTTONS (uniform pill style) ── */
 .ph-btn{
   display:inline-flex; align-items:center; justify-content:center;
-  height:36px; padding:0 20px;
-  border:none; border-radius:20px;
-  font-size:12px; font-weight:700; font-family:inherit;
+  height:30px; padding:0 14px;
+  border:none; border-radius:16px;
+  font-size:11px; font-weight:700; font-family:inherit;
   letter-spacing:.3px; cursor:pointer;
   white-space:nowrap; transition:opacity .15s, transform .1s;
 }
@@ -426,37 +429,37 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 
 /* ── KPI CARDS — mismo formato exacto que Dashboard ────────────── */
 
-#resumen{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:24px;}
+#resumen{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
 .rcard{
   background:#fff;
   border:0.5px solid #e5e2d8;
-  border-radius:16px;
-  padding:18px 20px;
+  border-radius:12px;
+  padding:10px 12px;
   flex:1;
-  min-width:130px;
+  min-width:100px;
   box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.035);
 }
-.rl{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:6px;}
-.rv{font-size:26px;font-weight:500;color:#111;line-height:1.1;}
-.rsub{font-size:11px;color:#999;margin-top:5px;font-weight:400;}
+.rl{font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:3px;}
+.rv{font-size:17px;font-weight:600;color:#111;line-height:1.1;}
+.rsub{font-size:9.5px;color:#999;margin-top:2px;font-weight:400;}
 
 /* Status bar */
 #st{border-radius:8px;padding:10px 14px;font-size:12px;font-weight:500;margin-bottom:12px;} #st:empty{padding:0;margin:0;}
 
 /* Filtros row */
-.filtros{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px;padding:8px 0;border-bottom:0.5px solid var(--border);}
+.filtros{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px;padding:4px 0;border-bottom:0.5px solid var(--border);}
 .filtros label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px;}
 #conteo{font-size:11px;color:var(--muted);margin-left:auto;font-weight:500;}
 
 /* Segmented control (estilo iOS) para filtros de sucursal */
-.fseg{display:flex;align-items:center;gap:2px;background:#F1EFE9;border-radius:11px;padding:3px;}
-.fseg .fbtn{border:none;background:transparent;border-radius:8px;color:#888;box-shadow:none;}
+.fseg{display:flex;align-items:center;gap:2px;background:#F1EFE9;border-radius:9px;padding:2px;}
+.fseg .fbtn{border:none;background:transparent;border-radius:7px;color:#888;box-shadow:none;padding:4px 11px;font-size:11px;}
 .fseg .fbtn.on{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.12);}
 .fseg .fbtn.ref.on{color:#C8960C;}
 .fseg .fbtn.ala.on{color:#185FA5;}
-.busq-inp{border:1.5px solid transparent;background:#F1EFE9;border-radius:20px;padding:6px 14px;font-size:12px;font-family:inherit;outline:none;width:180px;transition:background .15s,border-color .15s,box-shadow .15s;}
+.busq-inp{border:1.5px solid transparent;background:#F1EFE9;border-radius:16px;padding:5px 12px;font-size:11px;font-family:inherit;outline:none;width:160px;transition:background .15s,border-color .15s,box-shadow .15s;}
 .busq-inp:focus{background:#fff;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,150,12,.14);}
-.fbtn-csv{white-space:nowrap;}
+.fbtn-csv{white-space:nowrap;padding:4px 11px!important;height:auto!important;}
 
 /* Table cells */
 .hidden{display:none;}
@@ -3219,10 +3222,14 @@ function renderT(){
       <td data-label="Comisión" style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:74px;text-align:right"></td>
       <td data-label="Food" style="padding:5px 4px"><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:62px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
       <td data-label="Merch" style="padding:5px 4px;white-space:nowrap">
-        <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:60px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}">
+        <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:60px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}" title="Doble clic: agregar concepto" ondblclick="editarConceptoMerch(${i})">
+        <div ondblclick="editarConceptoMerch(${i})" style="font-size:9px;color:${row.merchConcepto?'#c0392b':'#ccc'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64px;cursor:pointer" title="${esc(row.merchConcepto||'Doble clic para agregar concepto')}">${esc(row.merchConcepto||'+ concepto')}</div>
         ${num(row.merch)>100&&!(d&&d.total>0)?`<button onclick="merchADeuda(${i})" title="Merch >$100 — convertir en deuda" style="display:block;margin-top:3px;background:#fff3cd;border:1px solid #f8ba00;border-radius:5px;cursor:pointer;font-size:10px;font-weight:800;padding:2px 5px;color:#7a5c00;white-space:nowrap">📋→ A deuda</button>`:""}
       </td>
-      <td data-label="Bono" style="padding:5px 4px"><input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:62px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}"></td>
+      <td data-label="Bono" style="padding:5px 4px">
+        <input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:62px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}" title="Doble clic: agregar concepto" ondblclick="editarConceptoBono(${i})">
+        <div ondblclick="editarConceptoBono(${i})" style="font-size:9px;color:${row.bonoConcepto?'#38a169':'#ccc'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64px;cursor:pointer" title="${esc(row.bonoConcepto||'Doble clic para agregar concepto')}">${esc(row.bonoConcepto||'+ concepto')}</div>
+      </td>
       <td data-label="Ahorro" style="padding:5px 4px"><input type="number" value="${row.ahorro||""}" oninput="uf(${i},'ahorro',this.value)" style="width:64px;text-align:right;color:${Math.abs(num(row.ahorro||0))>0?"#1c3a61":"inherit"}" placeholder="0" title="Siempre se descuenta (positivo o negativo)"></td>
       <td data-label="Extra" style="padding:5px 4px">
         <input type="number" min="0" step="0.5" value="${row.extra||""}" oninput="uf(${i},'extra',+this.value)" style="width:64px;text-align:right;color:${(row.extra>0)?'#38a169':'inherit'}" placeholder="$0" title="Doble clic: agregar concepto">
@@ -3298,6 +3305,18 @@ function editarConceptoExtra(i){
   const v=prompt("Concepto del extra para "+rows[i].nombre+":",rows[i].extraConcepto||"");
   if(v===null)return;
   rows[i].extraConcepto=v.trim();
+  sv("pc4_rows",rows);renderT();
+}
+function editarConceptoMerch(i){
+  const v=prompt("Concepto del merch para "+rows[i].nombre+":",rows[i].merchConcepto||"");
+  if(v===null)return;
+  rows[i].merchConcepto=v.trim();
+  sv("pc4_rows",rows);renderT();
+}
+function editarConceptoBono(i){
+  const v=prompt("Concepto del bono para "+rows[i].nombre+":",rows[i].bonoConcepto||"");
+  if(v===null)return;
+  rows[i].bonoConcepto=v.trim();
   sv("pc4_rows",rows);renderT();
 }
 function ufSucursal(i){
@@ -3488,20 +3507,20 @@ function renderResumenEfectivoNomina(){
   const dif=efectivo-nomina;
   const ok=dif>=0;
   box.innerHTML=`
-    <div class="card" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;margin-bottom:16px">
+    <div class="card" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:10px;padding:10px 14px">
       <div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:2px">Efectivo de la semana</div>
-        <div style="font-size:18px;font-weight:700;color:var(--gold)">${fmt(efectivo)}</div>
-        <div style="font-size:10px;color:#aaa">Según Flujo — cortes menos gastos al sobre</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:1px">Efectivo de la semana</div>
+        <div style="font-size:14px;font-weight:700;color:var(--gold)">${fmt(efectivo)}</div>
+        <div style="font-size:9px;color:#aaa">Según Flujo</div>
       </div>
       <div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:2px">Total a pagar (nómina)</div>
-        <div style="font-size:18px;font-weight:700;color:#1c3a61">${fmt(nomina)}</div>
-        <div style="font-size:10px;color:#aaa">Según esta tabla</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:1px">Total a pagar (nómina)</div>
+        <div style="font-size:14px;font-weight:700;color:#1c3a61">${fmt(nomina)}</div>
+        <div style="font-size:9px;color:#aaa">Según esta tabla</div>
       </div>
-      <div style="margin-left:auto;background:${ok?"#eafaf1":"#fdecea"};color:${ok?"#1B5E20":"#A32D2D"};border-radius:12px;padding:10px 20px;text-align:right">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8">${ok?"Sobra":"Falta"}</div>
-        <div style="font-size:20px;font-weight:800">${fmt(Math.abs(dif))}</div>
+      <div style="margin-left:auto;background:${ok?"#eafaf1":"#fdecea"};color:${ok?"#1B5E20":"#A32D2D"};border-radius:9px;padding:6px 12px;text-align:right">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;opacity:.8">${ok?"Sobra":"Falta"}</div>
+        <div style="font-size:15px;font-weight:800">${fmt(Math.abs(dif))}</div>
       </div>
     </div>`;
 }
