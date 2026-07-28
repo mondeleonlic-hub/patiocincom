@@ -4973,9 +4973,9 @@ function cambiarSemanaFlujo(){
     return;
   }
   const idx = parseInt(val.replace("hist_",""));
-  const hist = ld("pc4_hist",[]);
-  if(hist[idx] && hist[idx].flujoDias){
-    flujoDias = hist[idx].flujoDias;
+  const hist = (flujoHist && flujoHist.length) ? flujoHist : ld("pc4_flujo",[]);
+  if(hist[idx] && hist[idx].dias){
+    flujoDias = hist[idx].dias;
     renderFlujoTabla();
     // Actualizar label con semana del historial
     const semHist = hist[idx].semana || hist[idx].label || ("Semana "+(idx+1));
@@ -5048,7 +5048,7 @@ function cargarSemanaHistDeudas(){
 function popularSelectores(){
   // Fill all week selectors from historial (in-memory from GS/localStorage)
   const hist = historial && historial.length ? historial : ld("pc4_hist",[]);
-  const selIds = ["flujo-sem-sel","datos-sem-sel","deudas-hist-sel","coords-hist-sel"];
+  const selIds = ["datos-sem-sel","deudas-hist-sel","coords-hist-sel"];
   selIds.forEach(selId=>{
     const sel = document.getElementById(selId);
     if(!sel) return;
@@ -5061,6 +5061,20 @@ function popularSelectores(){
       sel.appendChild(o);
     });
   });
+  // El selector de Flujo usa su propio historial (flujoHist / pc4_flujo),
+  // que es la fuente correcta — no el historial general de nómina.
+  const fSel = document.getElementById("flujo-sem-sel");
+  if(fSel){
+    while(fSel.options.length>1) fSel.remove(1);
+    const fHist = (flujoHist && flujoHist.length) ? flujoHist : ld("pc4_flujo",[]);
+    fHist.forEach((w,i)=>{
+      if(!w) return;
+      const o = document.createElement("option");
+      o.value = "hist_"+i;
+      o.textContent = w.semana || w.label || "Sem "+i;
+      fSel.appendChild(o);
+    });
+  }
 }
 
 function popularSelectorFlujo(){ popularSelectores(); }
