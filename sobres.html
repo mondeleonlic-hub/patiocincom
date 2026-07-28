@@ -446,6 +446,12 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 /* Status bar */
 #st{border-radius:8px;padding:10px 14px;font-size:12px;font-weight:500;margin-bottom:12px;} #st:empty{padding:0;margin:0;}
 
+/* Barra única: título+botones, filtros, resumen efectivo — sin divisiones internas */
+.ph-toolbar{border-bottom:0.5px solid #e0ddd4;margin-bottom:14px;padding-bottom:8px;}
+.ph-toolbar .ph{border-bottom:none;margin-bottom:8px;padding-bottom:0;}
+.ph-toolbar .filtros{border-bottom:none;margin-bottom:0;}
+.ph-toolbar #resumen-efec-nom .card{background:transparent;border:none;box-shadow:none;padding:8px 0 0!important;margin-bottom:0!important;}
+
 /* Filtros row */
 .filtros{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px;padding:4px 0;border-bottom:0.5px solid var(--border);}
 .filtros label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px;}
@@ -1209,34 +1215,35 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
 
   <!-- DATOS -->
   <div class="pnl" id="pnl-datos">
-    <div class="ph">
-      <h2 id="ptit">Sin datos cargados</h2>
-      <div class="bg">
-        <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
-
-        <button class="ph-btn ph-dark" onclick="cerrarSemana()">🔒 Cerrar semana</button>
-        <button class="ph-btn ph-danger-outline" onclick="limpiarDatosSem()">🗑 Limpiar datos</button>
-        <button class="ph-btn ph-navy" onclick="addRow()">＋ Lavador</button>
+    <div class="ph-toolbar">
+      <div class="ph">
+        <h2 id="ptit">Sin datos cargados</h2>
+        <div class="bg">
+          <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
+          <button class="ph-btn ph-dark" onclick="cerrarSemana()">🔒 Cerrar semana</button>
+          <button class="ph-btn ph-danger-outline" onclick="limpiarDatosSem()">🗑 Limpiar datos</button>
+          <button class="ph-btn ph-navy" onclick="addRow()">＋ Lavador</button>
+        </div>
       </div>
+      <div class="filtros">
+        <div class="fseg">
+          <button class="fbtn on" data-f="all" onclick="setF('all')">Todos</button>
+          <button class="fbtn ref" data-f="PC Refugio" onclick="setF('PC Refugio')">Refugio</button>
+          <button class="fbtn ala" data-f="PC Álamos" onclick="setF('PC Álamos')">Álamos</button>
+          <button class="fbtn" data-f="sin" onclick="setF('sin')">Sin asignar</button>
+        </div>
+        <span id="conteo"></span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <input id="busq-inp" type="search" placeholder="🔍 Buscar lavador..." oninput="busquedaGlobal(this.value)" class="busq-inp">
+          <button class="fbtn fbtn-csv" onclick="exportarCSV()" title="Exportar a Excel/CSV">⬇ CSV</button>
+        </div>
+      </div>
+      <div id="resumen-efec-nom"></div>
     </div>
     <input type="file" id="fi" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="onFile(this)">
     <input type="file" id="fi-import" accept=".json" style="display:none" onchange="importarDatos(this)">
     <div id="st"></div>
-    <div class="filtros">
-      <div class="fseg">
-        <button class="fbtn on" data-f="all" onclick="setF('all')">Todos</button>
-        <button class="fbtn ref" data-f="PC Refugio" onclick="setF('PC Refugio')">Refugio</button>
-        <button class="fbtn ala" data-f="PC Álamos" onclick="setF('PC Álamos')">Álamos</button>
-        <button class="fbtn" data-f="sin" onclick="setF('sin')">Sin asignar</button>
-      </div>
-      <span id="conteo"></span>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-        <input id="busq-inp" type="search" placeholder="🔍 Buscar lavador..." oninput="busquedaGlobal(this.value)" class="busq-inp">
-        <button class="fbtn fbtn-csv" onclick="exportarCSV()" title="Exportar a Excel/CSV">⬇ CSV</button>
-      </div>
-    </div>
     <div id="busq-modal" style="display:none;margin-bottom:12px"></div>
-    <div id="resumen-efec-nom"></div>
     <div class="resumen" id="resumen"></div>
     <div class="tw">
       <table>
