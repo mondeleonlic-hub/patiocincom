@@ -1594,6 +1594,75 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     </div>
   </div>
 </div>
+
+<!-- Modal: nuevo/editar contacto CRM -->
+<div class="modal-overlay" id="crm-modal" onclick="if(event.target===this)crmCerrarModal()">
+  <div class="modal-box" style="width:420px">
+    <div class="modal-title" id="crm-modal-title">Nuevo contacto</div>
+    <input type="hidden" id="crm-edit-tel-original" value="">
+    <div style="display:grid;gap:12px;margin-top:4px">
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Nombre</label>
+        <input type="text" id="crm-f-nombre" placeholder="Nombre del contacto" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-transform:uppercase">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Teléfono (WhatsApp, con código de país)</label>
+        <input type="text" id="crm-f-tel" placeholder="Ej: 5216441234567" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Categoría</label>
+        <select id="crm-f-cat" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+          <option value="lavador">Lavador</option>
+          <option value="coordinador">Coordinador</option>
+          <option value="operador">Operador</option>
+          <option value="mantenimiento">Mantenimiento</option>
+          <option value="cliente_carwash">Cliente Carwash</option>
+          <option value="cliente_detallado">Cliente Detallado</option>
+          <option value="cliente_autolavado">Cliente Autolavado</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Sucursal (opcional)</label>
+        <select id="crm-f-suc" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+          <option value="">—</option>
+          <option value="PC Refugio">PC Refugio</option>
+          <option value="PC Álamos">PC Álamos</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Notas</label>
+        <textarea id="crm-f-notas" placeholder="Observaciones..." rows="3" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="crmCerrarModal()">Cancelar</button>
+      <button class="btn btn-dark" onclick="crmGuardarContacto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: configuración conexión WhatsApp -->
+<div class="modal-overlay" id="crm-config-modal" onclick="if(event.target===this)crmCerrarConfig()">
+  <div class="modal-box" style="width:460px">
+    <div class="modal-title">⚙ Conexión con WhatsApp</div>
+    <p style="font-size:12px;color:#777;margin-top:2px">Pega aquí la URL de tu Cloud Function una vez desplegada (ver guía de configuración). Se guarda solo en este navegador.</p>
+    <div style="display:grid;gap:12px;margin-top:10px">
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">URL de la Cloud Function (sendMessage)</label>
+        <input type="text" id="crm-cfg-url" placeholder="https://us-central1-montseflow.cloudfunctions.net/sendWhatsAppMessage" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:12px">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Clave compartida (secret)</label>
+        <input type="text" id="crm-cfg-secret" placeholder="La misma que configuraste en la Cloud Function" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:12px">
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="crmCerrarConfig()">Cancelar</button>
+      <button class="btn btn-dark" onclick="crmGuardarConfig()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div class="pnl" id="pnl-finanzas">
   <!-- ══ FINANZAS SUB-NAV ══ -->
   <div class="dash-subnav">
@@ -2387,74 +2456,6 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <div class="modal-actions" style="margin-top:20px;">
       <button class="btn btn-outline" onclick="dash_cerrarModalInv()">Cancelar</button>
       <button class="btn btn-dark" onclick="dash_guardarArticuloInv()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: nuevo/editar contacto CRM -->
-<div class="modal-overlay" id="crm-modal" onclick="if(event.target===this)crmCerrarModal()">
-  <div class="modal-box" style="width:420px">
-    <div class="modal-title" id="crm-modal-title">Nuevo contacto</div>
-    <input type="hidden" id="crm-edit-tel-original" value="">
-    <div style="display:grid;gap:12px;margin-top:4px">
-      <div>
-        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Nombre</label>
-        <input type="text" id="crm-f-nombre" placeholder="Nombre del contacto" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-transform:uppercase">
-      </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Teléfono (WhatsApp, con código de país)</label>
-        <input type="text" id="crm-f-tel" placeholder="Ej: 5216441234567" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
-      </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Categoría</label>
-        <select id="crm-f-cat" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
-          <option value="lavador">Lavador</option>
-          <option value="coordinador">Coordinador</option>
-          <option value="operador">Operador</option>
-          <option value="mantenimiento">Mantenimiento</option>
-          <option value="cliente_carwash">Cliente Carwash</option>
-          <option value="cliente_detallado">Cliente Detallado</option>
-          <option value="cliente_autolavado">Cliente Autolavado</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Sucursal (opcional)</label>
-        <select id="crm-f-suc" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
-          <option value="">—</option>
-          <option value="PC Refugio">PC Refugio</option>
-          <option value="PC Álamos">PC Álamos</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Notas</label>
-        <textarea id="crm-f-notas" placeholder="Observaciones..." rows="3" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;resize:vertical"></textarea>
-      </div>
-    </div>
-    <div class="modal-actions" style="margin-top:20px">
-      <button class="btn btn-outline" onclick="crmCerrarModal()">Cancelar</button>
-      <button class="btn btn-dark" onclick="crmGuardarContacto()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: configuración conexión WhatsApp -->
-<div class="modal-overlay" id="crm-config-modal" onclick="if(event.target===this)crmCerrarConfig()">
-  <div class="modal-box" style="width:460px">
-    <div class="modal-title">⚙ Conexión con WhatsApp</div>
-    <p style="font-size:12px;color:#777;margin-top:2px">Pega aquí la URL de tu Cloud Function una vez desplegada (ver guía de configuración). Se guarda solo en este navegador.</p>
-    <div style="display:grid;gap:12px;margin-top:10px">
-      <div>
-        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">URL de la Cloud Function (sendMessage)</label>
-        <input type="text" id="crm-cfg-url" placeholder="https://us-central1-montseflow.cloudfunctions.net/sendWhatsAppMessage" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:12px">
-      </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Clave compartida (secret)</label>
-        <input type="text" id="crm-cfg-secret" placeholder="La misma que configuraste en la Cloud Function" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:12px">
-      </div>
-    </div>
-    <div class="modal-actions" style="margin-top:20px">
-      <button class="btn btn-outline" onclick="crmCerrarConfig()">Cancelar</button>
-      <button class="btn btn-dark" onclick="crmGuardarConfig()">Guardar</button>
     </div>
   </div>
 </div>
