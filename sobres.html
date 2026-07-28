@@ -446,11 +446,17 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 /* Status bar */
 #st{border-radius:8px;padding:10px 14px;font-size:12px;font-weight:500;margin-bottom:12px;} #st:empty{padding:0;margin:0;}
 
-/* Barra única: título+botones, filtros, resumen efectivo — sin divisiones internas */
+/* Barra única: título + resumen efectivo + botones en un renglón; filtros abajo */
 .ph-toolbar{border-bottom:0.5px solid #e0ddd4;margin-bottom:14px;padding-bottom:8px;}
-.ph-toolbar .ph{border-bottom:none;margin-bottom:8px;padding-bottom:0;}
+.ph-toolbar .ph{border-bottom:none;margin-bottom:8px;padding-bottom:0;justify-content:flex-start;flex-wrap:wrap;}
+.ph-toolbar .ph h2{white-space:nowrap;}
+.ph-toolbar .ph #resumen-efec-nom{border-left:1px solid #e0ddd4;padding-left:16px;flex:1;min-width:220px;}
+.ph-toolbar .ph .bg{margin-left:auto;border-left:1px solid #e0ddd4;padding-left:16px;}
 .ph-toolbar .filtros{border-bottom:none;margin-bottom:0;}
-.ph-toolbar #resumen-efec-nom .card{background:transparent;border:none;box-shadow:none;padding:8px 0 0!important;margin-bottom:0!important;}
+.ph-toolbar #resumen-efec-nom .card{background:transparent;border:none;box-shadow:none;padding:0!important;margin-bottom:0!important;gap:20px!important;}
+@media(max-width:768px){
+  .ph-toolbar .ph #resumen-efec-nom,.ph-toolbar .ph .bg{border-left:none;padding-left:0;margin-left:0;}
+}
 
 /* Filtros row */
 .filtros{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px;padding:4px 0;border-bottom:0.5px solid var(--border);}
@@ -493,6 +499,11 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .deuda-sin{font-size:13px;color:#ddd;}
 
 /* ── DATOS (Nómina) — tabla pulida ─────────────────────────────── */
+#pnl-datos .tw table td input[type=number],
+#pnl-datos .tw table td input[type=text]{padding:5px 4px!important;}
+#pnl-datos .tw table td input[type=number]{-moz-appearance:textfield;}
+#pnl-datos .tw table td input[type=number]::-webkit-outer-spin-button,
+#pnl-datos .tw table td input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 @media(min-width:769px){
   #pnl-datos .tw table td:first-child,
   #pnl-datos .tw table th:first-child{
@@ -1218,6 +1229,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <div class="ph-toolbar">
       <div class="ph">
         <h2 id="ptit">Sin datos cargados</h2>
+        <div id="resumen-efec-nom"></div>
         <div class="bg">
           <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
           <button class="ph-btn ph-dark" onclick="cerrarSemana()">🔒 Cerrar semana</button>
@@ -1238,7 +1250,6 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
           <button class="fbtn fbtn-csv" onclick="exportarCSV()" title="Exportar a Excel/CSV">⬇ CSV</button>
         </div>
       </div>
-      <div id="resumen-efec-nom"></div>
     </div>
     <input type="file" id="fi" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="onFile(this)">
     <input type="file" id="fi-import" accept=".json" style="display:none" onchange="importarDatos(this)">
@@ -3225,8 +3236,8 @@ function renderT(){
       </td>
       <td data-label="Sucursal" style="padding:5px 4px">${sucLabel}</td>
       <td data-label="%" style="padding:5px 4px"><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
-      <td data-label="Autos" style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:54px;text-align:center"></td>
-      <td data-label="Comisión" style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:74px;text-align:right"></td>
+      <td data-label="Autos" style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:44px;text-align:center"></td>
+      <td data-label="Comisión" style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:66px;text-align:right"></td>
       <td data-label="Food" style="padding:5px 4px"><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:62px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
       <td data-label="Merch" style="padding:5px 4px;white-space:nowrap">
         <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:60px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}" title="Doble clic: agregar concepto" ondblclick="editarConceptoMerch(${i})">
