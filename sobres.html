@@ -463,6 +463,8 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .ph-toolbar #resumen-efec-nom .card{background:transparent;border:none;box-shadow:none;padding:0!important;margin-bottom:0!important;gap:20px!important;}
 @media(max-width:768px){
   .ph-toolbar .ph #resumen-efec-nom,.ph-toolbar .ph .bg{border-left:none;padding-left:0;margin-left:0;}
+  #crm-layout{flex-direction:column!important;}
+  #crm-lista{flex:1 1 auto!important;max-width:none!important;max-height:280px!important;}
 }
 
 /* Filtros row */
@@ -1225,7 +1227,8 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   <button class="tab" data-t="ahorros">Ahorros</button>
   <button class="tab" data-t="sucursales">Analytics</button>
   <button class="tab" data-t="hist">Historial</button>
-  
+  <button class="tab" data-t="crm">CRM</button>
+
     <button class="tab" data-t="finanzas">Finanzas</button>
   </div>
 </div>
@@ -1553,6 +1556,42 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       <input id="hist-buscar" type="search" placeholder="🔍 Buscar semana o lavador..." oninput="filtrarHist(this.value)" class="busq-inp" style="width:220px">
     </div>
     <div id="hc"></div>
+  </div>
+
+  <!-- CRM -->
+  <div class="pnl" id="pnl-crm">
+    <div class="ph-toolbar">
+      <div class="ph">
+        <h2>CRM — Contactos</h2>
+        <div class="bg">
+          <span id="crm-conn-badge" style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;background:#fdecea;color:#A32D2D;white-space:nowrap">● WhatsApp no configurado</span>
+          <button class="ph-btn ph-dark" onclick="crmAbrirConfig()">⚙ Configurar WhatsApp</button>
+          <button class="ph-btn ph-navy" onclick="crmNuevoContacto()">＋ Contacto</button>
+        </div>
+      </div>
+      <div class="filtros">
+        <div class="fseg" id="crm-cat-filtros" style="flex-wrap:wrap;height:auto;padding:3px">
+          <button class="fbtn on" data-cat="all" onclick="crmSetCat('all')">Todos</button>
+          <button class="fbtn" data-cat="lavador" onclick="crmSetCat('lavador')">Lavadores</button>
+          <button class="fbtn" data-cat="coordinador" onclick="crmSetCat('coordinador')">Coordinadores</button>
+          <button class="fbtn" data-cat="operador" onclick="crmSetCat('operador')">Operadores</button>
+          <button class="fbtn" data-cat="mantenimiento" onclick="crmSetCat('mantenimiento')">Mantenimiento</button>
+          <button class="fbtn" data-cat="cliente_carwash" onclick="crmSetCat('cliente_carwash')">Clientes Carwash</button>
+          <button class="fbtn" data-cat="cliente_detallado" onclick="crmSetCat('cliente_detallado')">Clientes Detallado</button>
+          <button class="fbtn" data-cat="cliente_autolavado" onclick="crmSetCat('cliente_autolavado')">Clientes Autolavado</button>
+        </div>
+        <span id="crm-conteo"></span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <input id="crm-buscar" type="search" placeholder="🔍 Buscar nombre o teléfono..." oninput="crmBuscar(this.value)" class="busq-inp">
+        </div>
+      </div>
+    </div>
+    <div id="crm-layout" style="display:flex;gap:14px;align-items:flex-start">
+      <div id="crm-lista" style="flex:0 0 320px;max-width:320px;display:flex;flex-direction:column;gap:6px;max-height:70vh;overflow-y:auto"></div>
+      <div id="crm-detalle" class="card" style="flex:1;min-width:0;padding:18px">
+        <p class="nd">Selecciona un contacto de la lista o crea uno nuevo.</p>
+      </div>
+    </div>
   </div>
 </div>
 <div class="pnl" id="pnl-finanzas">
@@ -2352,6 +2391,74 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   </div>
 </div>
 
+<!-- Modal: nuevo/editar contacto CRM -->
+<div class="modal-overlay" id="crm-modal" onclick="if(event.target===this)crmCerrarModal()">
+  <div class="modal-box" style="width:420px">
+    <div class="modal-title" id="crm-modal-title">Nuevo contacto</div>
+    <input type="hidden" id="crm-edit-tel-original" value="">
+    <div style="display:grid;gap:12px;margin-top:4px">
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Nombre</label>
+        <input type="text" id="crm-f-nombre" placeholder="Nombre del contacto" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-transform:uppercase">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Teléfono (WhatsApp, con código de país)</label>
+        <input type="text" id="crm-f-tel" placeholder="Ej: 5216441234567" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Categoría</label>
+        <select id="crm-f-cat" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+          <option value="lavador">Lavador</option>
+          <option value="coordinador">Coordinador</option>
+          <option value="operador">Operador</option>
+          <option value="mantenimiento">Mantenimiento</option>
+          <option value="cliente_carwash">Cliente Carwash</option>
+          <option value="cliente_detallado">Cliente Detallado</option>
+          <option value="cliente_autolavado">Cliente Autolavado</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Sucursal (opcional)</label>
+        <select id="crm-f-suc" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+          <option value="">—</option>
+          <option value="PC Refugio">PC Refugio</option>
+          <option value="PC Álamos">PC Álamos</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Notas</label>
+        <textarea id="crm-f-notas" placeholder="Observaciones..." rows="3" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="crmCerrarModal()">Cancelar</button>
+      <button class="btn btn-dark" onclick="crmGuardarContacto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: configuración conexión WhatsApp -->
+<div class="modal-overlay" id="crm-config-modal" onclick="if(event.target===this)crmCerrarConfig()">
+  <div class="modal-box" style="width:460px">
+    <div class="modal-title">⚙ Conexión con WhatsApp</div>
+    <p style="font-size:12px;color:#777;margin-top:2px">Pega aquí la URL de tu Cloud Function una vez desplegada (ver guía de configuración). Se guarda solo en este navegador.</p>
+    <div style="display:grid;gap:12px;margin-top:10px">
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">URL de la Cloud Function (sendMessage)</label>
+        <input type="text" id="crm-cfg-url" placeholder="https://us-central1-montseflow.cloudfunctions.net/sendWhatsAppMessage" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:12px">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Clave compartida (secret)</label>
+        <input type="text" id="crm-cfg-secret" placeholder="La misma que configuraste en la Cloud Function" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:12px">
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="crmCerrarConfig()">Cancelar</button>
+      <button class="btn btn-dark" onclick="crmGuardarConfig()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: coincidencia inventario ↔ gasto -->
 <div class="modal-overlay" id="inv-match-modal">
   <div class="modal-box" style="width:400px;">
@@ -2765,6 +2872,7 @@ function goTab(id){
   if(id==="ahorros")renderAhorros();
   if(id==="coords"){renderCoords();renderLiquidaciones();syncSemana(document.getElementById("sem").value);goSubTab("pagos");}
   if(id==="flujo"){initFlujo();syncSemana(document.getElementById("sem").value);}
+  if(id==="crm"){crmInit();}
 }
 // ── SYNC SEMANA — actualiza todos los labels al cambiar la semana ────────────
 function syncSemana(v){
@@ -6155,6 +6263,252 @@ function renderHistPagos(){
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ── CRM: contactos + WhatsApp ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+const CRM_CATS = {
+  lavador:            {label:"Lavador",             color:"#C8960C"},
+  coordinador:        {label:"Coordinador",          color:"#1c3a61"},
+  operador:           {label:"Operador",             color:"#6b46c1"},
+  mantenimiento:      {label:"Mantenimiento",        color:"#b7791f"},
+  cliente_carwash:    {label:"Cliente Carwash",      color:"#185FA5"},
+  cliente_detallado:  {label:"Cliente Detallado",    color:"#38a169"},
+  cliente_autolavado: {label:"Cliente Autolavado",   color:"#C53030"},
+};
+let crmContactos = [];      // [{tel,nombre,categoria,sucursal,notas,ultimoMsg,ultimoMsgTs,ultimaDireccion,createdAt}]
+let crmMensajesCache = {};  // { tel: [{dir,texto,ts,tipo}] }
+let crmCatActiva = "all";
+let crmBusqueda = "";
+let crmContactoActivo = null;
+let _crmFbDb = null, _crmFbReady = false, _crmUnsubContactos = null, _crmUnsubMsgs = null;
+
+function crmSoloDigitos(s){ return String(s||"").replace(/\D/g,""); }
+
+async function crmInitFirebase(){
+  if(_crmFbReady) return;
+  try{
+    await _sobLoadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
+    await _sobLoadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js');
+    const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(_SOB_FB_CFG);
+    _crmFbDb = firebase.firestore();
+    _crmFbReady = true;
+  }catch(e){ console.warn("CRM Firebase init error:", e); }
+}
+
+async function crmInit(){
+  await crmInitFirebase();
+  if(!_crmFbDb) return;
+  // Config guardada (URL + secret de la Cloud Function)
+  const cfgUrl = localStorage.getItem("crm_cfg_url") || "";
+  crmActualizarBadgeConexion(!!cfgUrl);
+  if(_crmUnsubContactos) _crmUnsubContactos();
+  _crmUnsubContactos = _crmFbDb.collection("crm_contactos").onSnapshot(snap=>{
+    crmContactos = snap.docs.map(d=>({tel:d.id, ...d.data()}));
+    renderCRM();
+    if(crmContactoActivo){
+      const sigue = crmContactos.find(c=>c.tel===crmContactoActivo);
+      if(sigue) crmRenderDetalle(crmContactoActivo);
+    }
+  }, err=>console.warn("CRM contactos onSnapshot error:", err));
+}
+
+function crmActualizarBadgeConexion(conectado){
+  const b = document.getElementById("crm-conn-badge");
+  if(!b) return;
+  if(conectado){
+    b.textContent = "● WhatsApp conectado";
+    b.style.background = "#eafaf1"; b.style.color = "#1B5E20";
+  } else {
+    b.textContent = "● WhatsApp no configurado";
+    b.style.background = "#fdecea"; b.style.color = "#A32D2D";
+  }
+}
+
+function crmSetCat(cat){
+  crmCatActiva = cat;
+  document.querySelectorAll("#crm-cat-filtros .fbtn").forEach(b=>b.classList.toggle("on", b.dataset.cat===cat));
+  renderCRM();
+}
+function crmBuscar(v){ crmBusqueda = (v||"").trim().toLowerCase(); renderCRM(); }
+
+function renderCRM(){
+  const lista = document.getElementById("crm-lista");
+  if(!lista) return;
+  let arr = crmContactos.slice();
+  if(crmCatActiva!=="all") arr = arr.filter(c=>c.categoria===crmCatActiva);
+  if(crmBusqueda) arr = arr.filter(c=>
+    (c.nombre||"").toLowerCase().includes(crmBusqueda) || crmSoloDigitos(c.tel).includes(crmSoloDigitos(crmBusqueda))
+  );
+  arr.sort((a,b)=>(b.ultimoMsgTs||0)-(a.ultimoMsgTs||0));
+  const conteo = document.getElementById("crm-conteo");
+  if(conteo) conteo.textContent = arr.length + (arr.length===1?" contacto":" contactos");
+  if(!arr.length){ lista.innerHTML = '<p class="nd" style="padding:12px">Sin contactos aún.</p>'; return; }
+  lista.innerHTML = arr.map(c=>{
+    const catInfo = CRM_CATS[c.categoria] || {label:c.categoria||"Sin categoría", color:"#999"};
+    const activo = c.tel===crmContactoActivo;
+    const snippet = c.ultimoMsg ? esc(c.ultimoMsg).slice(0,44) : "Sin mensajes";
+    return `<div onclick="crmAbrirContacto('${c.tel}')" style="cursor:pointer;padding:10px 12px;border-radius:12px;border:1.5px solid ${activo?'var(--gold)':'#e8e0cc'};background:${activo?'var(--gold-pale)':'#fff'}">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+        <span style="font-weight:800;font-size:13px;text-transform:uppercase">${esc(c.nombre||"Sin nombre")}</span>
+        <span style="font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:10px;color:#fff;background:${catInfo.color};white-space:nowrap">${catInfo.label}</span>
+      </div>
+      <div style="font-size:10px;color:#999;margin-top:2px">${esc(c.tel)}${c.sucursal?" · "+esc(c.sucursal):""}</div>
+      <div style="font-size:11px;color:#777;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.ultimaDireccion==="out"?"Tú: ":""}${snippet}</div>
+    </div>`;
+  }).join("");
+}
+
+async function crmAbrirContacto(tel){
+  crmContactoActivo = tel;
+  renderCRM();
+  await crmRenderDetalle(tel);
+  crmSuscribirMensajes(tel);
+}
+
+function crmSuscribirMensajes(tel){
+  if(_crmUnsubMsgs) _crmUnsubMsgs();
+  if(!_crmFbDb) return;
+  _crmUnsubMsgs = _crmFbDb.collection("crm_mensajes").doc(tel).collection("msgs").orderBy("ts","asc").limitToLast(200)
+    .onSnapshot(snap=>{
+      crmMensajesCache[tel] = snap.docs.map(d=>d.data());
+      if(crmContactoActivo===tel) crmPintarHilo(tel);
+    }, err=>console.warn("CRM mensajes onSnapshot error:", err));
+}
+
+async function crmRenderDetalle(tel){
+  const c = crmContactos.find(x=>x.tel===tel);
+  const det = document.getElementById("crm-detalle");
+  if(!det || !c) return;
+  const catInfo = CRM_CATS[c.categoria] || {label:c.categoria||"—", color:"#999"};
+  const cfgUrl = localStorage.getItem("crm_cfg_url") || "";
+  det.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px">
+      <div>
+        <div style="font-size:16px;font-weight:900;text-transform:uppercase">${esc(c.nombre||"Sin nombre")}</div>
+        <div style="font-size:11px;color:#999;margin-top:2px">📱 ${esc(c.tel)}${c.sucursal?" · "+esc(c.sucursal):""}</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:9px;font-weight:800;padding:3px 9px;border-radius:10px;color:#fff;background:${catInfo.color}">${catInfo.label}</span>
+        <button class="ph-btn ph-dark" style="padding:4px 10px;font-size:11px" onclick="crmEditarContacto('${c.tel}')">✎ Editar</button>
+      </div>
+    </div>
+    ${c.notas?`<div style="font-size:12px;background:var(--gold-pale);border:1px solid var(--border-gold);border-radius:10px;padding:8px 10px;margin-bottom:12px;color:#7a5c00">📝 ${esc(c.notas)}</div>`:""}
+    <div id="crm-hilo" style="border:1px solid #e8e0cc;border-radius:12px;padding:10px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:10px;background:#fafaf8"></div>
+    <div style="display:flex;gap:8px">
+      <input id="crm-msg-input" type="text" placeholder="${cfgUrl?'Escribe un mensaje...':'Configura WhatsApp para poder responder'}" ${cfgUrl?'':'disabled'} style="flex:1;padding:9px 12px;border:1px solid #e0ddd4;border-radius:20px;font-size:13px" onkeydown="if(event.key==='Enter')crmEnviarMensaje('${c.tel}')">
+      <button class="ph-btn ph-gold" ${cfgUrl?'':'disabled style="opacity:.4"'} onclick="crmEnviarMensaje('${c.tel}')">Enviar</button>
+    </div>`;
+  crmPintarHilo(tel);
+}
+
+function crmPintarHilo(tel){
+  const hilo = document.getElementById("crm-hilo");
+  if(!hilo) return;
+  const msgs = crmMensajesCache[tel] || [];
+  if(!msgs.length){ hilo.innerHTML = '<p class="nd">Sin mensajes todavía.</p>'; return; }
+  hilo.innerHTML = msgs.map(m=>{
+    const out = m.dir==="out";
+    const hora = m.ts ? new Date(m.ts).toLocaleString("es-MX",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}) : "";
+    return `<div style="align-self:${out?'flex-end':'flex-start'};max-width:75%;background:${out?'var(--gold)':'#fff'};color:${out?'#fff':'#111'};border:${out?'none':'1px solid #e8e0cc'};border-radius:14px;padding:7px 11px;font-size:12.5px">
+      <div>${esc(m.texto||"")}</div>
+      <div style="font-size:9px;opacity:.7;margin-top:3px;text-align:right">${hora}</div>
+    </div>`;
+  }).join("");
+  hilo.scrollTop = hilo.scrollHeight;
+}
+
+async function crmEnviarMensaje(tel){
+  const input = document.getElementById("crm-msg-input");
+  const texto = (input.value||"").trim();
+  if(!texto) return;
+  const cfgUrl = localStorage.getItem("crm_cfg_url") || "";
+  const cfgSecret = localStorage.getItem("crm_cfg_secret") || "";
+  if(!cfgUrl){ flash("⚠️ Configura primero la conexión con WhatsApp"); return; }
+  input.value = "";
+  try{
+    const res = await fetch(cfgUrl, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ secret: cfgSecret, telefono: tel, texto })
+    });
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    flash("✅ Mensaje enviado");
+  }catch(e){
+    console.warn("CRM sendMessage error:", e);
+    flash("❌ No se pudo enviar (revisa la configuración)");
+  }
+}
+
+function crmNuevoContacto(){
+  document.getElementById("crm-modal-title").textContent = "Nuevo contacto";
+  document.getElementById("crm-edit-tel-original").value = "";
+  document.getElementById("crm-f-nombre").value = "";
+  document.getElementById("crm-f-tel").value = "";
+  document.getElementById("crm-f-cat").value = "lavador";
+  document.getElementById("crm-f-suc").value = "";
+  document.getElementById("crm-f-notas").value = "";
+  document.getElementById("crm-modal").classList.add("open");
+}
+function crmEditarContacto(tel){
+  const c = crmContactos.find(x=>x.tel===tel);
+  if(!c) return;
+  document.getElementById("crm-modal-title").textContent = "Editar contacto";
+  document.getElementById("crm-edit-tel-original").value = tel;
+  document.getElementById("crm-f-nombre").value = c.nombre||"";
+  document.getElementById("crm-f-tel").value = c.tel||"";
+  document.getElementById("crm-f-cat").value = c.categoria||"lavador";
+  document.getElementById("crm-f-suc").value = c.sucursal||"";
+  document.getElementById("crm-f-notas").value = c.notas||"";
+  document.getElementById("crm-modal").classList.add("open");
+}
+function crmCerrarModal(){ document.getElementById("crm-modal").classList.remove("open"); }
+
+async function crmGuardarContacto(){
+  const telOriginal = document.getElementById("crm-edit-tel-original").value;
+  const tel = crmSoloDigitos(document.getElementById("crm-f-tel").value);
+  const nombre = document.getElementById("crm-f-nombre").value.trim().toUpperCase();
+  const categoria = document.getElementById("crm-f-cat").value;
+  const sucursal = document.getElementById("crm-f-suc").value;
+  const notas = document.getElementById("crm-f-notas").value.trim();
+  if(!tel || !nombre){ flash("⚠️ Nombre y teléfono son obligatorios"); return; }
+  if(!_crmFbDb){ flash("⚠️ Firebase no está listo, intenta de nuevo"); return; }
+  try{
+    if(telOriginal && telOriginal!==tel){
+      await _crmFbDb.collection("crm_contactos").doc(telOriginal).delete();
+    }
+    await _crmFbDb.collection("crm_contactos").doc(tel).set({
+      nombre, categoria, sucursal, notas,
+      ultimoMsg: crmContactos.find(c=>c.tel===(telOriginal||tel))?.ultimoMsg || "",
+      ultimoMsgTs: crmContactos.find(c=>c.tel===(telOriginal||tel))?.ultimoMsgTs || Date.now(),
+      ultimaDireccion: crmContactos.find(c=>c.tel===(telOriginal||tel))?.ultimaDireccion || "",
+      createdAt: crmContactos.find(c=>c.tel===(telOriginal||tel))?.createdAt || new Date().toISOString(),
+    }, {merge:true});
+    crmCerrarModal();
+    flash("✅ Contacto guardado");
+    crmContactoActivo = tel;
+  }catch(e){
+    console.warn("CRM guardar error:", e);
+    flash("❌ Error al guardar el contacto");
+  }
+}
+
+function crmAbrirConfig(){
+  document.getElementById("crm-cfg-url").value = localStorage.getItem("crm_cfg_url")||"";
+  document.getElementById("crm-cfg-secret").value = localStorage.getItem("crm_cfg_secret")||"";
+  document.getElementById("crm-config-modal").classList.add("open");
+}
+function crmCerrarConfig(){ document.getElementById("crm-config-modal").classList.remove("open"); }
+function crmGuardarConfig(){
+  const url = document.getElementById("crm-cfg-url").value.trim();
+  const secret = document.getElementById("crm-cfg-secret").value.trim();
+  localStorage.setItem("crm_cfg_url", url);
+  localStorage.setItem("crm_cfg_secret", secret);
+  crmActualizarBadgeConexion(!!url);
+  crmCerrarConfig();
+  flash("✅ Configuración guardada");
+  if(crmContactoActivo) crmRenderDetalle(crmContactoActivo);
+}
+
 init().then(()=>{
   initFlujo();
   initPerf();
@@ -8579,6 +8933,7 @@ function dash_init() {
     hist:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
     mas:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>`,
       finanzas:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h4M7 12h10"/></svg>`,
+      crm:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`,
   };
   const MAIN_TABS=[
     {t:"datos",    icon:"datos",    label:"Nómina"},
@@ -8591,7 +8946,8 @@ function dash_init() {
     {t:"coords",     icon:"coords",     label:"Coords"},
     {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
     {t:"sucursales", icon:"sucursales", label:"Analytics"},
-    {t:"hist",       icon:"hist",       label:"Historial"}];
+    {t:"hist",       icon:"hist",       label:"Historial"},
+    {t:"crm",        icon:"crm",        label:"CRM"}];
   // 1. Build overlay + sheet FIRST (so closeMas/toggleMas can close them)
   const overlay=document.createElement("div");
   overlay.className="mas-overlay";
