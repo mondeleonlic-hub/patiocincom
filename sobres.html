@@ -251,6 +251,7 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .ph-gold{background:var(--gold); color:#fff;}
 .ph-dark{background:#111; color:#fff;}
 .ph-navy{background:var(--navy); color:#fff;}
+.ph-danger-outline{background:#fff;color:#C62828;border:1.5px solid #C62828;}
 .ph-outline{
   background:transparent; color:var(--gold);
   border:2px solid var(--gold); border-radius:20px;
@@ -428,8 +429,8 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 #resumen{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:24px;}
 .rcard{
   background:#fff;
-  border:0.5px solid #e0ddd4;
-  border-radius:12px;
+  border:0.5px solid #e5e2d8;
+  border-radius:16px;
   padding:18px 20px;
   flex:1;
   min-width:130px;
@@ -447,6 +448,16 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .filtros label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px;}
 #conteo{font-size:11px;color:var(--muted);margin-left:auto;font-weight:500;}
 
+/* Segmented control (estilo iOS) para filtros de sucursal */
+.fseg{display:flex;align-items:center;gap:2px;background:#F1EFE9;border-radius:11px;padding:3px;}
+.fseg .fbtn{border:none;background:transparent;border-radius:8px;color:#888;box-shadow:none;}
+.fseg .fbtn.on{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+.fseg .fbtn.ref.on{color:#C8960C;}
+.fseg .fbtn.ala.on{color:#185FA5;}
+.busq-inp{border:1.5px solid transparent;background:#F1EFE9;border-radius:20px;padding:6px 14px;font-size:12px;font-family:inherit;outline:none;width:180px;transition:background .15s,border-color .15s,box-shadow .15s;}
+.busq-inp:focus{background:#fff;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,150,12,.14);}
+.fbtn-csv{white-space:nowrap;}
+
 /* Table cells */
 .hidden{display:none;}
 .tc{text-align:right;font-weight:500;font-size:13px;white-space:nowrap;}
@@ -459,8 +470,8 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .xb:hover{color:#c0392b;background:#fdecea;}
 
 /* Sucursal pills */
-.pill-ref{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:#e6f1fb;color:#185FA5;cursor:pointer;transition:opacity .15s;}
-.pill-ala{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:var(--gold-pale);color:var(--gold);cursor:pointer;transition:opacity .15s;}
+.pill-ref{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:var(--gold-pale);color:var(--gold);cursor:pointer;transition:opacity .15s;}
+.pill-ala{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:#e6f1fb;color:#185FA5;cursor:pointer;transition:opacity .15s;}
 .pill-sin{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;background:#f0f0f0;color:#aaa;cursor:pointer;transition:opacity .15s;}
 .pill-ref:hover,.pill-ala:hover,.pill-sin:hover{opacity:.75;}
 
@@ -471,6 +482,19 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .deuda-row{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:11px;color:#555;margin-bottom:2px;}
 .deuda-resta{font-size:10px;color:#888;margin-top:3px;font-weight:500;}
 .deuda-sin{font-size:13px;color:#ddd;}
+
+/* ── DATOS (Nómina) — tabla pulida ─────────────────────────────── */
+@media(min-width:769px){
+  #pnl-datos .tw table td:first-child,
+  #pnl-datos .tw table th:first-child{
+    position:sticky;left:0;z-index:3;background:inherit;
+    box-shadow:2px 0 4px rgba(0,0,0,.05);
+  }
+}
+#pnl-datos .tw table tfoot tr{background:#111;}
+#pnl-datos .tw table tfoot td{border-top:none;color:#eee!important;padding:12px 12px;}
+#pnl-datos .tw table tfoot td:first-child{color:#fff!important;letter-spacing:.5px;}
+#pnl-datos .tw table tfoot #tg{color:var(--gold)!important;font-size:16px;}
 
 /* Table refresh */
 table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);}
@@ -1187,25 +1211,25 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       <div class="bg">
         <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
 
-        <button class="ph-btn ph-dark" onclick="cerrarSemana()">Cerrar semana</button>
-        <button class="ph-btn" onclick="limpiarDatosSem()" style="background:#fff;color:#C62828;border:1.5px solid #C62828;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;padding:7px 16px;">Limpiar datos</button>
-        <button class="ph-btn ph-navy" onclick="addRow()">+ Lavador</button>
+        <button class="ph-btn ph-dark" onclick="cerrarSemana()">🔒 Cerrar semana</button>
+        <button class="ph-btn ph-danger-outline" onclick="limpiarDatosSem()">🗑 Limpiar datos</button>
+        <button class="ph-btn ph-navy" onclick="addRow()">＋ Lavador</button>
       </div>
     </div>
     <input type="file" id="fi" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="onFile(this)">
     <input type="file" id="fi-import" accept=".json" style="display:none" onchange="importarDatos(this)">
     <div id="st"></div>
     <div class="filtros">
-      <label>Filtrar:</label>
-      <button class="fbtn on" data-f="all" onclick="setF('all')">Todos</button>
-      <button class="fbtn ref" data-f="PC Refugio" onclick="setF('PC Refugio')">PC Refugio</button>
-      <button class="fbtn ala" data-f="PC Álamos" onclick="setF('PC Álamos')">PC Álamos</button>
-      <button class="fbtn" data-f="sin" onclick="setF('sin')">Sin asignar</button>
+      <div class="fseg">
+        <button class="fbtn on" data-f="all" onclick="setF('all')">Todos</button>
+        <button class="fbtn ref" data-f="PC Refugio" onclick="setF('PC Refugio')">Refugio</button>
+        <button class="fbtn ala" data-f="PC Álamos" onclick="setF('PC Álamos')">Álamos</button>
+        <button class="fbtn" data-f="sin" onclick="setF('sin')">Sin asignar</button>
+      </div>
       <span id="conteo"></span>
       <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-        <input id="busq-inp" type="search" placeholder="🔍 Buscar lavador..." oninput="busquedaGlobal(this.value)"
-          style="border:1.5px solid #e0ddd4;border-radius:20px;padding:5px 14px;font-size:12px;font-family:inherit;outline:none;width:180px">
-        <button class="fbtn" onclick="exportarCSV()" title="Exportar a Excel/CSV" style="white-space:nowrap">⬇ CSV</button>
+        <input id="busq-inp" type="search" placeholder="🔍 Buscar lavador..." oninput="busquedaGlobal(this.value)" class="busq-inp">
+        <button class="fbtn fbtn-csv" onclick="exportarCSV()" title="Exportar a Excel/CSV">⬇ CSV</button>
       </div>
     </div>
     <div id="busq-modal" style="display:none;margin-bottom:12px"></div>
