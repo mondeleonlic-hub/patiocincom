@@ -2700,6 +2700,8 @@ async function init(){
     _sobSaveToFirebase();
   }
 
+  migrarHistorialDuplicados();
+
   Object.entries(PERFILES_DEFAULT).forEach(([n,v])=>{if(!perfiles[n])perfiles[n]=v;});
 
   const savedSem = _cache["pc4_semana"] || "";
@@ -4607,6 +4609,30 @@ function cerrarSemana(){
   document.getElementById("sem").value = nextSem;
   syncSemana(nextSem);
   renderT();renderD();renderFlujoHist();flash("✓ Semana "+sem+" cerrada — flujo guardado — ahora en semana "+nextSem);
+}
+
+// ── HISTORIAL: corrige entradas con el mismo número de semana pero fecha distinta ──
+// (ej. dos semanas guardadas como "28/2026" por un bug al cerrar semana — la de
+// fecha más reciente en realidad es la semana siguiente y se re-etiqueta sola)
+function migrarHistorialDuplicados(){
+  if(!historial || !historial.length) return;
+  const grupos={};
+  historial.forEach((h,i)=>{ const k=String(h.semana); (grupos[k]=grupos[k]||[]).push(i); });
+  const parseFecha=f=>{ const m=String(f||"").match(/(\d+)\/(\d+)\/(\d+)/); return m? new Date(+m[3], +m[2]-1, +m[1]).getTime() : 0; };
+  let changed=false;
+  Object.entries(grupos).forEach(([sem,idxs])=>{
+    if(idxs.length<2) return;
+    const parts=sem.split("/");
+    const n=parseInt(parts[0]); if(isNaN(n)) return;
+    const yr=parts[1]||"2026";
+    const sorted=[...idxs].sort((a,b)=>parseFecha(historial[a].fecha)-parseFecha(historial[b].fecha));
+    sorted.forEach((idx,j)=>{
+      if(j===0) return; // el de fecha más antigua conserva el número original
+      const nuevaSem=(n+j)+"/"+yr;
+      if(historial[idx].semana!==nuevaSem){ historial[idx].semana=nuevaSem; changed=true; }
+    });
+  });
+  if(changed) sv("pc4_hist",historial);
 }
 
 // ── HISTORIAL ─────────────────────────────────────────────────────────────────
