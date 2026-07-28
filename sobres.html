@@ -3584,47 +3584,6 @@ function renderResumen(){
     ${nD>0?`<div class="rcard" style="border-left:3px solid #e53e3e"><div class="rl">Con deuda</div><div class="rv" style="color:#c0392b">${nD}</div><div class="rsub">lavadores</div></div>`:""}
     ${sorted.length>=3?`<div class="rcard" style="min-width:220px;flex:2"><div class="rl" style="margin-bottom:8px">🏆 Top 3 esta semana</div>${rankHTML}</div>`:""}`;
 
-  // ── Botón WhatsApp ──
-  _renderWABtn(vis,tP,sorted);
-}
-
-function _renderWABtn(vis,tP,sorted){
-  let btn=document.getElementById("wa-btn");
-  if(!btn){
-    btn=document.createElement("button");
-    btn.id="wa-btn";
-    btn.className="ph-btn";
-    btn.style.cssText="background:#25D366;color:#fff;gap:6px;margin-top:8px;width:100%";
-    btn.innerHTML="📲 Compartir resumen por WhatsApp";
-    btn.onclick=compartirWhatsApp;
-    const res=document.getElementById("resumen");
-    res.after(btn);
-  }
-}
-
-function compartirWhatsApp(){
-  const sem=document.getElementById("sem").value||"—";
-  const vis=rows.filter(r=>rowVisible(r));
-  const tP=vis.reduce((s,r)=>s+calcT(r,r.nombre),0);
-  const tAutos=vis.reduce((s,r)=>s+num(r.autos),0);
-  const nR=vis.filter(r=>r.sucursal==="PC Refugio").length;
-  const nA=vis.filter(r=>r.sucursal==="PC Álamos").length;
-  const top3=[...vis].sort((a,b)=>num(b.autos)-num(a.autos)).slice(0,3);
-  const medals=["🥇","🥈","🥉"];
-  const fmtWA=n=>"$"+Math.round(n).toLocaleString("es-MX");
-  const txt=
-`📊 *Semana ${sem} — Patio Cinco*
-━━━━━━━━━━━━━━━━
-💰 Total nómina: *${fmtWA(tP)}*
-🚗 Total autos: *${tAutos}*
-👥 PC Refugio: ${nR} lavadores
-👥 PC Álamos: ${nA} lavadores
-
-🏆 *Top 3 de la semana:*
-${top3.map((r,i)=>`${medals[i]} ${r.nombre} — ${num(r.autos)} autos — ${fmtWA(calcT(r,r.nombre))}`).join("\n")}
-━━━━━━━━━━━━━━━━`;
-  const url="https://wa.me/?text="+encodeURIComponent(txt);
-  window.open(url,"_blank");
 }
 
 // ── SUCURSALES ────────────────────────────────────────────────────────────────
