@@ -91,10 +91,10 @@ tfoot td{padding:10px 12px;font-weight:700;border-top:2px solid var(--border-gol
 
 /* ── INPUTS INLINE ── */
 input[type=text],input[type=number],select,textarea{
-  border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-size:12px;font-family:inherit;
-  background:#fff;color:var(--text);outline:none;transition:border .15s;
+  border:1.5px solid transparent;border-radius:10px;padding:6px 10px;font-size:12px;font-family:inherit;
+  background:#F1EFE9;color:var(--text);outline:none;transition:background .15s,border-color .15s,box-shadow .15s;
 }
-input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:var(--gold);}
+input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{background:#fff;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,150,12,.14);}
 input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 
 /* ── HISTORIAL SELECT ── */
@@ -273,7 +273,7 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .hf{color:#888;font-weight:400;font-size:11px;}
 .nd{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;}
 .it{font-size:11px;color:var(--muted);margin:0 0 14px;}
-.tw{border-radius:12px;border:0.5px solid #e0ddd4;margin-bottom:16px;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;}
+.tw{border-radius:16px;border:0.5px solid #e5e2d8;margin-bottom:16px;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.035);}
 
 /* ── BUTTON EXTRAS ── */
 .bo{background:#fff;color:#333;border:1.5px solid var(--border);}
@@ -384,27 +384,34 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
   #print-area .s-bruto{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
-/* ── FLUJO TABLE CELLS ────────────────────────────────────────── */
-.fd-td{padding:8px 10px;vertical-align:top}
-.fd-td-sm{padding:8px;vertical-align:top}
-.fd-td-ctr{padding:8px;text-align:center;vertical-align:top}
-.fd-td-gasto{padding:2px 10px 8px;font-size:10px;color:#888;font-style:italic;vertical-align:top}
-.fd-td-gasto-inp{padding:2px 8px 8px;vertical-align:top}
-.fd-inp-txt{width:100%;border:none;background:transparent;font-size:12px;font-weight:600;font-family:inherit;outline:none}
-.fd-inp-coord{width:100%;border:none;background:transparent;font-size:12px;font-family:inherit;outline:none}
-.fd-inp-num-ref{width:88px;border:none;border-bottom:1px solid #e0e0e0;background:transparent;font-size:12px;font-weight:700;color:#1c3a61;text-align:right;font-family:inherit;outline:none;padding:2px 0}
-.fd-inp-num-ala{width:88px;border:none;border-bottom:1px solid #e0e0e0;background:transparent;font-size:12px;font-weight:700;color:#38a169;text-align:right;font-family:inherit;outline:none;padding:2px 0}
-.fd-inp-nota{width:60px;border:none;border-bottom:1px dashed #e0e0e0;background:transparent;font-size:10px;color:#aaa;font-family:inherit;outline:none;padding:2px 0}
-.fd-inp-gasto{width:80px;border:none;border-bottom:1px dashed #ddd;background:transparent;font-size:11px;text-align:right;color:#e53e3e;font-family:inherit;outline:none}
-.fd-inp-concepto{width:100%;border:none;border-bottom:1px dashed #e0e0e0;background:transparent;font-size:10px;color:#888;font-family:inherit;outline:none}
-.fd-chk{width:20px;height:20px;accent-color:#000;cursor:pointer;margin-top:2px}
-@media(max-width:768px){.fd-chk{width:28px;height:28px;margin-top:0}}
-.fd-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;line-height:1;margin-top:4px}
-.fd-elim-corte{background:none;border:none;color:#ddd;cursor:pointer;font-size:12px;padding:0;line-height:1}
-.fd-add-corte{margin-top:3px;background:none;border:1px dashed #ccc;border-radius:4px;color:#aaa;font-size:10px;cursor:pointer;padding:1px 6px;width:100%}
-.fd-corte-sum-ref{font-size:10px;font-weight:700;color:#1c3a61;text-align:right;margin-top:2px;border-top:1px solid #eee;padding-top:2px}
-.fd-corte-sum-ala{font-size:10px;font-weight:700;color:#38a169;text-align:right;margin-top:2px;border-top:1px solid #eee;padding-top:2px}
-.fd-gasto-neg{font-size:10px;color:#e53e3e}
+/* ── FLUJO — TARJETAS POR DÍA (2 columnas: Refugio | Álamos) ──────── */
+.fd-card{background:#fff;border:0.5px solid #e5e2d8;border-radius:16px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.035);}
+.fd-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f0ede4;}
+.fd-inp-txt-card{border:none;background:transparent;font-size:15px;font-weight:700;font-family:inherit;outline:none;padding:2px 0;flex:1;}
+.fd-cols-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:640px){.fd-cols-grid{grid-template-columns:1fr;}}
+.fd-col{background:#faf9f6;border-radius:12px;padding:12px 14px;}
+.fd-col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.fd-col-label{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;}
+.fd-recibido{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#888;cursor:pointer;}
+.fd-cortes{margin-bottom:2px;}
+.fd-chk{width:16px;height:16px;accent-color:var(--gold);cursor:pointer;}
+@media(max-width:768px){.fd-chk{width:22px;height:22px;}}
+.fd-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;line-height:1;padding:4px;transition:color .15s,transform .1s;}
+.fd-del:hover{color:#e53e3e;}
+.fd-del:active{transform:scale(.85);}
+.fd-elim-corte{background:none;border:none;color:#ddd;cursor:pointer;font-size:13px;padding:0 2px;line-height:1;}
+.fd-add-corte{margin:2px 0 8px;background:none;border:1px dashed #ccc;border-radius:8px;color:#aaa;font-size:10px;font-weight:700;cursor:pointer;padding:4px 8px;width:100%;transition:all .15s;}
+.fd-add-corte:hover{border-color:var(--gold);color:var(--gold);}
+.fd-corte-sum{font-size:11px;font-weight:800;text-align:right;margin-bottom:8px;}
+.fd-col-divider{border-top:1px solid #eee;margin:8px 0;}
+.fd-inp-coord-card{width:100%;font-size:12px;font-weight:600;margin-bottom:8px;}
+.fd-gasto-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.fd-gasto-lbl{font-size:10px;font-weight:600;color:#999;white-space:nowrap;}
+.fd-inp-gasto-card{width:76px;text-align:right;color:#e53e3e;font-weight:700;}
+.fd-inp-concepto-card{width:100%;font-size:11px;color:#888;margin-bottom:10px;}
+.fd-col-total{font-size:12px;font-weight:600;text-align:right;padding-top:8px;border-top:1px solid #eee;}
+.fd-col-total b{font-size:15px;font-weight:800;}
 
 /* ── KPI CARDS — mismo formato exacto que Dashboard ────────────── */
 
@@ -1192,6 +1199,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       </div>
     </div>
     <div id="busq-modal" style="display:none;margin-bottom:12px"></div>
+    <div id="resumen-efec-nom"></div>
     <div class="resumen" id="resumen"></div>
     <div class="tw">
       <table>
@@ -1447,36 +1455,22 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       </div>
     </div>
 
-    <!-- TABLA DE FLUJO -->
-    <div class="tw">
-      <table id="flujo-tabla" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;">
-        <thead>
-          <tr style="background:#f0ede6;color:#555;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid #e0ddd4">
-            <th style="padding:10px 10px;text-align:left;min-width:120px">Día</th>
-            <th style="padding:10px 8px;text-align:right;min-width:90px">PC Refugio</th>
-            <th style="padding:10px 8px;text-align:center;width:60px">✓</th>
-            <th style="padding:10px 8px;text-align:left;min-width:90px">Staff Ref.</th>
-            <th style="padding:10px 8px;text-align:right;min-width:90px">PC Álamos</th>
-            <th style="padding:10px 8px;text-align:center;width:60px">✓</th>
-            <th style="padding:10px 8px;text-align:left;min-width:90px">Staff Ál.</th>
-            <th style="padding:10px 6px;width:32px"></th>
-          </tr>
-        </thead>
-        <tbody id="flujo-body"></tbody>
-        <tfoot>
-          <tr style="background:#f7f6f3;font-weight:900;font-size:13px;border-top:2px solid #e0ddd4">
-            <td style="padding:10px">Subtotal</td>
-            <td style="padding:10px;text-align:right;color:#1c3a61" id="fl-tot-ref">$0</td>
-            <td colspan="2"></td>
-            <td style="padding:10px;text-align:right;color:#1c3a61" id="fl-tot-ala">$0</td>
-            <td colspan="3"></td>
-          </tr>
-          <tr style="background:#f8ba00;font-weight:900;font-size:14px">
-            <td style="padding:10px">TOTAL SEMANA</td>
-            <td colspan="7" style="padding:10px;text-align:right;font-size:16px" id="fl-tot-total">$0</td>
-          </tr>
-        </tfoot>
-      </table>
+    <!-- TARJETAS DE FLUJO -->
+    <div id="flujo-body" style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px"></div>
+
+    <div class="card" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;margin-bottom:20px">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:2px">Subtotal Refugio</div>
+        <div style="font-size:18px;font-weight:700;color:#1c3a61" id="fl-tot-ref">$0</div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:2px">Subtotal Álamos</div>
+        <div style="font-size:18px;font-weight:700;color:#38a169" id="fl-tot-ala">$0</div>
+      </div>
+      <div style="margin-left:auto;background:var(--gold);color:#fff;border-radius:12px;padding:10px 20px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.85">Total semana</div>
+        <div style="font-size:22px;font-weight:800" id="fl-tot-total">$0</div>
+      </div>
     </div>
 
     <!-- GRÁFICA DE FLUJO DIARIO (#5) -->
@@ -3448,6 +3442,34 @@ function utg(){
   g("tg-bono").textContent  = fmt(vis.reduce((s,r)=>s+num(r.bono),0));
   g("tg-aho").textContent   = fmt(vis.reduce((s,r)=>s+num(r.ahorro),0));
   g("tg-ext").textContent   = fmt(vis.reduce((s,r)=>s+num(r.extra||0),0));
+  renderResumenEfectivoNomina();
+}
+
+// ── RESUMEN: Efectivo de la semana (Flujo) vs Total a pagar (Nómina) ────────
+function renderResumenEfectivoNomina(){
+  const box=document.getElementById("resumen-efec-nom");
+  if(!box)return;
+  const efectivo=(typeof flujoDias!=="undefined"?flujoDias:[]).reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0)+montoAla(d)-(d.ala.gasto||0),0);
+  const nomina=rows.filter(r=>rowVisible(r)).reduce((s,r)=>s+calcT(r,r.nombre),0);
+  const dif=efectivo-nomina;
+  const ok=dif>=0;
+  box.innerHTML=`
+    <div class="card" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;margin-bottom:16px">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:2px">Efectivo de la semana</div>
+        <div style="font-size:18px;font-weight:700;color:var(--gold)">${fmt(efectivo)}</div>
+        <div style="font-size:10px;color:#aaa">Según Flujo — cortes menos gastos al sobre</div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-bottom:2px">Total a pagar (nómina)</div>
+        <div style="font-size:18px;font-weight:700;color:#1c3a61">${fmt(nomina)}</div>
+        <div style="font-size:10px;color:#aaa">Según esta tabla</div>
+      </div>
+      <div style="margin-left:auto;background:${ok?"#eafaf1":"#fdecea"};color:${ok?"#1B5E20":"#A32D2D"};border-radius:12px;padding:10px 20px;text-align:right">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8">${ok?"Sobra":"Falta"}</div>
+        <div style="font-size:20px;font-weight:800">${fmt(Math.abs(dif))}</div>
+      </div>
+    </div>`;
 }
 function renderResumen(){
   const vis=rows.filter(r=>rowVisible(r));
@@ -5072,79 +5094,63 @@ function renderFlujoTabla(){
   flujoDias=flujoDias.map(migrarFlujoDia);
 
   body.innerHTML=flujoDias.map((d,i)=>{
-    const bg=i%2===0?"#fafafa":"#fff";
     const mRef=montoRef(d), mAla=montoAla(d);
+    const netoRef=mRef-(d.ref.gasto||0), netoAla=mAla-(d.ala.gasto||0);
 
-    // HTML de cortes para una sucursal
-    const cortesHtml=(suc)=>{
+    // Columna de una sucursal (cortes múltiples + suma + coordinador + gasto)
+    const colHtml=(suc,label,color)=>{
       const cortes=d[suc].cortes||[{val:"",nota:""}];
-      const numCls=suc==="ref"?"fd-inp-num-ref":"fd-inp-num-ala";
-      const sumCls=suc==="ref"?"fd-corte-sum-ref":"fd-corte-sum-ala";
-      return cortes.map((c,ci)=>`
-        <div style="display:flex;align-items:center;gap:4px;margin-bottom:${ci<cortes.length-1?4:0}px">
+      const monto=suc==="ref"?mRef:mAla;
+      const neto=suc==="ref"?netoRef:netoAla;
+      const cortesRows=cortes.map((c,ci)=>`
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px">
           <input type="number" value="${c.val||""}" placeholder="0.00"
             oninput="ufdCorte(${i},'${suc}',${ci},'val',+this.value)"
-            class="${numCls}">
+            style="width:84px;text-align:right;font-weight:700;color:${color}">
           <input type="text" value="${c.nota||""}" placeholder="corte ${ci+1}"
             oninput="ufdCorte(${i},'${suc}',${ci},'nota',this.value)"
-            class="fd-inp-nota">
+            style="flex:1;min-width:0;font-size:11px">
           ${cortes.length>1?`<button onclick="elimCorte(${i},'${suc}',${ci})" class="fd-elim-corte">✕</button>`:""}
-        </div>`).join("")+
-        `<button onclick="addCorte(${i},'${suc}')" title="Agregar corte" class="fd-add-corte">+ corte</button>
-        ${cortes.length>1?`<div class="${sumCls}">=&nbsp;${fmt(suc==="ref"?mRef:mAla)}</div>`:""}`;
+        </div>`).join("");
+      return `
+      <div class="fd-col">
+        <div class="fd-col-head">
+          <span class="fd-col-label" style="color:${color}">${label}</span>
+          <label class="fd-recibido" title="Efectivo recibido / conciliado">
+            <input type="checkbox" ${d[suc].recibido?"checked":""} onchange="ufd(${i},'${suc}.recibido',this.checked)" class="fd-chk">
+            <span>Recibido</span>
+          </label>
+        </div>
+        <div class="fd-cortes">${cortesRows}</div>
+        <button onclick="addCorte(${i},'${suc}')" title="Agregar corte" class="fd-add-corte">+ corte</button>
+        <div class="fd-corte-sum" id="fd-sum-${i}-${suc}" style="color:${color};display:${cortes.length>1?"block":"none"}">Suma cortes: ${fmt(monto)}</div>
+        <div class="fd-col-divider"></div>
+        <input type="text" value="${d[suc].staff||""}" placeholder="Coordinador"
+          oninput="ufd(${i},'${suc}.staff',this.value)" class="fd-inp-coord-card">
+        <div class="fd-gasto-row">
+          <span class="fd-gasto-lbl">Gasto al sobre</span>
+          <input type="number" value="${d[suc].gasto||""}" placeholder="0"
+            oninput="ufd(${i},'${suc}.gasto',+this.value);calcFlujoTotales()"
+            class="fd-inp-gasto-card">
+        </div>
+        <input type="text" value="${d[suc].gastoNota||""}" placeholder="Concepto del gasto"
+          oninput="ufd(${i},'${suc}.gastoNota',this.value)" class="fd-inp-concepto-card">
+        <div class="fd-col-total" style="color:${color}">Neto del día: <b id="fd-neto-${i}-${suc}">${fmt(neto)}</b></div>
+      </div>`;
     };
 
     return`
-    <tr style="border-top:2px solid #f0f0f0;background:${bg}">
-      <td class="fd-td">
+    <div class="fd-card">
+      <div class="fd-card-head">
         <input type="text" value="${d.dia||""}" placeholder="lunes, 5 de may"
-          oninput="ufd(${i},'dia',this.value)" class="fd-inp-txt">
-      </td>
-      <td class="fd-td-sm">${cortesHtml("ref")}</td>
-      <td class="fd-td-ctr">
-        <input type="checkbox" ${d.ref.recibido?"checked":""} onchange="ufd(${i},'ref.recibido',this.checked)" class="fd-chk">
-      </td>
-      <td class="fd-td-sm">
-        <input type="text" value="${d.ref.staff||""}" placeholder="COORD"
-          oninput="ufd(${i},'ref.staff',this.value)" class="fd-inp-coord">
-      </td>
-      <td class="fd-td-sm">${cortesHtml("ala")}</td>
-      <td class="fd-td-ctr">
-        <input type="checkbox" ${d.ala.recibido?"checked":""} onchange="ufd(${i},'ala.recibido',this.checked)" class="fd-chk">
-      </td>
-      <td class="fd-td-sm">
-        <input type="text" value="${d.ala.staff||""}" placeholder="COORD"
-          oninput="ufd(${i},'ala.staff',this.value)" class="fd-inp-coord">
-      </td>
-      <td style="padding:4px" class="fd-td-ctr">
-        <button onclick="elimDiaFlujo(${i})" class="fd-del">✕</button>
-      </td>
-    </tr>
-    <tr style="background:${bg}">
-      <td class="fd-td-gasto">Gasto al sobre</td>
-      <td class="fd-td-gasto-inp">
-        <input type="number" value="${d.ref.gasto||""}" placeholder="0"
-          oninput="ufd(${i},'ref.gasto',+this.value);calcFlujoTotales()"
-          class="fd-inp-gasto">
-        ${d.ref.gasto?`<div class="fd-gasto-neg">-${fmt(d.ref.gasto)}</div>`:""}
-      </td>
-      <td colspan="2" class="fd-td-gasto-inp">
-        <input type="text" value="${d.ref.gastoNota||""}" placeholder="concepto"
-          oninput="ufd(${i},'ref.gastoNota',this.value)"
-          class="fd-inp-concepto">
-      </td>
-      <td class="fd-td-gasto-inp">
-        <input type="number" value="${d.ala.gasto||""}" placeholder="0"
-          oninput="ufd(${i},'ala.gasto',+this.value);calcFlujoTotales()"
-          class="fd-inp-gasto">
-        ${d.ala.gasto?`<div class="fd-gasto-neg">-${fmt(d.ala.gasto)}</div>`:""}
-      </td>
-      <td colspan="3" class="fd-td-gasto-inp">
-        <input type="text" value="${d.ala.gastoNota||""}" placeholder="concepto"
-          oninput="ufd(${i},'ala.gastoNota',this.value)"
-          class="fd-inp-concepto">
-      </td>
-    </tr>`;
+          oninput="ufd(${i},'dia',this.value)" class="fd-inp-txt-card">
+        <button onclick="elimDiaFlujo(${i})" class="fd-del" title="Borrar día">✕</button>
+      </div>
+      <div class="fd-cols-grid">
+        ${colHtml("ref","PC Refugio","#185FA5")}
+        ${colHtml("ala","PC Álamos","#27500A")}
+      </div>
+    </div>`;
   }).join("");
   calcFlujoTotales();
 }
@@ -5197,10 +5203,23 @@ function calcFlujoTotales(){
   if(er)er.textContent=fmt(totRef);
   if(ea)ea.textContent=fmt(totAla);
   if(et)et.textContent=fmt(tot);
+  // Actualizar suma de cortes y neto del día en cada tarjeta (sin re-render completo — no pierde el foco)
+  flujoDias.forEach((d,i)=>{
+    ["ref","ala"].forEach(suc=>{
+      const monto=suc==="ref"?montoRef(d):montoAla(d);
+      const neto=monto-(d[suc].gasto||0);
+      const sumEl=document.getElementById(`fd-sum-${i}-${suc}`);
+      const netoEl=document.getElementById(`fd-neto-${i}-${suc}`);
+      if(sumEl){sumEl.textContent="Suma cortes: "+fmt(monto);sumEl.style.display=(d[suc].cortes||[]).length>1?"block":"none";}
+      if(netoEl)netoEl.textContent=fmt(neto);
+    });
+  });
   // Actualizar gráfica (#5)
   if(typeof renderFlujoChart==="function")renderFlujoChart();
   // Actualizar margen en resumen (#6)
   if(typeof renderResumen==="function"&&rows.length)renderResumen();
+  // Actualizar resumen Efectivo vs Nómina en pestaña Datos
+  if(typeof renderResumenEfectivoNomina==="function")renderResumenEfectivoNomina();
 }
 
 function guardarFlujo(){
