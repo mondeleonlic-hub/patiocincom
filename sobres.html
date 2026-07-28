@@ -2701,6 +2701,7 @@ async function init(){
   }
 
   migrarHistorialDuplicados();
+  agregarSemanasFaltantes();
 
   Object.entries(PERFILES_DEFAULT).forEach(([n,v])=>{if(!perfiles[n])perfiles[n]=v;});
 
@@ -4631,6 +4632,77 @@ function migrarHistorialDuplicados(){
       const nuevaSem=(n+j)+"/"+yr;
       if(historial[idx].semana!==nuevaSem){ historial[idx].semana=nuevaSem; changed=true; }
     });
+  });
+  if(changed) sv("pc4_hist",historial);
+}
+
+// ── HISTORIAL: recupera semanas 21/2026 y 27/2026 (reconstruidas de tickets) ──
+function agregarSemanasFaltantes(){
+  if(!historial) return;
+  const S21={
+    semana:"21/2026", fecha:"27/5/2026",
+    rows:[
+      {nombre:"Uli", sucursal:"PC Refugio", autos:41, comision:2278, food:474, merch:0, bono:0, total:1804},
+      {nombre:"Arellano", sucursal:"PC Refugio", autos:19, comision:1228, food:0, merch:225, bono:0, deudaCon:"Merch S21/2026 (Pago 1 de 2)", total:1003},
+      {nombre:"Arturoo", sucursal:"PC Refugio", autos:17, comision:1116, food:0, merch:225, bono:0, deudaCon:"Kit de Inicio S21/2026 (Pago 1 de 2)", total:891},
+      {nombre:"Cesar", sucursal:"PC Refugio", autos:74, comision:4235, food:0, merch:0, bono:0, total:4235},
+      {nombre:"Charlie", sucursal:"PC Refugio", autos:71, comision:5649, food:460, merch:225, bono:0, total:4964},
+      {nombre:"Cheque", sucursal:"PC Refugio", autos:50, comision:2624, food:147, merch:200, bono:0, total:2277},
+      {nombre:"Danielll", sucursal:"PC Refugio", autos:7, comision:514, food:0, merch:450, bono:0, total:64},
+      {nombre:"El güero", sucursal:"PC Refugio", autos:72, comision:4020, food:0, merch:0, bono:0, total:4020},
+      {nombre:"Emma", sucursal:"PC Refugio", autos:54, comision:5110, food:200, merch:80, bono:0, total:4830},
+      {nombre:"Gaell", sucursal:"PC Refugio", autos:11, comision:564, food:22, merch:0, bono:0, total:542},
+      {nombre:"Javier", sucursal:"PC Refugio", autos:14, comision:1300, food:799, merch:25, bono:0, total:476},
+      {nombre:"Mario", sucursal:"PC Refugio", autos:10, comision:525, food:0, merch:0, bono:0, deudaDesc:500, deudaCon:"Percance (Pago 3 de 8)", total:25},
+      {nombre:"Antonio", sucursal:"PC Refugio", autos:50, comision:3392, food:0, merch:0, bono:0, total:3392},
+      {nombre:"Canelo", sucursal:"PC Álamos", autos:27, comision:1772, food:0, merch:25, bono:0, total:1747},
+      {nombre:"Danilo", sucursal:"PC Álamos", autos:3, comision:184, food:0, merch:25, bono:0, total:159},
+      {nombre:"Jose Jr", sucursal:"PC Álamos", autos:63, comision:4186, food:0, merch:75, bono:0, total:4111},
+      {nombre:"Randy", sucursal:"PC Álamos", autos:39, comision:2230, food:0, merch:25, bono:0, total:2205},
+      {nombre:"Toño", sucursal:"PC Álamos", autos:70, comision:5528, food:0, merch:725, bono:0, deudaCon:"Merch $225 + Ahorro/Abono $500", total:4803},
+      {nombre:"Marvin", sucursal:"PC Álamos", autos:66, comision:5144, food:0, merch:550, bono:0, deudaCon:"Merch $50 + Ahorro/Abono $500", total:4594},
+      {nombre:"Juaquin", sucursal:"PC Álamos", autos:30, comision:1383, food:0, merch:0, bono:0, total:1383},
+      {nombre:"Juan Lopez", sucursal:"PC Álamos", autos:60, comision:3956, food:0, merch:0, bono:0, total:3956},
+      {nombre:"Juan Carlos", sucursal:"PC Álamos", autos:13, comision:620, food:0, merch:0, bono:0, total:620},
+      {nombre:"Valente", sucursal:"PC Álamos", autos:66, comision:4320, food:0, merch:0, bono:0, total:4320},
+    ]
+  };
+  const S27={
+    semana:"27/2026", fecha:"5/7/2026",
+    rows:[
+      {nombre:"Antonio", sucursal:"PC Refugio", autos:18, comision:1474, food:0, merch:25, bono:0, total:1449},
+      {nombre:"Cesar", sucursal:"PC Refugio", autos:23, comision:1620, food:0, merch:0, bono:0, total:1620},
+      {nombre:"Charlie", sucursal:"PC Refugio", autos:43, comision:2760, food:271.20, merch:0, bono:0, total:2488.80},
+      {nombre:"El güero", sucursal:"PC Refugio", autos:43, comision:2983, food:0, merch:0, bono:0, total:2983},
+      {nombre:"Emma", sucursal:"PC Refugio", autos:48, comision:3240, food:100, merch:140, bono:0, deudaCon:"Merch S27/2026 (P1/2)", total:3000},
+      {nombre:"Francisco", sucursal:"PC Refugio", autos:43, comision:3139, food:0, merch:0, bono:0, total:3139},
+      {nombre:"Jacobo", sucursal:"PC Refugio", autos:4, comision:268, food:0, merch:0, bono:0, total:268},
+      {nombre:"Juan Carlos", sucursal:"PC Refugio", autos:6, comision:376, food:0, merch:0, bono:0, total:376},
+      {nombre:"Juaquin", sucursal:"PC Refugio", autos:18, comision:1256, food:0, merch:277, bono:0, deudaCon:"Merch S27/2026 (P1/2)", total:979},
+      {nombre:"Lupis", sucursal:"PC Refugio", autos:22, comision:1802, food:0, merch:0, bono:0, total:1802},
+      {nombre:"Uli", sucursal:"PC Refugio", autos:13, comision:1032, food:435.40, merch:0, bono:0, total:596.60},
+      {nombre:"Arellano", sucursal:"PC Refugio", autos:54, comision:3350, food:0, merch:0, bono:0, total:3350},
+      {nombre:"Valente", sucursal:"PC Refugio", autos:1, comision:70, food:0, merch:0, bono:0, total:70},
+      {nombre:"Diego Diego", sucursal:"PC Álamos", autos:11, comision:728, food:0, merch:0, bono:250, total:978},
+      {nombre:"Jacobo", sucursal:"PC Álamos", autos:27, comision:1902, food:100, merch:0, bono:0, total:1802},
+      {nombre:"Jose Jr", sucursal:"PC Álamos", autos:33, comision:2224, food:0, merch:0, bono:0, total:2224},
+      {nombre:"Juan Lopez", sucursal:"PC Álamos", autos:36, comision:2909, food:0, merch:25, bono:0, total:2884},
+      {nombre:"Juaquin", sucursal:"PC Álamos", autos:6, comision:440, food:0, merch:0, bono:0, total:440},
+      {nombre:"Marvin", sucursal:"PC Álamos", autos:38, comision:2817, food:0, merch:500, bono:0, deudaCon:"Ahorro/Abono", total:2317},
+      {nombre:"Mauri", sucursal:"PC Álamos", autos:19, comision:1228, food:0, merch:48, bono:0, total:1180},
+      {nombre:"Poli", sucursal:"PC Álamos", autos:9, comision:540, food:0, merch:0, bono:0, total:540},
+      {nombre:"Toño", sucursal:"PC Álamos", autos:41, comision:3598, food:0, merch:25, bono:0, total:3573},
+      {nombre:"Valente", sucursal:"PC Álamos", autos:29, comision:2140, food:0, merch:0, bono:0, total:2140},
+    ]
+  };
+  const semNum=s=>{ const p=String(s||"").split("/"); return parseInt(p[1]||0)*100+parseInt(p[0]||0); };
+  let changed=false;
+  [S21,S27].forEach(entrada=>{
+    const yaExiste=historial.some(h=>String(h.semana).trim()===entrada.semana);
+    if(yaExiste) return;
+    const pos=historial.findIndex(h=>semNum(h.semana)<semNum(entrada.semana));
+    if(pos===-1) historial.push(entrada); else historial.splice(pos,0,entrada);
+    changed=true;
   });
   if(changed) sv("pc4_hist",historial);
 }
