@@ -275,6 +275,12 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .hb{background:#fff;border:0.5px solid #e5e2d8;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.035);}
 .hh{background:#f5f3ee;color:#111;padding:12px 16px;font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid #e0ddd4;}
 .hf{color:#888;font-weight:400;font-size:11px;}
+.hh-click{cursor:pointer;transition:background .15s;border-bottom:none;}
+.hh-click:hover{background:#efece3;}
+.hist-sum{font-size:11px;color:#888;font-weight:500;white-space:nowrap;}
+.hist-sum b{color:#1c3a61;font-weight:800;}
+.hist-chevron{font-size:11px;color:#aaa;transition:transform .15s;}
+.hist-body{border-top:0.5px solid #e0ddd4;animation:pcFadeIn .2s ease;}
 .nd{color:var(--muted);font-size:13px;padding:20px 0;text-align:center;}
 .it{font-size:11px;color:var(--muted);margin:0 0 14px;}
 .tw{border-radius:16px;border:0.5px solid #e5e2d8;margin-bottom:16px;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.035);}
@@ -1544,11 +1550,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   <div class="pnl" id="pnl-hist">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
       <h2 style="font-size:14px;font-weight:900">Historial</h2>
-      <button onclick="recuperarS25EnHistorial()" class="ph-btn"
-        style="background:#fff;color:#185FA5;border:1.5px solid #185FA5;font-size:11px;padding:5px 12px;border-radius:20px"
-        title="Recuperar semana 25 que falta en el historial">
-        🔍 Recuperar S25
-      </button>
+      <input id="hist-buscar" type="search" placeholder="🔍 Buscar semana o lavador..." oninput="filtrarHist(this.value)" class="busq-inp" style="width:220px">
     </div>
     <div id="hc"></div>
   </div>
@@ -3883,50 +3885,6 @@ async function cargarS25(){
   flash("✅ Semana 25/2026 cargada — 24 lavadores (10 Álamos + 14 Refugio)");
 }
 
-async function recuperarS25EnHistorial(){
-  // Verificar si ya existe en el historial
-  const hist = ld("pc4_hist",[]);
-  const yaExiste = hist.some(h => String(h.semana).trim() === "25/2026");
-  if(yaExiste){
-    flash("ℹ️ Semana 25/2026 ya existe en el historial");
-    renderH(); showPage("hist");
-    return;
-  }
-  if(!confirm(
-    "¿Recuperar Semana 25/2026 en el historial?\n\n" +
-    "Esto insertará los datos de nómina de S25 (24 lavadores) " +
-    "en el historial entre S24 y S26.\n" +
-    "El flujo de efectivo de esa semana NO se puede recuperar automáticamente — " +
-    "puedes agregarlo manualmente en el panel Flujo → Historial."
-  ))return;
-
-  // Calcular total de cada lavador
-  const rowsS25 = S25.map(r => {
-    const t = (r.comision||0) - (r.food||0) - (r.merch||0) - (r.ahorro||0) + (r.bono||0) + (r.extra||0);
-    return {...r, total: t};
-  });
-
-  const entrada = {
-    semana: "25/2026",
-    fecha: "PDF recuperado",
-    rows: rowsS25
-  };
-
-  // Insertar en posición correcta (ordenado por número de semana, más reciente primero)
-  const semNum = s => {
-    const p = String(s||"").split("/");
-    return parseInt(p[1]||0)*100 + parseInt(p[0]||0);
-  };
-  const pos = hist.findIndex(h => semNum(h.semana) < semNum("25/2026"));
-  if(pos === -1) hist.push(entrada);
-  else hist.splice(pos, 0, entrada);
-
-  historial = hist.slice(0,52);
-  await sv("pc4_hist", historial);
-  renderH();
-  flash("✅ Semana 25/2026 recuperada en el historial — 24 lavadores");
-  showPage("hist");
-}
 
 async function cargarS26(){
   if(!confirm("¿Cargar datos de Semana 26/2026?\nEsto reemplaza los datos actuales.\n(Las deudas y el historial no se borran)"))return;
@@ -4652,16 +4610,29 @@ function cerrarSemana(){
 }
 
 // ── HISTORIAL ─────────────────────────────────────────────────────────────────
+let _histFiltro="";
+function filtrarHist(v){_histFiltro=(v||"").trim().toLowerCase();renderH();}
+
 function renderH(){
   const d=document.getElementById("hc");
   if(!historial.length){d.innerHTML='<p class="nd">Sin historial aún.</p>';return}
-  d.innerHTML=historial.map(h=>`<div class="hb">
-    <div class="hh"><span>Semana ${h.semana}</span><span class="hf">${h.fecha}</span></div>
-    <div class="tw" style="margin:0;border-radius:0;border:none;border-top:0.5px solid #e0ddd4"><table style="min-width:auto"><thead><tr>
-      <th>Nombre</th><th>Sucursal</th><th>%</th><th>Autos</th><th>Comisión</th>
-      <th>Food</th><th>Merch</th><th>Bono</th><th>Deuda</th><th>Concepto</th><th>Pago</th><th>Total</th>
-    </tr></thead><tbody>
-    ${h.rows.filter(r=>r.nombre).map(r=>`<tr>
+
+  const q=_histFiltro;
+  const lista=!q?historial:historial.filter(h=>{
+    if(String(h.semana||"").toLowerCase().includes(q))return true;
+    return (h.rows||[]).some(r=>(r.nombre||"").toLowerCase().includes(q));
+  });
+
+  if(!lista.length){d.innerHTML='<p class="nd">Sin resultados para "'+esc(q)+'".</p>';return}
+
+  d.innerHTML=lista.map(h=>{
+    const hi=historial.indexOf(h);
+    const rows=(h.rows||[]).filter(r=>r.nombre);
+    const totalNom=rows.reduce((s,r)=>s+(r.total||0),0);
+    const totalAutos=rows.reduce((s,r)=>s+num(r.autos),0);
+    const nRef=rows.filter(r=>r.sucursal==="PC Refugio").length;
+    const nAla=rows.filter(r=>r.sucursal==="PC Álamos").length;
+    const rowsHtml=rows.map(r=>`<tr>
       <td><strong>${r.nombre}</strong></td>
       <td style="font-size:10px">${r.sucursal||"—"}</td>
       <td>${r.pct?r.pct+"%":"—"}</td>
@@ -4674,8 +4645,36 @@ function renderH(){
       <td style="font-size:10px;color:#aaa">${r.deudaCon||"—"}</td>
       <td style="font-size:10px;color:#aaa">${r.pagoTot>1?r.pagoPago+" de "+r.pagoTot:"—"}</td>
       <td style="font-weight:900;text-align:right;color:${r.total<0?"#e53e3e":"#1c3a61"}">${fmt(r.total)}</td>
-    </tr>`).join("")}
-    </tbody></table></div></div>`).join("");
+    </tr>`).join("");
+    return `<div class="hb">
+      <div class="hh hh-click" onclick="toggleHistWeek(${hi})">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span>Semana ${h.semana}</span><span class="hf">${h.fecha}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span class="hist-sum"><b>${fmt(totalNom)}</b> nómina</span>
+          <span class="hist-sum">${totalAutos} autos</span>
+          <span class="hist-sum">${rows.length} lav. <span style="color:#185FA5">(${nRef}R</span>/<span style="color:#C8960C">${nAla}A)</span></span>
+          <span class="hist-chevron" id="hist-chev-${hi}">▾</span>
+        </div>
+      </div>
+      <div class="hist-body" id="hist-body-${hi}" style="display:none">
+        <div class="tw" style="margin:0;border-radius:0;border:none;border-top:0.5px solid #e0ddd4"><table style="min-width:auto"><thead><tr>
+          <th>Nombre</th><th>Sucursal</th><th>%</th><th>Autos</th><th>Comisión</th>
+          <th>Food</th><th>Merch</th><th>Bono</th><th>Deuda</th><th>Concepto</th><th>Pago</th><th>Total</th>
+        </tr></thead><tbody>${rowsHtml}</tbody></table></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleHistWeek(hi){
+  const body=document.getElementById("hist-body-"+hi);
+  const chev=document.getElementById("hist-chev-"+hi);
+  if(!body)return;
+  const abierta=body.style.display!=="none";
+  body.style.display=abierta?"none":"block";
+  if(chev)chev.textContent=abierta?"▾":"▴";
 }
 
 // ── LIQUIDACIONES COORDINADORES ───────────────────────────────────────────────
