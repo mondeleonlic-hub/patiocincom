@@ -2873,6 +2873,7 @@ function goTab(id){
   if(id==="ahorros")renderAhorros();
   if(id==="coords"){renderCoords();renderLiquidaciones();syncSemana(document.getElementById("sem").value);goSubTab("pagos");}
   if(id==="flujo"){initFlujo();syncSemana(document.getElementById("sem").value);}
+  if(id==="datos"){renderT();}
   if(id==="crm"){crmInit();}
 }
 // ── SYNC SEMANA — actualiza todos los labels al cambiar la semana ────────────
