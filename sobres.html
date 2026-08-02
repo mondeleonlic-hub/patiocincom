@@ -4480,7 +4480,10 @@ function bsobreTermica(row, sem){
   } else if(food>0){
     dc+=`<div style="${rowS}"><span>Food</span><span>-${fmt(food)}</span></div>`;
   }
-  if(merch>0)  dc+=`<div style="${rowS}"><span>Merch</span><span>-${fmt(merch)}</span></div>`;
+  if(merch>0){
+    dc+=`<div style="${rowS}"><span>Merch</span><span>-${fmt(merch)}</span></div>`;
+    if(row.merchConcepto) dc+=`<div style="font-size:8px;font-family:'Courier New',monospace;color:#555;padding-left:2px;line-height:1.5">${esc(row.merchConcepto)}</div>`;
+  }
   if(ahorro>0) dc+=`<div style="${rowS}"><span>Ahorro/Abono</span><span>-${fmt(ahorro)}</span></div>`;
   if(entrena>0) dc+=`<div style="${rowS}"><span>${row.extraConcepto||"Extra"}</span><span>+${fmt(entrena)}</span></div>`;
   if(d&&d.total>0){
@@ -4491,6 +4494,8 @@ function bsobreTermica(row, sem){
       if(resta>0)dc+=`<div style="font-size:8px;font-family:'Courier New',monospace;display:flex;justify-content:space-between"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
     }
   }
+
+  const saldoAcum = (typeof saldoAhorroDe==='function') ? saldoAhorroDe(row.nombre) : 0;
 
   const W="260px";
   const FONT="'Courier New',monospace";
@@ -4518,6 +4523,7 @@ function bsobreTermica(row, sem){
     <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#000;margin-bottom:2px">TOTAL A PAGAR</div>
     <div style="font-size:24px;font-weight:900;color:#000">${fmt(total)}</div>
   </div>
+  ${saldoAcum>0?`<div style="text-align:center;padding:0 12px 10px;font-family:${FONT}"><span style="font-size:8px;color:#555;letter-spacing:1px;text-transform:uppercase">Ahorro acumulado</span><br><span style="font-size:13px;font-weight:900;color:#000">${fmt(saldoAcum)}</span></div>`:""}
 </div>`;
 }
 
@@ -4672,7 +4678,10 @@ function bsobre(row,sem){
   } else if(food>0){
     dc+=`<div class="sr"><span class="sl2">Food</span><span class="sv">-${fmt(food)}</span></div>`;
   }
-  if(merch>0)  dc+=`<div class="sr"><span class="sl2">Merch</span><span class="sv">-${fmt(merch)}</span></div>`;
+  if(merch>0){
+    dc+=`<div class="sr"><span class="sl2">Merch</span><span class="sv">-${fmt(merch)}</span></div>`;
+    if(row.merchConcepto) dc+=`<div class="sr ssm"><span>${esc(row.merchConcepto)}</span><span></span></div>`;
+  }
   if(ahorro>0) dc+=`<div class="sr"><span class="sl2">Ahorro/Abono</span><span class="sv">-${fmt(ahorro)}</span></div>`;
   if(entrena>0) dc+=`<div class="sr" style="color:#38a169"><span class="sl2">${row.extraConcepto||"Extra"}</span><span class="sv">+${fmt(entrena)}</span></div>`;
   if(d&&d.total>0){
@@ -4683,6 +4692,7 @@ function bsobre(row,sem){
       if(resta>0)dc+=`<div class="sr ssm"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
     }
   }
+  const saldoAcum = (typeof saldoAhorroDe==='function') ? saldoAhorroDe(row.nombre) : 0;
   const _sucHead=row._suc_lines
     ? row._suc_lines.map(l=>`<div class="s-suc" style="font-size:10px">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
       +`<div class="s-autos">${row.autos} autos</div>`
@@ -4695,7 +4705,9 @@ function bsobre(row,sem){
   </div>
   <div class="s-bruto"><span class="s-bruto-lbl">${row._suc_lines?"Comisión total":"Comisión bruta"}</span><span class="s-bruto-val">${fmt(bruto)}</span></div>
   ${dc?`<div class="s-body">${dc}</div>`:""}
-  <div class="s-total"><span>TOTAL</span><span>${fmt(total)}</span></div></div>`;
+  <div class="s-total"><span>TOTAL</span><span>${fmt(total)}</span></div>
+  ${saldoAcum>0?`<div class="sr ssm" style="justify-content:center;gap:6px;margin-top:4px"><span>Ahorro acumulado:</span><span style="font-weight:700">${fmt(saldoAcum)}</span></div>`:""}
+  </div>`;
 }
 let sobreSeleccionado = null; // nombre del lavador seleccionado
 
@@ -6779,14 +6791,16 @@ function _ahSemKey(sem){
   return 999999; // "Actual" o formato no reconocido → al final
 }
 
-function renderAhorros(){
+// Construye el mapa nombre → {sucursal, movs:[{sem,monto,tipo,id?,nota?}], total}
+// Se usa tanto para pintar la pestaña Ahorros como para consultar el saldo
+// acumulado de un lavador desde cualquier otro lado (ej. al imprimir tickets).
+function _ahCalcularMapa(){
   const hist = ld("pc4_hist",[]);
   const semActual = ld("pc4_semana","Actual");
   const retiros = ld("pc4_ah_retiros",[]);
   const iniciales = ld("pc4_ah_inicial",{});
   const abonos = ld("pc4_ah_abonos",[]);
 
-  // Construir mapa: nombre → {sucursal, movs:[{sem,monto,tipo,id?,nota?}], total}
   const mapa = {};
   function ensure(nombre,sucursal){
     if(!mapa[nombre]) mapa[nombre]={sucursal:sucursal||"",movs:[],total:0};
@@ -6850,6 +6864,22 @@ function renderAhorros(){
 
   // Ordenar movimientos de cada lavador en orden cronológico
   Object.values(mapa).forEach(m=> m.movs.sort((a,b)=>_ahSemKey(a.sem)-_ahSemKey(b.sem)) );
+
+  return mapa;
+}
+
+// Saldo total de ahorro acumulado de un lavador (inicial + depósitos + abonos − retiros)
+function saldoAhorroDe(nombre){
+  if(!nombre) return 0;
+  const mapa=_ahCalcularMapa();
+  if(mapa[nombre]) return mapa[nombre].total;
+  const key=normN(nombre);
+  const found=Object.entries(mapa).find(([n])=>normN(n)===key);
+  return found?found[1].total:0;
+}
+
+function renderAhorros(){
+  const mapa = _ahCalcularMapa();
 
   // Filtrar y ordenar por saldo desc
   let lista = Object.entries(mapa)
