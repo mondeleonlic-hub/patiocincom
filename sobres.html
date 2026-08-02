@@ -1424,6 +1424,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       <h2>Ahorros de Lavadores</h2>
       <div class="bg">
         <button class="btn bk" onclick="abrirInicialAh(null)">📦 Saldo inicial</button>
+        <button class="btn bk" style="background:#27ae60;border-color:#27ae60;color:#fff" onclick="abrirAbonoAh(null)">+ Abono</button>
         <button class="btn by" onclick="renderAhorros()">↻ Actualizar</button>
       </div>
     </div>
@@ -1690,6 +1691,38 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <div class="modal-actions" style="margin-top:20px">
       <button class="btn btn-outline" onclick="cerrarRetiroAh()">Cancelar</button>
       <button class="btn btn-dark" onclick="guardarRetiroAh()">Guardar retiro</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: registrar abono manual (semana que no quedó capturada en Flujo/Datos) -->
+<div class="modal-overlay" id="ah-abono-modal" onclick="if(event.target===this)cerrarAbonoAh()">
+  <div class="modal-box" style="width:380px">
+    <div class="modal-title">➕ Abono de ahorro</div>
+    <p style="font-size:12px;color:#777;margin-top:2px">Para registrar a mano el ahorro de una semana que no capturaste en la app.</p>
+    <div id="ah-abono-nombre-wrap" style="margin-top:8px;display:none">
+      <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Lavador</label>
+      <select id="ah-abono-sel" onchange="_ahAbonoSelChange()" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px"></select>
+    </div>
+    <div id="ah-abono-nombre" style="font-size:15px;font-weight:800;margin-top:8px"></div>
+    <div style="display:grid;gap:12px;margin-top:10px">
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Monto del abono</label>
+        <input type="number" id="ah-abono-monto" placeholder="0.00" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:14px">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Semana (ej. 25/2026)</label>
+        <input type="text" id="ah-abono-sem" list="ah-sem-datalist" placeholder="Ej: 25/2026" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+        <datalist id="ah-sem-datalist"></datalist>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Nota (opcional)</label>
+        <input type="text" id="ah-abono-nota" placeholder="Ej: capturado de la libreta" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="cerrarAbonoAh()">Cancelar</button>
+      <button class="btn btn-dark" onclick="guardarAbonoAh()">Guardar abono</button>
     </div>
   </div>
 </div>
@@ -2679,7 +2712,8 @@ const GS_KEY_MAP = {
   "pc4_flujo_dias":    "flujo_dias",
   "pc4_perf_hist":     "perf_hist",
   "pc4_ah_retiros":    "ah_retiros",
-  "pc4_ah_inicial":    "ah_inicial"
+  "pc4_ah_inicial":    "ah_inicial",
+  "pc4_ah_abonos":     "ah_abonos"
 };
 // Cache local para evitar múltiples fetches
 const _cache = {};
@@ -2859,6 +2893,7 @@ async function init(){
       gsLoad("pc4_perf_hist",[]).then(v=>{ _cache["pc4_perf_hist"]=v; }),
       gsLoad("pc4_ah_retiros",[]).then(v=>{ _cache["pc4_ah_retiros"]=v; }),
       gsLoad("pc4_ah_inicial",{}).then(v=>{ _cache["pc4_ah_inicial"]=v; }),
+      gsLoad("pc4_ah_abonos",[]).then(v=>{ _cache["pc4_ah_abonos"]=v; }),
     ]);
     // Migrar a Firebase para que próximas cargas sean más rápidas
     _sobSaveToFirebase();
@@ -6749,6 +6784,7 @@ function renderAhorros(){
   const semActual = ld("pc4_semana","Actual");
   const retiros = ld("pc4_ah_retiros",[]);
   const iniciales = ld("pc4_ah_inicial",{});
+  const abonos = ld("pc4_ah_abonos",[]);
 
   // Construir mapa: nombre → {sucursal, movs:[{sem,monto,tipo,id?,nota?}], total}
   const mapa = {};
@@ -6792,6 +6828,16 @@ function renderAhorros(){
     });
   });
 
+  // Abonos manuales (semanas que no quedaron registradas en Flujo/Datos)
+  abonos.forEach(ab=>{
+    if(!ab.nombre) return;
+    const montoAbs=Math.abs(num(ab.monto)||0);
+    if(montoAbs===0) return;
+    const m=ensure(ab.nombre, ab.sucursal);
+    m.movs.push({sem:ab.sem||"—", monto:montoAbs, tipo:"abono", id:ab.id, nota:ab.nota});
+    m.total+=montoAbs;
+  });
+
   // Retiros (pueden ser de cualquier semana pasada o actual)
   retiros.forEach(rt=>{
     if(!rt.nombre) return;
@@ -6832,10 +6878,11 @@ function renderAhorros(){
     const tagLbl = d.sucursal==="PC Refugio"?"Refugio":"Álamos";
     const movHtml = d.movs.length
       ? [...d.movs].reverse().map(mv=>{
-          const lbl = mv.tipo==="inicial" ? "Saldo inicial" : (mv.tipo==="retiro" ? `Retiro · Sem ${mv.sem}` : `Sem ${mv.sem}`);
+          const lbl = mv.tipo==="inicial" ? "Saldo inicial" : (mv.tipo==="retiro" ? `Retiro · Sem ${mv.sem}` : (mv.tipo==="abono" ? `Abono manual · Sem ${mv.sem}` : `Sem ${mv.sem}`));
           const amtCls = mv.tipo==="retiro" ? " retiro" : (mv.monto===0?" zero":"");
           const signo = mv.monto>0 ? "+" : "";
-          const delBtn = mv.tipo==="retiro" ? `<span class="ah-mov-del" onclick="event.stopPropagation();eliminarRetiroAh('${mv.id}')" title="Eliminar retiro">✕</span>` : "";
+          const delBtn = mv.tipo==="retiro" ? `<span class="ah-mov-del" onclick="event.stopPropagation();eliminarRetiroAh('${mv.id}')" title="Eliminar retiro">✕</span>`
+                       : mv.tipo==="abono" ? `<span class="ah-mov-del" onclick="event.stopPropagation();eliminarAbonoAh('${mv.id}')" title="Eliminar abono">✕</span>` : "";
           return `
           <div class="ah-week">
             <span class="ah-week-sem">${lbl}${mv.nota?` <span style="color:#bbb">· ${mv.nota}</span>`:""}</span>
@@ -6858,6 +6905,7 @@ function renderAhorros(){
           <div style="display:flex;align-items:center;gap:10px">
             <span class="ah-saldo${d.total===0?" zero":""}">${fmt(d.total)}</span>
             <button class="ah-retiro-btn" style="background:#556;opacity:.85" onclick="event.stopPropagation();abrirInicialAh('${nombre}','${d.sucursal||""}')" title="Ajustar saldo inicial">Inicial</button>
+            <button class="ah-retiro-btn" style="background:#27ae60" onclick="event.stopPropagation();abrirAbonoAh('${nombre}','${d.sucursal||""}')" title="Registrar abono de una semana no capturada">+ Abono</button>
             ${d.total>0?`<button class="ah-retiro-btn" onclick="event.stopPropagation();abrirRetiroAh('${nombre}',${d.total},'${d.sucursal||""}')">Retiro</button>`:""}
             <span style="color:#ccc;font-size:16px" id="ah-chev-${i}">▾</span>
           </div>
@@ -6926,6 +6974,75 @@ function eliminarRetiroAh(id){
   retiros=retiros.filter(r=>r.id!==id);
   sv("pc4_ah_retiros", retiros);
   flash("🗑️ Retiro eliminado");
+  renderAhorros();
+}
+
+// Lista de semanas conocidas (historial + actual), para el datalist de abonos
+function _ahSemanasConocidas(){
+  const hist=ld("pc4_hist",[]);
+  const semActual=ld("pc4_semana","Actual");
+  return [...new Set([...hist.map(h=>h.semana||h.label).filter(Boolean), semActual].filter(Boolean))]
+    .sort((a,b)=>_ahSemKey(a)-_ahSemKey(b));
+}
+
+// ── Modal: registrar abono manual (semanas que no quedaron capturadas) ─────
+let _ahAbonoCtx=null;
+function abrirAbonoAh(nombre, sucursal){
+  const dl=document.getElementById("ah-sem-datalist");
+  dl.innerHTML=_ahSemanasConocidas().map(s=>`<option value="${s}">`).join("");
+  document.getElementById("ah-abono-monto").value="";
+  document.getElementById("ah-abono-nota").value="";
+  document.getElementById("ah-abono-sem").value="";
+  if(nombre){
+    _ahAbonoCtx={nombre, sucursal};
+    document.getElementById("ah-abono-nombre-wrap").style.display="none";
+    document.getElementById("ah-abono-nombre").textContent=nombre;
+    document.getElementById("ah-abono-nombre").style.display="block";
+  } else {
+    _ahAbonoCtx=null;
+    document.getElementById("ah-abono-nombre").style.display="none";
+    document.getElementById("ah-abono-nombre-wrap").style.display="block";
+    const nombres=[...new Set([...Object.keys(perfiles||{}), ...rows.map(r=>r.nombre).filter(Boolean)])].sort();
+    document.getElementById("ah-abono-sel").innerHTML = nombres.map(n=>`<option value="${n}">${n}</option>`).join("");
+    _ahAbonoSelChange();
+  }
+  document.getElementById("ah-abono-modal").classList.add("open");
+}
+function _ahAbonoSelChange(){
+  const sel=document.getElementById("ah-abono-sel");
+  const nombre=sel.value;
+  const sucursal=(rows.find(r=>normN(r.nombre)===normN(nombre))||{}).sucursal||(perfiles?.[nombre]?.sucursal)||"";
+  _ahAbonoCtx={nombre, sucursal};
+}
+function cerrarAbonoAh(){
+  document.getElementById("ah-abono-modal").classList.remove("open");
+  _ahAbonoCtx=null;
+}
+function guardarAbonoAh(){
+  if(!_ahAbonoCtx || !_ahAbonoCtx.nombre){ flash("⚠️ Elige un lavador"); return; }
+  const monto=num(document.getElementById("ah-abono-monto").value);
+  if(!monto||monto<=0){ flash("⚠️ Ingresa un monto válido"); return; }
+  const sem=document.getElementById("ah-abono-sem").value.trim();
+  if(!sem){ flash("⚠️ Indica a qué semana pertenece el abono"); return; }
+  const nota=document.getElementById("ah-abono-nota").value.trim();
+  const abonos=ld("pc4_ah_abonos",[]);
+  abonos.push({
+    id:"a"+Date.now()+Math.random().toString(36).slice(2,7),
+    nombre:_ahAbonoCtx.nombre, sucursal:_ahAbonoCtx.sucursal,
+    monto, sem, nota, fecha:new Date().toISOString()
+  });
+  sv("pc4_ah_abonos", abonos);
+  const nombreCtx=_ahAbonoCtx.nombre;
+  cerrarAbonoAh();
+  flash(`✅ Abono de ${fmt(monto)} registrado para ${nombreCtx} (Sem ${sem})`);
+  renderAhorros();
+}
+function eliminarAbonoAh(id){
+  if(!confirm("¿Eliminar este abono?")) return;
+  let abonos=ld("pc4_ah_abonos",[]);
+  abonos=abonos.filter(a=>a.id!==id);
+  sv("pc4_ah_abonos", abonos);
+  flash("🗑️ Abono eliminado");
   renderAhorros();
 }
 
