@@ -3643,7 +3643,19 @@ function utg(){
 function renderResumenEfectivoNomina(){
   const box=document.getElementById("resumen-efec-nom");
   if(!box)return;
-  const efectivo=(typeof flujoDias!=="undefined"?flujoDias:[]).reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0)+montoAla(d)-(d.ala.gasto||0),0);
+  // El efectivo de la semana que se está pagando en Datos viene del HISTORIAL
+  // de Flujo (la semana ya cerrada), no de la vista "actual" de Flujo — esa
+  // vista actual corresponde a la semana siguiente, que apenas está en curso.
+  const semActiva=document.getElementById("sem")?.value||"";
+  const histFlujo=(typeof flujoHist!=="undefined"?flujoHist:[]);
+  const entradaHist=histFlujo.find(h=>String(h.semana).trim()===semActiva.trim());
+  let efectivo;
+  if(entradaHist){
+    efectivo=(entradaHist.dias||[]).reduce((s,d)=>s+montoRef(d)-(d.ref?.gasto||0)+montoAla(d)-(d.ala?.gasto||0),0);
+  } else {
+    // Fallback: si no hay entrada archivada para esta semana, usar la vista actual de Flujo
+    efectivo=(typeof flujoDias!=="undefined"?flujoDias:[]).reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0)+montoAla(d)-(d.ala.gasto||0),0);
+  }
   const nomina=rows.filter(r=>rowVisible(r)).reduce((s,r)=>s+calcT(r,r.nombre),0);
   const dif=efectivo-nomina;
   const ok=dif>=0;
