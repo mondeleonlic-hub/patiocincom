@@ -320,6 +320,9 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .ah-week-amt.zero{color:#ccc;font-weight:400;}
 .ah-retiro-btn{background:#c0392b;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
 .ah-retiro-btn:hover{background:#a93226;}
+.ah-week-amt.retiro{color:#c0392b;}
+.ah-mov-del{color:#ccc;font-size:12px;cursor:pointer;padding:0 2px;}
+.ah-mov-del:hover{color:#c0392b;}
 .ah-kpi{background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:14px 16px;text-align:center;}
 .ah-kpi-val{font-size:22px;font-weight:700;color:#27ae60;}
 .ah-kpi-lbl{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-top:4px;}
@@ -1420,10 +1423,11 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <div class="ph">
       <h2>Ahorros de Lavadores</h2>
       <div class="bg">
+        <button class="btn bk" onclick="abrirInicialAh(null)">📦 Saldo inicial</button>
         <button class="btn by" onclick="renderAhorros()">↻ Actualizar</button>
       </div>
     </div>
-    <p class="it">Saldo acumulado de ahorro/abono por lavador, calculado de todas las semanas del historial más la semana actual.</p>
+    <p class="it">Saldo acumulado de ahorro/abono por lavador: saldo inicial + depósitos por semana − retiros.</p>
     <div id="ahorros-filtros" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
       <button class="fbtn on" id="ah-all" onclick="setFiltroAh('all')">Todos</button>
       <button class="fbtn ref" id="ah-ref" onclick="setFiltroAh('PC Refugio')">PC Refugio</button>
@@ -1659,6 +1663,54 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <div class="modal-actions" style="margin-top:20px">
       <button class="btn btn-outline" onclick="crmCerrarConfig()">Cancelar</button>
       <button class="btn btn-dark" onclick="crmGuardarConfig()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: registrar retiro de ahorro -->
+<div class="modal-overlay" id="ah-retiro-modal" onclick="if(event.target===this)cerrarRetiroAh()">
+  <div class="modal-box" style="width:380px">
+    <div class="modal-title">💵 Retiro de ahorro</div>
+    <div id="ah-retiro-nombre" style="font-size:15px;font-weight:800;margin-top:2px"></div>
+    <div id="ah-retiro-saldo" style="font-size:12px;color:#777;margin-bottom:6px"></div>
+    <div style="display:grid;gap:12px;margin-top:8px">
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Monto a retirar</label>
+        <input type="number" id="ah-retiro-monto" placeholder="0.00" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:14px">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Semana a la que pertenece</label>
+        <select id="ah-retiro-sem" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px"></select>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Nota (opcional)</label>
+        <input type="text" id="ah-retiro-nota" placeholder="Ej: retiro en efectivo" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px">
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="cerrarRetiroAh()">Cancelar</button>
+      <button class="btn btn-dark" onclick="guardarRetiroAh()">Guardar retiro</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: ajustar saldo inicial (previo a registrar en la app) -->
+<div class="modal-overlay" id="ah-inicial-modal" onclick="if(event.target===this)cerrarInicialAh()">
+  <div class="modal-box" style="width:380px">
+    <div class="modal-title">📦 Saldo inicial</div>
+    <p style="font-size:12px;color:#777;margin-top:2px">El monto que ya tenía ahorrado antes de empezar a registrar en la app. Se suma al total, junto antes de las semanas.</p>
+    <div id="ah-inicial-nombre-wrap" style="margin-top:8px;display:none">
+      <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Lavador</label>
+      <select id="ah-inicial-sel" onchange="_ahInicialSelChange()" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px"></select>
+    </div>
+    <div id="ah-inicial-nombre" style="font-size:15px;font-weight:800;margin-top:8px"></div>
+    <div style="margin-top:10px">
+      <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px">Monto inicial</label>
+      <input type="number" id="ah-inicial-monto" placeholder="0.00" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:14px">
+    </div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="cerrarInicialAh()">Cancelar</button>
+      <button class="btn btn-dark" onclick="guardarInicialAh()">Guardar</button>
     </div>
   </div>
 </div>
@@ -2625,7 +2677,9 @@ const GS_KEY_MAP = {
   "pc4_liquidaciones": "liquidaciones",
   "pc4_flujo":         "flujo",
   "pc4_flujo_dias":    "flujo_dias",
-  "pc4_perf_hist":     "perf_hist"
+  "pc4_perf_hist":     "perf_hist",
+  "pc4_ah_retiros":    "ah_retiros",
+  "pc4_ah_inicial":    "ah_inicial"
 };
 // Cache local para evitar múltiples fetches
 const _cache = {};
@@ -2803,6 +2857,8 @@ async function init(){
       gsLoad("pc4_flujo",[]).then(v=>{ _cache["pc4_flujo"]=v; }),
       gsLoad("pc4_flujo_dias",[]).then(v=>{ _cache["pc4_flujo_dias"]=v; }),
       gsLoad("pc4_perf_hist",[]).then(v=>{ _cache["pc4_perf_hist"]=v; }),
+      gsLoad("pc4_ah_retiros",[]).then(v=>{ _cache["pc4_ah_retiros"]=v; }),
+      gsLoad("pc4_ah_inicial",{}).then(v=>{ _cache["pc4_ah_inicial"]=v; }),
     ]);
     // Migrar a Firebase para que próximas cargas sean más rápidas
     _sobSaveToFirebase();
@@ -6662,6 +6718,10 @@ function busquedaGlobal(q){
 
 // ══════════════════════════════════════════════════════════════════════════════
 // AHORROS — Historial de ahorro/abono acumulado por lavador
+// (Saldo = saldo inicial + depósitos por semana − retiros. Los retiros y el
+//  saldo inicial se guardan como movimientos independientes, no se mezclan
+//  con el campo "ahorro" de una semana en particular — así un retiro nunca
+//  se pierde ni queda limitado al monto ahorrado esa semana.)
 // ══════════════════════════════════════════════════════════════════════════════
 let _filtroAh = "all";
 
@@ -6675,38 +6735,75 @@ function setFiltroAh(f){
   renderAhorros();
 }
 
+// Convierte una etiqueta de semana ("31/2026", "Inicial", "Actual"...) en una
+// clave numérica para poder ordenar los movimientos en orden cronológico real.
+function _ahSemKey(sem){
+  if(sem==="Inicial") return -1;
+  const m=String(sem||"").match(/^(\d+)\s*\/\s*(\d+)/);
+  if(m) return (+m[2])*100+(+m[1]);
+  return 999999; // "Actual" o formato no reconocido → al final
+}
+
 function renderAhorros(){
   const hist = ld("pc4_hist",[]);
   const semActual = ld("pc4_semana","Actual");
+  const retiros = ld("pc4_ah_retiros",[]);
+  const iniciales = ld("pc4_ah_inicial",{});
 
-  // Construir mapa: nombre → {sucursal, semanas:[{sem, monto}], total}
+  // Construir mapa: nombre → {sucursal, movs:[{sem,monto,tipo,id?,nota?}], total}
   const mapa = {};
+  function ensure(nombre,sucursal){
+    if(!mapa[nombre]) mapa[nombre]={sucursal:sucursal||"",movs:[],total:0};
+    if(sucursal) mapa[nombre].sucursal=sucursal;
+    return mapa[nombre];
+  }
+
+  // Saldo inicial (previo a empezar a registrar en la app)
+  Object.values(iniciales).forEach(ini=>{
+    if(!ini||!ini.nombre) return;
+    const monto=num(ini.monto)||0;
+    if(monto===0) return;
+    const m=ensure(ini.nombre, ini.sucursal);
+    m.movs.push({sem:"Inicial", monto, tipo:"inicial"});
+    m.total+=monto;
+  });
 
   // Semana actual
   rows.forEach(r=>{
     if(!r.nombre) return;
     const monto = num(r.ahorro)||0;
-    if(!mapa[r.nombre]) mapa[r.nombre]={sucursal:r.sucursal,semanas:[],total:0};
+    const m=ensure(r.nombre, r.sucursal);
     if(monto>0){
-      mapa[r.nombre].semanas.push({sem:semActual||"Actual",monto});
-      mapa[r.nombre].total+=monto;
+      m.movs.push({sem:semActual||"Actual", monto, tipo:"deposito"});
+      m.total+=monto;
     }
-    mapa[r.nombre].sucursal=r.sucursal;
   });
 
-  // Historial
+  // Historial de semanas cerradas
   hist.forEach(h=>{
     (h.rows||[]).forEach(r=>{
       if(!r.nombre) return;
       const monto = num(r.ahorro)||0;
-      if(!mapa[r.nombre]) mapa[r.nombre]={sucursal:r.sucursal,semanas:[],total:0};
+      const m=ensure(r.nombre, r.sucursal);
       if(monto>0){
-        mapa[r.nombre].semanas.push({sem:h.semana||h.label||"—",monto});
-        mapa[r.nombre].total+=monto;
+        m.movs.push({sem:h.semana||h.label||"—", monto, tipo:"deposito"});
+        m.total+=monto;
       }
-      if(!mapa[r.nombre].sucursal) mapa[r.nombre].sucursal=r.sucursal;
     });
   });
+
+  // Retiros (pueden ser de cualquier semana pasada o actual)
+  retiros.forEach(rt=>{
+    if(!rt.nombre) return;
+    const montoAbs=Math.abs(num(rt.monto)||0);
+    if(montoAbs===0) return;
+    const m=ensure(rt.nombre, rt.sucursal);
+    m.movs.push({sem:rt.sem||"—", monto:-montoAbs, tipo:"retiro", id:rt.id, nota:rt.nota});
+    m.total-=montoAbs;
+  });
+
+  // Ordenar movimientos de cada lavador en orden cronológico
+  Object.values(mapa).forEach(m=> m.movs.sort((a,b)=>_ahSemKey(a.sem)-_ahSemKey(b.sem)) );
 
   // Filtrar y ordenar por saldo desc
   let lista = Object.entries(mapa)
@@ -6733,13 +6830,22 @@ function renderAhorros(){
   document.getElementById("ahorros-lista").innerHTML = lista.map(([nombre,d],i)=>{
     const tagCls = d.sucursal==="PC Refugio"?"ah-tag-ref":"ah-tag-ala";
     const tagLbl = d.sucursal==="PC Refugio"?"Refugio":"Álamos";
-    const semHtml = d.semanas.length
-      ? [...d.semanas].reverse().map(s=>`
+    const movHtml = d.movs.length
+      ? [...d.movs].reverse().map(mv=>{
+          const lbl = mv.tipo==="inicial" ? "Saldo inicial" : (mv.tipo==="retiro" ? `Retiro · Sem ${mv.sem}` : `Sem ${mv.sem}`);
+          const amtCls = mv.tipo==="retiro" ? " retiro" : (mv.monto===0?" zero":"");
+          const signo = mv.monto>0 ? "+" : "";
+          const delBtn = mv.tipo==="retiro" ? `<span class="ah-mov-del" onclick="event.stopPropagation();eliminarRetiroAh('${mv.id}')" title="Eliminar retiro">✕</span>` : "";
+          return `
           <div class="ah-week">
-            <span class="ah-week-sem">Sem ${s.sem}</span>
-            <span class="ah-week-amt${s.monto===0?" zero":""}">${s.monto>0?"+"+fmt(s.monto):"—"}</span>
-          </div>`).join("")
-      : `<div style="color:#ccc;font-size:12px;padding:10px 0">Sin ahorros registrados</div>`;
+            <span class="ah-week-sem">${lbl}${mv.nota?` <span style="color:#bbb">· ${mv.nota}</span>`:""}</span>
+            <span style="display:flex;align-items:center;gap:8px">
+              <span class="ah-week-amt${amtCls}">${signo}${fmt(mv.monto)}</span>
+              ${delBtn}
+            </span>
+          </div>`;
+        }).join("")
+      : `<div style="color:#ccc;font-size:12px;padding:10px 0">Sin movimientos registrados</div>`;
 
     return `
       <div class="ah-card">
@@ -6747,21 +6853,22 @@ function renderAhorros(){
           <div>
             <span class="ah-name">${nombre}</span>
             <span class="ah-tag ${tagCls}">${tagLbl}</span>
-            <span style="font-size:11px;color:#aaa;margin-left:8px">${d.semanas.length} sem</span>
+            <span style="font-size:11px;color:#aaa;margin-left:8px">${d.movs.length} mov.</span>
           </div>
-          <div style="display:flex;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px">
             <span class="ah-saldo${d.total===0?" zero":""}">${fmt(d.total)}</span>
-            ${d.total>0?`<button class="ah-retiro-btn" onclick="event.stopPropagation();registrarRetiroAh('${nombre}',${d.total})">Retiro</button>`:""}
+            <button class="ah-retiro-btn" style="background:#556;opacity:.85" onclick="event.stopPropagation();abrirInicialAh('${nombre}','${d.sucursal||""}')" title="Ajustar saldo inicial">Inicial</button>
+            ${d.total>0?`<button class="ah-retiro-btn" onclick="event.stopPropagation();abrirRetiroAh('${nombre}',${d.total},'${d.sucursal||""}')">Retiro</button>`:""}
             <span style="color:#ccc;font-size:16px" id="ah-chev-${i}">▾</span>
           </div>
         </div>
         <div class="ah-body" id="ah-body-${i}">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#aaa;padding:10px 0 6px">Historial semana a semana</div>
-          ${semHtml}
-          ${d.total>0?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid #f0efe9">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#aaa;padding:10px 0 6px">Historial de movimientos</div>
+          ${movHtml}
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid #f0efe9">
             <span style="font-size:11px;font-weight:700;color:#888">SALDO TOTAL</span>
-            <span style="font-size:15px;font-weight:900;color:#27ae60">${fmt(d.total)}</span>
-          </div>`:""}
+            <span style="font-size:15px;font-weight:900;color:${d.total>=0?'#27ae60':'#c0392b'}">${fmt(d.total)}</span>
+          </div>
         </div>
       </div>`;
   }).join("");
@@ -6775,19 +6882,100 @@ function toggleAh(i){
   if(chev)chev.textContent=open?"▴":"▾";
 }
 
-function registrarRetiroAh(nombre, saldoActual){
-  const monto = prompt(`Retiro de ahorro para ${nombre}\nSaldo actual: ${fmt(saldoActual)}\n\n¿Cuánto retira?`);
-  if(!monto||isNaN(+monto)||+monto<=0) return;
-  const retiro=Math.min(+monto, saldoActual);
-  // Descuenta del registro actual en rows
-  const r=rows.find(r=>normN(r.nombre)===normN(nombre));
-  if(r){
-    r.ahorro=Math.max(0,(num(r.ahorro)||0)-retiro);
-    svQ("pc4_rows",rows);
-    renderT();
+// ── Modal: registrar retiro (permite elegir a qué semana se atribuye) ──────
+let _ahRetiroCtx=null;
+function abrirRetiroAh(nombre, saldoActual, sucursal){
+  _ahRetiroCtx={nombre, sucursal};
+  document.getElementById("ah-retiro-nombre").textContent=nombre;
+  document.getElementById("ah-retiro-saldo").textContent="Saldo actual: "+fmt(saldoActual);
+  document.getElementById("ah-retiro-monto").value="";
+  document.getElementById("ah-retiro-nota").value="";
+  const hist=ld("pc4_hist",[]);
+  const semActual=ld("pc4_semana","Actual");
+  const semanas=[...new Set([...hist.map(h=>h.semana||h.label).filter(Boolean), semActual].filter(Boolean))]
+    .sort((a,b)=>_ahSemKey(a)-_ahSemKey(b));
+  const sel=document.getElementById("ah-retiro-sem");
+  sel.innerHTML = semanas.map(s=>`<option value="${s}" ${s===semActual?"selected":""}>${s===semActual?"Semana actual ("+s+")":"Sem "+s}</option>`).join("");
+  document.getElementById("ah-retiro-modal").classList.add("open");
+}
+function cerrarRetiroAh(){
+  document.getElementById("ah-retiro-modal").classList.remove("open");
+  _ahRetiroCtx=null;
+}
+function guardarRetiroAh(){
+  if(!_ahRetiroCtx) return;
+  const monto=num(document.getElementById("ah-retiro-monto").value);
+  if(!monto||monto<=0){ flash("⚠️ Ingresa un monto válido"); return; }
+  const sem=document.getElementById("ah-retiro-sem").value;
+  const nota=document.getElementById("ah-retiro-nota").value.trim();
+  const retiros=ld("pc4_ah_retiros",[]);
+  retiros.push({
+    id:"r"+Date.now()+Math.random().toString(36).slice(2,7),
+    nombre:_ahRetiroCtx.nombre, sucursal:_ahRetiroCtx.sucursal,
+    monto, sem, nota, fecha:new Date().toISOString()
+  });
+  sv("pc4_ah_retiros", retiros);
+  const nombreCtx=_ahRetiroCtx.nombre;
+  cerrarRetiroAh();
+  flash(`✅ Retiro de ${fmt(monto)} registrado para ${nombreCtx}`);
+  renderAhorros();
+}
+function eliminarRetiroAh(id){
+  if(!confirm("¿Eliminar este retiro? Esto vuelve a sumar el monto al saldo del lavador.")) return;
+  let retiros=ld("pc4_ah_retiros",[]);
+  retiros=retiros.filter(r=>r.id!==id);
+  sv("pc4_ah_retiros", retiros);
+  flash("🗑️ Retiro eliminado");
+  renderAhorros();
+}
+
+// ── Modal: saldo inicial (previo a empezar a registrar ahorros en la app) ──
+let _ahInicialCtx=null;
+function abrirInicialAh(nombre, sucursal){
+  const iniciales=ld("pc4_ah_inicial",{});
+  if(nombre){
+    _ahInicialCtx={nombre, sucursal};
+    document.getElementById("ah-inicial-nombre-wrap").style.display="none";
+    document.getElementById("ah-inicial-nombre").textContent=nombre;
+    document.getElementById("ah-inicial-nombre").style.display="block";
+    const key=normN(nombre);
+    document.getElementById("ah-inicial-monto").value = iniciales[key]?.monto || "";
+  } else {
+    // Abierto desde el botón general: elegir a quién
+    _ahInicialCtx=null;
+    document.getElementById("ah-inicial-nombre").style.display="none";
+    document.getElementById("ah-inicial-nombre-wrap").style.display="block";
+    const nombres=[...new Set([...Object.keys(perfiles||{}), ...rows.map(r=>r.nombre).filter(Boolean)])].sort();
+    document.getElementById("ah-inicial-sel").innerHTML = nombres.map(n=>`<option value="${n}">${n}</option>`).join("");
+    document.getElementById("ah-inicial-monto").value="";
+    _ahInicialSelChange();
   }
-  flash(`✅ Retiro de ${fmt(retiro)} registrado para ${nombre}`);
-  setTimeout(()=>renderAhorros(),400);
+  document.getElementById("ah-inicial-modal").classList.add("open");
+}
+function _ahInicialSelChange(){
+  const sel=document.getElementById("ah-inicial-sel");
+  const nombre=sel.value;
+  const sucursal=(rows.find(r=>normN(r.nombre)===normN(nombre))||{}).sucursal||(perfiles?.[nombre]?.sucursal)||"";
+  _ahInicialCtx={nombre, sucursal};
+  const iniciales=ld("pc4_ah_inicial",{});
+  const key=normN(nombre);
+  document.getElementById("ah-inicial-monto").value = iniciales[key]?.monto || "";
+}
+function cerrarInicialAh(){
+  document.getElementById("ah-inicial-modal").classList.remove("open");
+  _ahInicialCtx=null;
+}
+function guardarInicialAh(){
+  if(!_ahInicialCtx || !_ahInicialCtx.nombre){ flash("⚠️ Elige un lavador"); return; }
+  const monto=num(document.getElementById("ah-inicial-monto").value);
+  const iniciales=ld("pc4_ah_inicial",{});
+  const key=normN(_ahInicialCtx.nombre);
+  if(monto>0) iniciales[key]={nombre:_ahInicialCtx.nombre, sucursal:_ahInicialCtx.sucursal, monto};
+  else delete iniciales[key];
+  sv("pc4_ah_inicial", iniciales);
+  cerrarInicialAh();
+  flash("✅ Saldo inicial actualizado");
+  renderAhorros();
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
