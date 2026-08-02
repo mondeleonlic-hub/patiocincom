@@ -3140,7 +3140,33 @@ function isCRMFormat(visualLines){
 //          + columna MERCH separada (coordinadores, se omite en lavadores)
 function parseCRMText(visualLines,pageW){
   const comisiones=[], foodMap={}, pctMap={};
-  let suc=null;
+  let suc=null, currentName=null;
+
+  // ── MERCH: tabla independiente arriba a la derecha ("MERCH (SEMANA...)" →
+  // "ALIAS | SUM de TOTAL" → filas "Nombre monto" → "Suma total"). Ocupa la
+  // misma franja de columna que otra tabla no relacionada más abajo
+  // ("FOOD (SEMANA...)" con gastos de oficina/staff), así que se usa un
+  // estado (dentro/fuera de la sección MERCH) en vez de solo la posición X,
+  // para no mezclar ambas tablas.
+  const merchMap={};
+  const MERCH_X_MIN=pageW*0.70;
+  let inMerch=false;
+  for(const l of visualLines){
+    const rItems=l.items.filter(i=>i.x>=MERCH_X_MIN);
+    const rTxt=rItems.map(i=>i.str).join(' ').trim();
+    if(!rTxt) continue;
+    if(/^MERCH\s*\(/i.test(rTxt)){ inMerch=true; continue; }
+    if(/^FOOD\s*\(/i.test(rTxt)){ inMerch=false; continue; } // tabla de food de oficina, no es MERCH
+    if(!inMerch) continue;
+    if(/^Suma\s*total/i.test(rTxt)){ inMerch=false; continue; }
+    if(/^(ALIAS|SUM\s*de\s*TOTAL|COLABORADOR)/i.test(rTxt)) continue;
+    const mm=rTxt.match(/^([A-Za-záéíóúüñÁÉÍÓÚÜÑ][^\d$]*?)\s+\$?([\d,]+\.?\d*)\s*$/);
+    if(mm){
+      const nombre=mm[1].trim();
+      const amt=parseFloat(mm[2].replace(/,/g,''));
+      if(nombre&&!isNaN(amt)) merchMap[normN(nombre)]=amt;
+    }
+  }
 
   for(const l of visualLines){
     const allText=l.items.map(i=>i.str).join(' ').trim();
@@ -3153,8 +3179,9 @@ function parseCRMText(visualLines,pageW){
     else if(/^REFUGIO\b/i.test(allText)) suc='PC Refugio';
     if(!suc) continue;
 
-    // 1. Food: buscar deducción "-$X" en la línea (antes que Total para capturar líneas mixtas)
-    const negM=allText.match(/([A-Za-záéíóúüñÁÉÍÓÚÜÑ][^\d$-]*?)\s+\$([\d,]+\.?\d*)\s+-\$([\d,]+\.?\d*)/);
+    // 1. Food: buscar deducción "-$X" en la línea (antes que Total para capturar líneas mixtas).
+    // El monto de food antes del "-$" viene SIN signo de pesos (ej. "Gio 200 -$200"), por eso el "$" es opcional.
+    const negM=allText.match(/([A-Za-záéíóúüñÁÉÍÓÚÜÑ][^\d$-]*?)\s+\$?([\d,]+\.?\d*)\s+-\$([\d,]+\.?\d*)/);
     if(negM){
       const nombre=negM[1].trim();
       const foodAmt=parseFloat(negM[2].replace(/,/g,''));
@@ -3175,11 +3202,24 @@ function parseCRMText(visualLines,pageW){
       }
     } else {
       // 3. Fila de detalle: "Nombre NN% $X N" → guardar pct (el más alto, si tiene varios niveles)
+      //    y recordar el nombre activo para las filas de nivel adicional que le siguen.
       const pm=allText.match(/^(?:ALAMOS\s+|REFUGIO\s+)?([A-Za-záéíóúüñÁÉÍÓÚÜÑ].+?)\s+(\d+)%/);
       if(pm){
         const nmKey=normN(pm[1].trim());
         const pctVal=parseInt(pm[2]);
         if(!pctMap[nmKey]||pctVal>pctMap[nmKey]) pctMap[nmKey]=pctVal;
+        currentName=nmKey;
+      } else {
+        // 4. Fila de nivel adicional SIN nombre: "NN% $X N" → usa el nombre activo anterior
+        const tierOnly=allText.match(/^(\d+)\s*%\s+\$/);
+        if(tierOnly&&currentName){
+          const pctVal=parseInt(tierOnly[1]);
+          if(!pctMap[currentName]||pctVal>pctMap[currentName]) pctMap[currentName]=pctVal;
+        } else {
+          // 5. Fila de nombre SIN % (ej. "Charlie $0.00 0 $0") → solo actualiza el nombre activo
+          const nameOnly=allText.match(/^(?:ALAMOS\s+|REFUGIO\s+)?([A-Za-záéíóúüñÁÉÍÓÚÜÑ].+?)\s+\$/);
+          if(nameOnly) currentName=normN(nameOnly[1].trim());
+        }
       }
     }
   }
@@ -3188,7 +3228,8 @@ function parseCRMText(visualLines,pageW){
     nombre:c.nombre, sucursal:c.sucursal, pct:c.pct,
     autos:c.autos, comision:c.comision,
     food:foodMap[normN(c.nombre)]||0,
-    merch:0, bono:0, ahorro:'', extra:0, extraConcepto:''
+    merch:merchMap[normN(c.nombre)]||0,
+    bono:0, ahorro:'', extra:0, extraConcepto:''
   }));
 }
 
