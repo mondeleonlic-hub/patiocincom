@@ -3059,10 +3059,13 @@ function parsePatioCincoText(visualLines,forcedPageW){
     // Fila con nombre + porcentaje primario: "[Nombre] NN% $X N"
     if(/^[A-ZÁÉÍÓÚÜÑ]/u.test(left)){
       const nm=left.match(/^(.+?)\s+(\d+)\s*%\s+\$([\d,]+\.?\d*)\s+(\d+)/);
-      if(nm) currentPct=+nm[2];
+      if(nm) currentPct=Math.max(currentPct,+nm[2]);
+    } else {
+      // Fila de tier adicional (solo "NN% $X N", sin nombre) → se usa el % más
+      // alto de todos los niveles del lavador, no el primero que aparece.
+      const tier=left.match(/^(\d+)\s*%\s+\$([\d,]+\.?\d*)\s+(\d+)/);
+      if(tier) currentPct=Math.max(currentPct,+tier[1]);
     }
-    // Filas de tier adicional (solo NN%) no llevan nombre → se ignoran,
-    // el Total acumula la suma completa de comisión y autos.
   }
 
   // ── 2. FOOD ──────────────────────────────────────────────────────────────────
@@ -3171,9 +3174,13 @@ function parseCRMText(visualLines,pageW){
           comisiones.push({nombre,sucursal:suc,pct,comision,autos});
       }
     } else {
-      // 3. Fila de detalle: "Nombre NN% $X N" → guardar pct
+      // 3. Fila de detalle: "Nombre NN% $X N" → guardar pct (el más alto, si tiene varios niveles)
       const pm=allText.match(/^(?:ALAMOS\s+|REFUGIO\s+)?([A-Za-záéíóúüñÁÉÍÓÚÜÑ].+?)\s+(\d+)%/);
-      if(pm) pctMap[normN(pm[1].trim())]=parseInt(pm[2]);
+      if(pm){
+        const nmKey=normN(pm[1].trim());
+        const pctVal=parseInt(pm[2]);
+        if(!pctMap[nmKey]||pctVal>pctMap[nmKey]) pctMap[nmKey]=pctVal;
+      }
     }
   }
 
