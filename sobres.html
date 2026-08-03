@@ -2388,13 +2388,25 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
     <div>
       <h2 style="font-size:18px;font-weight:700;color:#111;margin:0;letter-spacing:1px;">Inventario</h2>
-      <p style="font-size:11px;color:#999;margin:4px 0 0;letter-spacing:.5px;text-transform:uppercase;">Artículos · Costos · Existencias</p>
+      <p style="font-size:11px;color:#999;margin:4px 0 0;letter-spacing:.5px;text-transform:uppercase;">Artículos · Costos · Existencias por sucursal</p>
     </div>
-    <button class="btn btn-dark" onclick="dash_abrirModalInv()">+ Agregar artículo</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="dash_abrirReporteInv()">📋 Reportar inventario</button>
+      <button class="btn btn-dark" onclick="dash_abrirModalInv()">+ Agregar artículo</button>
+    </div>
   </div>
 
   <!-- Resumen rápido -->
   <div id="inv-resumen" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;"></div>
+
+  <!-- Lista de compras (auto: artículos bajo el mínimo por sucursal) -->
+  <div id="inv-compras-wrap" style="margin-bottom:20px;display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+      <h3 style="font-size:14px;font-weight:700;color:#111;margin:0;">🛒 Lista de compras</h3>
+      <button class="btn btn-outline" onclick="dash_copiarListaCompras()">📋 Copiar lista</button>
+    </div>
+    <div id="inv-compras" style="display:grid;gap:12px;"></div>
+  </div>
 
   <!-- Tabla -->
   <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;overflow:hidden;">
@@ -2407,7 +2419,9 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
           <th style="background:#fff;color:#1565C0;text-align:right;min-width:110px;">Costo unitario</th>
           <th style="background:#fff;color:#2E7D32;text-align:right;min-width:110px;">Costo paquete</th>
           <th style="background:#fff;color:#555;text-align:center;min-width:90px;">Uds / paquete</th>
-          <th style="background:#fff;color:#C8960C;text-align:right;min-width:100px;">Existencia</th>
+          <th style="background:#fff;color:#888;text-align:center;min-width:70px;">Mínimo</th>
+          <th style="background:#fff;color:#C8960C;text-align:right;min-width:90px;">Álamos</th>
+          <th style="background:#fff;color:#C8960C;text-align:right;min-width:90px;">Refugio</th>
           <th style="background:#fff;color:#555;text-align:center;min-width:80px;">Acciones</th>
         </tr>
       </thead>
@@ -2528,8 +2542,21 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
           <input type="number" id="inv-uds-paq" placeholder="0" min="0" step="1" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;" oninput="dash_invCalcUnit()">
         </div>
         <div>
-          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Existencia actual</label>
-          <input type="number" id="inv-existencia" placeholder="0" min="0" step="1" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;">
+          <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Mínimo por sucursal</label>
+          <input type="number" id="inv-minimo" placeholder="0" min="0" step="1" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;" title="Cuando la existencia baje de este número, se agrega a la lista de compras">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px;">Existencia actual por sucursal</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:11px;color:#888;min-width:64px">Álamos</span>
+            <input type="number" id="inv-existencia-alamos" placeholder="0" min="0" step="1" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:11px;color:#888;min-width:64px">Refugio</span>
+            <input type="number" id="inv-existencia-refugio" placeholder="0" min="0" step="1" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;text-align:right;">
+          </div>
         </div>
       </div>
       <div>
@@ -2545,6 +2572,23 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   </div>
 </div>
 
+<!-- Modal: reportar inventario contado (por sucursal) -->
+<div class="modal-overlay" id="inv-reporte-modal" onclick="if(event.target===this)dash_cerrarReporteInv()">
+  <div class="modal-box" style="width:480px;max-height:85vh;display:flex;flex-direction:column;">
+    <div class="modal-title">📋 Reportar inventario</div>
+    <p style="font-size:12px;color:#777;margin-top:2px">Captura lo que contaste en la sucursal. Se actualiza la existencia de cada artículo.</p>
+    <div style="display:flex;gap:8px;margin:12px 0">
+      <button class="btn btn-outline" id="inv-rep-btn-alamos" onclick="dash_reporteSetSuc('PC Álamos')" style="flex:1">PC Álamos</button>
+      <button class="btn btn-outline" id="inv-rep-btn-refugio" onclick="dash_reporteSetSuc('PC Refugio')" style="flex:1">PC Refugio</button>
+    </div>
+    <div id="inv-reporte-lista" style="overflow-y:auto;flex:1;display:grid;gap:8px;padding-right:4px"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn btn-outline" onclick="dash_cerrarReporteInv()">Cancelar</button>
+      <button class="btn btn-dark" onclick="dash_guardarReporteInv()">Guardar conteo</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: coincidencia inventario ↔ gasto -->
 <div class="modal-overlay" id="inv-match-modal">
   <div class="modal-box" style="width:400px;">
@@ -2556,6 +2600,11 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       El concepto <strong id="inv-match-desc" style="color:#111;"></strong> coincide con
       <strong id="inv-match-nombre" style="color:#C8960C;"></strong> en tu inventario.
     </div>
+    <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;">¿A qué sucursal entró?</label>
+    <select id="inv-match-suc" style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:13px;margin-bottom:12px;">
+      <option value="PC Álamos">PC Álamos</option>
+      <option value="PC Refugio">PC Refugio</option>
+    </select>
     <label style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;">¿Cuántas unidades deseas agregar?</label>
     <input type="number" id="inv-match-uds" value="1" min="1" step="1"
       style="width:100%;padding:9px 12px;border:1px solid #e0ddd4;border-radius:8px;font-size:16px;text-align:center;font-weight:700;">
@@ -2713,7 +2762,8 @@ const GS_KEY_MAP = {
   "pc4_perf_hist":     "perf_hist",
   "pc4_ah_retiros":    "ah_retiros",
   "pc4_ah_inicial":    "ah_inicial",
-  "pc4_ah_abonos":     "ah_abonos"
+  "pc4_ah_abonos":     "ah_abonos",
+  "pc4_inventario":    "inventario"
 };
 // Cache local para evitar múltiples fetches
 const _cache = {};
@@ -2894,6 +2944,7 @@ async function init(){
       gsLoad("pc4_ah_retiros",[]).then(v=>{ _cache["pc4_ah_retiros"]=v; }),
       gsLoad("pc4_ah_inicial",{}).then(v=>{ _cache["pc4_ah_inicial"]=v; }),
       gsLoad("pc4_ah_abonos",[]).then(v=>{ _cache["pc4_ah_abonos"]=v; }),
+      gsLoad("pc4_inventario",[]).then(v=>{ _cache["pc4_inventario"]=v; }),
     ]);
     // Migrar a Firebase para que próximas cargas sean más rápidas
     _sobSaveToFirebase();
@@ -7628,11 +7679,25 @@ function dash_showPage(id) {
 
 // ══ INVENTARIO ══════════════════════════════════════════════════
 const INV_KEY = 'pc4_inventario';
+const INV_SUCS = ['PC Álamos','PC Refugio'];
 
 function dash_getInventario() {
-  try { return JSON.parse(localStorage.getItem(INV_KEY) || '[]'); } catch { return []; }
+  const items = ld(INV_KEY, []);
+  // Migración: artículos viejos con existencia como número simple (sin sucursal)
+  // se reparten a "PC Álamos" para no perder el dato; hay que revisarlos y
+  // repartir con "Reportar inventario".
+  let migrado=false;
+  items.forEach(it=>{
+    if(typeof it.existencia!=="object" || it.existencia===null){
+      const v=Number(it.existencia||0);
+      it.existencia={"PC Álamos":v||0,"PC Refugio":0};
+      migrado=true;
+    }
+  });
+  if(migrado) dash_saveInventario(items);
+  return items;
 }
-function dash_saveInventario(arr) { localStorage.setItem(INV_KEY, JSON.stringify(arr)); }
+function dash_saveInventario(arr) { sv(INV_KEY, arr); }
 const fmtInv = v => '$' + Number(v||0).toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2});
 
 function dash_renderInventario() {
@@ -7642,19 +7707,25 @@ function dash_renderInventario() {
   const tabla = document.getElementById('inv-tabla');
   const resumen = document.getElementById('inv-resumen');
 
+  const existTotal = it => INV_SUCS.reduce((s,suc)=>s+Number(it.existencia?.[suc]||0),0);
   const totalArt = items.length;
-  const valorTotal = items.reduce((s,i) => s + (Number(i.costoUnit||0) * Number(i.existencia||0)), 0);
-  const sinStock = items.filter(i => Number(i.existencia||0) === 0).length;
+  const valorTotal = items.reduce((s,i) => s + (Number(i.costoUnit||0) * existTotal(i)), 0);
+  const sinStock = items.filter(i => existTotal(i) === 0).length;
+  const listaCompras = dash_calcularListaCompras(items);
+  const totalCompras = listaCompras.reduce((s,c)=>s+c.costoEst,0);
 
   resumen.innerHTML = [
     {label:'Artículos', val: totalArt, color:'#111'},
     {label:'Valor en inventario', val: fmtInv(valorTotal), color:'#2E7D32'},
     {label:'Sin existencia', val: sinStock, color: sinStock > 0 ? '#C62828' : '#999'},
+    {label:'Por comprar', val: listaCompras.length ? `${listaCompras.length} (${fmtInv(totalCompras)})` : '—', color: listaCompras.length ? '#C62828' : '#999'},
   ].map(c=>`
     <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:14px 20px;min-width:140px;flex:1;">
       <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;">${c.label}</div>
       <div style="font-size:22px;font-weight:500;color:${c.color};">${c.val}</div>
     </div>`).join('');
+
+  dash_renderListaCompras(listaCompras);
 
   if (!items.length) {
     tabla.style.display = 'none'; empty.style.display = 'block'; return;
@@ -7664,8 +7735,14 @@ function dash_renderInventario() {
   tbody.innerHTML = items.map((item, idx) => {
     const cu = item.costoUnit ? Number(item.costoUnit)
       : (item.costoPaq && item.udsPaq ? Number(item.costoPaq)/Number(item.udsPaq) : 0);
-    const stockColor = Number(item.existencia||0) === 0 ? '#C62828'
-      : Number(item.existencia||0) <= 5 ? '#E65100' : '#2E7D32';
+    const minimo = item.minimo!=null ? Number(item.minimo) : null;
+    const stockCellColor = (suc) => {
+      const v = Number(item.existencia?.[suc]||0);
+      if(minimo!=null && v<minimo) return '#C62828';
+      if(v===0) return '#C62828';
+      if(v<=5) return '#E65100';
+      return '#2E7D32';
+    };
     return `<tr>
       <td class="td-label" style="font-weight:600;color:#111;">${item.nombre||'—'}
         ${item.notas?`<div style="font-size:10px;color:#bbb;font-weight:400;margin-top:2px;">${item.notas}</div>`:''}
@@ -7675,7 +7752,9 @@ function dash_renderInventario() {
       <td style="text-align:right;color:#1565C0;font-weight:500;">${fmtInv(cu)}</td>
       <td style="text-align:right;color:#2E7D32;font-weight:500;">${item.costoPaq?fmtInv(item.costoPaq):'—'}</td>
       <td style="text-align:center;color:#555;">${item.udsPaq||'—'}</td>
-      <td style="text-align:right;font-weight:700;color:${stockColor};">${item.existencia??'—'}</td>
+      <td style="text-align:center;color:#888;">${minimo??'—'}</td>
+      <td style="text-align:right;font-weight:700;color:${stockCellColor('PC Álamos')};">${item.existencia?.['PC Álamos']??0}</td>
+      <td style="text-align:right;font-weight:700;color:${stockCellColor('PC Refugio')};">${item.existencia?.['PC Refugio']??0}</td>
       <td style="text-align:center;">
         <button onclick="dash_editarArticuloInv(${idx})" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px 5px;opacity:.6;" title="Editar">✏️</button>
         <button onclick="dash_eliminarArticuloInv(${idx})" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px 5px;opacity:.6;color:#C62828;" title="Eliminar">🗑</button>
@@ -7684,11 +7763,75 @@ function dash_renderInventario() {
   }).join('');
 }
 
+// Compara existencia vs mínimo por artículo y sucursal → lista de lo que falta comprar
+function dash_calcularListaCompras(items){
+  items = items || dash_getInventario();
+  const out=[];
+  items.forEach(item=>{
+    if(item.minimo==null || item.minimo<=0) return;
+    const cu = item.costoUnit ? Number(item.costoUnit)
+      : (item.costoPaq && item.udsPaq ? Number(item.costoPaq)/Number(item.udsPaq) : 0);
+    INV_SUCS.forEach(suc=>{
+      const existe = Number(item.existencia?.[suc]||0);
+      const min = Number(item.minimo);
+      if(existe < min){
+        const faltante = min - existe;
+        out.push({ nombre:item.nombre, categoria:item.categoria, sucursal:suc, existe, minimo:min, faltante, costoEst: faltante*cu });
+      }
+    });
+  });
+  return out;
+}
+
+function dash_renderListaCompras(lista){
+  const wrap=document.getElementById('inv-compras-wrap');
+  const cont=document.getElementById('inv-compras');
+  if(!wrap||!cont) return;
+  if(!lista.length){ wrap.style.display='none'; cont.innerHTML=''; return; }
+  wrap.style.display='block';
+  const porSuc={};
+  lista.forEach(l=>{ (porSuc[l.sucursal]=porSuc[l.sucursal]||[]).push(l); });
+  cont.innerHTML = Object.entries(porSuc).map(([suc,arr])=>{
+    const total=arr.reduce((s,a)=>s+a.costoEst,0);
+    return `<div style="background:#fff;border:0.5px solid #f0c6c6;border-left:4px solid #C62828;border-radius:10px;padding:14px 18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-weight:700;color:#111;font-size:13px;">${suc}</span>
+        <span style="font-size:12px;color:#C62828;font-weight:700;">${fmtInv(total)} estimado</span>
+      </div>
+      ${arr.map(a=>`
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:4px 0;border-top:1px solid #f5f5f5;">
+          <span>${a.nombre} <span style="color:#aaa">(tiene ${a.existe}, mínimo ${a.minimo})</span></span>
+          <span style="font-weight:700;color:#111;">comprar ${a.faltante}${a.costoEst?` · ${fmtInv(a.costoEst)}`:''}</span>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function dash_copiarListaCompras(){
+  const lista=dash_calcularListaCompras();
+  if(!lista.length){ dash_showToast('No hay artículos por debajo del mínimo'); return; }
+  const porSuc={};
+  lista.forEach(l=>{ (porSuc[l.sucursal]=porSuc[l.sucursal]||[]).push(l); });
+  let txt='🛒 LISTA DE COMPRAS — Patio Cinco\n';
+  let granTotal=0;
+  Object.entries(porSuc).forEach(([suc,arr])=>{
+    const total=arr.reduce((s,a)=>s+a.costoEst,0);
+    granTotal+=total;
+    txt+=`\n— ${suc} —\n`;
+    arr.forEach(a=>{ txt+=`• ${a.nombre}: comprar ${a.faltante} (tiene ${a.existe}, mínimo ${a.minimo})${a.costoEst?` — ${fmtInv(a.costoEst)}`:''}\n`; });
+    txt+=`Subtotal: ${fmtInv(total)}\n`;
+  });
+  txt+=`\nTOTAL ESTIMADO: ${fmtInv(granTotal)}`;
+  navigator.clipboard.writeText(txt).then(()=>dash_showToast('📋 Lista copiada')).catch(()=>{
+    prompt('Copia la lista manualmente:', txt);
+  });
+}
+
 function dash_abrirModalInv() {
   document.getElementById('inv-edit-idx').value = -1;
   document.getElementById('inv-modal-title').textContent = 'Nuevo artículo';
   ['inv-nombre','inv-categoria','inv-proveedor','inv-notas'].forEach(id=>document.getElementById(id).value='');
-  ['inv-costo-unit','inv-costo-paq','inv-uds-paq','inv-existencia'].forEach(id=>document.getElementById(id).value='');
+  ['inv-costo-unit','inv-costo-paq','inv-uds-paq','inv-minimo','inv-existencia-alamos','inv-existencia-refugio'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('inv-modal').classList.add('open');
   document.getElementById('inv-nombre').focus();
 }
@@ -7703,7 +7846,9 @@ function dash_editarArticuloInv(idx) {
   document.getElementById('inv-costo-unit').value = item.costoUnit||'';
   document.getElementById('inv-costo-paq').value = item.costoPaq||'';
   document.getElementById('inv-uds-paq').value = item.udsPaq||'';
-  document.getElementById('inv-existencia').value = item.existencia??'';
+  document.getElementById('inv-minimo').value = item.minimo??'';
+  document.getElementById('inv-existencia-alamos').value = item.existencia?.['PC Álamos']??'';
+  document.getElementById('inv-existencia-refugio').value = item.existencia?.['PC Refugio']??'';
   document.getElementById('inv-notas').value = item.notas||'';
   document.getElementById('inv-modal').classList.add('open');
 }
@@ -7719,8 +7864,14 @@ function dash_guardarArticuloInv() {
     costoUnit: document.getElementById('inv-costo-unit').value||null,
     costoPaq:  document.getElementById('inv-costo-paq').value||null,
     udsPaq:    document.getElementById('inv-uds-paq').value||null,
-    existencia: document.getElementById('inv-existencia').value!==''
-      ? Number(document.getElementById('inv-existencia').value) : null,
+    minimo: document.getElementById('inv-minimo').value!==''
+      ? Number(document.getElementById('inv-minimo').value) : null,
+    existencia: {
+      'PC Álamos': document.getElementById('inv-existencia-alamos').value!==''
+        ? Number(document.getElementById('inv-existencia-alamos').value) : 0,
+      'PC Refugio': document.getElementById('inv-existencia-refugio').value!==''
+        ? Number(document.getElementById('inv-existencia-refugio').value) : 0,
+    },
     notas: document.getElementById('inv-notas').value.trim(),
   };
   const items = dash_getInventario();
@@ -7734,6 +7885,52 @@ function dash_eliminarArticuloInv(idx) {
   if (!confirm('¿Eliminar este artículo?')) return;
   const items = dash_getInventario(); items.splice(idx, 1);
   dash_saveInventario(items); dash_renderInventario(); dash_showToast('Artículo eliminado');
+}
+
+// ── Reportar inventario contado (por sucursal) ─────────────────
+let _invReporteSuc = 'PC Álamos';
+
+function dash_abrirReporteInv() {
+  const items = dash_getInventario();
+  if (!items.length) { alert('Primero agrega artículos al catálogo con "+ Agregar artículo".'); return; }
+  dash_reporteSetSuc(_invReporteSuc);
+  document.getElementById('inv-reporte-modal').classList.add('open');
+}
+
+function dash_reporteSetSuc(suc) {
+  _invReporteSuc = suc;
+  document.getElementById('inv-rep-btn-alamos').classList.toggle('btn-dark', suc==='PC Álamos');
+  document.getElementById('inv-rep-btn-refugio').classList.toggle('btn-dark', suc==='PC Refugio');
+  const items = dash_getInventario();
+  const cont = document.getElementById('inv-reporte-lista');
+  cont.innerHTML = items.map((item, idx) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:#f7f6f3;border-radius:8px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#111;">${item.nombre||'—'}</div>
+        <div style="font-size:10px;color:#999;">${item.minimo!=null?`mínimo ${item.minimo}`:'sin mínimo definido'}</div>
+      </div>
+      <input type="number" min="0" step="1" data-idx="${idx}" class="inv-rep-input"
+        value="${item.existencia?.[suc]??0}"
+        style="width:80px;padding:8px 10px;border:1px solid #e0ddd4;border-radius:8px;font-size:14px;text-align:right;font-weight:700;">
+    </div>`).join('');
+}
+
+function dash_cerrarReporteInv() { document.getElementById('inv-reporte-modal').classList.remove('open'); }
+
+function dash_guardarReporteInv() {
+  const items = dash_getInventario();
+  document.querySelectorAll('#inv-reporte-lista .inv-rep-input').forEach(inp=>{
+    const idx = Number(inp.dataset.idx);
+    const val = inp.value!=='' ? Number(inp.value) : 0;
+    if (!items[idx].existencia) items[idx].existencia = {};
+    items[idx].existencia[_invReporteSuc] = val;
+  });
+  const ts = new Date().toISOString();
+  items.forEach(it=>{ if(!it.ultimoConteo) it.ultimoConteo={}; it.ultimoConteo[_invReporteSuc]=ts; });
+  dash_saveInventario(items);
+  dash_cerrarReporteInv();
+  dash_renderInventario();
+  dash_showToast(`✓ Conteo de ${_invReporteSuc} guardado`);
 }
 
 // ── Detección: gasto ↔ inventario ─────────────────────────────
@@ -7779,10 +7976,12 @@ function dash__mostrarSiguienteMatch() {
 function dash_confirmarInvMatch() {
   const m = _invMatchQueue[0];
   const uds = Number(document.getElementById('inv-match-uds').value) || 1;
+  const suc = document.getElementById('inv-match-suc').value || 'PC Álamos';
   const items = dash_getInventario();
-  items[m.invIdx].existencia = (Number(items[m.invIdx].existencia || 0)) + uds;
+  if (!items[m.invIdx].existencia) items[m.invIdx].existencia = {};
+  items[m.invIdx].existencia[suc] = (Number(items[m.invIdx].existencia[suc] || 0)) + uds;
   dash_saveInventario(items);
-  dash_showToast(`+${uds} unidades → ${m.invNombre}`);
+  dash_showToast(`+${uds} unidades → ${m.invNombre} (${suc})`);
   dash__cerrarMatchModal();
 }
 
