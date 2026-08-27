@@ -6206,17 +6206,17 @@ function onInsumoFile(inp){
 }
 
 async function runInsumoOCR(b64, mime){
-  setSt('load', '📷 Leyendo nota de insumos con IA...');
+  flash('📷 Leyendo nota de insumos con IA...');
   const prompt = 'Analiza esta foto de una nota de remision (compra de insumos quimicos para un car wash). Extrae: fecha (formato DD/MM/YYYY, del campo FECHA con DIA/MES/ANO), items (lista de productos comprados, cada uno con producto: nombre del articulo tal como aparece; litros: cantidad numerica en litros, ej. si dice 40 LTS son 40; costo: el importe en pesos de esa linea, usa la columna IMPORTE si existe, si no hay columna IMPORTE multiplica el precio unitario por (litros/20)), y total (el total de la nota). Devuelve SOLO este JSON sin texto adicional: {"fecha":"DD/MM/YYYY","items":[{"producto":"...","litros":0,"costo":0}],"total":0}';
   let parsed;
   try{
     parsed = await callGemini(b64, mime, prompt);
   } catch(e){
-    setSt('err', '❌ No se pudo leer la nota: ' + e.message);
+    flash('❌ No se pudo leer la nota: ' + e.message);
     return;
   }
   if(!parsed || !Array.isArray(parsed.items) || !parsed.items.length){
-    setSt('err', '❌ No se detectaron productos en la nota');
+    flash('❌ No se detectaron productos en la nota');
     return;
   }
   let added = 0;
@@ -6233,7 +6233,7 @@ async function runInsumoOCR(b64, mime){
     const m = String(parsed.fecha).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     if(fEl && m){ fEl.value = m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'); }
   }
-  setSt('ok', '✓ Nota leída: ' + added + ' productos');
+  flash('✓ Nota leída: ' + added + ' productos');
 }
 
 function guardarInsumo(){
