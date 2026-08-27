@@ -1449,6 +1449,9 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
           <input type="number" id="ins-item-litros" placeholder="Litros" style="width:70px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
           <input type="number" id="ins-item-costo" placeholder="Costo $" style="width:80px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
           <button onclick="agregarInsumoItem()" style="background:#f0ede6;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">+ Agregar</button>
+          <label style="background:#1c3a61;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer">📷 Leer nota
+            <input type="file" accept="image/*" style="display:none" onchange="onInsumoFile(this)">
+          </label>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="font-size:12px;font-weight:700">Total: $<span id="ins-total">0</span></div>
@@ -6189,9 +6192,56 @@ function poblarInsumoSemSel(){
   if(uniq.includes(prev) || prev===semActual) sel.value = prev;
 }
 
+function onInsumoFile(inp){
+  const file = inp.files && inp.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = e=>{
+    const b64 = e.target.result.split(',')[1];
+    const mime = file.type || 'image/jpeg';
+    runInsumoOCR(b64, mime);
+  };
+  r.readAsDataURL(file);
+  inp.value = '';
+}
+
+async function runInsumoOCR(b64, mime){
+  setSt('load', '📷 Leyendo nota de insumos con IA...');
+  const prompt = 'Analiza esta foto de una nota de remision (compra de insumos quimicos para un car wash). Extrae: fecha (formato DD/MM/YYYY, del campo FECHA con DIA/MES/ANO), items (lista de productos comprados, cada uno con producto: nombre del articulo tal como aparece; litros: cantidad numerica en litros, ej. si dice 40 LTS son 40; costo: el importe en pesos de esa linea, usa la columna IMPORTE si existe, si no hay columna IMPORTE multiplica el precio unitario por (litros/20)), y total (el total de la nota). Devuelve SOLO este JSON sin texto adicional: {"fecha":"DD/MM/YYYY","items":[{"producto":"...","litros":0,"costo":0}],"total":0}';
+  let parsed;
+  try{
+    parsed = await callGemini(b64, mime, prompt);
+  } catch(e){
+    setSt('err', '❌ No se pudo leer la nota: ' + e.message);
+    return;
+  }
+  if(!parsed || !Array.isArray(parsed.items) || !parsed.items.length){
+    setSt('err', '❌ No se detectaron productos en la nota');
+    return;
+  }
+  let added = 0;
+  parsed.items.forEach(it=>{
+    const lit = parseFloat(it.litros) || 0;
+    const costo = parseFloat(it.costo) || 0;
+    if(!lit && !costo) return;
+    insItems.push({ producto: it.producto || 'Otro', litros: lit, costo: costo });
+    added++;
+  });
+  renderInsItemsTabla();
+  if(parsed.fecha){
+    const fEl = document.getElementById('ins-fecha');
+    const m = String(parsed.fecha).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if(fEl && m){ fEl.value = m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'); }
+  }
+  setSt('ok', '✓ Nota leída: ' + added + ' productos');
+}
+
 function guardarInsumo(){
   if(!insItems.length){ flash('Agrega al menos un producto'); return; }
-  const fecha = document.getElementById('ins-fecha').value;
+  const fechaRaw = document.getElementById('ins-fecha').value;
+  let fecha = fechaRaw;
+  const isoM = String(fechaRaw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(isoM){ fecha = isoM[3]+'/'+isoM[2]+'/'+isoM[1]; }
   const semana = document.getElementById('ins-sem-sel').value;
   const sucursal = document.getElementById('ins-suc-sel').value;
   const total = insItems.reduce((a,it)=>a+it.costo,0);
