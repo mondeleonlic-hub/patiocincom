@@ -1315,6 +1315,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
           <button onclick="setSucTab('performance')" id="suctab-performance" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">⭐ Performance</button>
           <button onclick="setSucTab('hist')" id="suctab-hist" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">📈 Histórico</button>
           <button onclick="setSucTab('ranking')" id="suctab-ranking" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">🏆 Ranking</button>
+          <button onclick="setSucTab('insumos')" id="suctab-insumos" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">🧴 Insumos</button>
         </div>
         <button class="btn by" onclick="renderSucursales()" style="padding:5px 10px">🔄</button>
       </div>
@@ -1425,6 +1426,50 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
         <div style="font-weight:700;font-size:13px;margin-bottom:12px">Mapa de calor — últimas semanas</div>
         <div id="ranking-heatmap" style="overflow-x:auto"></div>
+      </div>
+    </div>
+
+    <div id="suc-view-insumos" style="display:none">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:12px">Registrar compra de insumos</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Fecha</label>
+            <input type="date" id="ins-fecha" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px"></div>
+          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Semana</label>
+            <select id="ins-sem-sel" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-weight:700"></select></div>
+          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Sucursal</label>
+            <select id="ins-suc-sel" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
+              <option value="PC Refugio">PC Refugio</option>
+              <option value="PC Álamos">PC Álamos</option>
+            </select></div>
+        </div>
+        <div id="ins-items-tabla" style="margin-bottom:8px"></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+          <select id="ins-item-prod" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px"><option value="Cera Líquida">Cera Líquida</option><option value="Shampoo">Shampoo</option><option value="Almorol Gel">Almorol Gel</option><option value="Almorol Líquido">Almorol Líquido</option><option value="Desengrasante">Desengrasante</option><option value="Filtro Solar">Filtro Solar</option><option value="APC Tapicería">APC Tapicería</option><option value="Otro">Otro</option></select>
+          <input type="number" id="ins-item-litros" placeholder="Litros" style="width:70px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
+          <input type="number" id="ins-item-costo" placeholder="Costo $" style="width:80px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
+          <button onclick="agregarInsumoItem()" style="background:#f0ede6;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">+ Agregar</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:12px;font-weight:700">Total: $<span id="ins-total">0</span></div>
+          <button onclick="guardarInsumo()" style="background:#000;color:#f8ba00;border:none;border-radius:6px;padding:6px 16px;font-size:11px;font-weight:700;cursor:pointer">Guardar compra</button>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div style="font-weight:700;font-size:13px">Indicadores de consumo</div>
+          <select id="ins-periodo-sel" onchange="renderInsumos()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px">
+            <option value="">Todas las semanas</option>
+          </select>
+        </div>
+        <div id="ins-indicadores" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px"></div>
+        <div id="ins-insight" style="font-size:12px;color:#555;background:#faf8f2;border-radius:8px;padding:10px 12px;margin-bottom:14px"></div>
+        <div style="font-weight:700;font-size:12px;margin-bottom:8px">Consumo por producto</div>
+        <div id="ins-productos-tabla" style="overflow-x:auto"></div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px">Historial de compras</div>
+        <div id="ins-hist"></div>
       </div>
     </div>
 
@@ -6081,7 +6126,7 @@ function guardarCoordHistEdit(idx){
 let sucTabActual="pagos";
 function setSucTab(tab){
   sucTabActual=tab;
-  ["pagos","performance","hist","ranking"].forEach(t=>{
+  ["pagos","performance","hist","ranking","insumos"].forEach(t=>{
     const btn=document.getElementById("suctab-"+t);
     const view=document.getElementById("suc-view-"+t);
     if(btn){btn.style.background=t===tab?"#111":"#f0ede6";btn.style.color=t===tab?"#fff":"#555";}
@@ -6090,9 +6135,193 @@ function setSucTab(tab){
   if(tab==="performance"){poblarPerfSemSel();renderPerfTabla();renderPerfHist();renderPerfTrend();}
   if(tab==="hist"){poblarFiltroLav();renderHistPagos();}
   if(tab==="ranking"){renderRanking();}
+  if(tab==="insumos"){renderInsumos();}
 }
 
 // ── RANKING / ANALYTICS ───────────────────────────────────────────────────────
+
+let insItems = [];
+let insEditId = null;
+
+function agregarInsumoItem(){
+  const prodEl = document.getElementById('ins-item-prod');
+  const litEl = document.getElementById('ins-item-litros');
+  const costoEl = document.getElementById('ins-item-costo');
+  const prod = prodEl.value;
+  const lit = parseFloat(litEl.value)||0;
+  const costo = parseFloat(costoEl.value)||0;
+  if(!lit && !costo){ flash('Captura litros o costo'); return; }
+  insItems.push({producto:prod, litros:lit, costo:costo});
+  litEl.value=''; costoEl.value='';
+  renderInsItemsTabla();
+}
+function quitarInsumoItem(i){
+  insItems.splice(i,1);
+  renderInsItemsTabla();
+}
+function renderInsItemsTabla(){
+  const el = document.getElementById('ins-items-tabla');
+  if(!el) return;
+  if(!insItems.length){
+    el.innerHTML = '<div style="font-size:11px;color:#999">Sin productos agregados.</div>';
+    const totalEl = document.getElementById('ins-total');
+    if(totalEl) totalEl.textContent = '0';
+    return;
+  }
+  let total = 0;
+  el.innerHTML = insItems.map((it,i)=>{
+    total += it.costo;
+    return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid #f0ede6"><span>'+esc(it.producto)+' — '+it.litros+'L</span><span>$'+it.costo+' <button onclick="quitarInsumoItem('+i+')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:12px">✕</button></span></div>';
+  }).join('');
+  const totalEl = document.getElementById('ins-total');
+  if(totalEl) totalEl.textContent = total.toFixed(0);
+}
+
+function poblarInsumoSemSel(){
+  const sel = document.getElementById('ins-sem-sel');
+  if(!sel) return;
+  const prev = sel.value;
+  const hist = historial&&historial.length?historial:ld('pc4_hist',[]);
+  const semActual = document.getElementById('sem')?.value||'';
+  const uniq = [...new Set(hist.map(h=>String(h.semana||h.sem||'')).filter(Boolean))];
+  uniq.sort((a,b)=>{ const na=parseFloat(a), nb=parseFloat(b); if(!isNaN(na)&&!isNaN(nb)) return nb-na; return b.localeCompare(a); });
+  sel.innerHTML = '<option value="'+esc(semActual)+'">Semana actual (S'+esc(semActual)+')</option>' + uniq.map(s=>'<option value="'+esc(s)+'">S'+esc(s)+'</option>').join('');
+  if(uniq.includes(prev) || prev===semActual) sel.value = prev;
+}
+
+function guardarInsumo(){
+  if(!insItems.length){ flash('Agrega al menos un producto'); return; }
+  const fecha = document.getElementById('ins-fecha').value;
+  const semana = document.getElementById('ins-sem-sel').value;
+  const sucursal = document.getElementById('ins-suc-sel').value;
+  const total = insItems.reduce((a,it)=>a+it.costo,0);
+  const entry = { id: insEditId||('ins_'+Date.now()), fecha, semana, sucursal, items:[...insItems], total };
+  if(insEditId){
+    const idx = insumos.findIndex(x=>x.id===insEditId);
+    if(idx>=0) insumos[idx]=entry;
+  } else {
+    insumos = [entry, ...insumos];
+  }
+  insEditId = null;
+  sv('pc4_insumos', insumos);
+  insItems = [];
+  renderInsItemsTabla();
+  renderInsumos();
+  flash('✓ Compra de insumos guardada');
+}
+
+function eliminarInsumo(id){
+  if(!confirm('¿Eliminar esta compra de insumos?')) return;
+  insumos = insumos.filter(x=>x.id!==id);
+  sv('pc4_insumos', insumos);
+  renderInsumos();
+}
+
+function autosPorSucSemana(sem, suc){
+  let rs;
+  const semActual = document.getElementById('sem')?.value||'';
+  if(!sem || sem===semActual){
+    rs = rows||[];
+  } else {
+    const hist = historial&&historial.length?historial:ld('pc4_hist',[]);
+    const h = hist.find(w=>String(w.semana||w.sem)===String(sem));
+    rs = h?(h.rows||[]):[];
+  }
+  return rs.filter(r=>r.sucursal===suc).reduce((a,r)=>a+(Number(r.autos)||0),0);
+}
+
+function renderInsumos(){
+  poblarInsumoSemSel();
+  const fechaEl = document.getElementById('ins-fecha');
+  if(fechaEl && !fechaEl.value){ fechaEl.value = new Date().toISOString().slice(0,10); }
+
+  const periodoSel = document.getElementById('ins-periodo-sel');
+  if(!periodoSel) return;
+  const semanasDisponibles = [...new Set(insumos.map(x=>x.semana).filter(Boolean))];
+  semanasDisponibles.sort((a,b)=>{ const na=parseFloat(a), nb=parseFloat(b); if(!isNaN(na)&&!isNaN(nb)) return nb-na; return b.localeCompare(a); });
+  const prevPeriodo = periodoSel.value;
+  periodoSel.innerHTML = '<option value="">Todas las semanas</option>' + semanasDisponibles.map(s=>'<option value="'+esc(s)+'">S'+esc(s)+'</option>').join('');
+  if(semanasDisponibles.includes(prevPeriodo)) periodoSel.value = prevPeriodo;
+  const periodo = periodoSel.value;
+
+  const filtrados = periodo ? insumos.filter(x=>x.semana===periodo) : insumos;
+  const sucs = ['PC Refugio','PC Álamos'];
+  const resumen = {};
+  sucs.forEach(suc=>{
+    const entries = filtrados.filter(x=>x.sucursal===suc);
+    const totalGasto = entries.reduce((a,x)=>a+(x.total||0),0);
+    const totalLitros = entries.reduce((a,x)=>a+x.items.reduce((s,it)=>s+(it.litros||0),0),0);
+    const semanasSet = [...new Set(entries.map(x=>x.semana).filter(Boolean))];
+    const totalAutos = semanasSet.reduce((a,sem)=>a+autosPorSucSemana(sem,suc),0);
+    resumen[suc] = { totalGasto, totalLitros, totalAutos, porAuto: totalAutos? totalGasto/totalAutos : null, litrosPorAuto: totalAutos? totalLitros/totalAutos : null };
+  });
+
+  const indEl = document.getElementById('ins-indicadores');
+  indEl.innerHTML = sucs.map(suc=>{
+    const r = resumen[suc];
+    return '<div style="background:#faf8f2;border-radius:10px;padding:12px 14px">'
+      +'<div style="font-weight:700;font-size:12px;margin-bottom:6px;color:'+(suc==='PC Refugio'?'#1c3a61':'#2e7d4f')+'">'+esc(suc)+'</div>'
+      +'<div style="font-size:11px;color:#888">Gasto total</div><div style="font-size:16px;font-weight:700;margin-bottom:6px">$'+r.totalGasto.toLocaleString('es-MX')+'</div>'
+      +'<div style="font-size:11px;color:#888">Litros totales</div><div style="font-size:14px;font-weight:700;margin-bottom:6px">'+r.totalLitros+'L</div>'
+      +'<div style="font-size:11px;color:#888">Autos lavados (mismas semanas)</div><div style="font-size:14px;font-weight:700;margin-bottom:6px">'+r.totalAutos+'</div>'
+      +'<div style="display:flex;gap:14px;margin-top:6px;border-top:1px solid #e8e2d4;padding-top:8px">'
+      +'<div><div style="font-size:10px;color:#888">$ / auto</div><div style="font-size:14px;font-weight:700;color:#C8960C">'+(r.porAuto!=null?'$'+r.porAuto.toFixed(2):'—')+'</div></div>'
+      +'<div><div style="font-size:10px;color:#888">L / auto</div><div style="font-size:14px;font-weight:700;color:#C8960C">'+(r.litrosPorAuto!=null?r.litrosPorAuto.toFixed(3)+'L':'—')+'</div></div>'
+      +'</div></div>';
+  }).join('');
+
+  const insightEl = document.getElementById('ins-insight');
+  const rR = resumen['PC Refugio'], rA = resumen['PC Álamos'];
+  if(rR.porAuto!=null && rA.porAuto!=null && rR.porAuto>0 && rA.porAuto>0){
+    const mayor = rR.porAuto>rA.porAuto ? 'PC Refugio' : 'PC Álamos';
+    const menor = mayor==='PC Refugio' ? 'PC Álamos' : 'PC Refugio';
+    const rMayor = resumen[mayor], rMenor = resumen[menor];
+    const dif = ((rMayor.porAuto/rMenor.porAuto)-1)*100;
+    insightEl.innerHTML = '💡 <b>'+esc(mayor)+'</b> gasta <b>$'+rMayor.porAuto.toFixed(2)+'</b> en insumos por auto lavado, un '+dif.toFixed(0)+'% más que <b>'+esc(menor)+'</b> ($'+rMenor.porAuto.toFixed(2)+'). Si '+esc(mayor)+' bajara al nivel de '+esc(menor)+', ahorraría aprox. $'+((rMayor.porAuto-rMenor.porAuto)*rMayor.totalAutos).toFixed(0)+' en el período mostrado.';
+  } else {
+    insightEl.innerHTML = 'Registra compras y autos lavados en ambas sucursales para ver comparaciones automáticas.';
+  }
+
+  const prodTabla = document.getElementById('ins-productos-tabla');
+  const prodMap = {};
+  filtrados.forEach(x=>{
+    x.items.forEach(it=>{
+      const key = it.producto;
+      if(!prodMap[key]) prodMap[key] = {};
+      if(!prodMap[key][x.sucursal]) prodMap[key][x.sucursal] = {l:0,c:0};
+      prodMap[key][x.sucursal].l += (it.litros||0);
+      prodMap[key][x.sucursal].c += (it.costo||0);
+    });
+  });
+  const prods = Object.keys(prodMap).sort();
+  if(!prods.length){
+    prodTabla.innerHTML = '<div style="font-size:11px;color:#999">Sin compras registradas en este período.</div>';
+  } else {
+    prodTabla.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:420px">'
+      +'<tr style="text-align:left;color:#888;font-size:10px"><th style="padding:4px 8px">Producto</th><th style="padding:4px 8px">Refugio L</th><th style="padding:4px 8px">Refugio $</th><th style="padding:4px 8px">Álamos L</th><th style="padding:4px 8px">Álamos $</th></tr>'
+      +prods.map(p=>{
+        const rr = prodMap[p]['PC Refugio']||{l:0,c:0};
+        const ra = prodMap[p]['PC Álamos']||{l:0,c:0};
+        return '<tr style="border-top:1px solid #f0ede6"><td style="padding:5px 8px;font-weight:600">'+esc(p)+'</td><td style="padding:5px 8px">'+rr.l+'L</td><td style="padding:5px 8px">$'+rr.c+'</td><td style="padding:5px 8px">'+ra.l+'L</td><td style="padding:5px 8px">$'+ra.c+'</td></tr>';
+      }).join('')
+      +'</table>';
+  }
+
+  const histEl = document.getElementById('ins-hist');
+  if(!insumos.length){
+    histEl.innerHTML = '<div style="font-size:11px;color:#999">Sin compras registradas aún.</div>';
+  } else {
+    const ordenados = [...insumos].sort((a,b)=> (b.fecha||'').localeCompare(a.fecha||''));
+    histEl.innerHTML = ordenados.map(x=>{
+      const resumenItems = x.items.map(it=>it.producto+' '+it.litros+'L').join(', ');
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede6;font-size:12px">'
+        +'<div><b>'+esc(x.fecha||'—')+'</b> · S'+esc(x.semana||'?')+' · '+esc(x.sucursal)+'<div style="color:#888;font-size:11px">'+esc(resumenItems)+'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px"><b>$'+(x.total||0)+'</b><button onclick="eliminarInsumo(\''+x.id+'\')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:13px">✕</button></div>'
+        +'</div>';
+    }).join('');
+  }
+}
+
 function renderRanking(){
   const suc=document.getElementById("ranking-suc-sel")?.value||"all";
   const hist=historial&&historial.length?historial:ld("pc4_hist",[]);
@@ -6232,6 +6461,12 @@ let perfHist=[];   // [{semana, fecha, suc, data:[...]}]
 
 function initPerf(){
   perfHist=ld("pc4_perf_hist",[]);
+}
+
+let insumos=[];
+
+function initInsumos(){
+  insumos=ld("pc4_insumos",[]);
 }
 
 const PERF_COLS=[
@@ -6907,6 +7142,7 @@ function crmGuardarConfig(){
 init().then(()=>{
   initFlujo();
   initPerf();
+  initInsumos();
   initLiquidaciones();
   popularSelectores();
   // Asegura que el tab Flujo esté activo al arrancar
