@@ -1278,6 +1278,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
           <th style="min-width:50px">Autos</th>
           <th style="min-width:80px">Comisión</th>
           <th style="min-width:68px">Food</th>
+          <th style="min-width:90px">Bono Food</th>
           <th style="min-width:68px">Merch</th>
           <th style="min-width:68px">Bono</th>
           <th style="min-width:72px">Ahorro</th>
@@ -3640,6 +3641,7 @@ function renderT(){
       <td data-label="Autos" style="padding:5px 4px"><input type="number" min="0" value="${row.autos||""}" oninput="uf(${i},'autos',+this.value)" style="width:44px;text-align:center"></td>
       <td data-label="Comisión" style="padding:5px 4px"><input type="number" min="0" step="0.5" value="${row.comision||""}" oninput="uf(${i},'comision',+this.value)" style="width:66px;text-align:right"></td>
       <td data-label="Food" style="padding:5px 4px"><input type="number" min="0" step="0.01" value="${row.food||""}" oninput="uf(${i},'food',+this.value)" style="width:62px;text-align:right;color:${num(row.food)>0?"#e53e3e":"inherit"}"></td>
+      <td data-label="Bono Food" style="padding:5px 4px;text-align:center">${(()=>{ if(!row.nombre) return ""; const s=saldoBonoFood(row.nombre); if(!s) return `<button type="button" onclick="asignarBonoFood(${i})" style="font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid #ccc;background:#f5f5f5;cursor:pointer">+ Bono</button>`; const color=s.restante<0?"#e53e3e":"#0a7a3d"; return `<span onclick="asignarBonoFood(${i})" style="cursor:pointer;font-weight:600;color:${color}" title="Bono $${s.monto.toFixed(2)} · consumido $${s.consumido.toFixed(2)}">$${s.restante.toFixed(2)}</span>`; })()}</td>
       <td data-label="Merch" style="padding:5px 4px;white-space:nowrap">
         <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:60px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}" title="Doble clic: agregar concepto" ondblclick="editarConceptoMerch(${i})">
         <div ondblclick="editarConceptoMerch(${i})" style="font-size:9px;color:${row.merchConcepto?'#c0392b':'#ccc'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64px;cursor:pointer" title="${esc(row.merchConcepto||'Doble clic para agregar concepto')}">${esc(row.merchConcepto||'+ concepto')}</div>
@@ -6537,6 +6539,64 @@ function initInsumos(){
   insumos=ld("pc4_insumos",[]);
 }
 
+let bonosFood={};
+
+function initBonosFood(){
+  bonosFood=ld("pc4_bonosFood",{});
+}
+
+function semKey(s){
+  if(!s) return 0;
+  const m=String(s).match(/(\d+)\s*\/\s*(\d+)/);
+  if(!m) return 0;
+  return parseInt(m[2])*100+parseInt(m[1]);
+}
+
+function foodConsumidoDesde(nombre, semanaInicio){
+  const kInicio=semKey(semanaInicio);
+  let total=0;
+  const hist=(historial&&historial.length?historial:ld("pc4_hist",[]));
+  hist.forEach(w=>{
+    const k=semKey(w.semana||w.sem);
+    if(k>=kInicio && Array.isArray(w.rows)){
+      w.rows.forEach(r=>{ if(r.nombre===nombre) total+=num(r.food); });
+    }
+  });
+  const semAct=document.getElementById("sem")?.value||"";
+  if(semKey(semAct)>=kInicio){
+    rows.forEach(r=>{ if(r.nombre===nombre) total+=num(r.food); });
+  }
+  return total;
+}
+
+function saldoBonoFood(nombre){
+  const b=bonosFood[nombre];
+  if(!b||!num(b.monto)) return null;
+  const consumido=foodConsumidoDesde(nombre,b.semanaAsignado);
+  return {monto:num(b.monto), consumido, restante:num(b.monto)-consumido};
+}
+
+function asignarBonoFood(i){
+  const row=rows[i];
+  if(!row||!row.nombre){ flash("Selecciona un lavador primero"); return; }
+  const nombre=row.nombre;
+  const actual=bonosFood[nombre];
+  const def=actual?actual.monto:500;
+  const val=prompt("Monto del bono de food para "+nombre+" (deja vacío o 0 para quitar el bono):", def);
+  if(val===null) return;
+  const monto=parseFloat(val);
+  if(!monto||monto<=0){
+    delete bonosFood[nombre];
+    flash("Bono food eliminado para "+nombre);
+  } else {
+    const semAct=document.getElementById("sem")?.value||"";
+    bonosFood[nombre]={monto:monto, semanaAsignado:semAct};
+    flash("✓ Bono food de $"+monto.toFixed(2)+" asignado a "+nombre);
+  }
+  sv("pc4_bonosFood", bonosFood);
+  renderT();
+}
+
 const PERF_COLS=[
   {k:"puntos",      label:"Puntos",       type:"number", w:65},
   {k:"lavTotal",    label:"Lavados",      type:"number", w:65},
@@ -7211,6 +7271,7 @@ init().then(()=>{
   initFlujo();
   initPerf();
   initInsumos();
+  initBonosFood();
   initLiquidaciones();
   popularSelectores();
   // Asegura que el tab Flujo esté activo al arrancar
