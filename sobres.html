@@ -1242,6 +1242,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <div class="ph-toolbar">
       <div class="ph">
         <h2 id="ptit">Sin datos cargados</h2>
+        <select id="datos-sem-sel" onchange="renderT()" style="margin:4px 0 8px;padding:6px 10px;border-radius:8px;border:1px solid #ddd;font-size:13px;font-family:inherit;background:#fff"><option value="">Semana actual</option></select>
         <div id="resumen-efec-nom"></div>
         <div class="bg">
           <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
@@ -3562,8 +3563,58 @@ REGLAS DEL JSON:
 }
 
 // ── TABLA ─────────────────────────────────────────────────────────────────────
+function poblarDatosSemSel(){
+  const sel=document.getElementById("datos-sem-sel");
+  if(!sel) return;
+  const cur=sel.value;
+  const hist=(historial&&historial.length?historial:ld("pc4_hist",[]));
+  const weeks=[...new Set(hist.map(w=>String(w.semana||w.sem)).filter(Boolean))];
+  weeks.sort((a,b)=>semKey(b)-semKey(a));
+  sel.innerHTML='<option value="">Semana actual</option>'+weeks.map(w=>`<option value="${esc(w)}">Semana ${esc(w)}</option>`).join("");
+  sel.value = weeks.includes(cur) ? cur : "";
+}
+
+function renderTHistorico(semana, tb){
+  const h=(historial&&historial.length?historial:ld("pc4_hist",[])).find(w=>String(w.semana||w.sem)===semana);
+  const hrows=(h&&Array.isArray(h.rows))?h.rows:[];
+  if(!hrows.length){
+    tb.innerHTML='<tr><td colspan="14" style="padding:20px;text-align:center;color:#999">Sin datos guardados para la semana '+esc(semana)+'</td></tr>';
+    return;
+  }
+  let html="";
+  hrows.forEach(r=>{
+    const foodTxt = num(r.food)>0 ? ("-$"+num(r.food).toFixed(2)) : "—";
+    const merchTxt = num(r.merch)>0 ? ("-$"+num(r.merch).toFixed(2)) : "—";
+    const bonoTxt = num(r.bono)>0 ? ("+$"+num(r.bono).toFixed(2)) : "—";
+    const ahorroTxt = num(r.ahorro)>0 ? ("$"+num(r.ahorro).toFixed(2)) : "—";
+    const extraTxt = num(r.extra)>0 ? ("$"+num(r.extra).toFixed(2)+(r.extraConcepto?" ("+esc(r.extraConcepto)+")":"")) : "—";
+    const deudaTxt = num(r.deudaDesc)>0 ? ("-$"+num(r.deudaDesc).toFixed(2)+(r.deudaCon?" — "+esc(r.deudaCon):"")) : "—";
+    html += `<tr>
+      <td data-label="Nombre" style="padding:6px 8px">${esc(r.nombre||"")}</td>
+      <td data-label="Sucursal" style="padding:6px 8px">${esc(r.sucursal||"")}</td>
+      <td data-label="%" style="padding:6px 8px;text-align:right">${r.pct||0}%</td>
+      <td data-label="Autos" style="padding:6px 8px;text-align:right">${r.autos||0}</td>
+      <td data-label="Comisión" style="padding:6px 8px;text-align:right">$${num(r.comision).toFixed(2)}</td>
+      <td data-label="Food" style="padding:6px 8px;text-align:right;color:${num(r.food)>0?"#e53e3e":"inherit"}">${foodTxt}</td>
+      <td data-label="Bono Food" style="padding:6px 8px;text-align:center;color:#aaa">—</td>
+      <td data-label="Merch" style="padding:6px 8px;text-align:right;color:${num(r.merch)>0?"#e53e3e":"inherit"}">${merchTxt}</td>
+      <td data-label="Bono" style="padding:6px 8px;text-align:right;color:${num(r.bono)>0?"#0a7a3d":"inherit"}">${bonoTxt}</td>
+      <td data-label="Ahorro" style="padding:6px 8px;text-align:right">${ahorroTxt}</td>
+      <td data-label="Extra" style="padding:6px 8px;text-align:right">${extraTxt}</td>
+      <td data-label="Deuda" style="padding:6px 8px">${deudaTxt}</td>
+      <td data-label="Total a pagar" style="padding:6px 8px;text-align:right;font-weight:700">$${num(r.total).toFixed(2)}</td>
+      <td></td>
+    </tr>`;
+  });
+  tb.innerHTML = html;
+}
+
 function renderT(){
   const tb=document.getElementById("tb");tb.innerHTML="";
+  poblarDatosSemSel();
+  const datosSemSel=document.getElementById("datos-sem-sel")?.value||"";
+  document.querySelectorAll(".ph-toolbar .bg button").forEach(b=>{ b.style.opacity=datosSemSel?"0.4":""; b.style.pointerEvents=datosSemSel?"none":""; });
+  if(datosSemSel){ renderTHistorico(datosSemSel, tb); return; }
   let vis=0;
 
   // Detectar lavadores en dos sucursales
