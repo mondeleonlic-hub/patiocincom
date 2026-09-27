@@ -4023,8 +4023,11 @@ function renderResumen(){
 
   // ── Flujo para calcular margen nómina/ingresos ──
   const fd=flujoDias||[];
-  const totIngRef=fd.reduce((s,d)=>s+montoRef(d),0);
-  const totIngAla=fd.reduce((s,d)=>s+montoAla(d),0);
+  const CASH_SHARE_EST=0.525; // Efectivo ~= 52.5% del ingreso real; tarjeta ~47.5% (estimado)
+  const totIngRefCash=fd.reduce((s,d)=>s+montoRef(d),0);
+  const totIngAlaCash=fd.reduce((s,d)=>s+montoAla(d),0);
+  const totIngRef=totIngRefCash/CASH_SHARE_EST;
+  const totIngAla=totIngAlaCash/CASH_SHARE_EST;
   const nomRef=rowsRef.reduce((s,r)=>s+calcT(r,r.nombre),0);
   const nomAla=rowsAla.reduce((s,r)=>s+calcT(r,r.nombre),0);
   const margenRef=totIngRef>0?Math.round(nomRef/totIngRef*100):null;
