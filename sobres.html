@@ -5543,8 +5543,10 @@ function initFlujo(){
 
 function cargarSemanaFlujoVacia(){
   const today = new Date();
-  const sun = new Date(today);
-  sun.setDate(today.getDate() - today.getDay());
+  const anchorDate = new Date(today);
+  anchorDate.setDate(today.getDate() - 1);
+  const sun = new Date(anchorDate);
+  sun.setDate(anchorDate.getDate() - anchorDate.getDay());
   const dias = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
   const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
   flujoDias = [];
