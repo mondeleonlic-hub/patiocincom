@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Inventario · Patio Cinco</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--gold:#C8960C;--gold-pale:#fdf8ec;--black:#111;--bg:#f7f6f3;--card:#fff;--border:#e8e0cc;--muted:#888;--red:#d63a2f;--green:#2e9e5b;--liq:#2f8fe0}
+html,body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:#1a1a1a}
+header{background:var(--black);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px}
+header b{color:var(--gold);font-size:18px;letter-spacing:.5px}
+header span{font-size:13px;opacity:.75}
+main{max-width:640px;margin:0 auto;padding:14px 12px 120px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+h2{margin:0 0 10px;font-size:16px;color:var(--gold);text-transform:uppercase;letter-spacing:.6px}
+h1{font-size:22px;margin:6px 0 4px}
+p.sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.suc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.suc button{padding:22px 8px;font-size:18px;font-weight:700;border:2px solid var(--border);border-radius:16px;background:#fff;cursor:pointer}
+.suc button.on{border-color:var(--gold);background:var(--gold-pale);color:#7a5a00}
+input[type=text]{width:100%;padding:13px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;margin-top:10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid #f0ebdc}
+.row:first-of-type{border-top:0}
+.row .nm{font-size:15px;font-weight:600;flex:1}
+.row .nm small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.row.low .nm{color:var(--red)}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:42px;height:42px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:22px;font-weight:700;cursor:pointer}
+.step button:active{background:var(--gold-pale)}
+.step input{width:58px;height:42px;text-align:center;font-size:18px;font-weight:700;border:1.5px solid var(--border);border-radius:12px}
+.jugrow{padding:12px 0;border-top:1px solid #f0ebdc;display:flex;gap:14px;align-items:center}
+.jugrow:first-of-type{border-top:0}
+.jugrow.low .nm,.jugrow.low .val{color:var(--red)}
+.jugbox{flex:0 0 96px;text-align:center}
+.jugbox svg{width:90px;height:110px;touch-action:none;cursor:pointer;display:block;margin:0 auto}
+.jugside{flex:1}
+.nm{font-size:15px;font-weight:600;color:#111}
+.val{font-size:22px;font-weight:800;margin:2px 0 6px}
+.val small{font-size:12px;color:var(--muted);font-weight:500}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chips button{padding:7px 10px;border-radius:999px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer}
+.chips button.on{background:var(--liq);border-color:var(--liq);color:#fff}
+.chips.caps button{padding:6px 14px}
+.extra{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.extra .step button{width:34px;height:34px;font-size:18px}
+.extra .step input{width:44px;height:34px;font-size:15px}
+.btn{display:block;width:100%;padding:17px;border:0;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;margin-top:10px}
+.btn.gold{background:var(--gold);color:#fff}
+.btn.dark{background:var(--black);color:#fff}
+.btn.green{background:#25D366;color:#fff}
+.btn.ghost{background:#fff;border:1.5px solid var(--border);color:#333}
+.photo{display:flex;flex-direction:column;align-items:center;gap:10px}
+.photo img{max-width:100%;border-radius:12px;max-height:240px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:6}
+.bar .in{max-width:640px;margin:0 auto}
+.bar .btn{margin:0}
+.warnbox{background:#fff1ef;border:1.5px solid #f3c1bb;border-radius:12px;padding:10px 12px;margin-bottom:10px;color:#a52a20;font-size:14px;font-weight:600}
+.sum .r{display:flex;justify-content:space-between;padding:5px 0;font-size:14px;border-top:1px solid #f4efe0}
+.sum .r:first-of-type{border-top:0}
+.d{font-size:12px;font-weight:700}
+.d.dn{color:var(--red)}.d.up{color:var(--green)}.d.eq{color:var(--muted)}
+.hide{display:none}
+.ok{text-align:center;font-size:56px}
+pre{white-space:pre-wrap;background:#f6f3ea;border-radius:12px;padding:12px;font-size:13px;max-height:260px;overflow:auto}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header><b>PATIO CINCO</b><span>Inventario semanal</span></header>
+<main>
+
+<!-- PASO 1 -->
+<section id="s1">
+  <div class="card">
+    <h1>¿En qué sucursal estás?</h1>
+    <p class="sub">Llena el inventario corto. Al terminar me llega automáticamente.</p>
+    <div class="suc">
+      <button id="bR" onclick="pickSuc('Refugio')">Refugio</button>
+      <button id="bA" onclick="pickSuc('Álamos')">Álamos</button>
+    </div>
+    <input type="text" id="resp" placeholder="Tu nombre (quien llena el inventario)">
+  </div>
+  <div id="prevInfo" class="card hide"></div>
+</section>
+
+<!-- PASO 2 -->
+<section id="s2" class="hide">
+  <div id="form"></div>
+  <div class="card">
+    <h2>Foto de evidencia</h2>
+    <p class="sub">Toma una foto del almacén / estante de químicos.</p>
+    <div class="photo">
+      <img id="photoImg" class="hide" alt="">
+      <button class="btn ghost" onclick="document.getElementById('photoIn').click()" id="photoBtn">📷 Tomar foto</button>
+      <input type="file" id="photoIn" accept="image/*" capture="environment" class="hide" onchange="onPhoto(this)">
+    </div>
+  </div>
+  <div class="card">
+    <h2>Notas (opcional)</h2>
+    <input type="text" id="notas" placeholder="Algo que debamos saber…">
+  </div>
+</section>
+
+<!-- PASO 3 -->
+<section id="s3" class="hide">
+  <div class="card">
+    <h2>Revisa antes de enviar</h2>
+    <div id="alerts"></div>
+    <div class="sum" id="sum"></div>
+  </div>
+  <div class="card" id="photoSum"></div>
+</section>
+
+<!-- PASO 4 -->
+<section id="s4" class="hide">
+  <div class="card" style="text-align:center">
+    <div class="ok">✅</div>
+    <h1>¡Inventario enviado!</h1>
+    <p class="sub" id="okMsg">Ya quedó guardado.</p>
+    <button class="btn green" onclick="sendWA()">Enviar también por WhatsApp</button>
+    <button class="btn ghost" onclick="copyTxt()">Copiar resumen</button>
+  </div>
+  <div class="card"><h2>Resumen</h2><pre id="txtOut"></pre></div>
+</section>
+
+</main>
+
+<div class="bar" id="bar"><div class="in"><button class="btn gold" id="mainBtn" onclick="next()" disabled>Elige sucursal para empezar</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+/* ============ CONFIG ============ */
+const WA_NUM = ""; // opcional: tu número con lada, ej. "5216441234567". Vacío = eliges el contacto.
+const FB_CFG = {apiKey:"AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",authDomain:"montseflow.firebaseapp.com",projectId:"montseflow",storageBucket:"montseflow.firebasestorage.app",messagingSenderId:"249314346746",appId:"1:249314346746:web:0d39b74f90dad6eff22b43"};
+let db=null;
+try{firebase.initializeApp(FB_CFG);db=firebase.firestore();}catch(e){console.warn(e)}
+
+/* ============ CATÁLOGO ============ */
+// t:'jug' = bidón dibujado (nivel pintable + bidones extra) | t:'n' = conteo
+const CATS=[
+ {id:'q',name:'Químicos',items:[
+  {k:'shampoo',n:'Shampoo',t:'jug',min:.25},
+  {k:'cera_express',n:'Cera express',t:'jug',min:.25},
+  {k:'armor_all',n:'Armor all',t:'jug',min:.1},
+  {k:'filtro_conc',n:'Filtro solar',sub:'para diluir',t:'jug',min:.25},
+  {k:'filtro_dil',n:'Filtro solar',sub:'ya diluido',t:'jug',min:.5,dep:'filtro_conc'},
+  {k:'desengr_conc',n:'Desengrasante',sub:'para diluir',t:'jug',min:.25},
+  {k:'desengr_dil',n:'Desengrasante',sub:'ya diluido',t:'jug',min:.25,dep:'desengr_conc'},
+  {k:'diesel',n:'Diesel',t:'jug',min:.25},
+  {k:'abrillantas',n:'Abrillantas',t:'jug',min:.25}]},
+ {id:'e',name:'Elementos de trabajo',items:[
+  {k:'carbrite',n:'CarBrite',t:'n',min:2},
+  {k:'mf_negra',n:'Microfibra negra',t:'n',min:3},
+  {k:'mf_azul',n:'Microfibra azul',t:'n',min:3},
+  {k:'mf_amarilla',n:'Microfibra amarilla',t:'n',min:3},
+  {k:'franela',n:'Franela de vidrios',t:'n',min:3},
+  {k:'cepillos',n:'Cepillos',t:'n',min:3},
+  {k:'esponja',n:'Esponja',sub:'bolsas',t:'n',min:0},
+  {k:'atomizador',n:'Atomizador',t:'n',min:3},
+  {k:'piedra',n:'Piedra',t:'n',min:2},
+  {k:'cubeta',n:'Cubeta',t:'n',min:1},
+  {k:'aromas',n:'Aromas',sub:'esencia, botellas de 1 L',t:'jug',min:null,cap:1}]},
+ {id:'a',name:'Aspiradoras',items:[
+  {k:'asp_act',n:'Aspiradoras activas',t:'n',min:0},
+  {k:'asp_res',n:'Aspiradoras reserva',t:'n',min:0},
+  {k:'asp_roto',n:'Aspiradora sin funcionar',t:'n',min:null}]},
+ {id:'d',name:'Detallado simple',items:[
+  {k:'cera_tempo',n:'Cera Tempo',t:'jug',tin:1,cap:1,min:.25},
+  {k:'cera_meg',n:'Cera Meguiars',t:'jug',tin:1,cap:1,min:.25},
+  {k:'quitagotas',n:'Quita gotas',t:'jug',min:.25},
+  {k:'alumbra',n:'Alumbra',t:'jug',min:.25},
+  {k:'restaurador',n:'Restaurador de molduras (azul)',t:'jug',min:.25}]}
+];
+const ALL=CATS.flatMap(c=>c.items);
+const FR=[[0,'0'],[.1,'1/10'],[.25,'1/4'],[.5,'1/2'],[.75,'3/4'],[1,'Lleno']];
+
+/* ============ ESTADO ============ */
+let suc=null, step=1, foto=null, prev=null;
+let S={}; // k -> {lvl:0..1, ext:int} | {n:int}
+function init(){ALL.forEach(i=>S[i.k]=i.t==='jug'?{lvl:0,ext:0,cap:i.cap||20}:{n:0});}
+init();
+
+/* ============ INVENTARIO ORIGINAL (base para comparar) ============ */
+const SEED={
+ refugio:{shampoo:1,cera_express:.5,armor_all:.1,filtro_conc:.5,filtro_dil:0,desengr_conc:.5,desengr_dil:0,diesel:0,abrillantas:.25,
+  carbrite:9,mf_negra:0,mf_azul:8,mf_amarilla:8,franela:11,cepillos:8,esponja:1,atomizador:21,piedra:7,cubeta:2,
+  asp_act:3,asp_res:1,asp_roto:0,cera_tempo:2,cera_meg:1,quitagotas:0,alumbra:.5,restaurador:1.5},
+ alamos:{shampoo:.1,cera_express:.5,armor_all:.25,filtro_conc:.5,filtro_dil:.5,desengr_conc:1,desengr_dil:1,diesel:.25,abrillantas:1.25,
+  carbrite:4,mf_negra:10,mf_azul:0,mf_amarilla:26,esponja:1,atomizador:8,piedra:9,
+  asp_act:2,asp_res:0,asp_roto:3,cera_tempo:3,cera_meg:2,quitagotas:.75,alumbra:.75,restaurador:1}
+};
+function seedPrev(sl){
+  const v=SEED[sl],l={};
+  ALL.forEach(i=>{if(i.t==='jug'&&v[i.k]!=null)l[i.k]=+(v[i.k]*(i.tin?1:(i.cap||20))).toFixed(1);});
+  return {v,l,ts:null,resp:'mensaje original'};
+}
+/* ============ UTIL ============ */
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800);}
+function val(i){const s=S[i.k];return i.t==='jug'?+(s.ext+s.lvl).toFixed(2):s.n;}
+function cap(i){return i.cap||S[i.k].cap||20;}
+function lit(i){return +(val(i)*cap(i)).toFixed(1);}
+function fmt(v){
+  if(v==null)return'—';
+  const w=Math.floor(v+1e-9),f=+(v-w).toFixed(2);
+  if(f===0)return String(w);
+  const lab={.05:'1/20',.1:'1/10',.15:'3/20',.2:'1/5',.25:'1/4',.3:'3/10',.35:'7/20',.4:'2/5',.45:'9/20',.5:'1/2',.55:'11/20',.6:'3/5',.65:'13/20',.7:'7/10',.75:'3/4',.8:'4/5',.85:'17/20',.9:'9/10',.95:'19/20'}[f]||(Math.round(f*100)+'%');
+  return w?w+' '+lab:lab;
+}
+function isLow(i){if(i.dep&&val(ALL.find(x=>x.k===i.dep))>0)return false;return !!S[i.k].tc&&i.min!=null&&i.min>0&&val(i)<=i.min;}
+function weekId(d=new Date()){
+  const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const dn=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-dn);
+  const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));
+  return t.getUTCFullYear()+'-W'+String(Math.ceil(((t-y0)/864e5+1)/7)).padStart(2,'0');
+}
+const slug=s=>s==='Álamos'?'alamos':'refugio';
+
+/* ============ UI ============ */
+function pickSuc(s){
+  suc=s;$('bR').classList.toggle('on',s==='Refugio');$('bA').classList.toggle('on',s==='Álamos');
+  $('mainBtn').disabled=false;$('mainBtn').textContent='Empezar inventario →';
+  loadPrev();
+}
+async function loadPrev(){
+  prev=null;const box=$('prevInfo');box.classList.add('hide');
+  try{if(db){
+    const d=await db.collection('pc_sobres').doc('inv_last_'+slug(suc)).get();
+    if(d.exists)prev=d.data();}
+  }catch(e){console.warn(e)}
+  if(!prev)prev=seedPrev(slug(suc));
+  box.innerHTML='Comparando contra el último inventario de <b>'+suc+'</b>: '+(prev.ts?new Date(prev.ts).toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'short'}):'el mensaje original')+(prev.resp&&prev.ts?' · '+prev.resp:'')+'. Te mostraré cuánto cambió.';
+  box.classList.remove('hide');
+}
+const tinSVG=k=>`<svg viewBox="0 0 90 110" data-k="${k}" data-tin="1">
+<defs><clipPath id="cp_${k}"><rect x="6" y="50" width="78" height="46" rx="10"/></clipPath></defs>
+<rect x="6" y="50" width="78" height="46" rx="10" fill="#f3f3f1"/>
+<rect id="liq_${k}" x="6" y="96" width="78" height="0" fill="#d9a521" opacity=".9" clip-path="url(#cp_${k})"/>
+<rect x="6" y="50" width="78" height="46" rx="10" fill="none" stroke="#333" stroke-width="2.5"/>
+<rect x="3" y="40" width="84" height="10" rx="4" fill="#333"/>
+</svg>`;
+const jugSVG=k=>`<svg viewBox="0 0 90 110" data-k="${k}">
+<defs><clipPath id="cp_${k}"><rect x="18" y="24" width="54" height="82" rx="14"/></clipPath></defs>
+<rect x="18" y="24" width="54" height="82" rx="14" fill="#f3f3f1"/>
+<rect id="liq_${k}" x="18" y="106" width="54" height="0" fill="var(--liq)" opacity=".9" clip-path="url(#cp_${k})"/>
+<rect x="18" y="24" width="54" height="82" rx="14" fill="none" stroke="#333" stroke-width="2.5"/>
+<rect x="36" y="10" width="18" height="14" rx="4" fill="#333"/>
+</svg>`;
+function build(){
+  $('form').innerHTML=CATS.map(c=>`<div class="card"><h2>${c.name}</h2>`+c.items.map(i=>{
+    const sb=i.sub?`<small>${i.sub}</small>`:'';
+    if(i.t==='jug')return `<div class="jugrow" id="r_${i.k}">
+      <div class="jugbox">${i.tin?tinSVG(i.k):jugSVG(i.k)}</div>
+      <div class="jugside"><div class="nm">${i.n}${sb}</div>
+      <div class="val" id="v_${i.k}"></div>
+      ${i.cap?'':`<div class="chips caps" id="cap_${i.k}">${[5,10,20].map(c=>`<button onclick="setCap('${i.k}',${c})" data-c="${c}">${c} L</button>`).join('')}</div>`}
+      <div class="chips" id="c_${i.k}">${FR.map(f=>`<button onclick="setLvl('${i.k}',${f[0]})" data-l="${f[0]}">${f[1]}</button>`).join('')}</div>
+      <div class="extra">+ bidones llenos:
+        <div class="step"><button onclick="ext('${i.k}',-1)">−</button><input id="x_${i.k}" type="number" inputmode="numeric" min="0" value="0" onchange="extSet('${i.k}',this.value)"><button onclick="ext('${i.k}',1)">+</button></div></div>
+      </div></div>`;
+    return `<div class="row" id="r_${i.k}"><div class="nm">${i.n}${sb}</div>
+      <div class="step"><button onclick="cnt('${i.k}',-1)">−</button><input id="n_${i.k}" type="number" inputmode="numeric" min="0" value="0" onchange="cntSet('${i.k}',this.value)"><button onclick="cnt('${i.k}',1)">+</button></div></div>`;
+  }).join('')+`</div>`).join('');
+  ALL.forEach(i=>{if(i.t==='jug'){bindJug(i.k);paint(i.k);}else $('n_'+i.k).value=S[i.k].n;});
+  refreshLow();
+}
+function bindJug(k){
+  const svg=document.querySelector(`svg[data-k="${k}"]`);let down=false;
+  const set=e=>{const r=svg.getBoundingClientRect();const y=(e.clientY-r.top)/r.height*110;
+    const T=svg.dataset.tin;let l=T?(96-y)/46:(106-y)/82;l=Math.max(0,Math.min(1,l));l=Math.round(l*20)/20;S[k].lvl=l;S[k].tc=1;paint(k);save();};
+  svg.addEventListener('pointerdown',e=>{down=true;svg.setPointerCapture(e.pointerId);set(e);});
+  svg.addEventListener('pointermove',e=>{if(down)set(e);});
+  svg.addEventListener('pointerup',()=>down=false);svg.addEventListener('pointercancel',()=>down=false);
+}
+function paint(k){
+  const i=ALL.find(x=>x.k===k);const s=S[k],H=i.tin?46:82,B=i.tin?96:106,h=H*s.lvl;const L=$('liq_'+k);L.setAttribute('y',B-h);L.setAttribute('height',h);
+  $('v_'+k).innerHTML=fmt(val(i))+' <small>'+(i.tin?'bote(s)':i.cap?'botella(s)':'bidón(es)')+(i.tin?'':' · '+lit(i)+' L')+'</small>';
+  const cc=$('cap_'+k);if(cc)[...cc.children].forEach(b=>b.classList.toggle('on',+b.dataset.c===cap(i)));
+  $('x_'+k).value=s.ext;
+  [...$('c_'+k).children].forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.l-s.lvl)<.001));
+  refreshLow();
+}
+function setCap(k,c){S[k].cap=c;try{const m=JSON.parse(localStorage.getItem('pcinv_caps')||'{}');m[k]=c;localStorage.setItem('pcinv_caps',JSON.stringify(m));}catch(e){}paint(k);save();}
+function setLvl(k,l){S[k].tc=1;S[k].lvl=l;paint(k);save();}
+function ext(k,d){S[k].tc=1;S[k].ext=Math.max(0,S[k].ext+d);paint(k);save();}
+function extSet(k,v){S[k].tc=1;S[k].ext=Math.max(0,parseInt(v)||0);paint(k);save();}
+function cnt(k,d){S[k].tc=1;S[k].n=Math.max(0,S[k].n+d);$('n_'+k).value=S[k].n;refreshLow();save();}
+function cntSet(k,v){S[k].tc=1;S[k].n=Math.max(0,parseInt(v)||0);$('n_'+k).value=S[k].n;refreshLow();save();}
+function refreshLow(){ALL.forEach(i=>{const r=$('r_'+i.k);if(r)r.classList.toggle('low',isLow(i));});}
+
+/* ============ FOTO ============ */
+function onPhoto(inp){
+  const f=inp.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{
+    const M=900,sc=Math.min(1,M/Math.max(im.width,im.height));
+    const c=document.createElement('canvas');c.width=im.width*sc;c.height=im.height*sc;
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    foto=c.toDataURL('image/jpeg',.6);
+    $('photoImg').src=foto;$('photoImg').classList.remove('hide');$('photoBtn').textContent='📷 Cambiar foto';
+  };im.src=rd.result;};
+  rd.readAsDataURL(f);
+}
+
+/* ============ AUTOGUARDADO LOCAL ============ */
+function save(){try{localStorage.setItem('pcinv_draft',JSON.stringify({suc,S,resp:$('resp').value,t:Date.now()}));}catch(e){}}
+function restore(){
+  try{const m=JSON.parse(localStorage.getItem('pcinv_caps')||'{}');for(const k in m)if(S[k]&&S[k].cap!=null)S[k].cap=m[k];}catch(e){}
+  try{const d=JSON.parse(localStorage.getItem('pcinv_draft')||'null');
+    if(d&&Date.now()-d.t<36e5*24*2){Object.assign(S,d.S||{});$('resp').value=d.resp||'';if(d.suc)pickSuc(d.suc);}}catch(e){}
+}
+
+/* ============ REPORTE ============ */
+function deltaStr(i){
+  if(i.t==='jug'){if(!prev||!prev.l||prev.l[i.k]==null)return null;return +(lit(i)-prev.l[i.k]).toFixed(1);}
+  if(!prev||!prev.v||prev.v[i.k]==null)return null;
+  return +(val(i)-prev.v[i.k]).toFixed(2);
+}
+function buildText(){
+  const lines=[`${suc} PATIO CINCO Inventario corto`];
+  CATS.forEach(c=>{
+    lines.push('',c.name==='Químicos'?'Quimicos':c.name);
+    c.items.forEach(i=>{
+      const v=val(i);let u='';
+      if(i.t==='jug')u=v===1?' bote':' bote';
+      const nm=i.n+(i.sub?' ('+i.sub+')':'');
+      lines.push(`•${nm}: ${fmt(v)}${i.t==='jug'?(i.tin?' bote':i.cap?' botella':' bote de '+cap(i)+' L')+(i.tin?'':' ('+lit(i)+' L)'):''}${isLow(i)?' ⚠️⚠️':''}`);
+    });
+  });
+  const low=ALL.filter(isLow);
+  if(low.length){lines.push('','⚠️ BAJO STOCK: '+low.map(i=>i.n+(i.sub?' ('+i.sub+')':'')).join(', '));}
+  if(prev){
+    const ch=ALL.map(i=>[i,deltaStr(i)]).filter(x=>x[1]!=null&&x[1]!==0);
+    if(ch.length){lines.push('','Cambio vs semana pasada:');ch.forEach(([i,d])=>lines.push(`${d<0?'↓':'↑'} ${i.n}${i.sub?' ('+i.sub+')':''}: ${d>0?'+':'−'}${i.t==='jug'&&!i.tin?Math.abs(d)+' L':fmt(Math.abs(d))}`));}
+  }
+  if($('notas').value.trim())lines.push('','Notas: '+$('notas').value.trim());
+  if($('resp').value.trim())lines.push('','Llenó: '+$('resp').value.trim());
+  return lines.join('\n');
+}
+function renderReview(){
+  const low=ALL.filter(isLow);
+  $('alerts').innerHTML=low.length?`<div class="warnbox">⚠️ Stock bajo: ${low.map(i=>i.n+(i.sub?' ('+i.sub+')':'')).join(', ')}</div>`:'';
+  $('sum').innerHTML=ALL.map(i=>{
+    const v=val(i),d=deltaStr(i);let ds='';
+    if(d!=null)ds=d===0?'<span class="d eq">= igual</span>':`<span class="d ${d<0?'dn':'up'}">${d<0?'↓':'↑'} ${i.t==='jug'&&!i.tin?Math.abs(d)+' L':fmt(Math.abs(d))}</span>`;
+    return `<div class="r"><span>${i.n}${i.sub?' <small style="color:#999">('+i.sub+')</small>':''}${isLow(i)?' ⚠️':''}</span><span><b>${i.t==='jug'&&!i.tin?lit(i)+' L':fmt(v)}</b> ${ds}</span></div>`;
+  }).join('');
+  $('photoSum').innerHTML=foto?`<h2>Foto</h2><img src="${foto}" style="max-width:100%;border-radius:12px">`:`<div class="warnbox" style="margin:0">⚠️ No tomaste foto de evidencia. Regresa y tómala.</div>`;
+}
+
+/* ============ FLUJO ============ */
+function show(n){step=n;[1,2,3,4].forEach(x=>$('s'+x).classList.toggle('hide',x!==n));
+  const b=$('mainBtn');$('bar').classList.toggle('hide',n===4);
+  b.textContent={1:'Empezar inventario →',2:'Revisar →',3:'✅ Enviar inventario'}[n]||'';
+  window.scrollTo(0,0);}
+async function next(){
+  if(step===1){if(!suc)return;if(!$('resp').value.trim()){toast('Escribe tu nombre');$('resp').focus();return;}build();show(2);return;}
+  if(step===2){renderReview();show(3);
+    return;}
+  if(step===3){
+    if(!foto){toast('Falta la foto de evidencia');show(2);return;}
+    const b=$('mainBtn');b.disabled=true;b.textContent='Enviando…';
+    const v={},l={},caps={};ALL.forEach(i=>{v[i.k]=val(i);if(i.t==='jug'){l[i.k]=lit(i);caps[i.k]=cap(i);}});
+    const rec={suc,slug:slug(suc),resp:$('resp').value.trim(),notas:$('notas').value.trim(),ts:new Date().toISOString(),week:weekId(),v,l,caps,low:ALL.filter(isLow).map(i=>i.n+(i.sub?' ('+i.sub+')':'')),texto:buildText(),foto};
+    let saved=false;
+    try{
+      if(db){
+        await db.collection('pc_sobres').doc('inv_'+slug(suc)+'_'+rec.week+'_'+Date.now()).set(rec);
+        const lite={...rec};delete lite.foto;
+        await db.collection('pc_sobres').doc('inv_last_'+slug(suc)).set(lite);
+        saved=true;
+      }
+    }catch(e){console.warn(e);}
+    $('txtOut').textContent=rec.texto;
+    $('okMsg').textContent=saved?'Ya quedó guardado y me llegó. ¡Gracias!':'No pude guardarlo en línea. Envíalo por WhatsApp para que me llegue.';
+    try{localStorage.removeItem('pcinv_draft');}catch(e){}
+    b.disabled=false;show(4);
+  }
+}
+function sendWA(){window.open('https://wa.me/'+WA_NUM+'?text='+encodeURIComponent($('txtOut').textContent),'_blank');}
+function copyTxt(){navigator.clipboard.writeText($('txtOut').textContent).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'));}
+$('resp').addEventListener('input',save);
+restore();
+(function(){const q=new URLSearchParams(location.search).get('demo');
+  if(q&&SEED[q]){ALL.forEach(i=>{const x=SEED[q][i.k];if(x==null)return;const st=S[i.k];st.tc=1;
+    if(i.t==='jug'){st.ext=Math.floor(x+1e-9);st.lvl=+(x-st.ext).toFixed(2);if(x>0&&st.lvl===0&&st.ext>0){}}else st.n=x;});
+    $('resp').value='Demo';pickSuc(q==='alamos'?'Álamos':'Refugio');}})();
+</script>
+</body>
+</html>
