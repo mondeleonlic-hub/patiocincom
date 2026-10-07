@@ -59,7 +59,11 @@
     const row=i=>'<label style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid #f0ebdc;cursor:pointer"><input type="checkbox" '+(done[i.n]?'checked':'')+' data-n="'+esc(i.n)+'" style="width:22px;height:22px;margin-top:2px"><span style="flex:1"><b style="font-size:16px;'+(done[i.n]?'text-decoration:line-through;color:#999':'')+'">'+esc(i.n)+'</b>'+
       '<span style="display:block;margin-top:4px;font-size:13px;line-height:1.7">'+i.per.map(p=>'<span style="display:inline-block;margin-right:6px;padding:2px 9px;border-radius:99px;'+(p.low?(p.empty?'background:#fde7e4;color:#b3261e;font-weight:700':'background:#fff3dc;color:#8a5a00;font-weight:700'):'background:#eef6ef;color:#2e7d4f')+'">'+p.sc+': '+esc(p.txt)+'</span>').join('')+'</span></span></label>';
     const pend=info.filter(i=>!done[i.n]),bought=info.filter(i=>done[i.n]);
-    LIST=pend.map(i=>'• '+i.n+' — '+i.per.map(p=>p.sc+': '+p.txt+(p.low?' ⚠️':'')).join(' | '));
+    const bySuc={Refugio:[],'Álamos':[]};
+    pend.forEach(i=>i.per.forEach(p=>{if(p.low)bySuc[p.sc].push({n:i.n,txt:p.txt,empty:p.empty});}));
+    LIST=[];
+    ['Refugio','Álamos'].forEach(sc=>{const arr=bySuc[sc].sort((x,y)=>(y.empty-x.empty)||x.n.localeCompare(y.n));
+      if(arr.length){if(LIST.length)LIST.push('');LIST.push('*'+sc+'*');arr.forEach(x=>LIST.push('• '+x.n+' — '+x.txt));}});
     const urg=pend.filter(i=>i.urgent),low=pend.filter(i=>!i.urgent);
     const top='<div style="'+card+'"><h3 style="'+h2+'">🛒 Qué comprar</h3>'+
       (info.length?'<div style="font-size:13px;color:#666;margin-bottom:4px">Marca la casilla cuando ya lo compraste: pasa a "Ya comprado" y <b>ya no se incluye</b> en el mensaje de WhatsApp. <span style="background:#fde7e4;color:#b3261e;padding:1px 7px;border-radius:99px">rojo</span> = se acabó · <span style="background:#fff3dc;color:#8a5a00;padding:1px 7px;border-radius:99px">naranja</span> = queda poco · <span style="background:#eef6ef;color:#2e7d4f;padding:1px 7px;border-radius:99px">verde</span> = en la otra sucursal hay suficiente</div>'+
