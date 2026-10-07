@@ -66,7 +66,7 @@
       if(arr.length){if(LIST.length)LIST.push('');LIST.push('*'+sc+'*');arr.forEach(x=>LIST.push('• '+x.n+' — '+x.txt));}});
     const urg=pend.filter(i=>i.urgent),low=pend.filter(i=>!i.urgent);
     const top='<div style="'+card+'"><h3 style="'+h2+'">🛒 Qué comprar</h3>'+
-      (info.length?'<div style="font-size:13px;color:#666;margin-bottom:4px">Marca la casilla cuando ya lo compraste: pasa a "Ya comprado" y <b>ya no se incluye</b> en el mensaje de WhatsApp. <span style="background:#fde7e4;color:#b3261e;padding:1px 7px;border-radius:99px">rojo</span> = se acabó · <span style="background:#fff3dc;color:#8a5a00;padding:1px 7px;border-radius:99px">naranja</span> = queda poco · <span style="background:#eef6ef;color:#2e7d4f;padding:1px 7px;border-radius:99px">verde</span> = en la otra sucursal hay suficiente</div>'+
+      (info.length?'<div></div>'+
         (urg.length?'<div style="margin-top:10px;font-weight:800;color:#b3261e">🔴 Urgente · se acabó</div>'+urg.map(row).join(''):'')+
         (low.length?'<div style="margin-top:14px;font-weight:800;color:#8a5a00">🟠 Queda poco</div>'+low.map(row).join(''):'')+
         (!pend.length?'<div style="color:#2e9e5b;font-weight:700;padding:10px 0">✅ Ya compraste todo lo de esta lista</div>':'')+
