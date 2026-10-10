@@ -20,6 +20,19 @@ p.sub{margin:0 0 14px;color:var(--muted);font-size:14px}
 .suc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .suc button{padding:22px 8px;font-size:18px;font-weight:700;border:2px solid var(--border);border-radius:16px;background:#fff;cursor:pointer}
 .suc button.on{border-color:var(--gold);background:var(--gold-pale);color:#7a5a00}
+.suc.tipo{margin-top:10px}.suc.tipo button{padding:14px 8px;font-size:16px}
+.suc.tipo small{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:3px}
+.lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 0}
+.row{flex-wrap:wrap}
+.bodw{flex:0 0 100%;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+.jugside .bodw{margin-top:10px}
+.bodw .chips{margin:0}
+.chips.bod button.on{background:var(--gold);border-color:var(--gold);color:#fff}
+.bodw.miss{color:var(--red);font-weight:700}.bodw.miss button{border-color:var(--red)}
+.del{border:0;background:none;color:var(--red);font-size:12px;font-weight:700;padding:4px 0;cursor:pointer;display:block}
+.addx input[type=text]{margin:0 0 10px}
+.sum .r small.b{display:block;color:#999;font-size:11px}
+.tag{font-size:10px;font-weight:800;background:var(--gold-pale);color:#7a5a00;border:1px solid var(--border);border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:middle}
 input[type=text]{width:100%;padding:13px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;margin-top:10px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid #f0ebdc}
 .row:first-of-type{border-top:0}
@@ -37,6 +50,7 @@ input[type=text]{width:100%;padding:13px;font-size:16px;border:1.5px solid var(-
 .jugbox svg{width:90px;height:110px;touch-action:none;cursor:pointer;display:block;margin:0 auto}
 .jugside{flex:1}
 .nm{font-size:15px;font-weight:600;color:#111}
+.jugside .nm small{display:block;color:var(--muted);font-weight:400;font-size:12px}
 .val{font-size:22px;font-weight:800;margin:2px 0 6px}
 .val small{font-size:12px;color:var(--muted);font-weight:500}
 .chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
@@ -69,18 +83,24 @@ pre{white-space:pre-wrap;background:#f6f3ea;border-radius:12px;padding:12px;font
 </style>
 </head>
 <body>
-<header><b>PATIO CINCO</b><span>Inventario semanal</span></header>
+<header><b>PATIO CINCO</b><span id="hdr">Inventario semanal</span></header>
 <main>
 
 <!-- PASO 1 -->
 <section id="s1">
   <div class="card">
     <h1>¿En qué sucursal estás?</h1>
-    <p class="sub">Llena el inventario corto. Al terminar me llega automáticamente.</p>
+    <p class="sub" id="s1sub">Llena el inventario corto. Al terminar me llega automáticamente.</p>
     <div class="suc">
       <button id="bR" onclick="pickSuc('Refugio')">Refugio</button>
       <button id="bA" onclick="pickSuc('Álamos')">Álamos</button>
     </div>
+    <p class="lbl">¿Cuál inventario vas a llenar?</p>
+    <div class="suc tipo">
+      <button id="tC" class="on" onclick="pickTipo('corto')">Corto<small>semanal · lunes</small></button>
+      <button id="tL" onclick="pickTipo('largo')">Largo<small>mensual · días 1 al 5</small></button>
+    </div>
+    <p class="sub hide" id="tipoHint" style="margin:10px 0 0"></p>
     <input type="text" id="resp" placeholder="Tu nombre (quien llena el inventario)">
   </div>
   <div id="prevInfo" class="card hide"></div>
@@ -90,8 +110,8 @@ pre{white-space:pre-wrap;background:#f6f3ea;border-radius:12px;padding:12px;font
 <section id="s2" class="hide">
   <div id="form"></div>
   <div class="card">
-    <h2>Foto de evidencia</h2>
-    <p class="sub">Toma una foto del almacén / estante de químicos.</p>
+    <h2 id="fotoH">Foto de evidencia</h2>
+    <p class="sub" id="fotoP">Toma una foto del almacén / estante de químicos.</p>
     <div class="photo">
       <img id="photoImg" class="hide" alt="">
       <button class="btn ghost" onclick="document.getElementById('photoIn').click()" id="photoBtn">📷 Tomar foto</button>
@@ -142,6 +162,7 @@ try{firebase.initializeApp(FB_CFG);db=firebase.firestore();}catch(e){console.war
 
 /* ============ CATÁLOGO ============ */
 // t:'jug' = bidón dibujado (nivel pintable + bidones extra) | t:'n' = conteo
+// L:1 = solo sale en el inventario LARGO | C:1 = solo sale en el CORTO | sin marca = sale en los dos
 const CATS=[
  {id:'q',name:'Químicos',items:[
   {k:'shampoo',n:'Shampoo',t:'jug',min:.25},
@@ -160,29 +181,104 @@ const CATS=[
   {k:'mf_amarilla',n:'Microfibra amarilla',t:'n',min:3},
   {k:'franela',n:'Franela de vidrios',t:'n',min:3},
   {k:'cepillos',n:'Cepillos',t:'n',min:3},
-  {k:'esponja',n:'Esponja',sub:'bolsas',t:'n',min:0},
+  {k:'esponja',n:'Esponja',sub:'bolsas',t:'n',min:0,C:1},
+  {k:'esponja_gde',n:'Esponjas grandes',t:'n',min:null,L:1},
+  {k:'esponja_peq',n:'Esponjas pequeñas',t:'n',min:null,L:1},
   {k:'atomizador',n:'Atomizador',t:'n',min:3},
   {k:'piedra',n:'Piedra',t:'n',min:2},
   {k:'cubeta',n:'Cubeta',t:'n',min:1},
-  {k:'aromas',n:'Aromas',sub:'esencia, botellas de 1 L',t:'jug',min:null,cap:1}]},
+  {k:'aromas',n:'Aromas',sub:'esencia, botellas de 1 L',t:'jug',min:null,cap:1,C:1},
+  {k:'aroma_coco',n:'Concentrado Coco',sub:'esencia, botellas de 1 L',t:'jug',min:.25,cap:1,L:1},
+  {k:'aroma_polo',n:'Concentrado Polo Sport',sub:'esencia, botellas de 1 L',t:'jug',min:.25,cap:1,L:1},
+  {k:'aroma_nuevo',n:'Concentrado Auto Nuevo',sub:'esencia, botellas de 1 L',t:'jug',min:.25,cap:1,L:1},
+  {k:'aroma_pc',n:'Aroma Patio Cinco',sub:'esencia, botellas de 1 L',t:'jug',min:.25,cap:1,L:1},
+  {k:'frasco_aroma',n:'Frascos de aroma',t:'n',min:null,L:1},
+  {k:'atom_aroma',n:'Atomizadores de frasco de aroma',t:'n',min:null,L:1},
+  {k:'trapo_vid_azul',n:'Trapo de vidrios azul',t:'n',min:null,L:1},
+  {k:'quita_pelos',n:'Quita pelos',t:'n',min:null,L:1}]},
  {id:'a',name:'Aspiradoras',items:[
   {k:'asp_act',n:'Aspiradoras activas',t:'n',min:0},
   {k:'asp_res',n:'Aspiradoras reserva',t:'n',min:0},
   {k:'asp_roto',n:'Aspiradora sin funcionar',t:'n',min:null}]},
- {id:'d',name:'Detallado simple',items:[
+ {id:'d',name:'Detallado simple',nl:'Detallado',items:[
   {k:'cera_tempo',n:'Cera Tempo',t:'jug',tin:1,cap:1,min:.25},
   {k:'cera_meg',n:'Cera Meguiars',t:'jug',tin:1,cap:1,min:.25},
+  {k:'cera_turtle',n:'Cera Turtle Wax',t:'jug',tin:1,cap:1,min:null,L:1},
   {k:'quitagotas',n:'Quita gotas',t:'jug',min:.25},
   {k:'alumbra',n:'Alumbra',t:'jug',min:.25},
-  {k:'restaurador',n:'Restaurador de molduras (azul)',t:'jug',min:.25}]}
+  {k:'restaurador',n:'Restaurador de molduras (azul)',t:'jug',min:.25},
+  {k:'polish',n:'Polish',sub:'botellas de 1 L',t:'jug',cap:1,min:.25,L:1},
+  {k:'pulidor_grueso',n:'Pulidor grueso',t:'jug',dc:1,min:null,L:1},
+  {k:'pulidor_fino',n:'Pulidor fino',t:'jug',dc:1,min:null,L:1},
+  {k:'quita_etiq',n:'Quita etiquetas',sub:'botellas de 1 L',t:'jug',cap:1,min:.25,L:1},
+  {k:'apc',n:'APC',sub:'shampoo de vestiduras',t:'jug',dc:1,min:.25,L:1},
+  {k:'pads',n:'Discos para pulir',t:'n',min:null,L:1},
+  {k:'plastilina',n:'Plastilina automotriz',t:'n',min:null,L:1},
+  {k:'lub_plastilina',n:'Lubricante de plastilina',t:'jug',dc:1,min:null,L:1},
+  {k:'lija_1000',n:'Lija 1000',t:'n',min:null,L:1},
+  {k:'tiner',n:'Tíner',t:'jug',dc:1,min:null,L:1},
+  {k:'descont_vidrios',n:'Descontaminador de vidrios',t:'jug',dc:1,min:null,L:1},
+  {k:'descont_rines',n:'Descontaminador de rines',t:'jug',dc:1,min:null,L:1},
+  {k:'rem_mosco',n:'Removedor de mosco',t:'jug',dc:1,min:null,L:1},
+  {k:'hid_viniles',n:'Hidratante de viniles',t:'jug',dc:1,min:null,L:1},
+  {k:'hid_plasticos',n:'Hidratante de plásticos',t:'jug',dc:1,min:null,L:1},
+  {k:'trat_piel',n:'Tratamiento de piel',t:'jug',dc:1,min:null,L:1},
+  {k:'shampoo_cera',n:'Shampoo con cera',t:'jug',dc:1,min:null,L:1},
+  {k:'jabon_manchas',n:'Jabón quita manchas',t:'jug',dc:1,min:null,L:1},
+  {k:'ceramic',n:'Ceramic coating',t:'jug',dc:1,min:null,L:1},
+  {k:'desengr_xf',n:'Desengrasante extra fuerte',t:'jug',dc:1,min:null,L:1},
+  {k:'gamuza',n:'Trapo de gamuza',t:'n',min:null,L:1}]},
+ {id:'h',name:'Herramientas y equipo',items:[
+  {k:'hidro_ok',n:'Hidrolavadoras funcionando',t:'n',min:null,L:1},
+  {k:'hidro_roto',n:'Hidrolavadoras sin funcionar',t:'n',min:null,L:1},
+  {k:'pist_hidro',n:'Pistolas de hidrolavadora',t:'n',min:null,L:1},
+  {k:'espumador',n:'Pistolas de espuma',sub:'espumador',t:'n',min:null,L:1},
+  {k:'mang_agua',n:'Mangueras de agua',t:'n',min:null,L:1},
+  {k:'mang_shampoo',n:'Mangueras de shampoo',t:'n',min:null,L:1},
+  {k:'mang_aire',n:'Mangueras de aire',t:'n',min:null,L:1},
+  {k:'pist_aire',n:'Pistolas de aire',sub:'para sopletear',t:'n',min:null,L:1},
+  {k:'pulidora',n:'Pulidora',t:'n',min:null,L:1},
+  {k:'botes',n:'Botes de basura',t:'n',min:null,L:1},
+  {k:'pala',n:'Pala',t:'n',min:null,L:1},
+  {k:'conos',n:'Conos',t:'n',min:null,L:1}]},
+ {id:'c',name:'Consumibles',items:[
+  {k:'jabon_polvo',n:'Jabón en polvo',sub:'bolsas',t:'n',min:1,L:1},
+  {k:'jabon_roma',n:'Jabón Roma',sub:'bolsas',t:'n',min:1,L:1},
+  {k:'cloro',n:'Cloro',sub:'botellas',t:'n',min:1,L:1},
+  {k:'limpiador',n:'Limpiador de baño y pisos',sub:'botellas',t:'n',min:1,L:1},
+  {k:'bolsas_basura',n:'Bolsas de basura',sub:'paquetes',t:'n',min:1,L:1},
+  {k:'filtro_asp',n:'Filtros de aspiradora',sub:'de repuesto',t:'n',min:1,L:1},
+  {k:'bolsa_asp',n:'Bolsas de aspiradora',sub:'de repuesto',t:'n',min:1,L:1},
+  {k:'garrafon',n:'Garrafones de agua',t:'n',min:null,L:1}]},
+ {id:'u',name:'Accesorios y uniformes',items:[
+  {k:'sombrillas',n:'Sombrillas',t:'n',min:null,L:1},
+  {k:'ponchos',n:'Ponchos',t:'n',min:null,L:1},
+  {k:'uniformes',n:'Uniformes',sub:'escribe las tallas en Notas',t:'n',min:null,L:1}]},
+ {id:'x',name:'Otros artículos',items:[]}
 ];
+const XI=CATS[CATS.length-1].items; // artículos que agrega quien llena el inventario largo
+/* ============ BODEGAS (solo inventario largo) ============ */
+const BOD={
+ refugio:['Bodega Amarilla','Reparación','Chilaquiles','Bodega Oficina'],
+ alamos:['Bodega Oficina','Bodega Superior','Bodega Lavadores']
+};
+const corto=b=>b.replace(/^Bodega /,'');
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nmH=i=>i.X?esc(i.n):i.n;
 const ALL=CATS.flatMap(c=>c.items);
+/* ============ CORTO / LARGO ============ */
+let tipo='corto';
+const AROMAS_L=['aroma_coco','aroma_polo','aroma_nuevo','aroma_pc'];
+const inTipo=i=>tipo==='largo'?!i.C:!i.L;
+function CA(){return CATS.map(c=>({...c,name:tipo==='largo'&&c.nl?c.nl:c.name,items:c.items.filter(inTipo)})).filter(c=>c.items.length);}
+function AC(){return ALL.filter(inTipo);}
+function monthId(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 const FR=[[0,'0'],[.1,'1/10'],[.25,'1/4'],[.5,'1/2'],[.75,'3/4'],[1,'Lleno']];
 
 /* ============ ESTADO ============ */
 let suc=null, step=1, foto=null, prev=null;
 let S={}; // k -> {lvl:0..1, ext:int} | {n:int}
-function init(){ALL.forEach(i=>S[i.k]=i.t==='jug'?{lvl:0,ext:0,cap:i.cap||20}:{n:0});}
+function init(){ALL.forEach(i=>S[i.k]=i.t==='jug'?{lvl:0,ext:0,cap:i.cap||i.dc||20}:{n:0});}
 init();
 
 /* ============ INVENTARIO ORIGINAL (base para comparar) ============ */
@@ -227,6 +323,20 @@ function pickSuc(s){
   $('mainBtn').disabled=false;$('mainBtn').textContent='Empezar inventario →';
   loadPrev();
 }
+function pickTipo(t,noSave){
+  tipo=t==='largo'?'largo':'corto';
+  $('tC').classList.toggle('on',tipo==='corto');$('tL').classList.toggle('on',tipo==='largo');
+  $('hdr').textContent=tipo==='largo'?'Inventario mensual (largo)':'Inventario semanal';
+  $('s1sub').textContent='Llena el inventario '+tipo+'. Al terminar me llega automáticamente.';
+  const h=$('tipoHint'),d=new Date().getDate();
+  if(tipo==='largo'){h.textContent='El largo trae todo lo del corto más herramientas, consumibles y productos de detallado. Toma unos 15 minutos.';h.classList.remove('hide');}
+  else if(d<=5){h.textContent='Estamos en los primeros 5 días del mes: si aún no se hace, toca el inventario largo.';h.classList.remove('hide');}
+  else h.classList.add('hide');
+  $('fotoH').textContent=tipo==='largo'?'Foto (opcional)':'Foto de evidencia';
+  $('fotoP').textContent=tipo==='largo'?'En el inventario largo la foto no es obligatoria.':'Toma una foto del almacén / estante de químicos.';
+  if(suc)loadPrev();
+  if(!noSave)save();
+}
 async function loadPrev(){
   prev=null;const box=$('prevInfo');box.classList.add('hide');
   try{if(db){
@@ -234,8 +344,17 @@ async function loadPrev(){
     if(d.exists)prev=d.data();}
   }catch(e){console.warn(e)}
   if(!prev)prev=seedPrev(slug(suc));
-  box.innerHTML='Comparando contra el último inventario de <b>'+suc+'</b>: '+(prev.ts?new Date(prev.ts).toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'short'}):'el mensaje original')+(prev.resp&&prev.ts?' · '+prev.resp:'')+'. Te mostraré cuánto cambió.';
-  box.classList.remove('hide');
+  let pl=null;
+  if(tipo==='largo'){
+    // lo que solo existe en el largo se compara contra el último inventario largo
+    const sl0=slug(suc);
+    try{if(db){const d2=await db.collection('pc_sobres').doc('inv_last_largo_'+sl0).get();if(d2.exists)pl=d2.data();}}catch(e){console.warn(e)}
+    try{await loadExtras(sl0,pl);}catch(e){console.warn(e)}
+    if(pl){prev={...prev,v:{...(prev.v||{})},l:{...(prev.l||{})}};
+      ALL.filter(i=>i.L).forEach(i=>{if(pl.v&&pl.v[i.k]!=null&&prev.v[i.k]==null)prev.v[i.k]=pl.v[i.k];if(pl.l&&pl.l[i.k]!=null&&prev.l[i.k]==null)prev.l[i.k]=pl.l[i.k];});}
+  }
+  box.innerHTML='Comparando contra el último inventario de <b>'+suc+'</b>: '+(prev.ts?new Date(prev.ts).toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'short'}):'el mensaje original')+(prev.resp&&prev.ts?' · '+prev.resp:'')+'. Te mostraré cuánto cambió.'+(tipo==='largo'?(pl&&pl.ts?' Lo que solo va en el largo se compara contra el del '+new Date(pl.ts).toLocaleDateString('es-MX',{day:'numeric',month:'long'})+'.':' Lo que solo va en el largo aún no tiene contra qué compararse: este será el primero.'):'');
+  // aviso oculto a petición de Montse: la comparación se sigue haciendo, solo no se le muestra al equipo
 }
 const tinSVG=k=>`<svg viewBox="0 0 90 110" data-k="${k}" data-tin="1">
 <defs><clipPath id="cp_${k}"><rect x="6" y="50" width="78" height="46" rx="10"/></clipPath></defs>
@@ -252,22 +371,88 @@ const jugSVG=k=>`<svg viewBox="0 0 90 110" data-k="${k}">
 <rect x="36" y="10" width="18" height="14" rx="4" fill="#333"/>
 </svg>`;
 function build(){
-  $('form').innerHTML=CATS.map(c=>`<div class="card"><h2>${c.name}</h2>`+c.items.map(i=>{
-    const sb=i.sub?`<small>${i.sub}</small>`:'';
+  const bl=tipo==='largo'?(BOD[slug(suc)]||[]):[];
+  AC().forEach(i=>{const st=S[i.k];st.bod=st.bod||[];if(tipo==='largo')st.bod=st.bod.filter(b=>bl.includes(b));});
+  const bodH=i=>bl.length?`<div class="bodw" id="bw_${i.k}">Bodega:<div class="chips bod">${bl.map((b,x)=>`<button onclick="togBod('${i.k}',${x})" class="${S[i.k].bod.includes(b)?'on':''}">${corto(b)}</button>`).join('')}</div></div>`:'';
+  const delH=i=>i.X&&!i.P?`<button class="del" onclick="delX('${i.k}')">✕ Quitar</button>`:'';
+  $('form').innerHTML=CA().map(c=>`<div class="card"><h2>${c.name}</h2>`+c.items.map(i=>{
+    const sb=(i.X?`<span class="tag">${i.P?'LARGO':'AGREGADO'}</span>`:i.L?'<span class="tag">LARGO</span>':'')+(i.sub?`<small>${i.sub}</small>`:'')+delH(i);
     if(i.t==='jug')return `<div class="jugrow" id="r_${i.k}">
       <div class="jugbox">${i.tin?tinSVG(i.k):jugSVG(i.k)}</div>
-      <div class="jugside"><div class="nm">${i.n}${sb}</div>
+      <div class="jugside"><div class="nm">${nmH(i)}${sb}</div>
       <div class="val" id="v_${i.k}"></div>
-      ${i.cap?'':`<div class="chips caps" id="cap_${i.k}">${[5,10,20].map(c=>`<button onclick="setCap('${i.k}',${c})" data-c="${c}">${c} L</button>`).join('')}</div>`}
+      ${i.cap?'':`<div class="chips caps" id="cap_${i.k}">${(i.X||i.dc?[1,5,10,20]:[5,10,20]).map(c=>`<button onclick="setCap('${i.k}',${c})" data-c="${c}">${c} L</button>`).join('')}</div>`}
       <div class="chips" id="c_${i.k}">${FR.map(f=>`<button onclick="setLvl('${i.k}',${f[0]})" data-l="${f[0]}">${f[1]}</button>`).join('')}</div>
       <div class="extra">+ bidones llenos:
         <div class="step"><button onclick="ext('${i.k}',-1)">−</button><input id="x_${i.k}" type="number" inputmode="numeric" min="0" value="0" onchange="extSet('${i.k}',this.value)"><button onclick="ext('${i.k}',1)">+</button></div></div>
+      ${bodH(i)}
       </div></div>`;
-    return `<div class="row" id="r_${i.k}"><div class="nm">${i.n}${sb}</div>
-      <div class="step"><button onclick="cnt('${i.k}',-1)">−</button><input id="n_${i.k}" type="number" inputmode="numeric" min="0" value="0" onchange="cntSet('${i.k}',this.value)"><button onclick="cnt('${i.k}',1)">+</button></div></div>`;
-  }).join('')+`</div>`).join('');
-  ALL.forEach(i=>{if(i.t==='jug'){bindJug(i.k);paint(i.k);}else $('n_'+i.k).value=S[i.k].n;});
+    return `<div class="row" id="r_${i.k}"><div class="nm">${nmH(i)}${sb}</div>
+      <div class="step"><button onclick="cnt('${i.k}',-1)">−</button><input id="n_${i.k}" type="number" inputmode="numeric" min="0" value="0" onchange="cntSet('${i.k}',this.value)"><button onclick="cnt('${i.k}',1)">+</button></div>${bodH(i)}</div>`;
+  }).join('')+`</div>`).join('')+(tipo==='largo'?`<div class="card addx"><h2>¿Hay algo que no está en la lista?</h2>
+    <p class="sub">Agrégalo aquí y dinos si se cuenta por piezas o es líquido. Se queda en la lista para los siguientes meses.</p>
+    <input type="text" id="xName" placeholder="Nombre del artículo" maxlength="60">
+    <div class="chips" id="xTipo"><button class="on" data-t="n" onclick="xTipoSet('n')">Piezas</button><button data-t="jug" onclick="xTipoSet('jug')">Líquido</button></div>
+    <button class="btn ghost" onclick="addX()">+ Agregar artículo</button></div>`:'');
+  AC().forEach(i=>{if(i.t==='jug'){bindJug(i.k);paint(i.k);}else $('n_'+i.k).value=S[i.k].n;});
   refreshLow();
+}
+/* ---- bodegas ---- */
+function togBod(k,x){
+  const b=(BOD[slug(suc)]||[])[x];if(!b)return;const a=S[k].bod||(S[k].bod=[]);const p=a.indexOf(b);
+  if(p>=0)a.splice(p,1);else a.push(b);
+  const w=$('bw_'+k);if(w){w.classList.remove('miss');[...w.querySelectorAll('button')].forEach((bt,n)=>bt.classList.toggle('on',a.includes(BOD[slug(suc)][n])));}
+  save();
+}
+function bodTxt(i){const a=S[i.k].bod||[];return a.length?a.map(corto).join(', '):'';}
+function sinBodega(){return tipo==='largo'?AC().filter(i=>val(i)>0&&!(S[i.k].bod||[]).length):[];}
+/* ---- artículos que no están en la lista ---- */
+let xT='n';
+function xTipoSet(t){xT=t;[...$('xTipo').children].forEach(b=>b.classList.toggle('on',b.dataset.t===t));}
+function mkX(o){const it={k:o.k,n:o.n,t:o.t==='jug'?'jug':'n',min:null,L:1,X:1};if(o.P){it.P=1;it.ps=o.ps||null;}XI.push(it);ALL.push(it);
+  if(!S[it.k])S[it.k]=it.t==='jug'?{lvl:0,ext:0,cap:20,bod:[]}:{n:0,bod:[]};return it;}
+function addX(){
+  const n=$('xName').value.trim().replace(/\s+/g,' ');
+  if(!n){toast('Escribe el nombre del artículo');$('xName').focus();return;}
+  if(ALL.some(i=>(i.n+(i.sub?' '+i.sub:'')).toLowerCase()===n.toLowerCase()||i.n.toLowerCase()===n.toLowerCase())){toast('Ese artículo ya está en la lista');return;}
+  const it=mkX({k:'x_'+Date.now().toString(36),n,t:xT});xT='n';
+  build();save();toast('Agregado: ahora pon la cantidad');
+  const r=$('r_'+it.k);if(r)r.scrollIntoView({block:'center',behavior:'smooth'});
+}
+/* Los artículos agregados en el inventario largo se quedan en la lista de ESA sucursal para los meses siguientes.
+   Se guardan en pc_sobres/inv_extras_<sucursal> (y en el celular como respaldo). */
+const xLS=sl=>'pcinv_extras_'+sl;
+async function readExtras(sl){
+  let a=null;
+  try{if(db){const d=await db.collection('pc_sobres').doc('inv_extras_'+sl).get();a=d.exists?(d.data().items||[]):[];}}catch(e){console.warn(e)}
+  let loc=[];try{loc=JSON.parse(localStorage.getItem(xLS(sl))||'[]');}catch(e){}
+  return a!==null?mergeX(a,[]):mergeX([],loc); // el respaldo del celular solo se usa si no hubo conexión
+}
+function mergeX(a,b){const out=[];[...a,...b].forEach(o=>{if(!o||!o.k||!o.n)return;
+  if(out.some(x=>x.k===o.k||x.n.toLowerCase()===String(o.n).toLowerCase()))return;out.push({k:o.k,n:String(o.n),t:o.t==='jug'?'jug':'n'});});return out;}
+async function loadExtras(sl,pl){
+  const list=await readExtras(sl);
+  if(slug(suc)!==sl)return; // cambiaron de sucursal mientras cargaba
+  // fuera los fijos de la otra sucursal
+  XI.filter(i=>i.P&&i.ps&&i.ps!==sl).forEach(i=>{const a=XI.indexOf(i);XI.splice(a,1);const b=ALL.indexOf(i);if(b>=0)ALL.splice(b,1);delete S[i.k];});
+  list.forEach(o=>{
+    let it=ALL.find(i=>i.k===o.k)||XI.find(i=>i.n.toLowerCase()===o.n.toLowerCase());
+    if(!it)it=mkX({...o,P:1,ps:sl});else if(it.X){it.P=1;it.ps=sl;}
+    // misma capacidad de envase que la vez pasada, si aún no lo tocan
+    if(it.X&&it.t==='jug'&&pl&&pl.caps&&pl.caps[it.k]&&!S[it.k].tc)S[it.k].cap=pl.caps[it.k];
+  });
+  if(step===2)build();
+}
+async function saveExtras(sl){
+  const mine=XI.filter(i=>!i.P||i.ps===sl).map(i=>({k:i.k,n:i.n,t:i.t}));
+  const all=mergeX(await readExtras(sl),mine);
+  try{localStorage.setItem(xLS(sl),JSON.stringify(all));}catch(e){}
+  if(db)await db.collection('pc_sobres').doc('inv_extras_'+sl).set({items:all,suc,ts:new Date().toISOString()});
+  XI.forEach(i=>{if(!i.P){i.P=1;i.ps=sl;}});
+}
+function delX(k){
+  let p=XI.findIndex(i=>i.k===k);if(p<0||XI[p].P)return;XI.splice(p,1);
+  p=ALL.findIndex(i=>i.k===k);if(p>=0)ALL.splice(p,1);delete S[k];build();save();
 }
 function bindJug(k){
   const svg=document.querySelector(`svg[data-k="${k}"]`);let down=false;
@@ -278,8 +463,8 @@ function bindJug(k){
   svg.addEventListener('pointerup',()=>down=false);svg.addEventListener('pointercancel',()=>down=false);
 }
 function paint(k){
-  const i=ALL.find(x=>x.k===k);const s=S[k],H=i.tin?46:82,B=i.tin?96:106,h=H*s.lvl;const L=$('liq_'+k);L.setAttribute('y',B-h);L.setAttribute('height',h);
-  $('v_'+k).innerHTML=fmt(val(i))+' <small>'+(i.tin?'bote(s)':i.cap?'botella(s)':'bidón(es)')+(i.tin?'':' · '+lit(i)+' L')+'</small>';
+  const i=ALL.find(x=>x.k===k);const s=S[k],H=i.tin?46:82,B=i.tin?96:106,h=H*s.lvl;const L=$('liq_'+k);if(!L)return;L.setAttribute('y',B-h);L.setAttribute('height',h);
+  $('v_'+k).innerHTML=fmt(val(i))+' <small>'+(i.tin?'bote(s)':(i.cap||cap(i)<=1)?'botella(s)':'bidón(es)')+(i.tin?'':' · '+lit(i)+' L')+'</small>';
   const cc=$('cap_'+k);if(cc)[...cc.children].forEach(b=>b.classList.toggle('on',+b.dataset.c===cap(i)));
   $('x_'+k).value=s.ext;
   [...$('c_'+k).children].forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.l-s.lvl)<.001));
@@ -308,11 +493,11 @@ function onPhoto(inp){
 }
 
 /* ============ AUTOGUARDADO LOCAL ============ */
-function save(){try{localStorage.setItem('pcinv_draft',JSON.stringify({suc,S,resp:$('resp').value,t:Date.now()}));}catch(e){}}
+function save(){try{localStorage.setItem('pcinv_draft',JSON.stringify({suc,tipo,S,X:XI.map(i=>({k:i.k,n:i.n,t:i.t,P:i.P||0,ps:i.ps||null})),resp:$('resp').value,t:Date.now()}));}catch(e){}}
 function restore(){
   try{const m=JSON.parse(localStorage.getItem('pcinv_caps')||'{}');for(const k in m)if(S[k]&&S[k].cap!=null)S[k].cap=m[k];}catch(e){}
   try{const d=JSON.parse(localStorage.getItem('pcinv_draft')||'null');
-    if(d&&Date.now()-d.t<36e5*24*2){Object.assign(S,d.S||{});$('resp').value=d.resp||'';if(d.suc)pickSuc(d.suc);}}catch(e){}
+    if(d&&Date.now()-d.t<36e5*24*2){(d.X||[]).forEach(o=>{if(o&&o.k&&o.n&&!ALL.some(i=>i.k===o.k))mkX(o);});for(const k in (d.S||{}))if(ALL.some(i=>i.k===k))S[k]=d.S[k];$('resp').value=d.resp||'';if(d.tipo==='largo')pickTipo('largo');if(d.suc)pickSuc(d.suc);}}catch(e){}
 }
 
 /* ============ REPORTE ============ */
@@ -322,34 +507,35 @@ function deltaStr(i){
   return +(val(i)-prev.v[i.k]).toFixed(2);
 }
 function buildText(){
-  const lines=[`${suc} PATIO CINCO Inventario corto`];
-  CATS.forEach(c=>{
+  const lines=[`${suc} PATIO CINCO Inventario ${tipo}`+(tipo==='largo'?' · '+new Date().toLocaleDateString('es-MX',{month:'long',year:'numeric'}):'')];
+  CA().forEach(c=>{
     lines.push('',c.name==='Químicos'?'Quimicos':c.name);
     c.items.forEach(i=>{
       const v=val(i);let u='';
       if(i.t==='jug')u=v===1?' bote':' bote';
       const nm=i.n+(i.sub?' ('+i.sub+')':'');
-      lines.push(`•${nm}: ${fmt(v)}${i.t==='jug'?(i.tin?' bote':i.cap?' botella':' bote de '+cap(i)+' L')+(i.tin?'':' ('+lit(i)+' L)'):''}${isLow(i)?' ⚠️⚠️':''}`);
+      lines.push(`•${nm}: ${fmt(v)}${i.t==='jug'?(i.tin?' bote':i.cap?' botella':' bote de '+cap(i)+' L')+(i.tin?'':' ('+lit(i)+' L)'):''}${isLow(i)?' ⚠️⚠️':''}${tipo==='largo'&&bodTxt(i)?' · '+bodTxt(i):''}`);
     });
   });
-  const low=ALL.filter(isLow);
+  const low=AC().filter(isLow);
   if(low.length){lines.push('','⚠️ BAJO STOCK: '+low.map(i=>i.n+(i.sub?' ('+i.sub+')':'')).join(', '));}
   if(prev){
-    const ch=ALL.map(i=>[i,deltaStr(i)]).filter(x=>x[1]!=null&&x[1]!==0);
-    if(ch.length){lines.push('','Cambio vs semana pasada:');ch.forEach(([i,d])=>lines.push(`${d<0?'↓':'↑'} ${i.n}${i.sub?' ('+i.sub+')':''}: ${d>0?'+':'−'}${i.t==='jug'&&!i.tin?Math.abs(d)+' L':fmt(Math.abs(d))}`));}
+    const ch=AC().map(i=>[i,deltaStr(i)]).filter(x=>x[1]!=null&&x[1]!==0);
+    if(ch.length){lines.push('',tipo==='largo'?'Cambio vs inventario anterior:':'Cambio vs semana pasada:');ch.forEach(([i,d])=>lines.push(`${d<0?'↓':'↑'} ${i.n}${i.sub?' ('+i.sub+')':''}: ${d>0?'+':'−'}${i.t==='jug'&&!i.tin?Math.abs(d)+' L':fmt(Math.abs(d))}`));}
   }
   if($('notas').value.trim())lines.push('','Notas: '+$('notas').value.trim());
   if($('resp').value.trim())lines.push('','Llenó: '+$('resp').value.trim());
   return lines.join('\n');
 }
 function renderReview(){
-  const low=ALL.filter(isLow);
+  const low=AC().filter(isLow);
   $('alerts').innerHTML=low.length?`<div class="warnbox">⚠️ Stock bajo: ${low.map(i=>i.n+(i.sub?' ('+i.sub+')':'')).join(', ')}</div>`:'';
-  $('sum').innerHTML=ALL.map(i=>{
+  $('sum').innerHTML=AC().map(i=>{
     const v=val(i),d=deltaStr(i);let ds='';
     if(d!=null)ds=d===0?'<span class="d eq">= igual</span>':`<span class="d ${d<0?'dn':'up'}">${d<0?'↓':'↑'} ${i.t==='jug'&&!i.tin?Math.abs(d)+' L':fmt(Math.abs(d))}</span>`;
-    return `<div class="r"><span>${i.n}${i.sub?' <small style="color:#999">('+i.sub+')</small>':''}${isLow(i)?' ⚠️':''}</span><span><b>${i.t==='jug'&&!i.tin?lit(i)+' L':fmt(v)}</b> ${ds}</span></div>`;
+    return `<div class="r"><span>${nmH(i)}${i.sub?' <small style="color:#999">('+i.sub+')</small>':''}${isLow(i)?' ⚠️':''}${tipo==='largo'&&bodTxt(i)?'<small class="b">'+esc(bodTxt(i))+'</small>':''}</span><span><b>${i.t==='jug'&&!i.tin?lit(i)+' L':fmt(v)}</b> ${ds}</span></div>`;
   }).join('');
+  $('photoSum').classList.toggle('hide',!foto&&tipo==='largo');
   $('photoSum').innerHTML=foto?`<h2>Foto</h2><img src="${foto}" style="max-width:100%;border-radius:12px">`:`<div class="warnbox" style="margin:0">⚠️ No tomaste foto de evidencia. Regresa y tómala.</div>`;
 }
 
@@ -360,22 +546,33 @@ function show(n){step=n;[1,2,3,4].forEach(x=>$('s'+x).classList.toggle('hide',x!
   window.scrollTo(0,0);}
 async function next(){
   if(step===1){if(!suc)return;if(!$('resp').value.trim()){toast('Escribe tu nombre');$('resp').focus();return;}build();show(2);return;}
-  if(step===2){renderReview();show(3);
+  if(step===2){
+    const sb=sinBodega();
+    if(sb.length){sb.forEach(i=>{const w=$('bw_'+i.k);if(w)w.classList.add('miss');});
+      toast('Falta elegir bodega en '+sb.length+(sb.length===1?' artículo':' artículos'));
+      const r=$('r_'+sb[0].k);if(r)r.scrollIntoView({block:'center',behavior:'smooth'});return;}
+    renderReview();show(3);
     return;}
   if(step===3){
-    if(!foto){toast('Falta la foto de evidencia');show(2);return;}
+    if(!foto&&tipo==='corto'){toast('Falta la foto de evidencia');show(2);return;}
     const b=$('mainBtn');b.disabled=true;b.textContent='Enviando…';
-    const v={},l={},caps={};ALL.forEach(i=>{v[i.k]=val(i);if(i.t==='jug'){l[i.k]=lit(i);caps[i.k]=cap(i);}});
-    const rec={suc,slug:slug(suc),resp:$('resp').value.trim(),notas:$('notas').value.trim(),ts:new Date().toISOString(),week:weekId(),v,l,caps,low:ALL.filter(isLow).map(i=>i.n+(i.sub?' ('+i.sub+')':'')),texto:buildText(),foto};
+    const v={},l={},caps={};AC().forEach(i=>{v[i.k]=val(i);if(i.t==='jug'){l[i.k]=lit(i);caps[i.k]=cap(i);}});
+    // en el largo los aromas van por separado: guardo también el total para que el corto siguiente tenga contra qué comparar
+    if(tipo==='largo'){v.aromas=+AROMAS_L.reduce((a,k)=>a+v[k],0).toFixed(2);l.aromas=+AROMAS_L.reduce((a,k)=>a+l[k],0).toFixed(1);caps.aromas=1;}
+    const rec={suc,slug:slug(suc),tipo,month:monthId(),resp:$('resp').value.trim(),notas:$('notas').value.trim(),ts:new Date().toISOString(),week:weekId(),v,l,caps,low:AC().filter(isLow).map(i=>i.n+(i.sub?' ('+i.sub+')':'')),texto:buildText(),foto};
+    if(tipo==='largo'){rec.bod={};AC().forEach(i=>{rec.bod[i.k]=(S[i.k].bod||[]).slice();});
+      rec.extras=XI.map(i=>({k:i.k,nombre:i.n,tipo:i.t==='jug'?'liquido':'piezas',cantidad:val(i),litros:i.t==='jug'?lit(i):null,bodegas:(S[i.k].bod||[]).slice()}));}
     let saved=false;
     try{
       if(db){
-        await db.collection('pc_sobres').doc('inv_'+slug(suc)+'_'+rec.week+'_'+Date.now()).set(rec);
+        await db.collection('pc_sobres').doc((tipo==='largo'?'invL_'+slug(suc)+'_'+rec.month:'inv_'+slug(suc)+'_'+rec.week)+'_'+Date.now()).set(rec);
         const lite={...rec};delete lite.foto;
         await db.collection('pc_sobres').doc('inv_last_'+slug(suc)).set(lite);
+        if(tipo==='largo')await db.collection('pc_sobres').doc('inv_last_largo_'+slug(suc)).set(lite);
         saved=true;
       }
     }catch(e){console.warn(e);}
+    if(tipo==='largo'){try{await saveExtras(slug(suc));}catch(e){console.warn(e);}}
     $('txtOut').textContent=rec.texto;
     $('okMsg').textContent=saved?'Ya quedó guardado y me llegó. ¡Gracias!':'No pude guardarlo en línea. Envíalo por WhatsApp para que me llegue.';
     try{localStorage.removeItem('pcinv_draft');}catch(e){}
@@ -385,8 +582,8 @@ async function next(){
 function sendWA(){window.open('https://wa.me/'+WA_NUM+'?text='+encodeURIComponent($('txtOut').textContent),'_blank');}
 function copyTxt(){navigator.clipboard.writeText($('txtOut').textContent).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'));}
 $('resp').addEventListener('input',save);
-restore();
-(function(){const q=new URLSearchParams(location.search).get('demo');
+restore();if(tipo==='corto')pickTipo('corto',1);
+(function(){if(new URLSearchParams(location.search).get('tipo')==='largo')pickTipo('largo');const q=new URLSearchParams(location.search).get('demo');
   if(q&&SEED[q]){ALL.forEach(i=>{const x=SEED[q][i.k];if(x==null)return;const st=S[i.k];st.tc=1;
     if(i.t==='jug'){st.ext=Math.floor(x+1e-9);st.lvl=+(x-st.ext).toFixed(2);if(x>0&&st.lvl===0&&st.ext>0){}}else st.n=x;});
     $('resp').value='Demo';pickSuc(q==='alamos'?'Álamos':'Refugio');}})();

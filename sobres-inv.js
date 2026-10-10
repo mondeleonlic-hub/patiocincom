@@ -1,6 +1,10 @@
 /* Patio Cinco · módulo Compras/Inventarios para Sobres (solo administradora) */
 (function(){
-  const NAMES={'Shampoo':['shampoo','j'],'Cera express':['cera_express','j'],'Armor all':['armor_all','j'],'Filtro solar (para diluir)':['filtro_conc','j'],'Filtro solar (ya diluido)':['filtro_dil','j'],'Desengrasante (para diluir)':['desengr_conc','j'],'Desengrasante (ya diluido)':['desengr_dil','j'],'Diesel':['diesel','j'],'Abrillantas':['abrillantas','j'],'CarBrite':['carbrite','n'],'Microfibra negra':['mf_negra','n'],'Microfibra azul':['mf_azul','n'],'Microfibra amarilla':['mf_amarilla','n'],'Franela de vidrios':['franela','n'],'Cepillos':['cepillos','n'],'Atomizador':['atomizador','n'],'Piedra':['piedra','n'],'Cubeta':['cubeta','n'],'Cera Tempo':['cera_tempo','t'],'Cera Meguiars':['cera_meg','t'],'Quita gotas':['quitagotas','j'],'Alumbra':['alumbra','j'],'Restaurador de molduras (azul)':['restaurador','j']};
+  const NAMES={'Shampoo':['shampoo','j'],'Cera express':['cera_express','j'],'Armor all':['armor_all','j'],'Filtro solar (para diluir)':['filtro_conc','j'],'Filtro solar (ya diluido)':['filtro_dil','j'],'Desengrasante (para diluir)':['desengr_conc','j'],'Desengrasante (ya diluido)':['desengr_dil','j'],'Diesel':['diesel','j'],'Abrillantas':['abrillantas','j'],'CarBrite':['carbrite','n'],'Microfibra negra':['mf_negra','n'],'Microfibra azul':['mf_azul','n'],'Microfibra amarilla':['mf_amarilla','n'],'Franela de vidrios':['franela','n'],'Cepillos':['cepillos','n'],'Atomizador':['atomizador','n'],'Piedra':['piedra','n'],'Cubeta':['cubeta','n'],'Cera Tempo':['cera_tempo','t'],'Cera Meguiars':['cera_meg','t'],'Quita gotas':['quitagotas','j'],'Alumbra':['alumbra','j'],'Restaurador de molduras (azul)':['restaurador','j'],
+    // artículos que solo vienen en el inventario largo (mensual)
+    'Concentrado Coco (esencia, botellas de 1 L)':['aroma_coco','b'],'Concentrado Polo Sport (esencia, botellas de 1 L)':['aroma_polo','b'],'Concentrado Auto Nuevo (esencia, botellas de 1 L)':['aroma_nuevo','b'],'Aroma Patio Cinco (esencia, botellas de 1 L)':['aroma_pc','b'],
+    'Polish (botellas de 1 L)':['polish','b'],'Quita etiquetas (botellas de 1 L)':['quita_etiq','b'],'APC (shampoo de vestiduras)':['apc','j'],
+    'Jabón en polvo (bolsas)':['jabon_polvo','n'],'Jabón Roma (bolsas)':['jabon_roma','n'],'Cloro (botellas)':['cloro','n'],'Limpiador de baño y pisos (botellas)':['limpiador','n'],'Bolsas de basura (paquetes)':['bolsas_basura','n'],'Filtros de aspiradora (de repuesto)':['filtro_asp','n'],'Bolsas de aspiradora (de repuesto)':['bolsa_asp','n']};
   const FORM_URL=location.origin+location.pathname.replace(/[^\/]*$/,'')+'inventario.html';
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function fmt(v){const w=Math.floor(v+1e-9),f=+(v-w).toFixed(2);if(!f)return String(w);const m={.1:'1/10',.25:'1/4',.5:'1/2',.75:'3/4'}[f]||Math.round(f*100)+'%';return w?w+' '+m:m;}
@@ -8,6 +12,7 @@
     const m=NAMES[name];if(!m||!rec.v)return'';const v=rec.v[m[0]];if(v==null)return'';
     if(m[1]==='j'){const l=rec.l&&rec.l[m[0]];return fmt(v)+' bidón'+(l!=null?' ('+l+' L)':'');}
     if(m[1]==='t')return fmt(v)+' bote';
+    if(m[1]==='b')return fmt(v)+' botella';
     return v+' pzas';
   }
 
@@ -21,6 +26,7 @@
     if(v<=0)return 'se acabó';
     if(m[1]==='j'){const l=rec.l&&rec.l[m[0]];return 'queda '+fmt(v)+' bidón'+(l!=null?' ('+l+' L)':'');}
     if(m[1]==='t')return 'queda '+fmt(v)+' bote';
+    if(m[1]==='b')return 'queda '+fmt(v)+' botella';
     return 'quedan '+v;
   }
   const DB=()=>firebase.firestore();
