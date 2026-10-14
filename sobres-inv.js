@@ -26,6 +26,10 @@
     if(type==='t')return fmt(v)+' bote';
     return String(v);
   }
+  function battery(v,s){
+    const p=Math.max(0,Math.min(1,v)),col=s===0||s===1?(s===0?'#d63a2f':'#e08a00'):'#2e9e5b';
+    return '<span style="display:inline-flex;align-items:center;vertical-align:middle;margin-right:6px"><span style="position:relative;width:30px;height:14px;border:2px solid #444;border-radius:4px;background:#fff;box-sizing:content-box;overflow:hidden"><span style="position:absolute;left:0;top:0;bottom:0;width:'+Math.round(p*100)+'%;background:'+col+'"></span></span><span style="width:3px;height:7px;background:#444;border-radius:0 2px 2px 0;margin-left:1px"></span>'+(v>1.001?'<span style="font-size:11px;color:#666;margin-left:3px">+'+fmt(v-1)+'</span>':'')+'</span>';
+  }
   const UNIT={j:'bidón',a:'botella',t:'bote',n:'pzas'};
   function parts(k,label,type,rec){
     if(!rec||!rec.v||rec.v[k]==null)return null;
@@ -60,12 +64,12 @@
       const empty=[],poco=[],bought=[];
       CATS.forEach(([cn,items])=>items.forEach(([k,label,type])=>{
         const s=statusOf(label,k,rec);if(s===null||s===2)return;
-        const pt=parts(k,label,type,rec);const o={k,label,q:pt.q,u:pt.u,l:pt.l,txt:pt.q+' '+pt.u,cat:cn};
+        const pt=parts(k,label,type,rec);const o={k,label,bat:(type==='j'||type==='a'||type==='t')?battery(rec.v[k],s):'',q:pt.q,u:pt.u,l:pt.l,txt:pt.q+' '+pt.u,cat:cn};
         if(mine[k])bought.push(o);else(s===0?empty:poco).push(o);
       }));
       WA[sl]=[...empty,...poco].map(o=>'• '+o.label+' — '+o.txt);
       const when=new Date(rec.ts).toLocaleString('es-MX',{weekday:'long',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-      const row=(o,cls)=>'<label style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #f0ebdc;cursor:pointer"><input type="checkbox" data-s="'+sl+'" data-k="'+o.k+'" '+(mine[o.k]?'checked':'')+' style="width:20px;height:20px"><span style="flex:1;font-size:15px;font-weight:600;'+(mine[o.k]?'text-decoration:line-through;color:#999':'')+'">'+esc(o.label)+'</span><span style="min-width:44px;text-align:center;font-size:14px;padding:2px 10px;border-radius:99px;'+cls+'">'+esc(o.q)+'</span><span style="width:56px;font-size:13px;color:#888">'+esc(o.u)+(o.l?'<br><span style="font-size:11px;color:#aaa">'+esc(o.l)+'</span>':'')+'</span></label>';
+      const row=(o,cls)=>'<label style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #f0ebdc;cursor:pointer"><input type="checkbox" data-s="'+sl+'" data-k="'+o.k+'" '+(mine[o.k]?'checked':'')+' style="width:20px;height:20px"><span style="flex:1;font-size:15px;font-weight:600;'+(mine[o.k]?'text-decoration:line-through;color:#999':'')+'">'+esc(o.label)+'</span>'+o.bat+'<span style="min-width:44px;text-align:center;font-size:14px;padding:2px 10px;border-radius:99px;'+cls+'">'+esc(o.q)+'</span><span style="width:56px;font-size:13px;color:#888">'+esc(o.u)+(o.l?'<br><span style="font-size:11px;color:#aaa">'+esc(o.l)+'</span>':'')+'</span></label>';
       const R='background:#fde7e4;color:#b3261e;font-weight:700',A='background:#fff3dc;color:#8a5a00;font-weight:700';
       html+='<div style="'+card+'"><h3 style="'+h2+'">'+nm+'</h3><div style="font-size:12px;color:#888;margin-bottom:6px">Inventario: '+esc(when)+' · '+esc(rec.resp||'')+'</div>'+
         (empty.length?'<div style="margin-top:6px;font-weight:800;color:#b3261e;font-size:14px">Se acabó</div>'+empty.map(o=>row(o,R)).join(''):'')+
@@ -83,10 +87,11 @@
       const p=parts(k,label,type,rec);if(!p)return '<span style="color:#bbb">—</span>';
       const s=statusOf(label,k,rec);
       const sty=s===0?'color:#b3261e;font-weight:700':s===1?'color:#8a5a00;font-weight:700':'color:#111;font-weight:600';
-      return '<span style="'+sty+'">'+esc(p.q)+'</span>'+(p.l?' <span style="font-size:11px;color:#aaa">'+esc(p.l)+'</span>':'');
+      const bat=(type==='j'||type==='a'||type==='t')?battery(rec.v[k],s):'';
+      return bat+'<span style="'+sty+'">'+esc(p.q)+'</span>'+(p.l?' <span style="font-size:11px;color:#aaa">'+esc(p.l)+'</span>':'');
     };
     const dates=SUCS.map(([sl,nm])=>RECS[sl]?nm+': '+new Date(RECS[sl].ts).toLocaleDateString('es-MX',{day:'numeric',month:'short'}):nm+': sin datos').join(' · ');
-    const cols='display:grid;grid-template-columns:1.5fr .7fr 1fr 1fr;font-size:14px;align-items:center';
+    const cols='display:grid;grid-template-columns:1.3fr .6fr 1.3fr 1.3fr;font-size:14px;align-items:center';
     const bd='padding:8px 0;border-top:1px solid #f0ebdc';
     let html='<div style="font-size:12px;color:#888;margin-bottom:10px">Último inventario · '+esc(dates)+'</div>';
     CATS.forEach(([cn,items])=>{
