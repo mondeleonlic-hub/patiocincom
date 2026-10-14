@@ -1,7 +1,8 @@
 /* Catálogo ÚNICO de artículos de inventario (lo usan inventario.html y el menú Inventario de Sobres).
    t:'jug' = líquido/bote con nivel · t:'n' = conteo
    L:1 = solo inventario LARGO · C:1 = solo CORTO · sin marca = en los dos
-   cap:1 = botella de 1 L · tin:1 = bote de cera · dc:1 = capacidad editable (1,5,10,20 L) */
+   cap:1 = botella de 1 L · tin:1 = bote de cera · dc:1 = capacidad editable (1,5,10,20 L)
+   min = mínimo (fracción de envase en líquidos, piezas en conteo) · minL = mínimo en litros (manda sobre min) */
 window.INV_CATS=[
 {id:'q',name:'Químicos',items:[
 {k:'shampoo',n:'Shampoo',t:'jug',min:.25},
@@ -65,8 +66,8 @@ window.INV_CATS=[
 {k:'cera_tempo',n:'Cera Tempo',t:'jug',tin:1,cap:1,min:.25},
 {k:'cera_meg',n:'Cera Meguiars',t:'jug',tin:1,cap:1,min:.25},
 {k:'cera_turtle',n:'Cera Turtle Wax',t:'jug',tin:1,cap:1,min:null,L:1},
-{k:'quitagotas',n:'Quita gotas',t:'jug',min:.25},
-{k:'alumbra',n:'Alumbra',t:'jug',min:.25},
+{k:'quitagotas',n:'Quita gotas',t:'jug',min:.25,minL:1},
+{k:'alumbra',n:'Alumbra',t:'jug',min:.25,minL:1},
 {k:'restaurador',n:'Restaurador de molduras (azul)',t:'jug',min:.25},
 {k:'polish',n:'Polish',sub:'botellas de 1 L',t:'jug',cap:1,min:.25,L:1},
 {k:'pulidor_grueso',n:'Pulidor grueso',t:'jug',dc:1,min:null,L:1},
@@ -103,4 +104,11 @@ window.INV_CATS=[
 window.invDefUnit=function(i,capNow){
   if(i.t==='jug')return i.tin?'bote':((i.cap||capNow||20)<=1?'botella':'bidón');
   return ['bolsas','paquetes','botellas'].includes(i.sub)?i.sub:'pzas';
+};
+/* mínimo efectivo: líquidos en LITROS (botes/botellas de 1 L = unidades), conteo en piezas. mins = ajustes hechos desde Sobres (inv_config.mins) */
+window.invMinLim=function(i,capNow,mins){
+  const m=mins&&mins[i.k];
+  if(i.t==='jug'){const c=i.tin?1:(i.cap||capNow||i.dc||20);
+    if(m!=null)return +m;if(i.minL!=null)return i.minL;return i.min!=null?i.min*c:null;}
+  return m!=null?+m:i.min;
 };

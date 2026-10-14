@@ -161,8 +161,8 @@ const FB_CFG = {apiKey:"AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",authDomain:"mon
 let db=null;
 try{firebase.initializeApp(FB_CFG);db=firebase.firestore();}catch(e){console.warn(e)}
 /* unidades de medida elegidas desde Sobres (Inventario > Unidades) */
-let CFG={units:{},extra:[]};
-(async()=>{try{if(db){const d=await db.collection('pc_sobres').doc('inv_config').get();if(d.exists){const x=d.data();CFG={units:x.units||{},extra:x.extra||[]};}}}catch(e){console.warn(e)}})();
+let CFG={units:{},extra:[],mins:{}};
+(async()=>{try{if(db){const d=await db.collection('pc_sobres').doc('inv_config').get();if(d.exists){const x=d.data();CFG={units:x.units||{},extra:x.extra||[],mins:x.mins||{}};refreshLow();}}}catch(e){console.warn(e)}})();
 function uw(i){return CFG.units[i.k]||window.invDefUnit(i,(S[i.k]&&S[i.k].cap)||null);}
 function unitSmall(i){const u=uw(i);const p=[i.sub,(u!==i.sub?u:null)].filter(Boolean);return p.length?`<small>${p.join(' · ')}</small>`:'';}
 
@@ -223,7 +223,7 @@ if(f===0)return String(w);
 const lab={.05:'1/20',.1:'1/10',.15:'3/20',.2:'1/5',.25:'1/4',.3:'3/10',.35:'7/20',.4:'2/5',.45:'9/20',.5:'1/2',.55:'11/20',.6:'3/5',.65:'13/20',.7:'7/10',.75:'3/4',.8:'4/5',.85:'17/20',.9:'9/10',.95:'19/20'}[f]||(Math.round(f*100)+'%');
 return w?w+' '+lab:lab;
 }
-function isLow(i){if(i.dep&&val(ALL.find(x=>x.k===i.dep))>0)return false;return !!S[i.k].tc&&i.min!=null&&i.min>0&&val(i)<=i.min;}
+function isLow(i){if(i.dep&&val(ALL.find(x=>x.k===i.dep))>0)return false;if(!S[i.k].tc)return false;const lim=window.invMinLim(i,S[i.k].cap,CFG.mins);return lim!=null&&lim>0&&(i.t==='jug'?lit(i):val(i))<=lim;}
 function weekId(d=new Date()){
 const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
 const dn=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-dn);
