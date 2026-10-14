@@ -1,109 +1,138 @@
-/* Patio Cinco · módulo Compras/Inventarios para Sobres (solo administradora) */
+/* Patio Cinco · menú INVENTARIO para Sobres (compras, existencias, liga) */
 (function(){
-  const NAMES={'Shampoo':['shampoo','j'],'Cera express':['cera_express','j'],'Armor all':['armor_all','j'],'Filtro solar (para diluir)':['filtro_conc','j'],'Filtro solar (ya diluido)':['filtro_dil','j'],'Desengrasante (para diluir)':['desengr_conc','j'],'Desengrasante (ya diluido)':['desengr_dil','j'],'Diesel':['diesel','j'],'Abrillantas':['abrillantas','j'],'CarBrite':['carbrite','n'],'Microfibra negra':['mf_negra','n'],'Microfibra azul':['mf_azul','n'],'Microfibra amarilla':['mf_amarilla','n'],'Franela de vidrios':['franela','n'],'Cepillos':['cepillos','n'],'Atomizador':['atomizador','n'],'Piedra':['piedra','n'],'Cubeta':['cubeta','n'],'Cera Tempo':['cera_tempo','t'],'Cera Meguiars':['cera_meg','t'],'Quita gotas':['quitagotas','j'],'Alumbra':['alumbra','j'],'Restaurador de molduras (azul)':['restaurador','j'],
-    // artículos que solo vienen en el inventario largo (mensual)
-    'Concentrado Coco (esencia, botellas de 1 L)':['aroma_coco','b'],'Concentrado Polo Sport (esencia, botellas de 1 L)':['aroma_polo','b'],'Concentrado Auto Nuevo (esencia, botellas de 1 L)':['aroma_nuevo','b'],'Aroma Patio Cinco (esencia, botellas de 1 L)':['aroma_pc','b'],
-    'Polish (botellas de 1 L)':['polish','b'],'Quita etiquetas (botellas de 1 L)':['quita_etiq','b'],'APC (shampoo de vestiduras)':['apc','j'],
-    'Jabón en polvo (bolsas)':['jabon_polvo','n'],'Jabón Roma (bolsas)':['jabon_roma','n'],'Cloro (botellas)':['cloro','n'],'Limpiador de baño y pisos (botellas)':['limpiador','n'],'Bolsas de basura (paquetes)':['bolsas_basura','n'],'Filtros de aspiradora (de repuesto)':['filtro_asp','n'],'Bolsas de aspiradora (de repuesto)':['bolsa_asp','n']};
+  const CATS=[
+    ['Químicos',[['shampoo','Shampoo','j'],['cera_express','Cera express','j'],['armor_all','Armor all','j'],['filtro_conc','Filtro solar (para diluir)','j'],['filtro_dil','Filtro solar (ya diluido)','j'],['desengr_conc','Desengrasante (para diluir)','j'],['desengr_dil','Desengrasante (ya diluido)','j'],['diesel','Diesel','j'],['abrillantas','Abrillantas','j']]],
+    ['Aromas',[['aromas','Aromas (esencia, botellas de 1 L)','a']]],
+    ['Accesorios',[['cepillos','Cepillos','n'],['esponja','Esponja (bolsas)','n'],['cubeta','Cubeta','n'],['atomizador','Atomizador','n'],['piedra','Piedra','n']]],
+    ['Herramientas',[['bolsas_basura','Bolsas de basura','n'],['escoba','Escoba','n'],['plumones','Plumones','n']]],
+    ['Trapos',[['carbrite','CarBrite','n'],['mf_negra','Microfibra negra','n'],['mf_azul','Microfibra azul','n'],['mf_amarilla','Microfibra amarilla','n'],['franela','Franela de vidrios','n'],['peluche','Peluche','n']]],
+    ['Aspiradoras',[['asp_act','Aspiradoras activas','n'],['asp_res','Aspiradoras reserva','n'],['asp_roto','Aspiradora sin funcionar','n']]],
+    ['Detallado simple',[['cera_tempo','Cera Tempo','t'],['cera_meg','Cera Meguiars','t'],['quitagotas','Quita gotas','j'],['alumbra','Alumbra','j'],['restaurador','Restaurador de molduras (azul)','j']]]
+  ];
+  const SUCS=[['refugio','Refugio'],['alamos','Álamos']];
   const FORM_URL=location.origin+location.pathname.replace(/[^\/]*$/,'')+'inventario.html';
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  function fmt(v){const w=Math.floor(v+1e-9),f=+(v-w).toFixed(2);if(!f)return String(w);const m={.1:'1/10',.25:'1/4',.5:'1/2',.75:'3/4'}[f]||Math.round(f*100)+'%';return w?w+' '+m:m;}
-  function qty(name,rec){
-    const m=NAMES[name];if(!m||!rec.v)return'';const v=rec.v[m[0]];if(v==null)return'';
-    if(m[1]==='j'){const l=rec.l&&rec.l[m[0]];return fmt(v)+' bidón'+(l!=null?' ('+l+' L)':'');}
-    if(m[1]==='t')return fmt(v)+' bote';
-    if(m[1]==='b')return fmt(v)+' botella';
-    return v+' pzas';
-  }
-
-  function level(name,rec){ // 0=se acabó 1=queda poco 2=ok / null sin dato
-    const m=NAMES[name];if(!m||!rec||!rec.v||rec.v[m[0]]==null)return null;
-    return rec.v[m[0]]<=0?0:1;
-  }
-  function plain(name,rec){
-    const m=NAMES[name];if(!m||!rec||!rec.v||rec.v[m[0]]==null)return 'sin dato';
-    const v=rec.v[m[0]];
-    if(v<=0)return 'se acabó';
-    if(m[1]==='j'){const l=rec.l&&rec.l[m[0]];return 'queda '+fmt(v)+' bidón'+(l!=null?' ('+l+' L)':'');}
-    if(m[1]==='t')return 'queda '+fmt(v)+' bote';
-    if(m[1]==='b')return 'queda '+fmt(v)+' botella';
-    return 'quedan '+v;
-  }
-  const DB=()=>firebase.firestore();
   const card='background:#fff;border:1px solid #e8e0cc;border-radius:16px;padding:14px;margin-bottom:14px';
   const h2='margin:0 0 6px;font-size:15px;color:#C8960C;text-transform:uppercase;letter-spacing:.5px';
-  let LIST=[];
+  const DB=()=>firebase.firestore();
+  let sub='compras',RECS={},WA={};
 
-  async function render(){
-    const v=document.getElementById('suc-view-compras');if(!v)return;
-    v.innerHTML='<div style="'+card+'">Cargando…</div>';
-    let html='',merged={},recR=null,recA=null;
-    const hist=[];
-    for(const [sl,nm] of [['refugio','Refugio'],['alamos','Álamos']]){
-      let rec=null;
-      try{const d=await DB().collection('pc_sobres').doc('inv_last_'+sl).get();if(d.exists)rec=d.data();}catch(e){console.warn(e)}
-      if(sl==='refugio')recR=rec;else recA=rec;
-    if(!rec){html+='<div style="'+card+'"><h3 style="'+h2+'">'+nm+'</h3><div style="color:#888;font-size:13px">Todavía no hay inventario enviado.</div></div>';continue;}
-      const when=new Date(rec.ts).toLocaleString('es-MX',{weekday:'long',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-      const low=rec.low||[];
-      low.forEach(n=>{(merged[n]=merged[n]||[]).push(nm+': '+qty(n,rec));});
-      html+='<div style="'+card+'"><h3 style="'+h2+'">'+nm+'</h3><div style="font-size:12px;color:#888;margin-bottom:8px">Inventario: '+esc(when)+' · '+esc(rec.resp||'')+'</div>'+
-        (low.length?low.map(n=>'<div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid #f0ebdc"><b>'+esc(n)+'</b><b style="color:#d63a2f">'+esc(qty(n,rec)||'bajo')+'</b></div>').join(''):'<div style="color:#2e9e5b;font-weight:700">✅ Nada bajo en esta sucursal</div>')+
-        (rec.notas?'<div style="font-size:12px;color:#666;margin-top:8px">📝 '+esc(rec.notas)+'</div>':'')+
-        '<details style="margin-top:10px"><summary style="cursor:pointer;font-size:13px;color:#555">Ver inventario completo</summary><pre style="white-space:pre-wrap;font-size:12px;background:#f6f3ea;border-radius:10px;padding:10px;margin-top:8px">'+esc(rec.texto||'')+'</pre></details></div>';
+  function fmt(v){const w=Math.floor(v+1e-9),f=+(v-w).toFixed(2);if(!f)return String(w);const m={.1:'1/10',.25:'1/4',.5:'1/2',.75:'3/4'}[f]||Math.round(f*100)+'%';return w?w+' '+m:m;}
+  function plain(k,type,rec){
+    if(!rec||!rec.v||rec.v[k]==null)return null;
+    const v=rec.v[k];
+    if(v<=0)return 'se acabó';
+    if(type==='j'||type==='a'){const l=rec.l&&rec.l[k];return fmt(v)+(type==='a'?' botella':' bidón')+(l!=null&&type==='j'?' ('+l+' L)':'');}
+    if(type==='t')return fmt(v)+' bote';
+    return String(v);
+  }
+  function statusOf(label,k,rec){ // 0 empty,1 low,2 ok,null no data
+    if(!rec||!rec.v||rec.v[k]==null)return null;
+    const isLow=(rec.low||[]).includes(label);
+    if(isLow)return rec.v[k]<=0?0:1;
+    return 2;
+  }
+  const done=()=>{let st={};try{st=JSON.parse(localStorage.getItem('pcc_done3')||'{}');}catch(e){}return st;};
+  const sigOf=sl=>{const r=RECS[sl];return r?r.ts:'';};
+
+  async function load(){
+    for(const [sl] of SUCS){
+      try{const d=await DB().collection('pc_sobres').doc('inv_last_'+sl).get();RECS[sl]=d.exists?d.data():null;}catch(e){RECS[sl]=null;console.warn(e);}
     }
-    const names=Object.keys(merged);
-    const recs={Refugio:recR,'Álamos':recA};
-    const info=names.map(n=>{
-      const per=['Refugio','Álamos'].map(sc=>{const r=recs[sc];if(!r)return null;const isLow=(r.low||[]).includes(n);return {sc,txt:plain(n,r),low:isLow,empty:level(n,r)===0};}).filter(Boolean);
-      return {n,per,urgent:per.some(p=>p.low&&p.empty)};
-    }).sort((x,y)=>(y.urgent-x.urgent)||x.n.localeCompare(y.n));
-    const sig=((recR&&recR.ts)||'')+'|'+((recA&&recA.ts)||'');
-    let st={};try{st=JSON.parse(localStorage.getItem('pcc_done2')||'{}');}catch(e){}
-    if(st.sig!==sig)st={sig,items:{}};
-    const done=st.items||{};
-    const row=i=>'<label style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid #f0ebdc;cursor:pointer"><input type="checkbox" '+(done[i.n]?'checked':'')+' data-n="'+esc(i.n)+'" style="width:22px;height:22px;margin-top:2px"><span style="flex:1"><b style="font-size:16px;'+(done[i.n]?'text-decoration:line-through;color:#999':'')+'">'+esc(i.n)+'</b>'+
-      '<span style="display:block;margin-top:4px;font-size:13px;line-height:1.7">'+i.per.map(p=>'<span style="display:inline-block;margin-right:6px;padding:2px 9px;border-radius:99px;'+(p.low?(p.empty?'background:#fde7e4;color:#b3261e;font-weight:700':'background:#fff3dc;color:#8a5a00;font-weight:700'):'background:#eef6ef;color:#2e7d4f')+'">'+p.sc+': '+esc(p.txt)+'</span>').join('')+'</span></span></label>';
-    const pend=info.filter(i=>!done[i.n]),bought=info.filter(i=>done[i.n]);
-    const bySuc={Refugio:[],'Álamos':[]};
-    pend.forEach(i=>i.per.forEach(p=>{if(p.low)bySuc[p.sc].push({n:i.n,txt:p.txt,empty:p.empty});}));
-    LIST=[];
-    ['Refugio','Álamos'].forEach(sc=>{const arr=bySuc[sc].sort((x,y)=>(y.empty-x.empty)||x.n.localeCompare(y.n));
-      if(arr.length){if(LIST.length)LIST.push('');LIST.push('*'+sc+'*');arr.forEach(x=>LIST.push('• '+x.n+' — '+x.txt));}});
-    const urg=pend.filter(i=>i.urgent),low=pend.filter(i=>!i.urgent);
-    const top='<div style="'+card+'"><h3 style="'+h2+'">🛒 Qué comprar</h3>'+
-      (info.length?'<div></div>'+
-        (urg.length?'<div style="margin-top:10px;font-weight:800;color:#b3261e">🔴 Urgente · se acabó</div>'+urg.map(row).join(''):'')+
-        (low.length?'<div style="margin-top:14px;font-weight:800;color:#8a5a00">🟠 Queda poco</div>'+low.map(row).join(''):'')+
-        (!pend.length?'<div style="color:#2e9e5b;font-weight:700;padding:10px 0">✅ Ya compraste todo lo de esta lista</div>':'')+
-        (bought.length?'<div style="margin-top:14px;font-weight:800;color:#2e7d4f">✅ Ya comprado ('+bought.length+') · toca para regresarlo</div>'+bought.map(row).join(''):'')
-        :'<div style="color:#2e9e5b;font-weight:700;padding:8px 0">✅ No hay nada que comprar</div>')+
-      '<button id="cmpWA" style="width:100%;margin-top:12px;padding:13px;border:0;border-radius:12px;background:#25D366;color:#fff;font-weight:800;font-size:15px;cursor:pointer">Enviar lista por WhatsApp</button></div>';
-    const link='<div style="'+card+'"><h3 style="'+h2+'">Liga para el coordinador</h3><div style="font-size:12px;color:#888;margin-bottom:8px">El coordinador llena el inventario aquí (no entra a Sobres):</div><input readonly value="'+esc(FORM_URL)+'" style="width:100%;padding:11px;border:1.5px solid #e8e0cc;border-radius:10px;font-size:13px"><button id="cmpCopy" style="width:100%;margin-top:8px;padding:12px;border:1.5px solid #e8e0cc;border-radius:12px;background:#fff;font-weight:700;cursor:pointer">Copiar liga</button></div>';
-    v.innerHTML=top+'<details style="margin-bottom:14px"><summary style="cursor:pointer;padding:12px 4px;font-weight:700">Ver detalle por sucursal</summary>'+html+'</details>'+link+'<div style="text-align:center"><button id="cmpRe" style="padding:10px 18px;border:1.5px solid #e8e0cc;border-radius:10px;background:#fff;cursor:pointer">Actualizar</button></div>';
-    v.querySelectorAll('input[type=checkbox][data-n]').forEach(c=>c.onchange=()=>{st.items[c.dataset.n]=c.checked;localStorage.setItem('pcc_done2',JSON.stringify(st));render();});
-    const wa=document.getElementById('cmpWA');if(wa)wa.onclick=()=>{if(!LIST.length){alert('No hay nada pendiente por comprar');return;}window.open('https://wa.me/?text='+encodeURIComponent('🛒 Por comprar · Patio Cinco\n\n'+LIST.join('\n')),'_blank');};
-    document.getElementById('cmpCopy').onclick=()=>navigator.clipboard.writeText(FORM_URL).then(()=>alert('Liga copiada'));
-    document.getElementById('cmpRe').onclick=render;
+  }
+
+  /* ---------- COMPRAS (una tarjeta por sucursal) ---------- */
+  function viewCompras(){
+    const st=done();WA={};
+    let html='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px">';
+    for(const [sl,nm] of SUCS){
+      const rec=RECS[sl];
+      if(!rec){html+='<div style="'+card+'"><h3 style="'+h2+'">'+nm+'</h3><div style="color:#888;font-size:13px">Todavía no hay inventario enviado.</div></div>';continue;}
+      const sig=sigOf(sl);const mine=(st[sl]&&st[sl].sig===sig)?st[sl].items:{};
+      const empty=[],poco=[],bought=[];
+      CATS.forEach(([cn,items])=>items.forEach(([k,label,type])=>{
+        const s=statusOf(label,k,rec);if(s===null||s===2)return;
+        const o={k,label,txt:plain(k,type,rec),cat:cn};
+        if(mine[k])bought.push(o);else(s===0?empty:poco).push(o);
+      }));
+      WA[sl]=[...empty,...poco].map(o=>'• '+o.label+' — '+o.txt);
+      const when=new Date(rec.ts).toLocaleString('es-MX',{weekday:'long',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+      const row=(o,cls)=>'<label style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #f0ebdc;cursor:pointer"><input type="checkbox" data-s="'+sl+'" data-k="'+o.k+'" '+(mine[o.k]?'checked':'')+' style="width:20px;height:20px"><span style="flex:1;font-size:15px;font-weight:600;'+(mine[o.k]?'text-decoration:line-through;color:#999':'')+'">'+esc(o.label)+'</span><span style="font-size:12px;padding:2px 10px;border-radius:99px;'+cls+'">'+esc(o.txt)+'</span></label>';
+      const R='background:#fde7e4;color:#b3261e;font-weight:700',A='background:#fff3dc;color:#8a5a00;font-weight:700';
+      html+='<div style="'+card+'"><h3 style="'+h2+'">'+nm+'</h3><div style="font-size:12px;color:#888;margin-bottom:6px">Inventario: '+esc(when)+' · '+esc(rec.resp||'')+'</div>'+
+        (empty.length?'<div style="margin-top:6px;font-weight:800;color:#b3261e;font-size:14px">Se acabó</div>'+empty.map(o=>row(o,R)).join(''):'')+
+        (poco.length?'<div style="margin-top:12px;font-weight:800;color:#8a5a00;font-size:14px">Queda poco</div>'+poco.map(o=>row(o,A)).join(''):'')+
+        (!empty.length&&!poco.length?'<div style="color:#2e9e5b;font-weight:700;padding:8px 0">✅ Nada por comprar en esta sucursal</div>':'')+
+        (bought.length?'<div style="margin-top:12px;font-weight:800;color:#2e7d4f;font-size:14px">Ya comprado ('+bought.length+')</div>'+bought.map(o=>row(o,'background:#eef6ef;color:#2e7d4f')).join(''):'')+
+        '<button data-wa="'+sl+'" style="width:100%;margin-top:12px;padding:13px;border:0;border-radius:12px;background:#25D366;color:#fff;font-weight:800;font-size:15px;cursor:pointer">Mandar lista de '+nm+' por WhatsApp</button></div>';
+    }
+    return html+'</div>';
+  }
+
+  /* ---------- EXISTENCIAS ---------- */
+  function viewExist(){
+    const cell=(k,label,type,rec)=>{
+      const p=plain(k,type,rec);if(p===null)return '<span style="color:#bbb">—</span>';
+      const s=statusOf(label,k,rec);
+      const sty=s===0?'color:#b3261e;font-weight:700':s===1?'color:#8a5a00;font-weight:700':'color:#111';
+      return '<span style="'+sty+'">'+esc(p)+'</span>';
+    };
+    const dates=SUCS.map(([sl,nm])=>RECS[sl]?nm+': '+new Date(RECS[sl].ts).toLocaleDateString('es-MX',{day:'numeric',month:'short'}):nm+': sin datos').join(' · ');
+    let html='<div style="font-size:12px;color:#888;margin-bottom:10px">Último inventario · '+esc(dates)+'</div>';
+    CATS.forEach(([cn,items])=>{
+      html+='<div style="'+card+'"><h3 style="'+h2+'">'+cn+'</h3><div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:0;font-size:14px"><div style="font-size:12px;color:#888;padding:4px 0">Producto</div><div style="font-size:12px;color:#888;padding:4px 0">Refugio</div><div style="font-size:12px;color:#888;padding:4px 0">Álamos</div>'+
+        items.map(([k,label,type])=>'<div style="padding:8px 0;border-top:1px solid #f0ebdc;font-weight:600">'+esc(label)+'</div><div style="padding:8px 0;border-top:1px solid #f0ebdc">'+cell(k,label,type,RECS.refugio)+'</div><div style="padding:8px 0;border-top:1px solid #f0ebdc">'+cell(k,label,type,RECS.alamos)+'</div>').join('')+'</div></div>';
+    });
+    return html;
+  }
+
+  /* ---------- LIGA ---------- */
+  function viewLiga(){
+    return '<div style="'+card+'"><h3 style="'+h2+'">Liga para el coordinador</h3><div style="font-size:13px;color:#888;margin-bottom:8px">El coordinador llena el inventario aquí (no entra a Sobres):</div><input readonly value="'+esc(FORM_URL)+'" style="width:100%;padding:11px;border:1.5px solid #e8e0cc;border-radius:10px;font-size:13px"><button data-copy="1" style="width:100%;margin-top:8px;padding:12px;border:1.5px solid #e8e0cc;border-radius:12px;background:#fff;font-weight:700;cursor:pointer">Copiar liga</button></div>';
+  }
+
+  function paint(){
+    const box=document.getElementById('inv-body');if(!box)return;
+    box.innerHTML=sub==='compras'?viewCompras():sub==='exist'?viewExist():viewLiga();
+    document.querySelectorAll('#inv-subs button').forEach(b=>{const on=b.dataset.sub===sub;b.style.background=on?'#111':'#f0ede6';b.style.color=on?'#fff':'#555';});
+    box.querySelectorAll('input[type=checkbox][data-s]').forEach(c=>c.onchange=()=>{
+      const st=done(),sl=c.dataset.s,sig=sigOf(sl);
+      if(!st[sl]||st[sl].sig!==sig)st[sl]={sig,items:{}};
+      st[sl].items[c.dataset.k]=c.checked;localStorage.setItem('pcc_done3',JSON.stringify(st));paint();});
+    box.querySelectorAll('button[data-wa]').forEach(b=>b.onclick=()=>{
+      const sl=b.dataset.wa,nm=SUCS.find(x=>x[0]===sl)[1],lines=WA[sl]||[];
+      if(!lines.length){alert('No hay nada pendiente por comprar en '+nm);return;}
+      window.open('https://wa.me/?text='+encodeURIComponent('🛒 Por comprar · '+nm+'\n\n'+lines.join('\n')),'_blank');});
+    box.querySelectorAll('button[data-copy]').forEach(b=>b.onclick=()=>navigator.clipboard.writeText(FORM_URL).then(()=>alert('Liga copiada')));
+  }
+  async function render(){
+    const box=document.getElementById('inv-body');if(box)box.innerHTML='<div style="'+card+'">Cargando…</div>';
+    await load();paint();
   }
 
   function install(){
-    const anchor=document.getElementById('suctab-insumos'),host=document.getElementById('suc-view-insumos');
-    if(!anchor||!host||document.getElementById('suctab-compras'))return !!document.getElementById('suctab-compras');
-    const btn=anchor.cloneNode(false);
-    btn.id='suctab-compras';btn.removeAttribute('onclick');btn.textContent='Compras';
-    btn.onclick=()=>window.setSucTab('compras');
-    anchor.after(btn);
-    const view=document.createElement('div');view.id='suc-view-compras';view.style.display='none';
-    host.after(view);
-    const orig=window.setSucTab;
-    window.setSucTab=function(tab){
-      orig(tab);
-      const on=tab==='compras';
-      view.style.display=on?'block':'none';
-      btn.style.background=on?'#111':'#f0ede6';btn.style.color=on?'#fff':'#555';
-      if(on){['pagos','performance','hist','ranking','insumos'].forEach(t=>{const e=document.getElementById('suc-view-'+t);if(e)e.style.display='none';});render();}
-    };
+    const content=document.getElementById('content'),tabs=document.querySelector('.tabs-inner'),grid=document.getElementById('mas-grid');
+    if(!content||!tabs||typeof window.goTab!=='function')return false;
+    if(document.getElementById('pnl-inventario'))return true;
+    const pnl=document.createElement('div');pnl.id='pnl-inventario';pnl.className='pnl';
+    pnl.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0;font-size:20px">Inventario carwash</h2><div id="inv-subs" style="display:flex;gap:8px;flex-wrap:wrap">'+
+      [['compras','Compras'],['exist','Existencias'],['liga','Liga']].map(([k,n])=>'<button data-sub="'+k+'" style="padding:9px 16px;border:0;border-radius:99px;font-weight:700;cursor:pointer;background:#f0ede6;color:#555">'+n+'</button>').join('')+
+      '<button id="inv-reload" style="padding:9px 14px;border:1px solid #e8e0cc;border-radius:99px;background:#fff;cursor:pointer">Actualizar</button></div></div><div id="inv-body"></div>';
+    content.appendChild(pnl);
+    pnl.querySelectorAll('#inv-subs button[data-sub]').forEach(b=>b.onclick=()=>{sub=b.dataset.sub;paint();});
+    pnl.querySelector('#inv-reload').onclick=render;
+    const t=document.createElement('button');t.className='tab';t.dataset.t='inventario';t.textContent='Inventario';
+    t.onclick=()=>window.goTab('inventario');
+    tabs.appendChild(t);
+    if(grid){
+      const src=grid.querySelector('.mas-item');
+      if(src){const m=src.cloneNode(true);m.dataset.mt='inventario';m.classList.remove('on');
+        const sp=m.querySelector('span');if(sp)sp.textContent='Inventario';
+        m.addEventListener('click',()=>{if(window.closeMas)window.closeMas();window.goTab('inventario');if(window.syncMobNav)window.syncMobNav('inventario');});
+        grid.appendChild(m);}
+    }
+    const orig=window.goTab;
+    window.goTab=function(id){orig(id);if(id==='inventario')render();};
     return true;
   }
   let n=0;const iv=setInterval(()=>{if(install()||++n>60)clearInterval(iv);},500);
