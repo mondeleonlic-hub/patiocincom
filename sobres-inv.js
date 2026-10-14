@@ -15,7 +15,7 @@
   const card='background:#fff;border:1px solid #e8e0cc;border-radius:16px;padding:14px;margin-bottom:14px';
   const h2='margin:0 0 6px;font-size:15px;color:#C8960C;text-transform:uppercase;letter-spacing:.5px';
   const DB=()=>firebase.firestore();
-  let sub='compras',RECS={},WA={},CFG={units:{},extra:[]};
+  let sub='todo',RECS={},WA={},CFG={units:{},extra:[]};
   const BASE_UNITS=['bidón','botella','bote','pzas','bolsas','litros','galón','caja','rollo','paquete','kg'];
 
   function fmt(v){const w=Math.floor(v+1e-9),f=+(v-w).toFixed(2);if(!f)return String(w);const m={.1:'1/10',.25:'1/4',.5:'1/2',.75:'3/4'}[f]||Math.round(f*100)+'%';return w?w+' '+m:m;}
@@ -93,7 +93,7 @@
       const s=statusOf(label,k,rec);
       const sty=s===0?'color:#b3261e;font-weight:700':s===1?'color:#8a5a00;font-weight:700':'color:#111;font-weight:600';
       const bat=(type==='j'||type==='a'||type==='t')?battery(rec.v[k],s):'';
-      return bat+'<span style="'+sty+'">'+esc(p.q)+'</span>'+(p.l?' <span style="font-size:11px;color:#aaa">'+esc(p.l)+'</span>':'');
+      return bat+'<span style="'+sty+'">'+esc(p.q)+'</span>'+(s===0||s===1?' <span style="font-size:10px;padding:1px 6px;border-radius:99px;background:'+(s===0?'#fde7e4;color:#b3261e':'#fff3dc;color:#8a5a00')+'">comprar</span>':'')+(p.l?' <span style="font-size:11px;color:#aaa">'+esc(p.l)+'</span>':'');
     };
     const dates=SUCS.map(([sl,nm])=>RECS[sl]?nm+': '+new Date(RECS[sl].ts).toLocaleDateString('es-MX',{day:'numeric',month:'short'}):nm+': sin datos').join(' · ');
     const cols='display:grid;grid-template-columns:1.3fr .6fr 1.3fr 1.3fr;font-size:14px;align-items:center';
@@ -132,7 +132,7 @@
 
   function paint(){
     const box=document.getElementById('inv-body');if(!box)return;
-    box.innerHTML=sub==='compras'?viewCompras():sub==='exist'?viewExist():sub==='units'?viewUnits():viewLiga();
+    box.innerHTML=sub==='todo'?viewCompras()+'<h3 style="margin:18px 0 8px;font-size:17px">Existencias</h3>'+viewExist():sub==='units'?viewUnits():viewLiga();
     document.querySelectorAll('#inv-subs button').forEach(b=>{const on=b.dataset.sub===sub;b.style.background=on?'#111':'#f0ede6';b.style.color=on?'#fff':'#555';});
     box.querySelectorAll('input[type=checkbox][data-s]').forEach(c=>c.onchange=()=>{
       const st=done(),sl=c.dataset.s,sig=sigOf(sl);
@@ -161,7 +161,7 @@
     if(document.getElementById('pnl-inventario'))return true;
     const pnl=document.createElement('div');pnl.id='pnl-inventario';pnl.className='pnl';
     pnl.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0;font-size:20px">Inventario carwash</h2><div id="inv-subs" style="display:flex;gap:8px;flex-wrap:wrap">'+
-      [['compras','Compras'],['exist','Existencias'],['units','Unidades'],['liga','Liga']].map(([k,n])=>'<button data-sub="'+k+'" style="padding:9px 16px;border:0;border-radius:99px;font-weight:700;cursor:pointer;background:#f0ede6;color:#555">'+n+'</button>').join('')+
+      [['todo','Compras y existencias'],['units','Unidades'],['liga','Liga']].map(([k,n])=>'<button data-sub="'+k+'" style="padding:9px 16px;border:0;border-radius:99px;font-weight:700;cursor:pointer;background:#f0ede6;color:#555">'+n+'</button>').join('')+
       '<button id="inv-reload" style="padding:9px 14px;border:1px solid #e8e0cc;border-radius:99px;background:#fff;cursor:pointer">Actualizar</button></div></div><div id="inv-body"></div>';
     content.appendChild(pnl);
     pnl.querySelectorAll('#inv-subs button[data-sub]').forEach(b=>b.onclick=()=>{sub=b.dataset.sub;paint();});
