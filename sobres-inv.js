@@ -15,7 +15,8 @@
   const card='background:#fff;border:1px solid #e8e0cc;border-radius:16px;padding:14px;margin-bottom:14px';
   const h2='margin:0 0 6px;font-size:15px;color:#C8960C;text-transform:uppercase;letter-spacing:.5px';
   const DB=()=>firebase.firestore();
-  let sub='compras',RECS={},WA={};
+  let sub='compras',RECS={},WA={},CFG={units:{},extra:[]};
+  const BASE_UNITS=['bidón','botella','bote','pzas','bolsas','litros','galón','caja','rollo','paquete','kg'];
 
   function fmt(v){const w=Math.floor(v+1e-9),f=+(v-w).toFixed(2);if(!f)return String(w);const m={.1:'1/10',.25:'1/4',.5:'1/2',.75:'3/4'}[f]||Math.round(f*100)+'%';return w?w+' '+m:m;}
   function plain(k,type,rec){
@@ -27,14 +28,17 @@
     return String(v);
   }
   function battery(v,s){
-    const p=Math.max(0,Math.min(1,v)),col=s===0||s===1?(s===0?'#d63a2f':'#e08a00'):'#2e9e5b';
-    return '<span style="display:inline-flex;align-items:center;vertical-align:middle;margin-right:6px"><span style="position:relative;width:30px;height:14px;border:2px solid #444;border-radius:4px;background:#fff;box-sizing:content-box;overflow:hidden"><span style="position:absolute;left:0;top:0;bottom:0;width:'+Math.round(p*100)+'%;background:'+col+'"></span></span><span style="width:3px;height:7px;background:#444;border-radius:0 2px 2px 0;margin-left:1px"></span>'+(v>1.001?'<span style="font-size:11px;color:#666;margin-left:3px">+'+fmt(v-1)+'</span>':'')+'</span>';
+    const p=Math.max(0,Math.min(1,v)),col=s===0?'#d63a2f':s===1?'#e08a00':'#2e9e5b';
+    return '<span style="display:inline-flex;align-items:flex-end;vertical-align:middle;margin-right:6px"><span style="display:inline-flex;flex-direction:column;align-items:center"><span style="width:8px;height:4px;background:#444;border-radius:2px 2px 0 0"></span><span style="position:relative;width:20px;height:26px;border:2px solid #444;border-radius:5px 5px 4px 4px;background:#fff;box-sizing:content-box;overflow:hidden"><span style="position:absolute;left:0;right:0;bottom:0;height:'+Math.round(p*100)+'%;background:'+col+'"></span></span></span>'+(v>1.001?'<span style="font-size:11px;color:#666;margin-left:3px">+'+fmt(v-1)+'</span>':'')+'</span>';
   }
   const UNIT={j:'bidón',a:'botella',t:'bote',n:'pzas'};
+  function unitOf(k,type,label){
+    if(CFG.units[k])return CFG.units[k];
+    let u=UNIT[type]||'pzas';if(type==='n'&&/bolsas\)/.test(label))u='bolsas';return u;
+  }
   function parts(k,label,type,rec){
     if(!rec||!rec.v||rec.v[k]==null)return null;
-    const v=rec.v[k];let u=UNIT[type]||'pzas';
-    if(type==='n'&&/bolsas\)/.test(label))u='bolsas';
+    const v=rec.v[k];const u=unitOf(k,type,label);
     const l=(type==='j'&&rec.l&&rec.l[k]!=null&&v>0)?rec.l[k]+' L':null;
     return {q:fmt(v),u,l};
   }
@@ -48,6 +52,7 @@
   const sigOf=sl=>{const r=RECS[sl];return r?r.ts:'';};
 
   async function load(){
+    try{const d=await DB().collection('pc_sobres').doc('inv_config').get();if(d.exists){const x=d.data();CFG={units:x.units||{},extra:x.extra||[]};}}catch(e){console.warn(e);}
     for(const [sl] of SUCS){
       try{const d=await DB().collection('pc_sobres').doc('inv_last_'+sl).get();RECS[sl]=d.exists?d.data():null;}catch(e){RECS[sl]=null;console.warn(e);}
     }
@@ -97,11 +102,27 @@
     CATS.forEach(([cn,items])=>{
       html+='<div style="'+card+'"><h3 style="'+h2+'">'+cn+'</h3><div style="'+cols+'">'+['Producto','Unidad','Refugio','Álamos'].map(h=>'<div style="font-size:12px;color:#888;padding:4px 0">'+h+'</div>').join('')+
         items.map(([k,label,type])=>{
-          let u=UNIT[type]||'pzas';if(type==='n'&&/bolsas\)/.test(label))u='bolsas';
+          const u=unitOf(k,type,label);
           return '<div style="'+bd+';font-weight:600">'+esc(label.replace(/ \(bolsas\)/,''))+'</div><div style="'+bd+';color:#888;font-size:13px">'+u+'</div><div style="'+bd+'">'+cell(k,label,type,RECS.refugio)+'</div><div style="'+bd+'">'+cell(k,label,type,RECS.alamos)+'</div>';
         }).join('')+'</div></div>';
     });
     return html;
+  }
+
+  /* ---------- UNIDADES ---------- */
+  function viewUnits(){
+    const opts=[...BASE_UNITS,...(CFG.extra||[])];
+    let html='<div style="font-size:13px;color:#888;margin-bottom:10px">Elige la unidad de medida de cada producto. Si no está en la lista, usa "+ Agregar unidad…". Se refleja aquí y en el formulario del coordinador.</div>';
+    CATS.forEach(([cn,items])=>{
+      html+='<div style="'+card+'"><h3 style="'+h2+'">'+cn+'</h3>'+items.map(([k,label,type])=>{
+        const cur=unitOf(k,type,label);const list=opts.includes(cur)?opts:[...opts,cur];
+        return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #f0ebdc"><span style="font-weight:600;font-size:14px">'+esc(label.replace(/ \(bolsas\)/,''))+'</span><select data-unit="'+k+'" style="padding:8px;border:1.5px solid #e8e0cc;border-radius:10px;font-size:14px;background:#fff">'+list.map(u=>'<option '+(u===cur?'selected':'')+'>'+esc(u)+'</option>').join('')+'<option value="__new">+ Agregar unidad…</option></select></div>';
+      }).join('')+'</div>';
+    });
+    return html;
+  }
+  async function saveCfg(){
+    try{await DB().collection('pc_sobres').doc('inv_config').set({units:CFG.units,extra:CFG.extra,updatedAt:new Date().toISOString()});}catch(e){alert('No se pudo guardar la unidad');console.warn(e);}
   }
 
   /* ---------- LIGA ---------- */
@@ -111,7 +132,7 @@
 
   function paint(){
     const box=document.getElementById('inv-body');if(!box)return;
-    box.innerHTML=sub==='compras'?viewCompras():sub==='exist'?viewExist():viewLiga();
+    box.innerHTML=sub==='compras'?viewCompras():sub==='exist'?viewExist():sub==='units'?viewUnits():viewLiga();
     document.querySelectorAll('#inv-subs button').forEach(b=>{const on=b.dataset.sub===sub;b.style.background=on?'#111':'#f0ede6';b.style.color=on?'#fff':'#555';});
     box.querySelectorAll('input[type=checkbox][data-s]').forEach(c=>c.onchange=()=>{
       const st=done(),sl=c.dataset.s,sig=sigOf(sl);
@@ -121,6 +142,12 @@
       const sl=b.dataset.wa,nm=SUCS.find(x=>x[0]===sl)[1],lines=WA[sl]||[];
       if(!lines.length){alert('No hay nada pendiente por comprar en '+nm);return;}
       window.open('https://wa.me/?text='+encodeURIComponent('🛒 Por comprar · '+nm+'\n\n'+lines.join('\n')),'_blank');});
+    box.querySelectorAll('select[data-unit]').forEach(sel=>sel.onchange=async()=>{
+      const k=sel.dataset.unit;let v=sel.value;
+      if(v==='__new'){const n=(prompt('Nombre de la nueva unidad (ej. garrafón, litro, tambo)')||'').trim();
+        if(!n){paint();return;}
+        if(!BASE_UNITS.includes(n)&&!(CFG.extra||[]).includes(n))CFG.extra=[...(CFG.extra||[]),n];v=n;}
+      CFG.units[k]=v;await saveCfg();paint();});
     box.querySelectorAll('button[data-copy]').forEach(b=>b.onclick=()=>navigator.clipboard.writeText(FORM_URL).then(()=>alert('Liga copiada')));
   }
   async function render(){
@@ -134,7 +161,7 @@
     if(document.getElementById('pnl-inventario'))return true;
     const pnl=document.createElement('div');pnl.id='pnl-inventario';pnl.className='pnl';
     pnl.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0;font-size:20px">Inventario carwash</h2><div id="inv-subs" style="display:flex;gap:8px;flex-wrap:wrap">'+
-      [['compras','Compras'],['exist','Existencias'],['liga','Liga']].map(([k,n])=>'<button data-sub="'+k+'" style="padding:9px 16px;border:0;border-radius:99px;font-weight:700;cursor:pointer;background:#f0ede6;color:#555">'+n+'</button>').join('')+
+      [['compras','Compras'],['exist','Existencias'],['units','Unidades'],['liga','Liga']].map(([k,n])=>'<button data-sub="'+k+'" style="padding:9px 16px;border:0;border-radius:99px;font-weight:700;cursor:pointer;background:#f0ede6;color:#555">'+n+'</button>').join('')+
       '<button id="inv-reload" style="padding:9px 14px;border:1px solid #e8e0cc;border-radius:99px;background:#fff;cursor:pointer">Actualizar</button></div></div><div id="inv-body"></div>';
     content.appendChild(pnl);
     pnl.querySelectorAll('#inv-subs button[data-sub]').forEach(b=>b.onclick=()=>{sub=b.dataset.sub;paint();});

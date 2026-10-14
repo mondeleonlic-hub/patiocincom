@@ -139,6 +139,9 @@ const WA_NUM = ""; // opcional: tu número con lada, ej. "5216441234567". Vacío
 const FB_CFG = {apiKey:"AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",authDomain:"montseflow.firebaseapp.com",projectId:"montseflow",storageBucket:"montseflow.firebasestorage.app",messagingSenderId:"249314346746",appId:"1:249314346746:web:0d39b74f90dad6eff22b43"};
 let db=null;
 try{firebase.initializeApp(FB_CFG);db=firebase.firestore();}catch(e){console.warn(e)}
+let CFG={units:{},extra:[]};
+(async()=>{try{if(db){const d=await db.collection('pc_sobres').doc('inv_config').get();if(d.exists){const x=d.data();CFG={units:x.units||{},extra:x.extra||[]};}}}catch(e){console.warn(e)}})();
+function uw(i){return CFG.units[i.k]||(i.t==='jug'?(i.tin?'bote':i.cap?'botella':'bidón'):'pzas');}
 
 /* ============ CATÁLOGO ============ */
 // t:'jug' = bidón dibujado (nivel pintable + bidones extra) | t:'n' = conteo
@@ -260,7 +263,7 @@ const jugSVG=k=>`<svg viewBox="0 0 90 110" data-k="${k}">
 </svg>`;
 function build(){
   $('form').innerHTML=CATS.map(c=>`<div class="card"><h2>${c.name}</h2>`+c.items.map(i=>{
-    const sb=i.sub?`<small>${i.sub}</small>`:'';
+    const sb=`<small>${i.sub?i.sub+' · ':''}${uw(i)}</small>`;
     if(i.t==='jug')return `<div class="jugrow" id="r_${i.k}">
       <div class="jugbox">${i.tin?tinSVG(i.k):jugSVG(i.k)}</div>
       <div class="jugside"><div class="nm">${i.n}${sb}</div>
@@ -286,7 +289,7 @@ function bindJug(k){
 }
 function paint(k){
   const i=ALL.find(x=>x.k===k);const s=S[k],H=i.tin?46:82,B=i.tin?96:106,h=H*s.lvl;const L=$('liq_'+k);L.setAttribute('y',B-h);L.setAttribute('height',h);
-  $('v_'+k).innerHTML=fmt(val(i))+' <small>'+(i.tin?'bote(s)':i.cap?'botella(s)':'bidón(es)')+(i.tin?'':' · '+lit(i)+' L')+'</small>';
+  $('v_'+k).innerHTML=fmt(val(i))+' <small>'+uw(i)+(i.tin?'':' · '+lit(i)+' L')+'</small>';
   const cc=$('cap_'+k);if(cc)[...cc.children].forEach(b=>b.classList.toggle('on',+b.dataset.c===cap(i)));
   $('x_'+k).value=s.ext;
   [...$('c_'+k).children].forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.l-s.lvl)<.001));
@@ -336,7 +339,7 @@ function buildText(){
       const v=val(i);let u='';
       if(i.t==='jug')u=v===1?' bote':' bote';
       const nm=i.n+(i.sub?' ('+i.sub+')':'');
-      lines.push(`•${nm}: ${fmt(v)}${i.t==='jug'?(i.tin?' bote':i.cap?' botella':' bote de '+cap(i)+' L')+(i.tin?'':' ('+lit(i)+' L)'):''}${isLow(i)?' ⚠️⚠️':''}`);
+      lines.push(`•${nm}: ${fmt(v)}${i.t==='jug'?' '+uw(i)+((i.tin||i.cap)?'':' de '+cap(i)+' L ('+lit(i)+' L)'):((CFG.units[i.k]&&CFG.units[i.k]!=='pzas')?' '+CFG.units[i.k]:'')}${isLow(i)?' ⚠️⚠️':''}`);
     });
   });
   const low=ALL.filter(isLow);
