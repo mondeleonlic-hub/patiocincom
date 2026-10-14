@@ -26,6 +26,14 @@
     if(type==='t')return fmt(v)+' bote';
     return String(v);
   }
+  const UNIT={j:'bidón',a:'botella',t:'bote',n:'pzas'};
+  function parts(k,label,type,rec){
+    if(!rec||!rec.v||rec.v[k]==null)return null;
+    const v=rec.v[k];let u=UNIT[type]||'pzas';
+    if(type==='n'&&/bolsas\)/.test(label))u='bolsas';
+    const l=(type==='j'&&rec.l&&rec.l[k]!=null&&v>0)?rec.l[k]+' L':null;
+    return {q:fmt(v),u,l};
+  }
   function statusOf(label,k,rec){ // 0 empty,1 low,2 ok,null no data
     if(!rec||!rec.v||rec.v[k]==null)return null;
     const isLow=(rec.low||[]).includes(label);
@@ -52,12 +60,12 @@
       const empty=[],poco=[],bought=[];
       CATS.forEach(([cn,items])=>items.forEach(([k,label,type])=>{
         const s=statusOf(label,k,rec);if(s===null||s===2)return;
-        const o={k,label,txt:plain(k,type,rec),cat:cn};
+        const pt=parts(k,label,type,rec);const o={k,label,q:pt.q,u:pt.u,l:pt.l,txt:pt.q+' '+pt.u,cat:cn};
         if(mine[k])bought.push(o);else(s===0?empty:poco).push(o);
       }));
       WA[sl]=[...empty,...poco].map(o=>'• '+o.label+' — '+o.txt);
       const when=new Date(rec.ts).toLocaleString('es-MX',{weekday:'long',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-      const row=(o,cls)=>'<label style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #f0ebdc;cursor:pointer"><input type="checkbox" data-s="'+sl+'" data-k="'+o.k+'" '+(mine[o.k]?'checked':'')+' style="width:20px;height:20px"><span style="flex:1;font-size:15px;font-weight:600;'+(mine[o.k]?'text-decoration:line-through;color:#999':'')+'">'+esc(o.label)+'</span><span style="font-size:12px;padding:2px 10px;border-radius:99px;'+cls+'">'+esc(o.txt)+'</span></label>';
+      const row=(o,cls)=>'<label style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #f0ebdc;cursor:pointer"><input type="checkbox" data-s="'+sl+'" data-k="'+o.k+'" '+(mine[o.k]?'checked':'')+' style="width:20px;height:20px"><span style="flex:1;font-size:15px;font-weight:600;'+(mine[o.k]?'text-decoration:line-through;color:#999':'')+'">'+esc(o.label)+'</span><span style="min-width:44px;text-align:center;font-size:14px;padding:2px 10px;border-radius:99px;'+cls+'">'+esc(o.q)+'</span><span style="width:56px;font-size:13px;color:#888">'+esc(o.u)+(o.l?'<br><span style="font-size:11px;color:#aaa">'+esc(o.l)+'</span>':'')+'</span></label>';
       const R='background:#fde7e4;color:#b3261e;font-weight:700',A='background:#fff3dc;color:#8a5a00;font-weight:700';
       html+='<div style="'+card+'"><h3 style="'+h2+'">'+nm+'</h3><div style="font-size:12px;color:#888;margin-bottom:6px">Inventario: '+esc(when)+' · '+esc(rec.resp||'')+'</div>'+
         (empty.length?'<div style="margin-top:6px;font-weight:800;color:#b3261e;font-size:14px">Se acabó</div>'+empty.map(o=>row(o,R)).join(''):'')+
@@ -72,16 +80,21 @@
   /* ---------- EXISTENCIAS ---------- */
   function viewExist(){
     const cell=(k,label,type,rec)=>{
-      const p=plain(k,type,rec);if(p===null)return '<span style="color:#bbb">—</span>';
+      const p=parts(k,label,type,rec);if(!p)return '<span style="color:#bbb">—</span>';
       const s=statusOf(label,k,rec);
-      const sty=s===0?'color:#b3261e;font-weight:700':s===1?'color:#8a5a00;font-weight:700':'color:#111';
-      return '<span style="'+sty+'">'+esc(p)+'</span>';
+      const sty=s===0?'color:#b3261e;font-weight:700':s===1?'color:#8a5a00;font-weight:700':'color:#111;font-weight:600';
+      return '<span style="'+sty+'">'+esc(p.q)+'</span>'+(p.l?' <span style="font-size:11px;color:#aaa">'+esc(p.l)+'</span>':'');
     };
     const dates=SUCS.map(([sl,nm])=>RECS[sl]?nm+': '+new Date(RECS[sl].ts).toLocaleDateString('es-MX',{day:'numeric',month:'short'}):nm+': sin datos').join(' · ');
+    const cols='display:grid;grid-template-columns:1.5fr .7fr 1fr 1fr;font-size:14px;align-items:center';
+    const bd='padding:8px 0;border-top:1px solid #f0ebdc';
     let html='<div style="font-size:12px;color:#888;margin-bottom:10px">Último inventario · '+esc(dates)+'</div>';
     CATS.forEach(([cn,items])=>{
-      html+='<div style="'+card+'"><h3 style="'+h2+'">'+cn+'</h3><div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:0;font-size:14px"><div style="font-size:12px;color:#888;padding:4px 0">Producto</div><div style="font-size:12px;color:#888;padding:4px 0">Refugio</div><div style="font-size:12px;color:#888;padding:4px 0">Álamos</div>'+
-        items.map(([k,label,type])=>'<div style="padding:8px 0;border-top:1px solid #f0ebdc;font-weight:600">'+esc(label)+'</div><div style="padding:8px 0;border-top:1px solid #f0ebdc">'+cell(k,label,type,RECS.refugio)+'</div><div style="padding:8px 0;border-top:1px solid #f0ebdc">'+cell(k,label,type,RECS.alamos)+'</div>').join('')+'</div></div>';
+      html+='<div style="'+card+'"><h3 style="'+h2+'">'+cn+'</h3><div style="'+cols+'">'+['Producto','Unidad','Refugio','Álamos'].map(h=>'<div style="font-size:12px;color:#888;padding:4px 0">'+h+'</div>').join('')+
+        items.map(([k,label,type])=>{
+          let u=UNIT[type]||'pzas';if(type==='n'&&/bolsas\)/.test(label))u='bolsas';
+          return '<div style="'+bd+';font-weight:600">'+esc(label.replace(/ \(bolsas\)/,''))+'</div><div style="'+bd+';color:#888;font-size:13px">'+u+'</div><div style="'+bd+'">'+cell(k,label,type,RECS.refugio)+'</div><div style="'+bd+'">'+cell(k,label,type,RECS.alamos)+'</div>';
+        }).join('')+'</div></div>';
     });
     return html;
   }
