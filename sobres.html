@@ -4246,8 +4246,8 @@ function tarjetaDeuda(nombre,d,saldada){
   const div=document.createElement("div");
   div.className="dc"+(saldada?"":" td");if(saldada)div.style.opacity="0.6";
   const mpp=d.montoPorPago||(d.total/d.numPagos)||0;
-  const pagosRest=Math.max(0,d.numPagos-(d.pagoActual-1));
-  const saldo=Math.max(0,d.total-mpp*(d.pagoActual-1||0));
+  const _pa=d.pagoActual===0?(d._pagoPrev||1):d.pagoActual;const pagosRest=Math.max(0,d.numPagos-(_pa-1));
+  const saldo=Math.max(0,d.total-mpp*(_pa-1));
   div.innerHTML=`
     <button class="dc-borrar" onclick="borrarDeuda('${nombre}')">✕</button>
     <div class="dc-nom">${nombre}</div>
@@ -4264,12 +4264,12 @@ function tarjetaDeuda(nombre,d,saldada){
     </div>
     <div class="dc-campo" style="margin-top:4px">
       <label style="font-size:10px;font-weight:700;color:#888">Pagos ya realizados</label>
-      <input type="number" min="0" max="${d.numPagos||1}" value="${Math.max(0,(d.pagoActual||1)-1)}" 
+      <input type="number" min="0" max="${d.numPagos||1}" value="${Math.max(0,_pa-1)}" 
         onchange="ajustarPagosHechos('${nombre}',+this.value)"
         style="font-weight:700">
     </div>
     <div class="dc-calc">
-      <div class="cr"><span class="cl">Pago actual</span><span class="cv">${d.pagoActual||1} de ${d.numPagos||1}</span></div>
+      <div class="cr"><span class="cl">Pago actual</span><span class="cv">${_pa} de ${d.numPagos||1}</span></div>
       <div class="cr"><span class="cl">Pagos restantes</span><span class="cv">${pagosRest}</span></div>
       <div class="cr"><span class="cl">Saldo pendiente</span><span class="cv rojo">${fmt(saldo)}</span></div>
     </div>
@@ -4548,8 +4548,8 @@ function actDeudaMpp(nombre, mpp){
   flash("✓ Monto por pago actualizado");
 }
 function borrarDeuda(n){if(!confirm("¿Eliminar deuda de "+n+"?"))return;delete deudas[n];sv("pc4_deudas",deudas);renderD();renderT()}
-function pausarDeuda(n){deudas[n].pagoActual=0;sv("pc4_deudas",deudas);renderD();renderT();flash("⏸ Deuda de "+n+" pausada esta semana")}
-function reanudarDeuda(n){deudas[n].pagoActual=1;sv("pc4_deudas",deudas);renderD();renderT();flash("▶ Deuda de "+n+" se cobra esta semana")}
+function pausarDeuda(n){deudas[n]._pagoPrev=deudas[n].pagoActual||1;deudas[n].pagoActual=0;sv("pc4_deudas",deudas);renderD();renderT();flash("⏸ Deuda de "+n+" pausada esta semana")}
+function reanudarDeuda(n){deudas[n].pagoActual=deudas[n]._pagoPrev||1;delete deudas[n]._pagoPrev;sv("pc4_deudas",deudas);renderD();renderT();flash("▶ Deuda de "+n+" se cobra esta semana")}
 
 function merchADeuda(i){
   const row=rows[i];
@@ -5080,7 +5080,7 @@ function cerrarSemana(){
     const d=deudas[n];
     if(d.total>0){
       if(d.pagoActual===0){
-        d.pagoActual=1;
+        d.pagoActual=d._pagoPrev||1;delete d._pagoPrev;
       } else if(d.pagoActual>=d.numPagos){
         d.total=0; // ya se completaron todos los pagos
       } else {
