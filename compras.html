@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patio Cinco — Compras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#002852;
+    --navy-light:#0a3d78;
+    --gold:#e0a614;
+    --cream:#fbf3dd;
+    --paper:#f5f3ee;
+    --line:#e6e2d5;
+    --ok:#1d9e75;
+    --warn:#d85a30;
+    --text:#1c1c1a;
+    --muted:#726f65;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Manrope',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    background:var(--paper);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 18px 70px;}
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;flex-wrap:wrap;gap:10px;
+  }
+  .brand{display:flex;align-items:center;gap:13px;}
+  .brand .mark{
+    width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(155deg,var(--navy),var(--navy-light));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:16px;letter-spacing:-0.5px;
+    box-shadow:0 3px 10px rgba(0,40,82,.25);
+  }
+  .brand h1{font-size:18px;margin:0;color:var(--navy);font-weight:800;letter-spacing:-0.2px;}
+  .brand p{margin:2px 0 0;font-size:12.5px;color:var(--muted);}
+  .shared-note{
+    font-size:11px;color:var(--muted);background:#fff;border:1px solid var(--line);
+    padding:6px 12px;border-radius:20px;
+  }
+
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:16px;
+    padding:22px;margin-bottom:18px;
+    box-shadow:0 1px 3px rgba(28,28,26,.04);
+  }
+  .drop{
+    border:2px dashed #cfc9b6;border-radius:14px;padding:34px 20px;
+    text-align:center;cursor:pointer;transition:.15s;background:var(--cream);
+  }
+  .drop.drag{border-color:var(--gold);background:#f7edcf;}
+  .drop svg{margin-bottom:8px;opacity:.55;}
+  .drop p{margin:4px 0;font-size:14px;}
+  .drop .hint{color:var(--muted);font-size:12.5px;}
+  input[type=file]{display:none;}
+
+  .thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .thumb{
+    position:relative;width:78px;height:78px;border-radius:9px;overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb .rm{
+    position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;
+    background:rgba(0,0,0,.6);color:#fff;border:none;font-size:12px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--navy);color:#fff;border:none;border-radius:10px;
+    padding:12px 22px;font-size:14.5px;font-weight:700;cursor:pointer;
+    margin-top:16px;font-family:inherit;transition:.13s;
+  }
+  .btn:hover:not(:disabled){background:var(--navy-light);}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy);margin-top:0;padding:7px 14px;font-size:13px;}
+  .btn.secondary:hover{background:var(--cream);}
+  .btn.small{padding:6px 12px;font-size:12.5px;margin-top:0;}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);margin-top:0;padding:6px 12px;font-size:12.5px;}
+  .btn.ghost:hover{border-color:var(--muted);}
+
+  .status{font-size:13px;color:var(--muted);margin-top:10px;min-height:18px;}
+  .status.err{color:var(--warn);font-weight:600;}
+
+  .spinner{
+    width:15px;height:15px;border:2px solid rgba(255,255,255,.4);
+    border-top-color:#fff;border-radius:50%;
+    animation:spin .7s linear infinite;display:inline-block;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  h2.section{
+    font-size:13px;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--navy);margin:0 0 14px;font-weight:800;
+  }
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  table.compact-list{width:auto;min-width:0;}
+  th{
+    text-align:left;background:var(--navy);color:#fff;
+    padding:8px 12px;font-weight:700;font-size:11.5px;text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  th:first-child{border-radius:8px 0 0 8px;}
+  th:last-child{border-radius:0 8px 8px 0;}
+  td{padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  table.compact-list td{padding:6px 16px 6px 12px;}
+  tr:last-child td{border-bottom:none;}
+  tr.alt{background:var(--cream);}
+  .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .provider-group{margin-bottom:24px;}
+  .provider-title{
+    display:flex;align-items:center;gap:8px;margin:0 0 9px;
+    font-size:14.5px;font-weight:800;color:var(--navy);
+  }
+  .provider-title .count{
+    font-size:11px;font-weight:700;color:var(--muted);
+    background:var(--cream);border-radius:20px;padding:2px 9px;
+  }
+  .provider-title .total{
+    margin-left:auto;font-size:12.5px;font-weight:800;color:var(--ok);
+  }
+  .flag{
+    background:#fcece6;color:var(--warn);font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:20px;
+  }
+  .item-name{font-weight:600;}
+  .item-row-head{display:flex;align-items:center;gap:4px;}
+  .item-notes{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .item-pres{font-size:11.5px;color:var(--muted);}
+  .edit-icon{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:5px;border:none;flex-shrink:0;
+    background:transparent;cursor:pointer;color:var(--muted);
+    transition:.12s;
+  }
+  .edit-icon:hover{color:var(--navy);background:var(--cream);}
+  .edit-icon svg{width:16px;height:16px;display:block;}
+  .transfer-icon{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:5px;border:none;flex-shrink:0;
+    background:#e8f5ee;cursor:pointer;color:var(--ok);
+  }
+  .transfer-icon svg{width:16px;height:16px;display:block;}
+  .transfer-card.highlight{background:#dff0d3;border-color:var(--ok);}
+
+  .edit-row td{background:#fdfaf1;padding:14px 10px;}
+  .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+  .edit-grid label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:600;}
+  .edit-grid input,.edit-grid select{
+    width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:7px;
+    font-size:13px;font-family:inherit;background:#fff;
+  }
+  .edit-grid input:focus,.edit-grid select:focus{outline:2px solid var(--gold);outline-offset:-1px;}
+  .edit-actions{display:flex;gap:8px;justify-content:flex-end;}
+
+  .transfer-card{
+    border:1px solid #d8ecd0;background:#f2f9ee;border-radius:12px;
+    padding:12px 14px;margin-bottom:9px;display:flex;justify-content:space-between;
+    align-items:center;gap:14px;transition:.3s;
+  }
+  .transfer-card .t-left{display:flex;align-items:center;gap:10px;min-width:0;}
+  .transfer-card .t-arrow-icon{
+    flex-shrink:0;width:30px;height:30px;border-radius:8px;background:#dff0d3;
+    display:flex;align-items:center;justify-content:center;color:var(--ok);
+  }
+  .transfer-card .t-arrow-icon svg{width:16px;height:16px;}
+  .transfer-card .t-name{font-weight:700;font-size:14px;}
+  .transfer-card .t-route{
+    font-size:12.5px;color:var(--navy);font-weight:600;margin-top:1px;
+  }
+  .transfer-card .t-route .sep{color:var(--ok);margin:0 4px;}
+  .transfer-card .t-reason{font-size:11px;color:var(--muted);margin-top:2px;}
+  .transfer-card .t-qty{
+    flex-shrink:0;text-align:center;background:#fff;border:1.5px solid var(--ok);
+    border-radius:10px;padding:6px 14px;cursor:pointer;font-family:inherit;transition:.12s;
+  }
+  .transfer-card .t-qty:hover{background:var(--ok);}
+  .transfer-card .t-qty:hover .n, .transfer-card .t-qty:hover .u{color:#fff;}
+  .transfer-card .t-qty .n{font-size:18px;font-weight:800;color:var(--ok);line-height:1.1;}
+  .transfer-card .t-qty .u{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;}
+  tr.highlight-row td{background:#dff0d3 !important;transition:background .3s;}
+
+  .qty-input{
+    width:52px;text-align:right;border:none;background:transparent;
+    font-family:inherit;font-size:13.5px;font-variant-numeric:tabular-nums;
+    color:var(--text);padding:3px 4px;border-radius:5px;border-bottom:1px dashed transparent;
+  }
+  .qty-input:hover{border-bottom-color:var(--line);}
+  .qty-input:focus{outline:none;border-bottom-color:var(--gold);background:var(--cream);}
+  .qty-input::placeholder{color:#c8c4b6;}
+  .unit-input{width:64px;text-align:left;}
+
+  .empty{
+    text-align:center;color:var(--muted);font-size:13.5px;padding:26px 0;
+  }
+  .tabs{
+    display:flex;gap:3px;margin-bottom:18px;flex-wrap:wrap;
+    background:var(--cream);border-radius:11px;padding:4px;
+  }
+  .tab{
+    padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:700;
+    cursor:pointer;border:none;background:transparent;color:var(--muted);
+    transition:.13s;font-family:inherit;
+  }
+  .tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,40,82,.15);}
+
+  .grand-total{
+    display:flex;justify-content:space-between;align-items:center;
+    border-top:2px solid var(--navy);margin-top:6px;padding-top:12px;
+    font-size:15px;font-weight:800;color:var(--navy);
+  }
+
+  .compact-table{font-size:12px;}
+  .compact-table th{padding:6px 6px;font-size:10px;}
+  .compact-table td{padding:6px 6px;}
+  .compact-table th.wide, .compact-table td.wide{width:34%;}
+
+  .catalog-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+  .catalog-search{
+    flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;
+    font-size:13px;font-family:inherit;
+  }
+  .catalog-search:focus{outline:2px solid var(--gold);outline-offset:-1px;}
+
+  footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:10px;}
+
+  @media (max-width:520px){
+    .edit-grid{grid-template-columns:1fr;}
+    .wrap{padding:16px 12px 60px;}
+    .card{padding:16px;border-radius:13px;}
+  }
+</style>
+</head>
+<body>
+<div id="gate" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,40,82,.92);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fbf3dd;border-radius:16px;padding:26px 22px;max-width:340px;width:100%;text-align:center;font-family:'Manrope',sans-serif;">
+    <div style="font-weight:800;font-size:18px;color:#002852;margin-bottom:6px;">Compras Patio Cinco</div>
+    <div style="font-size:13px;color:#555;margin-bottom:14px;">Escribe el código de acceso del equipo</div>
+    <input id="gateInput" type="password" autocomplete="off" style="width:100%;padding:12px;border:1px solid #c9bfa0;border-radius:10px;font-size:16px;text-align:center;box-sizing:border-box;">
+    <div id="gateErr" style="color:#b3261e;font-size:12px;min-height:16px;margin:8px 0;"></div>
+    <button id="gateBtn" type="button" style="width:100%;padding:12px;border:0;border-radius:10px;background:#002852;color:#fff;font-weight:800;font-size:14px;cursor:pointer;">Entrar</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="mark">PC</div>
+      <div>
+        <h1>Patio Cinco</h1>
+        <p>Lista de compras por proveedor</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <div class="shared-note">Catálogo compartido con tu equipo</div>
+      <div class="shared-note" id="usageBadge" title="Estimado según precio público de Claude Sonnet 4.6 ($3/$15 por millón de tokens). No es tu factura real de Anthropic.">Cargando uso de API…</div>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2 class="section">1. Sube las capturas del inventario</h2>
+    <div class="drop" id="dropZone">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#002852" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+      <p><strong>Toca para elegir imágenes</strong></p>
+      <p class="hint">O arrastra aquí las capturas de la tabla de inventario</p>
+      <input type="file" id="fileInput" accept="image/*" multiple>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+    <button class="btn" id="analyzeBtn" disabled>Analizar capturas</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card" id="resultsCard">
+    <div class="tabs">
+      <div class="tab active" data-tab="compras">Lista de compras</div>
+      <div class="tab" data-tab="traspasos">Sugerencias de traspaso</div>
+      <div class="tab" data-tab="existencias">Existencias</div>
+      <div class="tab" data-tab="catalogo">Catálogo</div>
+      <div class="tab" data-tab="historial">Historial</div>
+    </div>
+
+    <div id="panel-compras">
+      <div id="movedSectionsTop"></div>
+      <h2 class="section">Lista de compras por proveedor</h2>
+      <div id="comprasBody"><div class="empty">Sube y analiza capturas para ver tu lista de compras.</div></div>
+      <div class="grand-total" id="grandTotal" style="display:none;"></div>
+      <button class="btn secondary" id="saveHistoryBtn" style="margin-top:14px;display:none;">💾 Guardar lista final en el historial</button>
+      <div class="status" id="historyStatus"></div>
+    </div>
+
+    <div id="panel-traspasos" style="display:none;">
+      <h2 class="section">Antes de comprar, revisa esto</h2>
+      <div id="traspasosBody"><div class="empty">Sube y analiza capturas para ver sugerencias de traspaso.</div></div>
+    </div>
+
+    <div id="panel-existencias" style="display:none;">
+      <h2 class="section">Existencias actuales</h2>
+      <p style="font-size:12px;color:var(--muted);margin:-8px 0 14px;">Cada celda muestra <b>stock actual / óptimo</b></p>
+      <div id="existenciasBody"><div class="empty">Sube y analiza capturas para ver existencias.</div></div>
+    </div>
+
+    <div id="panel-catalogo" style="display:none;">
+      <h2 class="section">Catálogo de insumos</h2>
+      <div class="catalog-toolbar">
+        <input type="text" class="catalog-search" id="catalogSearch" placeholder="Buscar insumo...">
+        <button class="btn secondary" id="addCatalogBtn">+ Agregar insumo</button>
+      </div>
+      <div id="catalogoBody"></div>
+    </div>
+
+    <div id="panel-historial" style="display:none;">
+      <h2 class="section">Historial de listas guardadas</h2>
+      <div id="historialBody"><div class="empty">Todavía no has guardado ninguna lista.</div></div>
+    </div>
+  </div>
+
+  <footer>Patio Cinco · Herramienta interna de compras · <span id="buildTag">build 2026-10-19 · Dashboard</span></footer>
+</div>
+
+<script>
+const CATALOG_DEFAULT = {"bowl 1/2 litro":"BODEGA","tapa expresso":"BODEGA","cafe de grano":"BODEGA","gomitas de mango":"MATERIAS PRIMAS","manga de carton":"BODEGA","popotes plastico":"BODEGA","tapa blanca":"BODEGA","tapa negra":"BODEGA","vaso 32 oz reyma":"BODEGA","vaso cafe 12 oz":"BODEGA","vaso cafe 16 oz":"BODEGA","vaso cristal 16 oz":"BODEGA","tapa domo":"BODEGA","guantes negros":"BODEGA","papel de cuadros":"BODEGA","agua embotellada":"COSTCO","aceite de canola":"COSTCO","aceite cristal":"COSTCO","bollo brioche":"COSTCO","pan hamburguesa":"COSTCO","coca light 355ml":"COSTCO","coca regular 355ml":"COSTCO","croissant":"COSTCO","jabon liquido":"COSTCO","jamon serrano":"COSTCO","lechuga":"COSTCO","leche de almendra":"COSTCO","leche deslactosada light":"COSTCO","leche entera":"COSTCO","mezcla de quesos":"COSTCO","nutella":"COSTCO","pan hot dog":"COSTCO","pan multigrano":"COSTCO","pan sandwich":"COSTCO","papas a la francesa":"COSTCO","papel de bano":"COSTCO","papel zanitas":"COSTCO","salchicha de res":"COSTCO","salvo concentrado":"COSTCO","super hot dog":"COSTCO","tocino":"COSTCO","sanitas":"COSTCO","papel de baño":"COSTCO","carne para hamburguesa":"COSTCO","crema alpura":"CREMERÍA","crema acida":"CREMERÍA","cueritos":"CREMERÍA","jamon de pavo":"CREMERÍA","jamon pavo ahumado":"CREMERÍA","jamon ahumado":"CREMERÍA","jamon ahumado de pavo":"CREMERÍA","queso amarillo":"CREMERÍA","queso fresco":"CREMERÍA","queso manchego":"CREMERÍA","queso oaxaca":"CREMERÍA","queso panela":"CREMERÍA","salsa macha":"CREMERÍA","agua 355ml":"GUADALUPANA","agua mineral lourdes 355ml":"GUADALUPANA","botella agua mineral lourdes":"GUADALUPANA","agua mineral sifon":"GUADALUPANA","agua penafiel sifon caja":"GUADALUPANA","boing fresa":"GUADALUPANA","boing mango":"GUADALUPANA","checolines":"GUADALUPANA","chile miguelito":"GUADALUPANA","chilarines":"GUADALUPANA","clamato":"GUADALUPANA","coca cola sin azucar 355ml":"GUADALUPANA","coca cola sin azucar":"GUADALUPANA","coca regular":"GUADALUPANA","consomate":"GUADALUPANA","delaware":"GUADALUPANA","doritos nacho":"GUADALUPANA","fanta":"GUADALUPANA","galletas oreo decoracion":"GUADALUPANA","jabon de trastes":"GUADALUPANA","fibra de metal":"GUADALUPANA","jugo maggi":"GUADALUPANA","knorr pollo":"GUADALUPANA","knorr de jitomate":"GUADALUPANA","kuru banderilla tamarindo":"GUADALUPANA","manzana mundet":"GUADALUPANA","pa michela":"GUADALUPANA","pimienta":"GUADALUPANA","refresco squirt":"GUADALUPANA","sal fina":"GUADALUPANA","sal la fina":"GUADALUPANA","salsa botanera":"GUADALUPANA","salsa michelada":"GUADALUPANA","sidral mundet":"GUADALUPANA","sprite":"GUADALUPANA","serpentinas":"GUADALUPANA","cloro":"GUADALUPANA","pinol":"GUADALUPANA","fibra lavatrastes":"GUADALUPANA","chocolate en polvo morelia":"GUADALUPANA","chocolate morelia":"GUADALUPANA","aguacate":"HEB","ajo":"HEB","bolsa ziploc":"HEB","cebolla":"HEB","cerveza":"HEB","cerveza 0.0":"HEB","chile habanero":"HEB","chile serrano":"HEB","jicama":"HEB","jitomate":"HEB","jitomate saladet":"HEB","limon":"HEB","mango":"HEB","manzana verde":"HEB","manzana":"HEB","microdyn":"HEB","pepino":"HEB","piña":"HEB","tomate verde":"HEB","tortilla":"HEB","tortillas":"HEB","cilantro":"HEB","zanahoria":"HEB","te manzanilla":"HEB","te yerbabuena":"HEB","azucar refinada":"MATERIAS PRIMAS","bolsa de basura":"MATERIAS PRIMAS","bolsas de basura":"MATERIAS PRIMAS","bolsas de papel estraza":"MATERIAS PRIMAS","cacahuates japoneses":"MATERIAS PRIMAS","cacahuates":"MATERIAS PRIMAS","catsup heinz":"MATERIAS PRIMAS","catsup":"MATERIAS PRIMAS","chamoy liquido":"MATERIAS PRIMAS","chamoy (liquido)":"MATERIAS PRIMAS","chile en polvo":"MATERIAS PRIMAS","chiles jalapenos en rajas":"MATERIAS PRIMAS","chocolate hersheys jarabe":"MATERIAS PRIMAS","crema batida":"MATERIAS PRIMAS","cuchara sopera":"MATERIAS PRIMAS","cubiertos (cuchara)":"MATERIAS PRIMAS","cucharas pasteleras":"MATERIAS PRIMAS","cuchillo sopero":"MATERIAS PRIMAS","cubiertos (cuchillo)":"MATERIAS PRIMAS","cubiertos (tenedor)":"MATERIAS PRIMAS","stevia":"MATERIAS PRIMAS","galleta oreo a granel":"MATERIAS PRIMAS","mayonesa heinz":"MATERIAS PRIMAS","mayonesa":"MATERIAS PRIMAS","mostaza heinz":"MATERIAS PRIMAS","mostaza":"MATERIAS PRIMAS","palillo mezclador":"MATERIAS PRIMAS","palito mezclador":"MATERIAS PRIMAS","papel aluminio":"MATERIAS PRIMAS","piña en almibar":"MATERIAS PRIMAS","popote tamarindo":"MATERIAS PRIMAS","popote de tamarindo":"MATERIAS PRIMAS","pulpa para escarchar":"MATERIAS PRIMAS","salsa inglesa":"MATERIAS PRIMAS","servilletas":"MATERIAS PRIMAS","tapa domo pza":"MATERIAS PRIMAS","tenedor sopero":"MATERIAS PRIMAS","vaso papel 16oz":"BODEGA","vaso papel (16oz)":"BODEGA","vasos salsa":"MATERIAS PRIMAS","vaso salsas":"MATERIAS PRIMAS","salsa maggi":"MATERIAS PRIMAS","salsa botanera galon":"MATERIAS PRIMAS","cubierta de manzana":"MERCADO LIBRE","papas sabritas naturales":"PROVEEDOR INDEPENDIENTE","contenedor negro":"PROVEEDOR INDEPENDIENTE","garrafon":"PROVEEDOR INDEPENDIENTE","garrafon de agua purificada":"PROVEEDOR INDEPENDIENTE","hielo":"PROVEEDOR INDEPENDIENTE","hielo (5kg)":"PROVEEDOR INDEPENDIENTE","palillo banderilla":"PROVEEDOR INDEPENDIENTE","pan dulce":"PROVEEDOR INDEPENDIENTE","tisana fresa kiwi":"ETRUSSCA","tisana (fresa/kiwi)":"ETRUSSCA","tisana blueberry":"ETRUSSCA","polvo chai te negro":"ETRUSSCA","polvo chai te negro (chillout)":"ETRUSSCA","polvo taro":"ETRUSSCA","polvo taro (chillout)":"ETRUSSCA","polvo frappucino":"ETRUSSCA","polvo matcha":"ETRUSSCA","polvo matcha (chillout)":"ETRUSSCA","polvo capuchino":"ETRUSSCA","polvo capuchino (chillout)":"ETRUSSCA","tisiana moras":"ETRUSSCA","tisana (moras)":"ETRUSSCA","huevo":"SAMS","recogedor":"CENTRAL DE ABASTOS","trapeador":"CENTRAL DE ABASTOS","cubetas":"CENTRAL DE ABASTOS","escoba":"CENTRAL DE ABASTOS","desengrasante":"CARWASH"};
+
+const CATALOG_INFO = {"tapa expresso": ["", "50 pz por bolsa", ""], "cafe de grano": ["", "bolsa 2kg c/u", ""], "vaso 32 oz reyma": ["REYMA", "pieza", ""], "agua embotellada": ["Kirkland Signature", "paquete 40pz de 500ml", "102.19"], "aceite de canola": ["", "garrafa", ""], "aceite cristal": ["", "garrafa 20L", "735.53"], "bollo brioche": ["Bimbo", "bolsa 6 bollos", "117.64"], "pan hamburguesa": ["Bimbo", "bolsa 6 bollos", "117.64"], "coca light 355ml": ["Familia Coca-Cola", "paquete 24pz de 355ml", "479.77"], "coca regular 355ml": ["Familia Coca-Cola", "rejilla 24pz de 355ml", "449.08"], "croissant": ["Costco", "charola 12pz", "131.96"], "jabon liquido": ["", "paquete 2 botellas", ""], "jamon serrano": ["RSV", "paquete 2 x 250gr", "234.26"], "lechuga": ["", "caja 3pz", "64.34"], "leche de almendra": ["Kirkland Signature", "caja 6pz de 946ml", "152.42"], "leche deslactosada light": ["Kirkland Signature", "caja 12pz de 1L", "280.30"], "leche entera": ["Kirkland Signature", "caja 12pz de 1L", "280.30"], "mezcla de quesos": ["Kirkland Signature", "paquete 2 bolsas", "326.33"], "nutella": ["", "bote", ""], "pan hot dog": ["Wonder", "bolsa 12pz", "66.39"], "pan multigrano": ["", "paquete 1.2kg", "305"], "pan sandwich": ["Crafted", "paquete 2 bolsas", "148.33"], "papas a la francesa": ["Champ", "caja 6 bolsas/2kg", "613"], "salchicha de res": ["Kirkland Signature", "paquete 3 bolsas", "377.48"], "salvo concentrado": ["", "botella 2.6L", "132"], "super hot dog": ["", "bolsa 12pz", "64"], "tocino": ["Kirkland Signature", "paquete 4 bolsas de 454gr", "326.33"], "sanitas": ["", "caja", ""], "carne para hamburguesa": ["", "kg (1kg)", "150.00"], "crema alpura": ["Alpura", "litro (1/2 L)", "42.00"], "crema acida": ["Alpura", "litro (1/2 L)", "42.00"], "cueritos": ["", "kg", "48.00"], "jamon de pavo": ["Aros", "kg", "106.50"], "jamon pavo ahumado": ["Aros", "kg (1kg / 2 bol. 1/2)", "153.50"], "jamon ahumado": ["Aros", "kg", "153.50"], "jamon ahumado de pavo": ["Aros", "kg", "153.50"], "queso amarillo": ["Chipilo", "caja 100 rebanadas", "166.00"], "queso fresco": ["Las Cruces", "kg", ""], "queso manchego": ["Caperucita", "kg (1/2 kg)", "246.00"], "queso oaxaca": ["Las Cruces", "kg (1kg)", "180.00"], "queso panela": ["Santa", "kg", "132.60"], "salsa macha": ["La Guadalupana", "bote", "48.50"], "agua 355ml": ["Peñafiel", "rejilla 24pz", "256.52"], "agua mineral lourdes 355ml": ["Lourdes", "rejilla 24pz de 355ml", "318.03"], "botella agua mineral lourdes": ["Lourdes", "rejilla 24pz de 355ml", "318.03"], "agua mineral sifon": ["Peñafiel", "botella 1.75L", "29.75"], "agua penafiel sifon caja": ["Peñafiel", "caja 8pz x 1.75L", "238.00"], "boing fresa": ["Boing", "rejilla", ""], "boing mango": ["Boing", "rejilla 12pz de 500ml", "327.43"], "checolines": ["", "bolsa", ""], "chile miguelito": ["Miguelito", "bote 980gr", "89.91"], "chilarines": ["", "pieza (30/500g)", "44.70"], "clamato": ["", "pieza", ""], "coca cola sin azucar 355ml": ["Coca-Cola", "caja 12pz de 355ml", "216.08"], "coca cola sin azucar": ["Coca-Cola", "caja 12pz de 355ml", "216.08"], "coca regular": ["Familia Coca-Cola", "rejilla 12pz de 355ml", "214.03"], "coca cola": ["Familia Coca-Cola", "rejilla 12pz de 355ml", "214.03"], "consomate": ["", "pieza (24/12, 126g)", "23"], "delaware": ["Familia Coca-Cola", "rejilla 12pz de 355ml", "200.02"], "doritos nacho": ["PepsiCo", "caja 25pz", "356"], "fanta": ["", "rejilla 12pz de 355ml", ""], "galletas oreo decoracion": ["OREO", "paquete 114gr", "13.04"], "jabon de trastes": ["Salvo", "litro (1L)", "33.09"], "fibra de metal": ["", "pieza", ""], "jugo maggi": ["Maggi", "pieza (800g)", "203"], "knorr pollo": ["Knorr", "pieza", ""], "knorr de jitomate": ["Knorr", "caja", ""], "knorr jitomate": ["Knorr", "caja", ""], "kuru banderilla tamarindo": ["", "pieza (12/50p)", "58"], "manzana mundet": ["Familia Coca-Cola", "rejilla 12pz de 355ml", "214.03"], "pa michela": ["", "pieza (4LT)", "225"], "pimienta": ["", "bote (1pz, 64gr)", "64"], "refresco squirt": ["Familia Pepsi", "pieza (2L)", "33"], "sal fina": ["", "kg (1kg)", ""], "sal la fina": ["", "bolsa (18/1)", "20"], "salsa botanera": ["", "galón", ""], "salsa michelada": ["Pa Michelada", "bote 4L", "225.33"], "sidral mundet": ["Familia Coca-Cola", "caja (12/355 lata)", "214.03"], "sprite": ["Familia Coca-Cola", "rejilla 12pz", "214.03"], "serpentinas": ["", "bolsa", ""], "cloro": ["Cloralex", "bote 10 lts", "134.00"], "pinol": ["", "bote", ""], "fibra lavatrastes": ["", "pieza", ""], "chocolate en polvo morelia": ["Morelia", "kg (bolsa de 700gr)", "88"], "chocolate morelia": ["Morelia", "kg (bolsa de 700gr)", "88"], "aguacate": ["HEB", "pieza (1kg)", "72.00"], "ajo": ["HEB", "bolsa", "52.00"], "bolsa ziploc": ["Ziploc", "paquete", "41.00"], "cebolla": ["HEB", "kg (1kg)", "24.00"], "cerveza": ["TECATE", "pieza (355ml)", "17.50"], "cerveza 0.0": ["TECATE", "pieza (355ml)", "17.50"], "chile habanero": ["HEB", "pieza (1kg)", "156.00"], "chile serrano": ["HEB", "pieza (1kg)", "94.00"], "jicama": ["HEB", "kg (1kg)", "15.00"], "jitomate": ["HEB", "kg (1kg)", "65.00"], "jitomate saladet": ["HEB", "kg (1kg)", "65.00"], "limon": ["HEB", "kg (1kg)", "65"], "mango": ["HEB", "pieza (1kg)", "35.00"], "manzana verde": ["HEB", "pieza (1kg)", "57.00"], "manzana": ["HEB", "pieza (1kg)", "57.00"], "microdyn": ["", "botella 90ml", "74.00"], "pepino": ["HEB", "kg (1kg)", "60.00"], "piña": ["HEB", "pieza", "45.00"], "tomate verde": ["HEB", "kg (1kg)", "47"], "tortilla": ["HEB", "kg (1kg)", "19.90"], "tortillas": ["HEB", "kg (1kg)", "19.90"], "cilantro": ["HEB", "kg", ""], "zanahoria": ["HEB", "pieza (1kg)", "18.00"], "azucar refinada": ["Zulka", "kg (1kg)", "22.08"], "bolsa de basura": ["Plásticos y Derivados", "kg (45x100)", "43.60"], "bolsas de basura": ["Plásticos y Derivados", "kg (45x100)", "43.60"], "bolsas de papel estraza": ["", "paquete", ""], "cacahuates japoneses": ["Kurumaya", "bolsa 1kg", "75.85"], "cacahuates": ["Kurumaya", "bolsa 1kg", "75.85"], "catsup heinz": ["Heinz", "bolsa 3kg", "147"], "catsup": ["Heinz", "bolsa 3kg", "147"], "chamoy liquido": ["Mega", "galón (1 galón)", "92"], "chamoy (liquido)": ["Mega", "galón (1 galón)", "92"], "chile en polvo": ["", "bolsa", ""], "chiles jalapenos en rajas": ["La Costeña", "lata 2.8kg", "123.68"], "chocolate hersheys jarabe": ["Hersheys", "bote 3.4L", "270.96"], "crema batida": ["ON TOP", "bote 250gr", "141.22"], "cuchara sopera": ["Nova", "bolsa 25pz", "12.41"], "cubiertos (cuchara)": ["Nova", "bolsa 25pz", "12.41"], "cucharas pasteleras": ["", "bolsa", ""], "cuchillo sopero": ["", "paquete 25pz", "14.73"], "cubiertos (cuchillo)": ["", "paquete 25pz", "14.73"], "cubiertos (tenedor)": ["", "paquete 25pz", "11.11"], "stevia": ["Nestle Professional", "caja 400 sobres de 1g", "197.40"], "galleta oreo a granel": ["", "kg (1kg)", ""], "mayonesa heinz": ["Heinz", "bote", "295.48"], "mayonesa": ["Heinz", "bote", "295.48"], "mostaza heinz": ["Heinz", "bolsa 3L", "145.23"], "mostaza": ["Heinz", "bolsa 3L", "145.23"], "palillo mezclador": ["", "caja", ""], "palito mezclador": ["", "caja", ""], "papel aluminio": ["", "paquete", ""], "piña en almibar": ["Tierritas", "lata 800gr", "71.50"], "popote tamarindo": ["Kurumarindo", "bote 50pz", "60.97"], "popote de tamarindo": ["Kurumarindo", "bote 50pz", "60.97"], "pulpa para escarchar": ["Frutimich", "bote 1.1kg", "66.58"], "salsa inglesa": ["Maggi", "bote", ""], "servilletas": ["Yofi", "paquete 500pz", "38.38"], "tapa domo pza": ["", "pieza (precio unitario)", "1.40"], "tapa domo": ["", "pieza (precio unitario)", "1.40"], "tenedor sopero": ["", "paquete 25pz", "11.11"], "vaso papel 16oz": ["", "pieza (precio unitario)", "2.50"], "vaso papel (16oz)": ["", "pieza (precio unitario)", "2.50"], "vasos salsa": ["Primo Souffle", "paquete 100pz", "29.35"], "vaso salsas": ["Primo Souffle", "paquete 100pz", "29.35"], "salsa maggi": ["Maggi", "bote", ""], "cubierta de manzana": ["Dulces Micho", "caja 5pz de 350gr", "109"], "hielo": ["RemarWater", "bolsa 5kg", "35"], "hielo (5kg)": ["RemarWater", "bolsa 5kg", "35"], "garrafon": ["", "pieza", ""], "garrafon de agua purificada": ["", "pieza", ""], "contenedor negro": ["", "pieza", ""], "palillo banderilla": ["", "paquete", ""], "pan dulce": ["", "pieza", ""], "papas sabritas naturales": ["", "caja", ""], "polvo chai te negro": ["ChillOut", "bolsa 2kg", ""], "polvo chai te negro (chillout)": ["ChillOut", "bolsa 2kg", ""], "polvo taro": ["ChillOut", "bolsa 2kg", ""], "polvo taro (chillout)": ["ChillOut", "bolsa 2kg", ""], "polvo frappucino": ["", "bolsa", ""], "polvo matcha": ["ChillOut", "bolsa 2kg", ""], "polvo matcha (chillout)": ["ChillOut", "bolsa 2kg", ""], "tisiana moras": ["ChillOut", "bolsa", ""], "tisana (moras)": ["ChillOut", "bolsa", ""], "tisana fresa kiwi": ["ChillOut", "bolsa", ""], "tisana (fresa/kiwi)": ["ChillOut", "bolsa", ""], "huevo": ["San Juan", "caja 3kg", "305.87"]};
+
+const PROVIDERS_LIST = ["BODEGA","CARWASH","CENTRAL DE ABASTOS","COSTCO","CREMERÍA","ETRUSSCA","GUADALUPANA","HEB","MATERIAS PRIMAS","MERCADO LIBRE","PROVEEDOR INDEPENDIENTE","SAMS"];
+
+let files = [];
+let extracted = [];
+let workingRows = [];
+let overrides = {};
+let overridesVersion = null;
+
+
+/* ===== Backend: Google Apps Script (mismo del Dashboard) ===== */
+const GS_URL = "https://script.google.com/macros/s/AKfycbyzFNsBAyp0WwZQnESLQv09o-MtsdyBr6odfEPj6Z_1kFE7wUTmisy8noGvFbYY2n7ZnA/exec";
+const CODE_KEY = 'pc_compras_code';
+function getStoredCode(){ try { return localStorage.getItem(CODE_KEY) || ''; } catch(e){ return ''; } }
+function storeCode(c){ try { localStorage.setItem(CODE_KEY, c); } catch(e){} }
+function clearCode(){ try { localStorage.removeItem(CODE_KEY); } catch(e){} }
+
+let _gatePromise = null;
+function askCode(msg){
+  if (_gatePromise) return _gatePromise;
+  _gatePromise = new Promise(resolve => {
+    const gate = document.getElementById('gate');
+    const input = document.getElementById('gateInput');
+    const err = document.getElementById('gateErr');
+    err.textContent = msg || '';
+    gate.style.display = 'flex';
+    input.value = '';
+    setTimeout(() => input.focus(), 50);
+    const done = () => {
+      const v = input.value.trim();
+      if (!v) return;
+      gate.style.display = 'none';
+      _gatePromise = null;
+      resolve(v);
+    };
+    document.getElementById('gateBtn').onclick = done;
+    input.onkeydown = e => { if (e.key === 'Enter') done(); };
+  });
+  return _gatePromise;
+}
+
+async function api(action, payload){
+  let code = getStoredCode();
+  if (!code) code = await askCode();
+  for (let attempt = 0; attempt < 3; attempt++){
+    const resp = await fetch(GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ action: 'compras_' + action, code }, payload || {}))
+    });
+    const data = await resp.json();
+    if (data && data.auth && data.error && /acceso/i.test(data.error)){
+      clearCode();
+      code = await askCode('Código incorrecto, intenta de nuevo.');
+      continue;
+    }
+    if (data && data.error) throw new Error(data.error);
+    storeCode(code);
+    return data;
+  }
+  throw new Error('No se pudo validar el código de acceso.');
+}
+
+async function loadOverrides(){
+  try {
+    const d = await api('catalog_get');
+    overrides = d.overrides || {};
+  } catch(e){
+    console.error('No se pudo cargar el catálogo', e);
+    overrides = {};
+  }
+}
+async function saveOverrides(){
+  try {
+    await api('catalog_set', { overrides });
+  } catch(e){
+    console.error('No se pudo guardar el catálogo', e);
+  }
+}
+async function init(){
+  await loadOverrides();
+  renderCatalogTab();
+  loadUsageBadge();
+}
+init();
+
+async function loadUsageBadge(){
+  const badge = document.getElementById('usageBadge');
+  if (!badge) return;
+  try {
+    const t = await api('usage_get');
+    const inCost = (t.input_tokens || 0) / 1000000 * 3;
+    const outCost = (t.output_tokens || 0) / 1000000 * 15;
+    const total = inCost + outCost;
+    badge.textContent = `Uso API: ${t.calls || 0} análisis · ~$${total.toFixed(2)} USD estimado`;
+  } catch (e) {
+    badge.textContent = 'Uso de API no disponible';
+  }
+}
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const thumbsEl = document.getElementById('thumbs');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const statusEl = document.getElementById('status');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag');
+  addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
+});
+fileInput.addEventListener('change', e => { addFiles(Array.from(e.target.files)); fileInput.value=''; });
+
+function addFiles(list){
+  if (!list.length) return;
+  files = files.concat(list);
+  renderThumbs();
+  scheduleAutoAnalyze();
+}
+function renderThumbs(){
+  thumbsEl.innerHTML = '';
+  files.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'thumb';
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(f);
+    const rm = document.createElement('button');
+    rm.className = 'rm'; rm.textContent = '×';
+    rm.onclick = (e) => { e.stopPropagation(); files.splice(i,1); renderThumbs(); };
+    div.appendChild(img); div.appendChild(rm);
+    thumbsEl.appendChild(div);
+  });
+  analyzeBtn.disabled = files.length === 0;
+}
+
+function fileToBase64(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function analyzeImage(file){
+  const b64 = await fileToBase64(file);
+  const mediaType = file.type || 'image/jpeg';
+
+  const data = await api('analyze', { imageBase64: b64, mediaType });
+  return data.rows || [];
+}
+
+function normalize(s){
+  return String(s||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\(.*?\)/g,'')
+    .replace(/[^a-z0-9 ]/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
+
+function getOverride(name){
+  return overrides[normalize(name)] || null;
+}
+
+function findProvider(name){
+  const ov = getOverride(name);
+  if (ov && ov.proveedor) return ov.proveedor;
+  const key = normalize(name);
+  if (CATALOG_DEFAULT[key]) return CATALOG_DEFAULT[key];
+  const keys = Object.keys(CATALOG_DEFAULT);
+  for (const k of keys){
+    if (key.includes(k) || k.includes(key)) return CATALOG_DEFAULT[k];
+  }
+  const keyTokens = new Set(key.split(' ').filter(t=>t.length>2));
+  let best = null, bestScore = 0;
+  for (const k of keys){
+    const kTokens = new Set(k.split(' ').filter(t=>t.length>2));
+    let overlap = 0;
+    keyTokens.forEach(t => { if (kTokens.has(t)) overlap++; });
+    if (overlap > bestScore){ bestScore = overlap; best = CATALOG_DEFAULT[k]; }
+  }
+  if (bestScore >= 1) return best;
+  return null;
+}
+
+async function runAnalysis(){
+  if (!files.length) return;
+  analyzeBtn.disabled = true;
+  statusEl.className = 'status';
+  extracted = [];
+  let hadError = false;
+  let lastErrorMsg = '';
+  for (let i = 0; i < files.length; i++){
+    statusEl.innerHTML = `<span class="spinner"></span> Analizando imagen ${i+1} de ${files.length}...`;
+    try {
+      const rows = await analyzeImage(files[i]);
+      extracted = extracted.concat(rows);
+    } catch(e){
+      hadError = true;
+      lastErrorMsg = e.message || 'error desconocido';
+    }
+  }
+  if (hadError && extracted.length === 0){
+    statusEl.className = 'status err';
+    statusEl.textContent = 'Error al analizar: ' + lastErrorMsg;
+    analyzeBtn.disabled = false;
+    return;
+  }
+  if (extracted.length === 0){
+    statusEl.className = 'status err';
+    statusEl.textContent = 'No se detectaron insumos con compra mayor a 0 en las imágenes.';
+    analyzeBtn.disabled = false;
+    return;
+  }
+  statusEl.className = 'status';
+  statusEl.textContent = `Listo — ${extracted.length} insumos detectados.`;
+  analyzeBtn.disabled = false;
+
+  const byName = {};
+  extracted.forEach(r => { byName[normalize(r.i)] = r; });
+  workingRows = Object.values(byName).map((r, idx) => Object.assign({_id: 'r'+idx}, r));
+
+  renderResults();
+  loadUsageBadge();
+}
+
+analyzeBtn.addEventListener('click', runAnalysis);
+
+let autoAnalyzeTimer = null;
+function scheduleAutoAnalyze(){
+  if (autoAnalyzeTimer) clearTimeout(autoAnalyzeTimer);
+  statusEl.className = 'status';
+  statusEl.textContent = 'Analizando automáticamente en un momento — agrega más fotos si quieres antes de que empiece...';
+  autoAnalyzeTimer = setTimeout(() => {
+    autoAnalyzeTimer = null;
+    runAnalysis();
+  }, 1200);
+}
+
+function renderResults(){
+  const rows = workingRows;
+
+  const transferSet = new Set();
+  rows.forEach(r => {
+    const surplusRefugio = (r.sr||0) - (r.or||0);
+    const surplusAlamos = (r.sa||0) - (r.oa||0);
+    if ((r.ca > 0 && surplusRefugio > 0) || (r.cr > 0 && surplusAlamos > 0)){
+      transferSet.add(r._id);
+    }
+  });
+
+  const groups = {};
+  const unmatched = [];
+  rows.forEach(r => {
+    if (r.mv === 'r2a' || r.mv === 'a2r') return; // se traspasa, no se compra
+    const prov = findProvider(r.i);
+    if (!prov){ unmatched.push(r); return; }
+    if (!groups[prov]) groups[prov] = [];
+    groups[prov].push(r);
+  });
+
+  const comprasBody = document.getElementById('comprasBody');
+  comprasBody.innerHTML = '';
+  const provNames = Object.keys(groups).sort();
+  let grandTotal = 0;
+  let hasAnyPrice = false;
+
+  if (provNames.length === 0 && unmatched.length === 0){
+    comprasBody.innerHTML = '<div class="empty">No hay insumos para mostrar.</div>';
+  }
+
+  provNames.forEach(prov => {
+    const items = groups[prov];
+    let provTotal = 0;
+    items.forEach(r => {
+      const ov = getOverride(r.i);
+      if (ov && ov.precio) { provTotal += (Number(ov.precio)||0) * ((r.cr||0)+(r.ca||0)); hasAnyPrice = true; }
+    });
+    grandTotal += provTotal;
+    const div = document.createElement('div');
+    div.className = 'provider-group';
+    const totalHtml = provTotal > 0 ? `<span class="total">$${provTotal.toFixed(2)}</span>` : '';
+    div.innerHTML = `<div class="provider-title">${prov} <span class="count">${items.length} insumo${items.length===1?'':'s'}</span>${totalHtml}</div>` +
+      buildComprasTable(items, transferSet);
+    comprasBody.appendChild(div);
+  });
+
+  if (unmatched.length){
+    const div = document.createElement('div');
+    div.className = 'provider-group';
+    div.innerHTML = `<div class="provider-title">Sin proveedor identificado <span class="flag">confirmar</span></div>` +
+      buildComprasTable(unmatched, transferSet);
+    comprasBody.appendChild(div);
+  }
+
+  const gtEl = document.getElementById('grandTotal');
+  if (hasAnyPrice){
+    gtEl.style.display = 'flex';
+    gtEl.innerHTML = `<span>Total estimado</span><span>$${grandTotal.toFixed(2)}</span>`;
+  } else {
+    gtEl.style.display = 'none';
+  }
+
+  document.getElementById('saveHistoryBtn').style.display = rows.length ? 'inline-flex' : 'none';
+
+  attachEditHandlers();
+  attachJumpHandlers();
+  attachQtyHandlers();
+  attachDeleteHandlers();
+
+  const traspasosBody = document.getElementById('traspasosBody');
+  traspasosBody.innerHTML = '';
+
+  const movedR2A = rows.filter(r => r.mv === 'r2a');
+  const movedA2R = rows.filter(r => r.mv === 'a2r');
+  const movedTop = document.getElementById('movedSectionsTop');
+  let movedHtml = '';
+  if (movedR2A.length){
+    movedHtml += buildMovedSection('TRASPASO Refugio → Álamos', movedR2A, 'ca');
+  }
+  if (movedA2R.length){
+    movedHtml += buildMovedSection('TRASPASO Álamos → Refugio', movedA2R, 'cr');
+  }
+  movedTop.innerHTML = movedHtml;
+  attachMovedHandlers();
+
+  const autoBody = document.createElement('div');
+  let anyTransfer = false;
+  rows.forEach(r => {
+    if (r.mv === 'r2a' || r.mv === 'a2r') return;
+    const surplusRefugio = (r.sr||0) - (r.or||0);
+    const surplusAlamos = (r.sa||0) - (r.oa||0);
+    if (r.ca > 0 && surplusRefugio > 0){
+      const moveQty = Math.min(surplusRefugio, r.ca);
+      addTransferCard(autoBody, r._id, r.i, 'Refugio', 'Álamos', moveQty, r.u, surplusRefugio, r.ca, 'r2a');
+      anyTransfer = true;
+    }
+    if (r.cr > 0 && surplusAlamos > 0){
+      const moveQty = Math.min(surplusAlamos, r.cr);
+      addTransferCard(autoBody, r._id, r.i, 'Álamos', 'Refugio', moveQty, r.u, surplusAlamos, r.cr, 'a2r');
+      anyTransfer = true;
+    }
+  });
+  if (anyTransfer){
+    const wrap = document.createElement('div');
+    wrap.className = 'provider-group';
+    wrap.innerHTML = '<div class="provider-title">Sugerencias automáticas (por sobrante de stock)</div><p style="font-size:12px;color:var(--muted);margin:-4px 0 10px;">Dale clic al recuadro de cantidad para aplicar el traspaso automáticamente.</p>';
+    wrap.appendChild(autoBody);
+    traspasosBody.appendChild(wrap);
+  } else {
+    traspasosBody.innerHTML = '<div class="empty">No se detectaron sobrantes que convenga mover entre sucursales.</div>';
+  }
+  attachAutoTransferHandlers();
+
+  const existenciasBody = document.getElementById('existenciasBody');
+  if (!rows.length){
+    existenciasBody.innerHTML = '<div class="empty">Sube y analiza capturas para ver existencias.</div>';
+  } else {
+    existenciasBody.innerHTML = buildCompactExistenciasTable(rows);
+  }
+}
+
+function buildCompactExistenciasTable(rows){
+  let html = '<table class="compact-list compact-table"><thead><tr><th>Insumo</th><th>Unid.</th><th class="num">Refugio</th><th class="num">Álamos</th></tr></thead><tbody>';
+  rows.forEach((r,i) => {
+    const rs = fmt(r.sr)||'0', ro = fmt(r.or)||'0', as = fmt(r.sa)||'0', ao = fmt(r.oa)||'0';
+    html += `<tr${i%2?' class=alt':''}>
+      <td>${r.i}</td>
+      <td>${r.u||''}</td>
+      <td class="num"><b>${rs}</b><span style="color:var(--muted)"> / ${ro}</span></td>
+      <td class="num"><b>${as}</b><span style="color:var(--muted)"> / ${ao}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+const EDIT_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+const TRANSFER_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l-4 4 4 4"/><path d="M3 14h13a4 4 0 0 0 4-4"/><path d="M17 14l4-4-4-4"/><path d="M21 10H8a4 4 0 0 0-4 4"/></svg>';
+const DELETE_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+
+function buildComprasTable(items, transferSet){
+  let html = '<table class="compact-list"><thead><tr><th>Insumo</th><th>Unidad</th><th class="num">Refugio</th><th class="num">Álamos</th></tr></thead><tbody>';
+  items.forEach((r,i) => {
+    const ov = getOverride(r.i);
+    const pres = ov && ov.presentacion ? `<div class="item-pres">${ov.presentacion}</div>` : '';
+    const notas = ov && ov.notas ? `<div class="item-notes">📝 ${ov.notas}</div>` : '';
+    const precio = ov && ov.precio ? ` · $${Number(ov.precio).toFixed(2)}/${r.u||'u'}` : '';
+    const hasTransfer = transferSet && transferSet.has(r._id);
+    const transferBtn = hasTransfer
+      ? `<button class="transfer-icon" data-jump="${r._id}" title="Hay sugerencia de traspaso — ver" aria-label="Ver sugerencia de traspaso">${TRANSFER_ICON_SVG}</button>`
+      : '';
+    html += `<tr${i%2?' class=alt':''}>
+      <td>
+        <div class="item-row-head">
+          <button class="edit-icon" data-edit="${r._id}" title="Editar" aria-label="Editar ${escapeAttr(r.i)}">${EDIT_ICON_SVG}</button>
+          <button class="edit-icon danger" data-delete="${r._id}" title="Eliminar renglón" aria-label="Eliminar ${escapeAttr(r.i)}">${DELETE_ICON_SVG}</button>
+          ${transferBtn}
+          <span class="item-name">${r.i}${precio}</span>
+        </div>
+        ${pres}${notas}
+      </td>
+      <td><input type="text" class="qty-input unit-input" data-id="${r._id}" data-field="u" value="${escapeAttr(r.u||'')}" placeholder="—"></td>
+      <td class="num"><input type="number" step="0.01" class="qty-input" data-id="${r._id}" data-field="cr" value="${r.cr||''}" placeholder="—"></td>
+      <td class="num"><input type="number" step="0.01" class="qty-input" data-id="${r._id}" data-field="ca" value="${r.ca||''}" placeholder="—"></td>
+    </tr>
+    <tr class="edit-row" id="edit-${r._id}" style="display:none;"><td colspan="4"></td></tr>`;
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+function attachQtyHandlers(){
+  document.querySelectorAll('.qty-input').forEach(el => {
+    el.onchange = () => {
+      const r = workingRows.find(x => x._id === el.dataset.id);
+      if (!r) return;
+      if (el.dataset.field === 'u'){
+        r.u = el.value.trim();
+      } else {
+        const val = parseFloat(el.value);
+        r[el.dataset.field] = isNaN(val) ? 0 : val;
+      }
+      renderResults();
+    };
+    el.onclick = (e) => e.stopPropagation();
+  });
+}
+
+function attachDeleteHandlers(){
+  document.querySelectorAll('[data-delete]').forEach(el => {
+    el.onclick = (e) => { e.stopPropagation(); deleteRow(el.dataset.delete); };
+  });
+}
+
+function attachJumpHandlers(){
+  document.querySelectorAll('[data-jump]').forEach(el => {
+    el.onclick = () => jumpToTraspaso(el.dataset.jump);
+  });
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  ['compras','traspasos','existencias','catalogo','historial'].forEach(n => {
+    const panel = document.getElementById('panel-'+n);
+    if (panel) panel.style.display = (n === name) ? 'block' : 'none';
+  });
+  if (name === 'historial') renderHistorial();
+}
+
+function jumpToTraspaso(itemId){
+  switchTab('traspasos');
+  setTimeout(() => {
+    const el = document.querySelector(`.transfer-card[data-item-id="${itemId}"]`);
+    if (el){
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      el.classList.add('highlight');
+      setTimeout(() => el.classList.remove('highlight'), 2200);
+    }
+  }, 60);
+}
+
+function escapeAttr(s){
+  return String(s||'').replace(/"/g,'&quot;');
+}
+
+function attachEditHandlers(){
+  document.querySelectorAll('[data-edit]').forEach(el => {
+    el.onclick = () => toggleRowEdit(el.dataset.edit);
+  });
+}
+
+function toggleRowEdit(rowId){
+  const editRow = document.getElementById('edit-' + rowId);
+  if (!editRow) return;
+  const isOpen = editRow.style.display !== 'none';
+  document.querySelectorAll('.edit-row').forEach(r => r.style.display = 'none');
+  if (isOpen) return;
+
+  const r = workingRows.find(x => x._id === rowId);
+  if (!r) return;
+  const key = normalize(r.i);
+  const ov = overrides[key] || {};
+  const cell = editRow.querySelector('td');
+  const optionsHtml = PROVIDERS_LIST.map(p => `<option value="${p}" ${ov.proveedor===p?'selected':''}>${p}</option>`).join('');
+  cell.innerHTML = `
+    <div class="edit-grid">
+      <div>
+        <label>Insumo</label>
+        <input type="text" id="f-nombre-${rowId}" value="${escapeAttr(r.i)}">
+      </div>
+      <div>
+        <label>Unidad</label>
+        <input type="text" id="f-unidad-${rowId}" value="${escapeAttr(r.u||'')}">
+      </div>
+      <div>
+        <label>Cantidad Refugio</label>
+        <input type="number" step="0.01" id="f-cr-${rowId}" value="${r.cr||0}">
+      </div>
+      <div>
+        <label>Cantidad Álamos</label>
+        <input type="number" step="0.01" id="f-ca-${rowId}" value="${r.ca||0}">
+      </div>
+      <div>
+        <label>Proveedor</label>
+        <select id="f-prov-${rowId}">
+          <option value="">Sin cambio</option>
+          ${optionsHtml}
+        </select>
+      </div>
+      <div>
+        <label>¿Solo traspasar (no comprar)?</label>
+        <select id="f-mv-${rowId}">
+          <option value="" ${!r.mv?'selected':''}>Comprar normal</option>
+          <option value="r2a" ${r.mv==='r2a'?'selected':''}>Traspasar: Refugio → Álamos</option>
+          <option value="a2r" ${r.mv==='a2r'?'selected':''}>Traspasar: Álamos → Refugio</option>
+        </select>
+      </div>
+      <div>
+        <label>Precio unitario (MXN)</label>
+        <input type="number" step="0.01" id="f-precio-${rowId}" value="${ov.precio||''}" placeholder="0.00">
+      </div>
+      <div>
+        <label>Presentación</label>
+        <input type="text" id="f-pres-${rowId}" value="${ov.presentacion||''}" placeholder="Ej. Caja de 24 pzas">
+      </div>
+      <div>
+        <label>Notas</label>
+        <input type="text" id="f-notas-${rowId}" value="${ov.notas||''}" placeholder="Ej. Pedir con 2 días de anticipación">
+      </div>
+    </div>
+    <div class="edit-actions">
+      <button class="btn ghost" type="button" onclick="deleteRow('${rowId}')" style="color:var(--warn);margin-right:auto;">Eliminar renglón</button>
+      <button class="btn ghost" type="button" onclick="closeRowEdit('${rowId}')">Cancelar</button>
+      <button class="btn secondary" type="button" onclick="saveRowEdit('${rowId}')">Guardar</button>
+    </div>`;
+  editRow.style.display = 'table-row';
+}
+
+function closeRowEdit(rowId){
+  const editRow = document.getElementById('edit-' + rowId);
+  if (editRow) editRow.style.display = 'none';
+}
+
+function deleteRow(rowId){
+  if (!confirm('¿Eliminar este insumo de la lista de compras?')) return;
+  workingRows = workingRows.filter(x => x._id !== rowId);
+  renderResults();
+}
+window.deleteRow = deleteRow;
+
+async function saveRowEdit(rowId){
+  const r = workingRows.find(x => x._id === rowId);
+  if (!r) return;
+  const oldKey = normalize(r.i);
+
+  const newName = document.getElementById('f-nombre-' + rowId).value.trim() || r.i;
+  const newUnit = document.getElementById('f-unidad-' + rowId).value.trim();
+  const newCr = parseFloat(document.getElementById('f-cr-' + rowId).value) || 0;
+  const newCa = parseFloat(document.getElementById('f-ca-' + rowId).value) || 0;
+
+  const prov = document.getElementById('f-prov-' + rowId).value;
+  const mv = document.getElementById('f-mv-' + rowId).value;
+  const precio = document.getElementById('f-precio-' + rowId).value;
+  const pres = document.getElementById('f-pres-' + rowId).value;
+  const notas = document.getElementById('f-notas-' + rowId).value;
+
+  r.i = newName; r.u = newUnit; r.cr = newCr; r.ca = newCa; r.mv = mv || null;
+
+  const newKey = normalize(newName);
+  const existing = overrides[newKey] || (newKey !== oldKey ? overrides[oldKey] : null) || {};
+  overrides[newKey] = {
+    nombre: newName,
+    proveedor: prov || existing.proveedor || '',
+    precio: precio || existing.precio || '',
+    presentacion: pres || '',
+    notas: notas || ''
+  };
+  if (newKey !== oldKey) delete overrides[oldKey];
+
+  await saveOverrides();
+  renderResults();
+  renderCatalogTab();
+}
+window.closeRowEdit = closeRowEdit;
+window.saveRowEdit = saveRowEdit;
+
+function prettify(key){
+  return key.replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function buildCatalogMerged(){
+  const keys = new Set([...Object.keys(CATALOG_DEFAULT), ...Object.keys(overrides)]);
+  const list = [];
+  keys.forEach(key => {
+    const ov = overrides[key] || {};
+    const info = CATALOG_INFO[key] || ['', '', ''];
+    list.push({
+      key,
+      nombre: ov.nombre || prettify(key),
+      proveedor: ov.proveedor || CATALOG_DEFAULT[key] || '',
+      marca: ov.marca || info[0] || '',
+      presentacion: ov.presentacion || info[1] || '',
+      precio: ov.precio || info[2] || '',
+      notas: ov.notas || ''
+    });
+  });
+  return list;
+}
+
+let catalogFilter = '';
+
+function renderCatalogTab(){
+  const body = document.getElementById('catalogoBody');
+  if (!body) return;
+  const list = buildCatalogMerged()
+    .filter(x => !catalogFilter || x.nombre.toLowerCase().includes(catalogFilter));
+  list.sort((a,b) => (a.proveedor||'').localeCompare(b.proveedor||'') || a.nombre.localeCompare(b.nombre));
+
+  const groups = {};
+  list.forEach(x => {
+    const p = x.proveedor || 'Sin proveedor asignado';
+    if (!groups[p]) groups[p] = [];
+    groups[p].push(x);
+  });
+
+  let html = '';
+  Object.keys(groups).sort().forEach(prov => {
+    const items = groups[prov];
+    html += `<div class="provider-group"><div class="provider-title">${prov} <span class="count">${items.length}</span></div>`;
+    html += '<table class="compact-list"><thead><tr><th>Insumo</th><th>Marca</th><th>Presentación</th><th>Precio</th><th>Notas</th></tr></thead><tbody>';
+    items.forEach((x,i) => {
+      html += `<tr${i%2?' class=alt':''}>
+        <td><span class="item-name">${x.nombre}</span><button class="edit-icon" data-catedit="${escapeAttr(x.key)}" title="Editar">${EDIT_ICON_SVG}</button></td>
+        <td>${x.marca||''}</td>
+        <td>${x.presentacion||''}</td>
+        <td class="num">${x.precio ? '$'+Number(x.precio).toFixed(2) : ''}</td>
+        <td>${x.notas||''}</td>
+      </tr>
+      <tr class="edit-row" id="catedit-${cssId(x.key)}" style="display:none;"><td colspan="5"></td></tr>`;
+    });
+    html += '</tbody></table></div>';
+  });
+  if (!list.length) html = '<div class="empty">No se encontraron insumos.</div>';
+  body.innerHTML = html;
+
+  document.querySelectorAll('[data-catedit]').forEach(el => {
+    el.onclick = () => toggleCatalogEdit(el.dataset.catedit);
+  });
+}
+
+function cssId(key){
+  return key.replace(/[^a-z0-9]/g,'_');
+}
+
+function toggleCatalogEdit(key){
+  const row = document.getElementById('catedit-' + cssId(key));
+  if (!row) return;
+  const isOpen = row.style.display !== 'none';
+  document.querySelectorAll('.edit-row').forEach(r => r.style.display = 'none');
+  if (isOpen) return;
+  const merged = buildCatalogMerged().find(x => x.key === key) || {nombre: prettify(key)};
+  const cell = row.querySelector('td');
+  const id = cssId(key);
+  const optionsHtml = PROVIDERS_LIST.map(p => `<option value="${p}" ${merged.proveedor===p?'selected':''}>${p}</option>`).join('');
+  cell.innerHTML = `
+    <div class="edit-grid">
+      <div><label>Insumo</label><input type="text" id="cf-nombre-${id}" value="${escapeAttr(merged.nombre)}"></div>
+      <div><label>Marca</label><input type="text" id="cf-marca-${id}" value="${escapeAttr(merged.marca||'')}"></div>
+      <div><label>Proveedor</label><select id="cf-prov-${id}"><option value="">Sin asignar</option>${optionsHtml}</select></div>
+      <div><label>Precio unitario (MXN)</label><input type="number" step="0.01" id="cf-precio-${id}" value="${merged.precio||''}"></div>
+      <div><label>Presentación</label><input type="text" id="cf-pres-${id}" value="${escapeAttr(merged.presentacion||'')}"></div>
+      <div><label>Notas</label><input type="text" id="cf-notas-${id}" value="${escapeAttr(merged.notas||'')}"></div>
+    </div>
+    <div class="edit-actions">
+      <button class="btn ghost" type="button" onclick="closeCatalogEdit('${escapeAttr(key)}')">Cancelar</button>
+      <button class="btn secondary" type="button" onclick="saveCatalogEdit('${escapeAttr(key)}')">Guardar</button>
+    </div>`;
+  row.style.display = 'table-row';
+}
+
+function closeCatalogEdit(key){
+  const row = document.getElementById('catedit-' + cssId(key));
+  if (row) row.style.display = 'none';
+}
+
+async function saveCatalogEdit(key){
+  const id = cssId(key);
+  const nombre = document.getElementById('cf-nombre-' + id).value.trim();
+  const marca = document.getElementById('cf-marca-' + id).value;
+  const prov = document.getElementById('cf-prov-' + id).value;
+  const precio = document.getElementById('cf-precio-' + id).value;
+  const pres = document.getElementById('cf-pres-' + id).value;
+  const notas = document.getElementById('cf-notas-' + id).value;
+  const newKey = normalize(nombre) || key;
+  overrides[newKey] = { nombre, marca, proveedor: prov, precio, presentacion: pres, notas };
+  if (newKey !== key) delete overrides[key];
+  await saveOverrides();
+  renderCatalogTab();
+  if (workingRows.length) renderResults();
+}
+window.closeCatalogEdit = closeCatalogEdit;
+window.saveCatalogEdit = saveCatalogEdit;
+
+document.getElementById('addCatalogBtn').addEventListener('click', () => {
+  const tempKey = 'nuevo_' + Date.now();
+  overrides[tempKey] = { nombre: '', proveedor: '', precio: '', presentacion: '', notas: '' };
+  renderCatalogTab();
+  setTimeout(() => toggleCatalogEdit(tempKey), 30);
+});
+
+document.getElementById('catalogSearch').addEventListener('input', (e) => {
+  catalogFilter = e.target.value.toLowerCase();
+  renderCatalogTab();
+});
+
+function buildMovedSection(title, items, qtyField){
+  let html = `<div class="provider-group"><div class="provider-title">${title} <span class="count">${items.length} insumo${items.length===1?'':'s'}</span></div>`;
+  html += '<table class="compact-list"><thead><tr><th>Insumo</th><th>Unidad</th><th class="num">Cantidad</th><th></th></tr></thead><tbody>';
+  items.forEach((r,i) => {
+    html += `<tr${i%2?' class=alt':''} data-row-id="${r._id}">
+      <td>${r.i}</td>
+      <td>${r.u||''}</td>
+      <td class="num">${fmt(r[qtyField])}</td>
+      <td><button class="btn ghost small" data-unmove="${r._id}" type="button">Quitar de traspaso</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function attachMovedHandlers(){
+  document.querySelectorAll('[data-unmove]').forEach(el => {
+    el.onclick = () => {
+      const r = workingRows.find(x => x._id === el.dataset.unmove);
+      if (!r) return;
+      r.mv = null;
+      renderResults();
+    };
+  });
+}
+
+function addTransferCard(container, itemId, name, from, to, qty, unit, surplus, need, direction){
+  const div = document.createElement('div');
+  div.className = 'transfer-card';
+  div.dataset.itemId = itemId;
+  div.innerHTML = `
+    <div class="t-left">
+      <div class="t-arrow-icon">${TRANSFER_ICON_SVG}</div>
+      <div>
+        <div class="t-name">${name}</div>
+        <div class="t-route">${from}<span class="sep">→</span>${to}</div>
+        <div class="t-reason">${from} tiene ${fmt(surplus)} ${unit} de más · ${to} necesita ${fmt(need)} ${unit}</div>
+      </div>
+    </div>
+    <button class="t-qty" type="button" data-apply-transfer="${itemId}" data-direction="${direction}" title="Aplicar traspaso y volver a la lista de compras">
+      <div class="n">${fmt(qty)}</div><div class="u">${unit}</div>
+    </button>`;
+  container.appendChild(div);
+}
+
+function attachAutoTransferHandlers(){
+  document.querySelectorAll('[data-apply-transfer]').forEach(el => {
+    el.onclick = () => applyAutoTransfer(el.dataset.applyTransfer, el.dataset.direction);
+  });
+}
+
+function applyAutoTransfer(itemId, direction){
+  const r = workingRows.find(x => x._id === itemId);
+  if (!r) return;
+  r.mv = direction;
+  renderResults();
+  switchTab('compras');
+  setTimeout(() => {
+    const row = document.querySelector(`#movedSectionsTop [data-row-id="${itemId}"]`);
+    if (row){
+      row.scrollIntoView({behavior:'smooth', block:'center'});
+      row.classList.add('highlight-row');
+      setTimeout(() => row.classList.remove('highlight-row'), 2200);
+    }
+  }, 60);
+}
+
+function fmt(n){
+  n = Number(n)||0;
+  if (n === 0) return '';
+  return (n % 1 === 0) ? String(n) : n.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+}
+
+function buildTable(items, headers, rowFn){
+  let html = '<table><thead><tr>';
+  headers.forEach((h,i) => { html += `<th${i>1?' class=num':''}>${h}</th>`; });
+  html += '</tr></thead><tbody>';
+  items.forEach((r,i) => {
+    const cells = rowFn(r);
+    html += `<tr${i%2?' class=alt':''}>`;
+    cells.forEach((c,j) => { html += `<td${j>1?' class=num':''}>${c}</td>`; });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+});
+
+function formatTimestamp(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'}) + ' · ' +
+    d.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'});
+}
+
+document.getElementById('saveHistoryBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveHistoryBtn');
+  const statusEl2 = document.getElementById('historyStatus');
+  btn.disabled = true;
+  statusEl2.className = 'status';
+  statusEl2.innerHTML = '<span class="spinner" style="border-color:rgba(0,40,82,.25);border-top-color:var(--navy);"></span> Guardando...';
+  try {
+    await api('history_save', { rows: workingRows });
+    statusEl2.textContent = 'Lista guardada en el historial ✓';
+  } catch(e){
+    statusEl2.className = 'status err';
+    statusEl2.textContent = 'No se pudo guardar: ' + (e.message || 'error desconocido');
+  }
+  btn.disabled = false;
+});
+
+async function renderHistorial(){
+  const body = document.getElementById('historialBody');
+  body.innerHTML = '<div class="empty">Cargando...</div>';
+  try {
+    const listed = await api('history_list');
+    const index = listed.items || [];
+    if (!Array.isArray(index) || !index.length){
+      body.innerHTML = '<div class="empty">Todavía no has guardado ninguna lista.</div>';
+      return;
+    }
+    let html = '<table class="compact-list"><thead><tr><th>Fecha</th><th class="num">Insumos</th><th></th></tr></thead><tbody>';
+    index.forEach((snap,i) => {
+      html += `<tr${i%2?' class=alt':''}>
+        <td>${formatTimestamp(snap.timestamp)}</td>
+        <td class="num">${snap.count}</td>
+        <td><button class="btn ghost small" data-viewsnap="${snap.timestamp}" type="button">Ver</button></td>
+      </tr>
+      <tr id="snap-${cssId(snap.timestamp)}" style="display:none;"><td colspan="3"></td></tr>`;
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+    document.querySelectorAll('[data-viewsnap]').forEach(el => {
+      el.onclick = () => toggleSnapshot(el.dataset.viewsnap);
+    });
+  } catch(e){
+    body.innerHTML = '<div class="empty">No se pudo cargar el historial: ' + escapeAttr(e.message || 'error de red') + '</div>';
+  }
+}
+
+async function toggleSnapshot(timestamp){
+  const row = document.getElementById('snap-' + cssId(timestamp));
+  if (!row) return;
+  const isOpen = row.style.display !== 'none';
+  document.querySelectorAll('[id^="snap-"]').forEach(r => r.style.display = 'none');
+  if (isOpen) return;
+  const cell = row.querySelector('td');
+  cell.innerHTML = 'Cargando...';
+  row.style.display = 'table-row';
+  try {
+    const got = await api('history_get', { id: timestamp });
+    const snap = got.snapshot;
+    if (!snap || !snap.rows){ cell.innerHTML = 'No se encontró esta lista.'; return; }
+    cell.innerHTML = buildTable(snap.rows, ['Insumo','Unidad','Refugio','Álamos'],
+      r => [r.i, r.u, fmt(r.cr), fmt(r.ca)]);
+  } catch(e){
+    cell.innerHTML = 'Error al cargar.';
+  }
+}
+
+</script>
+</body>
+</html>
