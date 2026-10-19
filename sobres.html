@@ -54,7 +54,8 @@ body{
 @media(prefers-reduced-motion:reduce){.pnl.on{animation:none}}
 
 /* ── COORDINADORES: pago por turno ── */
-.co-tabla{min-width:1180px}
+.co-tabla{min-width:1280px}
+.co-imss-warn{display:inline-block;background:#fff6dc;color:#8a6500;border:1px solid #f3c64a;border-radius:8px;padding:2px 7px;font-size:10.5px;font-weight:800}
 .co-tabla th.co-dh{text-align:center;min-width:54px;padding-left:2px;padding-right:2px}
 .co-tabla th.co-nh{min-width:92px}
 .co-tabla td.co-dcell{padding-left:2px;padding-right:2px;text-align:center}
@@ -1590,7 +1591,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <!-- SUB-PANEL: Pagos semanales -->
     <div class="spnl on" id="spnl-pagos">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px;flex-wrap:wrap">
-        <p class="it" style="margin:0">Pago por día según turno (≤6h · 8h · 11h), faltas, incapacidades y descuentos de Food/Merch. Configura el acuerdo de cada uno en ⚙.</p>
+        <p class="it" style="margin:0">Pago por día según turno (≤6h · 8h · 11h), faltas, incapacidades y descuentos de Food, Merch e IMSS. Configura el acuerdo de cada uno en ⚙.</p>
         <div style="display:flex;gap:8px">
           <select class="hist-select" id="coords-hist-sel" onchange="cargarSemanaHistCoords()">
             <option value="">Semana actual</option>
@@ -1609,6 +1610,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
             <th class="co-nh">Comisión</th>
             <th class="co-nh">Food (−)</th>
             <th class="co-nh">Merch (−)</th>
+            <th class="co-nh">IMSS (−)</th>
             <th class="co-nh" style="text-align:right">Total</th>
             <th></th>
           </tr></thead>
@@ -1620,6 +1622,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
             <td id="coord-t-com" class="co-num" style="color:#1c3a61">$0.00</td>
             <td id="coord-t-food" class="co-num" style="color:#e53e3e">$0.00</td>
             <td id="coord-t-merch" class="co-num" style="color:#e53e3e">$0.00</td>
+            <td id="coord-t-imss" class="co-num" style="color:#e53e3e">$0.00</td>
             <td id="coord-total" style="text-align:right;font-weight:900;font-size:13px">$0.00</td>
             <td></td>
           </tr></tfoot>
@@ -6110,6 +6113,30 @@ const CO_EST=[
   {v:"",   s:"—",     l:"Sin capturar / no aplica ($0)"}
 ];
 const CO_PCT_INC=0.6;
+// IMSS 2026 — cuota OBRERA (lo que se descuenta al trabajador)
+//   UMA 2026: $117.31 (vigente desde 1-feb-2026) · Salario mínimo general 2026: $315.04
+//   Factor de integración 1er año: 1 + (15 aguinaldo + 12 vac × 25% prima)/365 = 1.0493
+//   Ramos: E y M prestaciones en dinero 0.25% + gastos médicos pensionados 0.375%
+//          + excedente de 3 UMA 0.40% + invalidez y vida 0.625% + cesantía y vejez 1.125%
+//   Con salario mínimo, la cuota obrera la paga el patrón (Art. 36 LSS)
+//   Incapacidad: no cotiza esos días. Falta injustificada: no cotiza IV ni CV.
+const CO_IMSS={uma:117.31,smg:315.04,factor:1.0493,topeUMA:25};
+function coImss(c,det){
+  const r={monto:0,sbc:0,exento:false,falta:false,activo:!!c.seguro};
+  if(!c.seguro)return r;
+  const sd=+c.sdImss||0;
+  if(!sd){r.falta=true;return r;}
+  const f=+c.factorInt||CO_IMSS.factor;
+  r.sbc=Math.min(Math.max(sd,CO_IMSS.smg)*f,CO_IMSS.topeUMA*CO_IMSS.uma);
+  if(sd<=CO_IMSS.smg){r.exento=true;return r;}
+  const inc=det?det.INC||0:0, fi=det?det.FI||0:0;
+  const dEyM=Math.max(0,7-inc), dIV=Math.max(0,7-inc-fi);
+  const exc=Math.max(0,r.sbc-3*CO_IMSS.uma);
+  const m=r.sbc*dEyM*(0.0025+0.00375)+exc*dEyM*0.004+r.sbc*dIV*(0.00625+0.01125);
+  r.monto=Math.round(m*100)/100;
+  r.dEyM=dEyM;r.dIV=dIV;
+  return r;
+}
 
 function coDiasDefault(c){
   return CO_DIAS.map((_,d)=>d===c.descanso?"D":(c.habitual||"8"));
@@ -6124,6 +6151,8 @@ function coNorm(c){
   c.seguro=!!c.seguro;
   if(!Array.isArray(c.dias)||c.dias.length!==7)c.dias=coDiasDefault(c);
   ["extra","comision","food","merch"].forEach(k=>{c[k]=+c[k]||0;});
+  c.sdImss=+c.sdImss||0;
+  if(!c.factorInt)c.factorInt=CO_IMSS.factor;
   return c;
 }
 function coTieneTarifas(c){return !!(c.tarifas&&(c.tarifas["6"]||c.tarifas["8"]||c.tarifas["11"]));}
@@ -6146,9 +6175,10 @@ function coCalc(c){
     base=+c.sueldo||0; // coordinador sin tarifas configuradas: pago fijo semanal (modo anterior)
   }
   base=Math.round(base*100)/100;
+  const imss=coImss(c,porTarifa?det:null);
   const desc=c.food+c.merch;
-  const total=Math.round((base+c.extra+c.comision-desc)*100)/100;
-  return {base,det,pagoInc,desc,total,porTarifa};
+  const total=Math.round((base+c.extra+c.comision-desc-imss.monto)*100)/100;
+  return {base,det,pagoInc,desc,imss,total,porTarifa};
 }
 function coResumen(det,seguro){
   if(!det)return "";
@@ -6200,6 +6230,7 @@ function renderCoords(){
       <td><input class="co-in" type="number" min="0" step="0.5" value="${c.comision||""}" placeholder="0" oninput="ufc(${i},'comision',+this.value)" style="color:#1c3a61"></td>
       <td><input class="co-in co-neg" type="number" min="0" step="0.5" value="${c.food||""}" placeholder="0" oninput="ufc(${i},'food',+this.value)" title="Consumo en Food (se descuenta)"></td>
       <td><input class="co-in co-neg" type="number" min="0" step="0.5" value="${c.merch||""}" placeholder="0" oninput="ufc(${i},'merch',+this.value)" title="Consumo de Merch (se descuenta)"></td>
+      <td class="co-num" id="co-imss-${i}">${coImssCell(r.imss)}</td>
       <td class="co-num co-tot" id="co-tot-${i}" style="color:${r.total<0?"#e53e3e":"#1c3a61"}">${fmt(r.total)}</td>
       <td class="co-act">
         <button class="co-gear ${r.porTarifa?"":"co-gear-warn"}" onclick="coToggleCfg(${i})" title="Acuerdo de pago">⚙</button>
@@ -6210,13 +6241,28 @@ function renderCoords(){
     cfg.className="co-cfg";
     cfg.id="co-cfg-"+i;
     cfg.style.display=c._cfgOpen?"":"none";
-    cfg.innerHTML=`<td colspan="15">${coCfgHtml(c,i)}</td>`;
+    cfg.innerHTML=`<td colspan="16">${coCfgHtml(c,i)}</td>`;
     tbody.appendChild(cfg);
   });
   coTotales();
   renderCoordHist();
 }
 
+function coImssCell(m){
+  if(!m.activo)return '<span style="color:#ccc">—</span>';
+  if(m.falta)return '<span class="co-imss-warn" title="Captura su salario diario registrado en ⚙">Falta SD</span>';
+  if(m.exento)return '<span style="color:#888;font-weight:600" title="Salario mínimo: la cuota obrera la paga el patrón">$0 <small>(SM)</small></span>';
+  return '<span style="color:#e53e3e">−'+fmt(m.monto)+'</span>';
+}
+function coImssNote(c,i){
+  if(!c.seguro)return "";
+  const r=coCalc(c), m=r.imss;
+  if(m.falta)return `<b>IMSS:</b> captura su salario diario registrado en el IMSS para calcular su descuento.`;
+  if(m.exento)return `<b>IMSS:</b> está registrado con salario mínimo (${fmt(CO_IMSS.smg)}), así que su cuota obrera la paga el patrón → no se le descuenta nada.`;
+  return `<b>IMSS:</b> SBC ${fmt(m.sbc)}/día (SD × ${(+c.factorInt).toFixed(4)}). Descuento esta semana: <b style="color:#e53e3e">${fmt(m.monto)}</b>`+
+    (m.dIV<7?` (cotiza ${m.dEyM} días E y M y ${m.dIV} días IV/CV por incapacidad o faltas)`:` (7 días)`)+
+    `. Se le paga: <b>${fmt(r.total)}</b>.`;
+}
 function coSumHtml(c,r){
   if(!r.porTarifa)return `<span style="color:#C8960C">Pago fijo · configura tarifas en ⚙</span>`;
   const s=coResumen(r.det,c.seguro);
@@ -6240,9 +6286,13 @@ function coCfgHtml(c,i){
         ${CO_DIAS.map((d,k)=>`<option value="${k}" ${c.descanso===k?"selected":""}>${d}</option>`).join("")}</select></label>
       <label>Pago día descanso<input type="number" min="0" step="0.5" value="${c.pagoDescanso||""}" placeholder="0" oninput="coSetCfg(${i},'pagoDescanso',+this.value)"></label>
       <label class="co-chk"><input type="checkbox" ${c.seguro?"checked":""} onchange="coSetCfg(${i},'seguro',this.checked)"> Tiene seguro (IMSS)</label>
+      ${c.seguro?`
+      <label>Salario diario registrado IMSS<input type="number" min="0" step="0.01" value="${c.sdImss||""}" placeholder="${CO_IMSS.smg}" oninput="coSetCfg(${i},'sdImss',+this.value)"></label>
+      <label>Factor de integración<input type="number" min="1" step="0.0001" value="${c.factorInt||CO_IMSS.factor}" oninput="coSetCfg(${i},'factorInt',+this.value)" title="1.0493 = 1er año con prestaciones de ley. Sube con la antigüedad (más días de vacaciones)."></label>`:""}
     </div>
     <div class="co-cfg-note">
       Falta justificada paga su turno habitual (${fmt(hab)}). Incapacidad médica: ${c.seguro?"<b>tiene seguro</b> → $0 (le paga el IMSS)":`<b>sin seguro</b> → 60% = ${fmt(hab*CO_PCT_INC)} por día`}. Falta injustificada: $0.
+      <div id="co-note-imss-${i}" style="margin-top:6px">${coImssNote(c,i)}</div>
     </div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
       <button class="btn" style="background:#f5f3ee;color:#333" onclick="coLlenarSemana(${i})">Llenar semana con turno habitual</button>
@@ -6273,6 +6323,8 @@ function coSetCfg(i,k,v){
   // si cambió el modo (fijo ↔ por turno) o los días, se redibuja la tabla completa
   if(teniaTarifas!==coTieneTarifas(c)||k==="descanso"||k==="habitual"){c._cfgOpen=true;renderCoords();return;}
   coUpdateRow(i);
+  const ni=document.getElementById("co-note-imss-"+i);
+  if(ni)ni.innerHTML=coImssNote(c,i);
   if(k==="seguro"){const box=document.querySelector("#co-cfg-"+i+" td");if(box)box.innerHTML=coCfgHtml(c,i);}
 }
 
@@ -6299,18 +6351,23 @@ function coUpdateRow(i){
   if(t){t.textContent=fmt(r.total);t.style.color=r.total<0?"#e53e3e":"#1c3a61";}
   const s=document.getElementById("co-sum-"+i);
   if(s)s.innerHTML=coSumHtml(c,r);
+  const im=document.getElementById("co-imss-"+i);
+  if(im)im.innerHTML=coImssCell(r.imss);
+  const ni=document.getElementById("co-note-imss-"+i);
+  if(ni)ni.innerHTML=coImssNote(c,i);
   coTotales();
 }
 
 function coTotales(){
-  let base=0,extra=0,com=0,food=0,merch=0,tot=0;
-  coords.forEach(c=>{const r=coCalc(c);base+=r.base;extra+=c.extra;com+=c.comision;food+=c.food;merch+=c.merch;tot+=r.total;});
+  let base=0,extra=0,com=0,food=0,merch=0,imss=0,tot=0;
+  coords.forEach(c=>{const r=coCalc(c);base+=r.base;extra+=c.extra;com+=c.comision;food+=c.food;merch+=c.merch;imss+=r.imss.monto;tot+=r.total;});
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   set("coord-t-base",fmt(base));
   set("coord-t-extra",fmt(extra));
   set("coord-t-com",fmt(com));
   set("coord-t-food",food?"−"+fmt(food):fmt(0));
   set("coord-t-merch",merch?"−"+fmt(merch):fmt(0));
+  set("coord-t-imss",imss?"−"+fmt(imss):fmt(0));
   set("coord-total",fmt(tot));
 }
 
@@ -6340,7 +6397,7 @@ function guardarSemanaCoords(){
   if(!confirm("¿Guardar pagos de coordinadores para la semana "+sem+"?"))return;
   const lista=coords.map(c=>{
     const r=coCalc(c);
-    const o={...c,sueldo:r.base,base:r.base,detalle:r.porTarifa?r.det:null,pagoInc:r.pagoInc,total:r.total};
+    const o={...c,sueldo:r.base,base:r.base,detalle:r.porTarifa?r.det:null,pagoInc:r.pagoInc,imss:r.imss.monto,total:r.total};
     delete o._cfgOpen;
     if(!r.porTarifa)delete o.dias;
     return o;
@@ -6362,7 +6419,7 @@ function guardarSemanaCoords(){
 }
 
 function coHistTotal(c){
-  return Math.round(((+c.sueldo||0)+(+c.extra||0)+(+c.comision||0)-(+c.food||0)-(+c.merch||0))*100)/100;
+  return Math.round(((+c.sueldo||0)+(+c.extra||0)+(+c.comision||0)-(+c.food||0)-(+c.merch||0)-(+c.imss||0))*100)/100;
 }
 
 function renderCoordHist(){
@@ -6393,6 +6450,7 @@ function renderCoordHist(){
               ${(c.comision||0)>0?`<span style="font-size:11px;color:#888">Com. <strong style="color:#1565C0">${fmt(c.comision)}</strong></span>`:""}
               ${(c.food||0)>0?`<span style="font-size:11px;color:#888">Food <strong style="color:#e53e3e">−${fmt(c.food)}</strong></span>`:""}
               ${(c.merch||0)>0?`<span style="font-size:11px;color:#888">Merch <strong style="color:#e53e3e">−${fmt(c.merch)}</strong></span>`:""}
+              ${(c.imss||0)>0?`<span style="font-size:11px;color:#888">IMSS <strong style="color:#e53e3e">−${fmt(c.imss)}</strong></span>`:""}
             </div>
             ${c.detalle?`<div style="font-size:10.5px;color:#aaa;margin-top:2px">${coResumen(c.detalle,c.seguro)}</div>`:""}
           </div>
@@ -6405,7 +6463,7 @@ function renderCoordHist(){
           <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:12px 14px;margin-bottom:8px">
             <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#1c3a61">${esc(c.nombre)}</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px">
-              ${[["sueldo",c.detalle?"Pago días":"Pago fijo"],["extra","Extra"],["comision","Comisión"],["food","Food (−)"],["merch","Merch (−)"]].map(([k,l])=>`
+              ${[["sueldo",c.detalle?"Pago días":"Pago fijo"],["extra","Extra"],["comision","Comisión"],["food","Food (−)"],["merch","Merch (−)"],["imss","IMSS (−)"]].map(([k,l])=>`
               <div>
                 <label style="font-size:10px;color:#888;display:block;margin-bottom:2px">${l}</label>
                 <input type="number" min="0" step="0.5" value="${c[k]||0}" onchange="editCoordHist(${idx},${ci},'${k}',+this.value)" style="width:100%;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;text-align:right">
