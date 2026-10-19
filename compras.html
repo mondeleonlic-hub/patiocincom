@@ -374,8 +374,8 @@ function askCode(msg){
 }
 
 async function api(action, payload){
+  // Sin código por defecto: solo lo pide si el servidor lo exige (propiedad ACCESS_CODE configurada)
   let code = getStoredCode();
-  if (!code) code = await askCode();
   for (let attempt = 0; attempt < 3; attempt++){
     const resp = await fetch(GS_URL, {
       method: 'POST',
