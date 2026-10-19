@@ -53,6 +53,40 @@ body{
 @keyframes pcFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.pnl.on{animation:none}}
 
+/* ── COORDINADORES: pago por turno ── */
+.co-tabla{min-width:1180px}
+.co-tabla th.co-dh{text-align:center;min-width:54px;padding-left:2px;padding-right:2px}
+.co-tabla th.co-nh{min-width:92px}
+.co-tabla td.co-dcell{padding-left:2px;padding-right:2px;text-align:center}
+.co-name input{width:140px}
+.co-sum{font-size:10.5px;color:#999;margin-top:4px;line-height:1.35;max-width:170px}
+.co-day{-webkit-appearance:none;appearance:none;width:52px;padding:7px 2px;border-radius:8px;border:1px solid #e5e2d8;font-size:11px;font-weight:800;text-align:center;text-align-last:center;cursor:pointer;background:#fafafa;color:#bbb}
+.co-day:disabled{opacity:.35;cursor:not-allowed}
+.co-day[data-v="6"]{background:#e8f0fb;color:#1c3a61;border-color:#c9d9f0}
+.co-day[data-v="8"]{background:#fff6dc;color:#8a6500;border-color:#f3dfa0}
+.co-day[data-v="11"]{background:#1c3a61;color:#fff;border-color:#1c3a61}
+.co-day[data-v="D"]{background:#f0efea;color:#999}
+.co-day[data-v="FJ"]{background:#e6f6ec;color:#2f855a;border-color:#b7e2c6}
+.co-day[data-v="FI"]{background:#fde8e8;color:#c53030;border-color:#f5bcbc}
+.co-day[data-v="INC"]{background:#efe7fb;color:#6b46c1;border-color:#d6c5f3}
+.co-in{width:88px;text-align:right}
+.co-neg{color:#e53e3e}
+.co-num{text-align:right;font-weight:700;white-space:nowrap}
+.co-num input{width:88px;text-align:right}
+.co-tot{font-weight:900}
+.co-act{white-space:nowrap}
+.co-gear{background:#f5f3ee;border:1px solid #e0ddd4;border-radius:8px;padding:3px 7px;font-size:13px;cursor:pointer;color:#555}
+.co-gear-warn{background:#fff6dc;border-color:#f3c64a;color:#8a6500}
+tr.co-cfg td{background:#fbfaf6;padding:0}
+.co-cfg-box{padding:14px 16px;border-top:2px solid #f8ba00}
+.co-cfg-tit{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:10px}
+.co-cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;align-items:end}
+.co-cfg-grid label{display:flex;flex-direction:column;gap:4px;font-size:10px;font-weight:700;color:#888;text-transform:uppercase}
+.co-cfg-grid input[type=number],.co-cfg-grid select{width:100%;text-align:right}
+.co-cfg-grid label.co-chk{flex-direction:row;align-items:center;gap:8px;font-size:12px;text-transform:none;color:#333;padding-bottom:8px}
+.co-cfg-note{font-size:11.5px;color:#666;margin-top:10px;line-height:1.5}
+#coord-tabla select.co-day{padding:7px 2px!important;font-size:11px!important;width:52px!important;min-width:0!important;height:auto!important;background-image:none!important;text-overflow:clip}
+.co-cfg-grid label.co-chk input[type=checkbox]{-webkit-appearance:checkbox!important;appearance:auto!important;width:18px!important;height:18px!important;margin:0;flex:none}
 /* ── SUB-TABS (coordinadores) ── */
 .stab-nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:22px;}
 .stab{padding:10px 22px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;letter-spacing:1px;text-transform:uppercase;transition:color .15s,transform .1s;}
@@ -1556,7 +1590,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <!-- SUB-PANEL: Pagos semanales -->
     <div class="spnl on" id="spnl-pagos">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px;flex-wrap:wrap">
-        <p class="it" style="margin:0">Sueldo fijo y comisión variable. Se guarda semana a semana.</p>
+        <p class="it" style="margin:0">Pago por día según turno (≤6h · 8h · 11h), faltas, incapacidades y descuentos de Food/Merch. Configura el acuerdo de cada uno en ⚙.</p>
         <div style="display:flex;gap:8px">
           <select class="hist-select" id="coords-hist-sel" onchange="cargarSemanaHistCoords()">
             <option value="">Semana actual</option>
@@ -1566,18 +1600,26 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
         </div>
       </div>
       <div class="tw" style="margin-bottom:14px">
-        <table id="coord-tabla" style="min-width:700px">
+        <table id="coord-tabla" class="co-tabla">
           <thead><tr>
-            <th style="min-width:130px">Nombre</th>
-            <th style="min-width:110px">Pago fijo</th>
-            <th style="min-width:110px">Extra / Bono</th>
-            <th style="min-width:110px">Comisión</th>
-            <th style="min-width:110px;text-align:right">Total</th>
+            <th style="min-width:150px">Nombre</th>
+            <th class="co-dh">Dom</th><th class="co-dh">Lun</th><th class="co-dh">Mar</th><th class="co-dh">Mié</th><th class="co-dh">Jue</th><th class="co-dh">Vie</th><th class="co-dh">Sáb</th>
+            <th class="co-nh">Pago días</th>
+            <th class="co-nh">Extra / Bono</th>
+            <th class="co-nh">Comisión</th>
+            <th class="co-nh">Food (−)</th>
+            <th class="co-nh">Merch (−)</th>
+            <th class="co-nh" style="text-align:right">Total</th>
             <th></th>
           </tr></thead>
           <tbody id="coord-body"></tbody>
           <tfoot><tr>
-            <td colspan="4" style="font-weight:900">TOTAL</td>
+            <td colspan="8" style="font-weight:900">TOTAL</td>
+            <td id="coord-t-base" class="co-num">$0.00</td>
+            <td id="coord-t-extra" class="co-num" style="color:#38a169">$0.00</td>
+            <td id="coord-t-com" class="co-num" style="color:#1c3a61">$0.00</td>
+            <td id="coord-t-food" class="co-num" style="color:#e53e3e">$0.00</td>
+            <td id="coord-t-merch" class="co-num" style="color:#e53e3e">$0.00</td>
             <td id="coord-total" style="text-align:right;font-weight:900;font-size:13px">$0.00</td>
             <td></td>
           </tr></tfoot>
@@ -6048,12 +6090,83 @@ function guardarFlujoHistEdit(idx){
   renderFlujoHist(); // cierra todos los paneles de edición
 }
 
+// ── COORDINADORES: pago por turno, faltas, incapacidad y descuentos ──────────
+// Cada coordinador tiene un acuerdo con tarifa POR DÍA según el turno:
+//   ≤6h · 8h · 11h. Cada día de la semana se marca el turno trabajado o:
+//   Descanso (paga "pago día descanso", default $0)
+//   Falta injustificada → $0
+//   Falta justificada   → paga su turno habitual completo
+//   Incapacidad médica  → 60% de su turno habitual si NO tiene seguro; $0 si tiene
+// Total = pago días + extra/bono + comisión − food − merch
+const CO_DIAS=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+const CO_EST=[
+  {v:"6",  s:"≤6h",   l:"Trabajó 6 h o menos"},
+  {v:"8",  s:"8h",    l:"Trabajó 8 h"},
+  {v:"11", s:"11h",   l:"Trabajó 11 h"},
+  {v:"D",  s:"Desc.", l:"Día de descanso"},
+  {v:"FJ", s:"Just.", l:"Falta justificada (se paga)"},
+  {v:"FI", s:"Falta", l:"Falta injustificada (no se paga)"},
+  {v:"INC",s:"Incap.",l:"Incapacidad médica (60% si no tiene seguro)"},
+  {v:"",   s:"—",     l:"Sin capturar / no aplica ($0)"}
+];
+const CO_PCT_INC=0.6;
+
+function coDiasDefault(c){
+  return CO_DIAS.map((_,d)=>d===c.descanso?"D":(c.habitual||"8"));
+}
+function coNorm(c){
+  if(!c.tarifas)c.tarifas={"6":0,"8":0,"11":0};
+  ["6","8","11"].forEach(k=>{c.tarifas[k]=+c.tarifas[k]||0;});
+  if(!c.habitual)c.habitual="8";
+  if(c.descanso===undefined||c.descanso===null||c.descanso==="")c.descanso=-1;
+  c.descanso=+c.descanso;
+  if(!c.pagoDescanso)c.pagoDescanso=0;
+  c.seguro=!!c.seguro;
+  if(!Array.isArray(c.dias)||c.dias.length!==7)c.dias=coDiasDefault(c);
+  ["extra","comision","food","merch"].forEach(k=>{c[k]=+c[k]||0;});
+  return c;
+}
+function coTieneTarifas(c){return !!(c.tarifas&&(c.tarifas["6"]||c.tarifas["8"]||c.tarifas["11"]));}
+
+function coCalc(c){
+  coNorm(c);
+  const t=c.tarifas, hab=t[c.habitual]||0;
+  const det={"6":0,"8":0,"11":0,D:0,FJ:0,FI:0,INC:0,"":0};
+  let base=0, pagoInc=0;
+  const porTarifa=coTieneTarifas(c);
+  if(porTarifa){
+    c.dias.forEach(v=>{
+      det[v]=(det[v]||0)+1;
+      if(v==="6"||v==="8"||v==="11")base+=t[v];
+      else if(v==="D")base+=c.pagoDescanso;
+      else if(v==="FJ")base+=hab;
+      else if(v==="INC"){const p=c.seguro?0:hab*CO_PCT_INC;base+=p;pagoInc+=p;}
+    });
+  } else {
+    base=+c.sueldo||0; // coordinador sin tarifas configuradas: pago fijo semanal (modo anterior)
+  }
+  base=Math.round(base*100)/100;
+  const desc=c.food+c.merch;
+  const total=Math.round((base+c.extra+c.comision-desc)*100)/100;
+  return {base,det,pagoInc,desc,total,porTarifa};
+}
+function coResumen(det,seguro){
+  if(!det)return "";
+  const p=[];
+  if(det["6"])p.push(det["6"]+"×≤6h");
+  if(det["8"])p.push(det["8"]+"×8h");
+  if(det["11"])p.push(det["11"]+"×11h");
+  if(det.D)p.push(det.D+" desc.");
+  if(det.FJ)p.push(det.FJ+" falta just.");
+  if(det.FI)p.push(det.FI+" falta injust.");
+  if(det.INC)p.push(det.INC+" incap."+(seguro?" (con seguro)":" (60%)"));
+  return p.join(" · ");
+}
+
 function renderCoords(){
   const tbody=document.getElementById("coord-body");
   tbody.innerHTML="";
-  // Show welcome message when no coordinators have been added yet
   if(!coords.length){
-    const wrapper=document.getElementById("coord-tabla")?.closest(".tw")||tbody.closest("table");
     const msg=document.getElementById("coord-empty-msg");
     if(!msg){
       const div=document.createElement("div");
@@ -6061,75 +6174,195 @@ function renderCoords(){
       div.style.cssText="padding:32px 20px;text-align:center;color:#888;font-size:13px;";
       div.innerHTML=`<div style="font-size:28px;margin-bottom:12px;">👋</div>
         <div style="font-weight:700;font-size:15px;color:#555;margin-bottom:6px;">Sin coordinadores configurados</div>
-        <div>Agrega coordinadores con el botón <strong>+ Agregar</strong> de abajo.</div>`;
+        <div>Agrega coordinadores con el botón <strong>+ Coordinador</strong>.</div>`;
       tbody.closest("table").after(div);
     }
   } else {
     const msg=document.getElementById("coord-empty-msg");
     if(msg) msg.remove();
   }
-  let total=0;
   coords.forEach((c,i)=>{
-    const t=(c.sueldo||0)+(c.extra||0)+(c.comision||0);
-    total+=t;
+    coNorm(c);
+    const r=coCalc(c);
     const tr=document.createElement("tr");
+    tr.className="co-row";
+    const diasHtml=c.dias.map((v,d)=>`
+      <td class="co-dcell"><select class="co-day" data-v="${v}" title="${CO_DIAS[d]}" ${r.porTarifa?"":"disabled"}
+        onchange="coSetDia(${i},${d},this)">${CO_EST.map(o=>`<option value="${o.v}" title="${o.l}" ${o.v===v?"selected":""}>${o.s}</option>`).join("")}</select></td>`).join("");
     tr.innerHTML=`
-      <td><input type="text" value="${esc(c.nombre)}" onchange="ufc(${i},'nombre',this.value)" style="width:120px"></td>
-      <td><input type="number" min="0" step="0.5" value="${c.sueldo||""}" placeholder="0"
-        oninput="ufc(${i},'sueldo',+this.value)" style="width:100px;text-align:right"></td>
-      <td><input type="number" min="0" step="0.5" value="${c.extra||""}" placeholder="0"
-        oninput="ufc(${i},'extra',+this.value)" style="width:100px;text-align:right;color:${(c.extra||0)>0?"#38a169":"inherit"}"></td>
-      <td><input type="number" min="0" step="0.5" value="${c.comision||""}" placeholder="0"
-        oninput="ufc(${i},'comision',+this.value)" style="width:100px;text-align:right;color:${(c.comision||0)>0?"#1c3a61":"inherit"}"></td>
-      <td style="text-align:right;font-weight:900;color:#1c3a61">${fmt(t)}</td>
-      <td><button class="xb" onclick="delCoord(${i})">✕</button></td>`;
+      <td class="co-name">
+        <input type="text" value="${esc(c.nombre)}" onchange="ufc(${i},'nombre',this.value)" placeholder="Nombre">
+        <div class="co-sum" id="co-sum-${i}">${coSumHtml(c,r)}</div>
+      </td>
+      ${diasHtml}
+      <td class="co-num" id="co-base-${i}">${r.porTarifa?fmt(r.base):`<input type="number" min="0" step="0.5" value="${c.sueldo||""}" placeholder="Fijo" oninput="ufc(${i},'sueldo',+this.value)" title="Pago fijo semanal (configura tarifas en ⚙ para pagar por turno)">`}</td>
+      <td><input class="co-in" type="number" min="0" step="0.5" value="${c.extra||""}" placeholder="0" oninput="ufc(${i},'extra',+this.value)" style="color:#38a169"></td>
+      <td><input class="co-in" type="number" min="0" step="0.5" value="${c.comision||""}" placeholder="0" oninput="ufc(${i},'comision',+this.value)" style="color:#1c3a61"></td>
+      <td><input class="co-in co-neg" type="number" min="0" step="0.5" value="${c.food||""}" placeholder="0" oninput="ufc(${i},'food',+this.value)" title="Consumo en Food (se descuenta)"></td>
+      <td><input class="co-in co-neg" type="number" min="0" step="0.5" value="${c.merch||""}" placeholder="0" oninput="ufc(${i},'merch',+this.value)" title="Consumo de Merch (se descuenta)"></td>
+      <td class="co-num co-tot" id="co-tot-${i}" style="color:${r.total<0?"#e53e3e":"#1c3a61"}">${fmt(r.total)}</td>
+      <td class="co-act">
+        <button class="co-gear ${r.porTarifa?"":"co-gear-warn"}" onclick="coToggleCfg(${i})" title="Acuerdo de pago">⚙</button>
+        <button class="xb" onclick="delCoord(${i})">✕</button>
+      </td>`;
     tbody.appendChild(tr);
+    const cfg=document.createElement("tr");
+    cfg.className="co-cfg";
+    cfg.id="co-cfg-"+i;
+    cfg.style.display=c._cfgOpen?"":"none";
+    cfg.innerHTML=`<td colspan="15">${coCfgHtml(c,i)}</td>`;
+    tbody.appendChild(cfg);
   });
-  document.getElementById("coord-total").textContent=fmt(total);
+  coTotales();
   renderCoordHist();
+}
+
+function coSumHtml(c,r){
+  if(!r.porTarifa)return `<span style="color:#C8960C">Pago fijo · configura tarifas en ⚙</span>`;
+  const s=coResumen(r.det,c.seguro);
+  const extra=r.desc>0?` · <span style="color:#e53e3e">−${fmt(r.desc)} consumo</span>`:"";
+  return (s||"Sin días capturados")+extra;
+}
+
+function coCfgHtml(c,i){
+  const t=c.tarifas;
+  const hab=t[c.habitual]||0;
+  return `<div class="co-cfg-box">
+    <div class="co-cfg-tit">Acuerdo de pago — ${esc(c.nombre)||"coordinador"}</div>
+    <div class="co-cfg-grid">
+      <label>Tarifa día ≤6 h<input type="number" min="0" step="0.5" value="${t["6"]||""}" placeholder="0" oninput="coSetCfg(${i},'t6',+this.value)"></label>
+      <label>Tarifa día 8 h<input type="number" min="0" step="0.5" value="${t["8"]||""}" placeholder="0" oninput="coSetCfg(${i},'t8',+this.value)"></label>
+      <label>Tarifa día 11 h<input type="number" min="0" step="0.5" value="${t["11"]||""}" placeholder="0" oninput="coSetCfg(${i},'t11',+this.value)"></label>
+      <label>Turno habitual<select onchange="coSetCfg(${i},'habitual',this.value)">
+        ${["6","8","11"].map(k=>`<option value="${k}" ${c.habitual===k?"selected":""}>${k==="6"?"≤6 h":k+" h"}</option>`).join("")}</select></label>
+      <label>Día de descanso<select onchange="coSetCfg(${i},'descanso',+this.value)">
+        <option value="-1" ${c.descanso===-1?"selected":""}>Ninguno fijo</option>
+        ${CO_DIAS.map((d,k)=>`<option value="${k}" ${c.descanso===k?"selected":""}>${d}</option>`).join("")}</select></label>
+      <label>Pago día descanso<input type="number" min="0" step="0.5" value="${c.pagoDescanso||""}" placeholder="0" oninput="coSetCfg(${i},'pagoDescanso',+this.value)"></label>
+      <label class="co-chk"><input type="checkbox" ${c.seguro?"checked":""} onchange="coSetCfg(${i},'seguro',this.checked)"> Tiene seguro (IMSS)</label>
+    </div>
+    <div class="co-cfg-note">
+      Falta justificada paga su turno habitual (${fmt(hab)}). Incapacidad médica: ${c.seguro?"<b>tiene seguro</b> → $0 (le paga el IMSS)":`<b>sin seguro</b> → 60% = ${fmt(hab*CO_PCT_INC)} por día`}. Falta injustificada: $0.
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn" style="background:#f5f3ee;color:#333" onclick="coLlenarSemana(${i})">Llenar semana con turno habitual</button>
+      <button class="btn bk" onclick="coToggleCfg(${i})">Listo</button>
+    </div>
+  </div>`;
+}
+
+function coToggleCfg(i){
+  coords[i]._cfgOpen=!coords[i]._cfgOpen;
+  const row=document.getElementById("co-cfg-"+i);
+  if(row)row.style.display=coords[i]._cfgOpen?"":"none";
+}
+
+function coGuardar(){
+  sv("pc4_coords",coords.map(c=>{const o={...c};delete o._cfgOpen;return o;}));
+}
+
+function coSetCfg(i,k,v){
+  const c=coNorm(coords[i]);
+  const teniaTarifas=coTieneTarifas(c);
+  if(k==="t6")c.tarifas["6"]=v;
+  else if(k==="t8")c.tarifas["8"]=v;
+  else if(k==="t11")c.tarifas["11"]=v;
+  else c[k]=v;
+  if(k==="descanso"||k==="habitual")c.dias=coDiasDefault(c);
+  coGuardar();
+  // si cambió el modo (fijo ↔ por turno) o los días, se redibuja la tabla completa
+  if(teniaTarifas!==coTieneTarifas(c)||k==="descanso"||k==="habitual"){c._cfgOpen=true;renderCoords();return;}
+  coUpdateRow(i);
+  if(k==="seguro"){const box=document.querySelector("#co-cfg-"+i+" td");if(box)box.innerHTML=coCfgHtml(c,i);}
+}
+
+function coLlenarSemana(i){
+  const c=coNorm(coords[i]);
+  c.dias=coDiasDefault(c);
+  c._cfgOpen=true;
+  coGuardar();
+  renderCoords();
+}
+
+function coSetDia(i,d,sel){
+  coords[i].dias[d]=sel.value;
+  sel.dataset.v=sel.value;
+  coGuardar();
+  coUpdateRow(i);
+}
+
+function coUpdateRow(i){
+  const c=coords[i], r=coCalc(c);
+  const b=document.getElementById("co-base-"+i);
+  if(b&&r.porTarifa)b.textContent=fmt(r.base);
+  const t=document.getElementById("co-tot-"+i);
+  if(t){t.textContent=fmt(r.total);t.style.color=r.total<0?"#e53e3e":"#1c3a61";}
+  const s=document.getElementById("co-sum-"+i);
+  if(s)s.innerHTML=coSumHtml(c,r);
+  coTotales();
+}
+
+function coTotales(){
+  let base=0,extra=0,com=0,food=0,merch=0,tot=0;
+  coords.forEach(c=>{const r=coCalc(c);base+=r.base;extra+=c.extra;com+=c.comision;food+=c.food;merch+=c.merch;tot+=r.total;});
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set("coord-t-base",fmt(base));
+  set("coord-t-extra",fmt(extra));
+  set("coord-t-com",fmt(com));
+  set("coord-t-food",food?"−"+fmt(food):fmt(0));
+  set("coord-t-merch",merch?"−"+fmt(merch):fmt(0));
+  set("coord-total",fmt(tot));
 }
 
 function ufc(i,f,v){
   coords[i][f]=v;
-  sv("pc4_coords",coords);
-  const trs=document.querySelectorAll("#coord-body tr");
-  if(trs[i]){
-    const t=(coords[i].sueldo||0)+(coords[i].extra||0)+(coords[i].comision||0);
-    const cell=trs[i].querySelector("td:nth-child(5)");
-    if(cell)cell.textContent=fmt(t);
-  }
-  const tot=coords.reduce((s,c)=>s+(c.sueldo||0)+(c.extra||0)+(c.comision||0),0);
-  document.getElementById("coord-total").textContent=fmt(tot);
+  coGuardar();
+  coUpdateRow(i);
 }
 
 function addCoord(){
-  coords.push({nombre:"",sueldo:0,comision:0});
-  sv("pc4_coords",coords);
+  const c=coNorm({nombre:"",sueldo:0,comision:0});
+  c._cfgOpen=true;
+  coords.push(c);
+  coGuardar();
   renderCoords();
 }
 
 function delCoord(i){
+  if(coords[i].nombre&&!confirm("¿Quitar a "+coords[i].nombre+" de coordinadores?"))return;
   coords.splice(i,1);
-  sv("pc4_coords",coords);
+  coGuardar();
   renderCoords();
 }
 
 function guardarSemanaCoords(){
   const sem=document.getElementById("sem").value;
   if(!confirm("¿Guardar pagos de coordinadores para la semana "+sem+"?"))return;
+  const lista=coords.map(c=>{
+    const r=coCalc(c);
+    const o={...c,sueldo:r.base,base:r.base,detalle:r.porTarifa?r.det:null,pagoInc:r.pagoInc,total:r.total};
+    delete o._cfgOpen;
+    if(!r.porTarifa)delete o.dias;
+    return o;
+  });
   const entry={
     semana:sem,
     fecha:new Date().toLocaleDateString("es-MX"),
-    coords:coords.map(c=>({...c,total:(c.sueldo||0)+(c.extra||0)+(c.comision||0)})),
-    totalGeneral:coords.reduce((s,c)=>s+(c.sueldo||0)+(c.extra||0)+(c.comision||0),0)
+    coords:lista,
+    totalGeneral:lista.reduce((s,c)=>s+c.total,0)
   };
   coordHist=[entry,...coordHist].slice(0,20);
   sv("pc4_coord_hist",coordHist);
-  // Limpiar extra y comisión para la siguiente semana (el sueldo se mantiene)
-  coords=coords.map(c=>({...c,extra:0,comision:0}));
-  sv("pc4_coords",coords);
+  // Siguiente semana: se conserva el acuerdo (tarifas, turno, descanso, seguro);
+  // los días vuelven al turno habitual y se limpian extra, comisión, food y merch
+  coords=coords.map(c=>{const n={...coNorm(c),extra:0,comision:0,food:0,merch:0};n.dias=coDiasDefault(n);delete n._cfgOpen;return n;});
+  coGuardar();
   renderCoords();
   flash("✓ Pagos de coordinadores guardados — S"+sem);
+}
+
+function coHistTotal(c){
+  return Math.round(((+c.sueldo||0)+(+c.extra||0)+(+c.comision||0)-(+c.food||0)-(+c.merch||0))*100)/100;
 }
 
 function renderCoordHist(){
@@ -6152,33 +6385,31 @@ function renderCoordHist(){
       <div style="padding:8px 0">
         ${h.coords.map((c,j)=>`
         <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:${j<h.coords.length-1?"0.5px solid #f5f3ee":"none"}">
-          <div style="font-weight:700;font-size:13px;min-width:90px;color:#111">${c.nombre}</div>
-          <div style="display:flex;gap:10px;flex:1;flex-wrap:wrap">
-            <span style="font-size:11px;color:#888">Fijo <strong style="color:#111">${fmt(c.sueldo||0)}</strong></span>
-            ${(c.extra||0)>0?`<span style="font-size:11px;color:#888">Extra <strong style="color:#38a169">+${fmt(c.extra)}</strong></span>`:""}
-            ${(c.comision||0)>0?`<span style="font-size:11px;color:#888">Com. <strong style="color:#1565C0">${fmt(c.comision)}</strong></span>`:""}
+          <div style="font-weight:700;font-size:13px;min-width:90px;color:#111">${esc(c.nombre)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <span style="font-size:11px;color:#888">${c.detalle?"Días":"Fijo"} <strong style="color:#111">${fmt(c.sueldo||0)}</strong></span>
+              ${(c.extra||0)>0?`<span style="font-size:11px;color:#888">Extra <strong style="color:#38a169">+${fmt(c.extra)}</strong></span>`:""}
+              ${(c.comision||0)>0?`<span style="font-size:11px;color:#888">Com. <strong style="color:#1565C0">${fmt(c.comision)}</strong></span>`:""}
+              ${(c.food||0)>0?`<span style="font-size:11px;color:#888">Food <strong style="color:#e53e3e">−${fmt(c.food)}</strong></span>`:""}
+              ${(c.merch||0)>0?`<span style="font-size:11px;color:#888">Merch <strong style="color:#e53e3e">−${fmt(c.merch)}</strong></span>`:""}
+            </div>
+            ${c.detalle?`<div style="font-size:10.5px;color:#aaa;margin-top:2px">${coResumen(c.detalle,c.seguro)}</div>`:""}
           </div>
-          <div style="font-weight:900;font-size:13px;color:#1c3a61;text-align:right;min-width:64px">${fmt(c.total)}</div>
+          <div style="font-weight:900;font-size:13px;color:${(c.total||0)<0?"#e53e3e":"#1c3a61"};text-align:right;min-width:64px">${fmt(c.total)}</div>
         </div>`).join("")}
       </div>
       <div id="chedit-${idx}" style="display:none;border-top:2px solid #f8ba00;padding:12px;background:#fafafa">
         <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:10px;text-transform:uppercase">Editar pagos — Semana ${h.semana}</div>
         ${h.coords.map((c,ci)=>`
           <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:12px 14px;margin-bottom:8px">
-            <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#1c3a61">${c.nombre}</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#1c3a61">${esc(c.nombre)}</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px">
+              ${[["sueldo",c.detalle?"Pago días":"Pago fijo"],["extra","Extra"],["comision","Comisión"],["food","Food (−)"],["merch","Merch (−)"]].map(([k,l])=>`
               <div>
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Pago fijo</label>
-                <input type="number" min="0" step="0.5" value="${c.sueldo||0}" onchange="editCoordHist(${idx},${ci},'sueldo',+this.value)" style="width:100%;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;text-align:right">
-              </div>
-              <div>
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Extra</label>
-                <input type="number" min="0" step="0.5" value="${c.extra||0}" onchange="editCoordHist(${idx},${ci},'extra',+this.value)" style="width:100%;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;text-align:right">
-              </div>
-              <div>
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Comisión</label>
-                <input type="number" min="0" step="0.5" value="${c.comision||0}" onchange="editCoordHist(${idx},${ci},'comision',+this.value)" style="width:100%;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;text-align:right">
-              </div>
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:2px">${l}</label>
+                <input type="number" min="0" step="0.5" value="${c[k]||0}" onchange="editCoordHist(${idx},${ci},'${k}',+this.value)" style="width:100%;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;text-align:right">
+              </div>`).join("")}
             </div>
           </div>`).join("")}
         <button onclick="guardarCoordHistEdit(${idx})" style="background:#000;color:#f8ba00;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px">Guardar cambios</button>
@@ -6202,7 +6433,8 @@ function eliminarCoordHist(idx){
 function editCoordHist(hIdx,cIdx,campo,val){
   const c=coordHist[hIdx].coords[cIdx];
   c[campo]=val;
-  c.total=(c.sueldo||0)+(c.extra||0)+(c.comision||0);
+  if(campo==="sueldo")c.base=val;
+  c.total=coHistTotal(c);
   coordHist[hIdx].totalGeneral=coordHist[hIdx].coords.reduce((s,x)=>s+(x.total||0),0);
 }
 
