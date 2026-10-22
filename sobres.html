@@ -474,6 +474,67 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .rl-img-desc td{font-weight:800}
 .rl-img-tot td{font-size:18px;font-weight:900;border-top:2px solid #111;padding-top:8px}
 
+
+/* ── HORARIOS: COORDINADORES ── */
+.hr-top{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+#hr-quien .fbtn{font-size:13px;padding:6px 16px}
+.ch-coords{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.ch-chip{display:flex;align-items:center;gap:4px;border-radius:10px;padding:4px 6px 4px 4px}
+.ch-chip input[type=color]{width:26px;height:26px;border:2px solid rgba(255,255,255,.7);border-radius:7px;padding:0;background:none;cursor:pointer}
+.ch-chip input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.ch-chip input[type=color]::-webkit-color-swatch{border:none;border-radius:5px}
+#pnl-rol .ch-chip-n{border:none;background:transparent;font-weight:800;font-size:14px!important;width:96px;padding:4px 2px;font-family:inherit}
+.ch-chip-n:focus{outline:none;background:rgba(255,255,255,.35);border-radius:6px}
+.ch-chip button{border:none;background:none;cursor:pointer;font-size:13px;opacity:.7;padding:2px 4px}
+.ch-av summary{cursor:pointer;font-weight:800}
+details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
+.ch-suc{font-size:20px;font-weight:900;letter-spacing:.5px;margin:18px 0 8px;text-transform:uppercase}
+.ch-tl{min-width:720px;background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:0 10px 14px 0}
+.ch-head{display:grid;grid-template-columns:54px repeat(7,1fr)}
+.ch-head>div{font-size:11px;font-weight:800;letter-spacing:1px;text-align:center;padding:12px 2px 8px;color:#444}
+.ch-body{display:grid;grid-template-columns:54px repeat(7,1fr);border-top:1.5px dashed #555}
+.ch-hrs{position:relative}
+.ch-hrs span{position:absolute;right:8px;transform:translateY(-50%);font-size:11px;color:#666;font-weight:600}
+.ch-hrs span:first-child{transform:none}
+.ch-dcol{position:relative;border-left:2px solid #111;background-image:linear-gradient(to bottom,#efece4 1px,transparent 1px)}
+.ch-dcol:last-child{border-right:2px solid #111}
+.ch-lane{position:absolute;top:0;bottom:0;width:50%;cursor:copy;z-index:1}
+.ch-lane:hover{background:rgba(200,150,12,.08)}
+.ch-blk{position:absolute;width:50%;z-index:2;cursor:pointer;padding:4px 3px;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;gap:2px;font-size:11px;line-height:1.2;transition:filter .12s;border-right:1px solid rgba(255,255,255,.5)}
+.ch-blk:hover{filter:brightness(.94)}
+.ch-blk b{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-blk span{font-size:9.5px;font-weight:700;opacity:.85}
+.ch-rt{width:100%;min-width:640px;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);margin-top:6px}
+.ch-rt th{font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;padding:10px 6px;background:#faf8f3;text-align:center}
+.ch-rt td{text-align:center;padding:8px 4px;border-top:1px solid #f1eee6;font-size:12px}
+.ch-rt td small{display:block;font-size:9px;color:#999;font-weight:700}
+.ch-rt .ch-rn{text-align:left;font-weight:800;padding-left:12px;white-space:nowrap}
+.ch-rn i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:middle}
+.ch-desc{color:#bbb;font-size:11px!important}
+.ch-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10000;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:769px){.ch-ov{align-items:center}}
+.ch-box{background:#fff;border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));width:min(440px,100vw);display:flex;flex-direction:column;gap:10px}
+@media(min-width:769px){.ch-box{border-radius:16px}}
+.ch-box-t{font-size:15px;font-weight:900}
+.ch-box label{font-size:10px;font-weight:800;color:#888;letter-spacing:1px;text-transform:uppercase;display:flex;flex-direction:column;gap:4px}
+.ch-box select{padding:9px 10px;border:1px solid #ddd;border-radius:10px;background-color:#fff;font-family:inherit;color:#111;font-weight:600}
+.ch-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ch-lbl{font-size:10px;font-weight:800;color:#888;letter-spacing:1px;text-transform:uppercase}
+.ch-dias{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.ch-box label.ch-dchk{flex-direction:row;justify-content:center;letter-spacing:0;text-transform:none}
+.ch-dchk input{display:none}
+.ch-dchk span{display:block;width:100%;text-align:center;padding:9px 0;border-radius:9px;background:#f1efe9;color:#666;font-size:12px;font-weight:800;cursor:pointer}
+.ch-dchk input:checked+span{background:#111;color:#f8ba00}
+.ch-dchk input:disabled+span{opacity:.55;cursor:default}
+.ch-btns{display:flex;gap:8px;align-items:center;margin-top:4px}
+@media(max-width:768px){.ch-tl{min-width:600px}.ch-blk{font-size:9.5px;padding:3px 2px}.ch-blk b{white-space:normal;overflow-wrap:anywhere}.ch-blk span{font-size:8.5px}}
+/* imagen */
+.ch-img{width:1000px;background:#fff;font-family:-apple-system,'Inter','Segoe UI',Arial,sans-serif;color:#111;padding-bottom:16px}
+.ch-img .ch-tl{box-shadow:none;min-width:0;margin:0 16px}
+.ch-img-leg{display:flex;gap:6px;justify-content:center;padding:14px}
+.ch-img-leg span{padding:6px 18px;font-weight:800;font-size:14px;border-radius:4px}
+.ch-img-suc{font-size:26px;font-weight:900;margin:14px 24px 4px}
+
 /* ── TICKETS / SOBRES ── */
 .sg{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
 .sobre{width:252px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#000;font-family:'Courier New',monospace;overflow:hidden;page-break-inside:avoid;break-inside:avoid;cursor:pointer;transition:box-shadow .15s,border-color .15s}
@@ -1338,7 +1399,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   <button class="tab" data-t="datos">Datos</button>
   <button class="tab" data-t="sobres">Tickets</button>
   <button class="tab" data-t="coords">Coordinadores</button>
-  <button class="tab" data-t="rol">Rol</button>
+  <button class="tab" data-t="rol">Horarios</button>
   <button class="tab" data-t="deudas">Deudas</button>
   <button class="tab" data-t="ahorros">Ahorros</button>
   <button class="tab" data-t="sucursales">Analytics</button>
@@ -1728,8 +1789,15 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   <!-- ROL: DESCANSOS Y ASISTENCIA -->
   <div class="pnl" id="pnl-rol">
     <div class="ph">
-      <h2>Rol de lavadores <span id="rl-sem-lbl" style="color:#C8960C"></span></h2>
+      <h2>Horarios <span id="rl-sem-lbl" style="color:#C8960C"></span></h2>
     </div>
+    <div class="hr-top">
+      <div class="fseg" id="hr-quien">
+        <button class="fbtn on" data-q="lav" onclick="setHorQuien('lav')">Lavadores</button>
+        <button class="fbtn" data-q="coo" onclick="setHorQuien('coo')">Coordinadores</button>
+      </div>
+    </div>
+    <div id="hr-lav">
     <div class="rl-bar">
       <div class="fseg" id="rl-sucs">
         <button class="fbtn ref on" data-s="PC Refugio" onclick="rlSetSuc('PC Refugio')">Refugio</button>
@@ -1754,6 +1822,20 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <p class="rl-help" id="rl-help-rol" style="margin:0 0 10px">Toca el día en que descansa cada lavador. El conteo y la lista de quién descansa se arman solos.</p>
     <div id="rl-avisos"></div>
     <div class="tw" id="rl-grid"></div>
+    </div>
+    <div id="hr-coo" style="display:none">
+      <div class="rl-tools">
+        <button class="ph-btn ph-navy" onclick="chAddCo()">＋ Coordinador</button>
+        <button class="ph-btn ph-outline-rl" onclick="chTraerPagos()" title="Agrega los coordinadores de la pestaña Coordinadores que aún no están aquí">Traer de Pagos</button>
+        <button class="ph-btn ph-gold" onclick="chImagen()">Imagen para el grupo</button>
+      </div>
+      <p class="rl-help" style="margin:0 0 8px">Toca un nombre para cambiarlo y el cuadrito para cambiar su color. En el horario, toca un turno para editar sus horas o un espacio vacío para agregar uno.</p>
+      <div class="ch-coords" id="ch-coords"></div>
+      <div id="ch-avisos"></div>
+      <div id="ch-tls"></div>
+      <h3 class="ch-suc" style="font-size:14px;letter-spacing:1.5px;color:#888;margin-top:26px">Horas por semana</h3>
+      <div class="tw" id="ch-res"></div>
+    </div>
   </div>
 
   <!-- FLUJO DE EFECTIVO -->
@@ -3279,7 +3361,7 @@ function goTab(id){
   if(id==="sobres")renderS();if(id==="hist")renderH();
   if(id==="deudas")renderD();if(id==="sucursales")renderSucursales();
   if(id==="ahorros")renderAhorros();
-  if(id==="rol")renderRol();
+  if(id==="rol")renderHorarios();
   if(id==="coords"){renderCoords();renderLiquidaciones();syncSemana(document.getElementById("sem").value);goSubTab("pagos");}
   if(id==="flujo"){initFlujo();syncSemana(document.getElementById("sem").value);}
   if(id==="datos"){renderT();}
@@ -5136,7 +5218,7 @@ function bsobre(row,sem){
 let sobreSeleccionado = null; // nombre del lavador seleccionado
 let ticketsModo="lav";   // "lav" | "coord"
 let tkCoordSem="";       // "" = semana en captura; si no, índice en coordHist
-let rolData=null, rolSuc="PC Refugio", rolModo="rol";
+let rolData=null, rolSuc="PC Refugio", rolModo="rol", horQuien="lav", chEdit=null;
 
 function renderS(){
   if(ticketsModo==="coord"){renderSCoord();return;}
@@ -10828,7 +10910,7 @@ function dash_init() {
   const MORE_TABS=[
     {t:"sobres",     icon:"sobres",     label:"Tickets"},
     {t:"coords",     icon:"coords",     label:"Coords"},
-    {t:"rol",        icon:"rol",        label:"Rol"},
+    {t:"rol",        icon:"rol",        label:"Horarios"},
     {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
     {t:"sucursales", icon:"sucursales", label:"Analytics"},
     {t:"hist",       icon:"hist",       label:"Historial"},
@@ -11220,6 +11302,244 @@ async function rlImagen(){
     flash("✓ Imagen descargada");
   }catch(e){console.error(e);flash("⚠️ No se pudo generar la imagen");}
 }
+
+// ══ HORARIOS DE COORDINADORES (hora por hora, por sucursal) ══════════════════
+// Cada día tiene 2 carriles: 1er turno (izq.) y 2do turno (der.), como la hoja.
+// Días en orden Dom..Sáb (índice 0 = domingo).
+const CH_DIAS=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+const CH_DIAS_L=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const CH_ABRE=8, CH_CIERRA=19;
+const CH_COLORES=["#E8C454","#BDD7AA","#B87F9E","#5183C2","#8B7DBB","#DF9C9A","#9FC385","#F2A65A","#5BB5A8","#9AA5B1"];
+
+function chB(dia,lane,ci,ini,fin){return {id:rlId(),dia,lane,ci,ini,fin};}
+// Horario inicial: el último que se llevaba en la hoja (oct 2026)
+function chSeed(){
+  const D="c_daniel",S="c_styben",B="c_bruno",J="c_josh";
+  const ref=[0,1,2,4,5,6].map(d=>chB(d,0,S,8,19));
+  ref.push(chB(3,0,D,8,16),chB(3,1,J,13,19));
+  const ala=[0,1,2,3,5,6].map(d=>chB(d,0,B,8,16));
+  [1,2,3,6].forEach(d=>ala.push(chB(d,1,J,16,19)));
+  ala.push(chB(4,0,D,8,16),chB(4,1,J,13,19));
+  return {coords:[{id:D,nombre:"Daniel",color:"#BDD7AA"},{id:S,nombre:"Styben",color:"#E8C454"},
+                  {id:B,nombre:"Bruno",color:"#B87F9E"},{id:J,nombre:"Josh",color:"#5183C2"}],
+          bloques:{"PC Refugio":ref,"PC Álamos":ala}};
+}
+function chData(){
+  const d=rlLoad();
+  if(!d.coordH)d.coordH=chSeed();
+  RL_SUCS.forEach(s=>{if(!d.coordH.bloques[s])d.coordH.bloques[s]=[];});
+  return d.coordH;
+}
+function chCo(id){return chData().coords.find(c=>c.id===id);}
+function chTxt(hex){
+  const h=(hex||"#999").replace("#","");const n=parseInt(h.length===3?h.split("").map(x=>x+x).join(""):h,16);
+  const r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  return (0.299*r+0.587*g+0.114*b)/255<0.6?"#fff":"#1a1a1a";
+}
+function chH(x){const h=Math.floor(x),m=Math.round((x-h)*60);return h+":"+(m<10?"0":"")+m;}
+function chRango(){
+  let a=CH_ABRE,b=CH_CIERRA;
+  RL_SUCS.forEach(s=>chData().bloques[s].forEach(k=>{a=Math.min(a,Math.floor(k.ini));b=Math.max(b,Math.ceil(k.fin));}));
+  return [a,b];
+}
+
+function chTimeline(suc,estatico){
+  const D=chData(), [a,b]=chRango();
+  const H=estatico?34:(window.innerWidth<768?28:34);
+  const alto=(b-a)*H;
+  const horas=[];for(let h=a;h<=b;h++)horas.push(h);
+  const col=(dia)=>{
+    const bl=D.bloques[suc].filter(k=>k.dia===dia);
+    const lanes=[0,1].map(l=>estatico?"":`<div class="ch-lane" style="left:${l*50}%" onclick="chNuevoClick(event,'${suc}',${dia},${l})" title="Agregar ${l?"2do":"1er"} turno"></div>`).join("");
+    const blks=bl.map(k=>{
+      const c=chCo(k.ci)||{nombre:"?",color:"#ccc"};
+      const top=(k.ini-a)*H, h=(k.fin-k.ini)*H;
+      return `<div class="ch-blk" style="top:${top}px;height:${h}px;left:${k.lane?50:0}%;background:${c.color};color:${chTxt(c.color)}" ${estatico?"":`onclick="event.stopPropagation();chAbrir('${suc}',${dia},${k.lane},'${k.id}')"`}>
+        <b>${esc(c.nombre)}</b>${h>=H*1.5?`<span>${chH(k.ini)}–${chH(k.fin)}</span>`:""}</div>`;
+    }).join("");
+    return `<div class="ch-dcol" style="height:${alto}px;background-size:100% ${H}px">${lanes}${blks}</div>`;
+  };
+  return `<div class="ch-tl${estatico?" ch-tl-img":""}">
+    <div class="ch-head"><div></div>${CH_DIAS_L.map(d=>`<div>${estatico?d.toUpperCase():`<span class="rl-lg">${d.toUpperCase()}</span><span class="rl-sm">${d.slice(0,3).toUpperCase()}</span>`}</div>`).join("")}</div>
+    <div class="ch-body">
+      <div class="ch-hrs" style="height:${alto}px">${horas.map(h=>`<span style="top:${(h-a)*H}px">${h}:00</span>`).join("")}</div>
+      ${CH_DIAS.map((_,d)=>col(d)).join("")}
+    </div></div>`;
+}
+
+// Horas por coordinador y día (sumando ambas sucursales)
+function chResumen(){
+  const D=chData();
+  return D.coords.map(c=>{
+    const dias=CH_DIAS.map((_,d)=>{
+      let hrs=0;const sucs=new Set();
+      RL_SUCS.forEach(s=>D.bloques[s].filter(k=>k.ci===c.id&&k.dia===d).forEach(k=>{hrs+=k.fin-k.ini;sucs.add(s==="PC Álamos"?"Á":"R");}));
+      return {hrs,sucs:[...sucs].join("·")};
+    });
+    return {c,dias,total:dias.reduce((s,x)=>s+x.hrs,0),nd:dias.filter(x=>x.hrs>0).length};
+  });
+}
+function chAvisos(){
+  const D=chData(), av=[];
+  // Huecos sin coordinador entre apertura y cierre
+  RL_SUCS.forEach(s=>CH_DIAS.forEach((_,d)=>{
+    const bl=D.bloques[s].filter(k=>k.dia===d);
+    let t=CH_ABRE, hue=[];
+    for(let x=CH_ABRE;x<CH_CIERRA;x+=0.5){
+      const cub=bl.some(k=>k.ini<=x&&k.fin>=x+0.5);
+      if(!cub){if(!hue.length||hue[hue.length-1][1]!==x)hue.push([x,x+0.5]);else hue[hue.length-1][1]=x+0.5;}
+    }
+    hue.forEach(([i,f])=>av.push(`<b>${s.replace("PC ","")} · ${CH_DIAS_L[d]}:</b> sin coordinador de ${chH(i)} a ${chH(f)}`));
+  }));
+  // Un coordinador en dos lugares a la vez
+  D.coords.forEach(c=>CH_DIAS.forEach((_,d)=>{
+    const bl=[];RL_SUCS.forEach(s=>D.bloques[s].filter(k=>k.ci===c.id&&k.dia===d).forEach(k=>bl.push({...k,s})));
+    for(let i=0;i<bl.length;i++)for(let j=i+1;j<bl.length;j++){
+      const x=bl[i],y=bl[j];const ini=Math.max(x.ini,y.ini),fin=Math.min(x.fin,y.fin);
+      if(ini<fin)av.push(`<b>${esc(c.nombre)} · ${CH_DIAS_L[d]}:</b> está en ${x.s===y.s?"dos turnos de "+x.s.replace("PC ",""):"Refugio y Álamos"} a la vez de ${chH(ini)} a ${chH(fin)}`);
+    }
+  }));
+  return av;
+}
+
+function renderHorCoord(){
+  const D=chData();
+  document.getElementById("ch-coords").innerHTML=D.coords.map((c,i)=>`
+    <div class="ch-chip" style="background:${c.color};color:${chTxt(c.color)}">
+      <input type="color" value="${c.color}" onchange="chSetCo(${i},'color',this.value)" title="Color">
+      <input class="ch-chip-n" value="${esc(c.nombre)}" onchange="chSetCo(${i},'nombre',this.value)" style="color:${chTxt(c.color)}">
+      <button onclick="chDelCo(${i})" title="Quitar" style="color:${chTxt(c.color)}">✕</button>
+    </div>`).join("");
+  const av=chAvisos();
+  document.getElementById("ch-avisos").innerHTML=av.length?`<details class="rl-av" ${av.length<=4?"open":""}><summary>${av.length} aviso${av.length>1?"s":""} del horario</summary>${av.join("<br>")}</details>`:"";
+  document.getElementById("ch-tls").innerHTML=RL_SUCS.map(s=>`<h3 class="ch-suc">${s.replace("PC ","")}</h3><div class="tw">${chTimeline(s,false)}</div>`).join("");
+  const R=chResumen();
+  document.getElementById("ch-res").innerHTML=`<table class="ch-rt"><thead><tr><th style="text-align:left">Coordinador</th>${CH_DIAS.map(d=>`<th>${d}</th>`).join("")}<th>Horas</th><th>Días</th></tr></thead><tbody>
+    ${R.map(r=>`<tr><td class="ch-rn"><i style="background:${r.c.color}"></i>${esc(r.c.nombre)}</td>${r.dias.map(x=>x.hrs?`<td><b>${Math.round(x.hrs*10)/10}h</b><small>${x.sucs}</small></td>`:`<td class="ch-desc">Desc.</td>`).join("")}<td><b>${Math.round(r.total*10)/10}</b></td><td>${r.nd}</td></tr>`).join("")}
+  </tbody></table>`;
+}
+
+function chSetCo(i,k,v){const c=chData().coords[i];c[k]=k==="nombre"?v.trim():v;rlSave();renderHorCoord();}
+function chAddCo(){
+  const n=prompt("Nombre del coordinador:");if(!n||!n.trim())return;
+  const D=chData();const usados=new Set(D.coords.map(c=>c.color.toLowerCase()));
+  const color=CH_COLORES.find(x=>!usados.has(x.toLowerCase()))||CH_COLORES[D.coords.length%CH_COLORES.length];
+  D.coords.push({id:"c_"+rlId(),nombre:n.trim(),color});rlSave();renderHorCoord();
+}
+function chDelCo(i){
+  const D=chData(),c=D.coords[i];
+  const n=RL_SUCS.reduce((s,x)=>s+D.bloques[x].filter(k=>k.ci===c.id).length,0);
+  if(!confirm("¿Quitar a "+c.nombre+"?"+(n?"\nTambién se borran sus "+n+" turnos del horario.":"")))return;
+  RL_SUCS.forEach(x=>{D.bloques[x]=D.bloques[x].filter(k=>k.ci!==c.id);});
+  D.coords.splice(i,1);rlSave();renderHorCoord();
+}
+function chTraerPagos(){
+  const D=chData();const ya=new Set(D.coords.map(c=>normN(c.nombre)));
+  const nuevos=(coords||[]).map(c=>(c.nombre||"").trim()).filter(n=>n&&!ya.has(normN(n)));
+  if(!nuevos.length){flash("Todos los coordinadores de Pagos ya están en el horario");return;}
+  nuevos.forEach(n=>{const usados=new Set(D.coords.map(c=>c.color.toLowerCase()));
+    D.coords.push({id:"c_"+rlId(),nombre:n,color:CH_COLORES.find(x=>!usados.has(x.toLowerCase()))||"#9AA5B1"});});
+  rlSave();renderHorCoord();flash("✓ Agregados: "+nuevos.join(", "));
+}
+
+// ── Editor de un turno ──
+function chNuevoClick(ev,suc,dia,lane){
+  const [a,b]=chRango();const r=ev.currentTarget.getBoundingClientRect();
+  let ini=a+Math.floor((ev.clientY-r.top)/r.height*(b-a));
+  ini=Math.max(a,Math.min(ini,b-1));
+  const fin=Math.min(b,ini+(lane?3:8));
+  chAbrir(suc,dia,lane,null,ini,fin);
+}
+function chOpcHoras(sel){
+  let o="";for(let x=6;x<=22;x+=0.5)o+=`<option value="${x}" ${Math.abs(x-sel)<0.01?"selected":""}>${chH(x)}</option>`;return o;
+}
+function chAbrir(suc,dia,lane,id,ini,fin){
+  const D=chData();
+  if(!D.coords.length){flash("Primero agrega un coordinador");return;}
+  const k=id?D.bloques[suc].find(x=>x.id===id):null;
+  chEdit={suc,dia,lane,id};
+  const ci=k?k.ci:D.coords[0].id;
+  const m=document.createElement("div");m.id="ch-modal";m.className="ch-ov";
+  m.innerHTML=`<div class="ch-box" onclick="event.stopPropagation()">
+    <div class="ch-box-t">${k?"Editar":"Nuevo"} turno · ${suc.replace("PC ","")} · ${CH_DIAS_L[dia]}</div>
+    <label>Coordinador<select id="ch-f-ci">${D.coords.map(c=>`<option value="${c.id}" ${c.id===ci?"selected":""}>${esc(c.nombre)}</option>`).join("")}</select></label>
+    <div class="ch-row2">
+      <label>Entra<select id="ch-f-ini">${chOpcHoras(k?k.ini:ini)}</select></label>
+      <label>Sale<select id="ch-f-fin">${chOpcHoras(k?k.fin:fin)}</select></label>
+    </div>
+    <label>Columna<select id="ch-f-lane"><option value="0" ${lane===0?"selected":""}>1er turno (izquierda)</option><option value="1" ${lane===1?"selected":""}>2do turno (derecha)</option></select></label>
+    <div class="ch-lbl">${k?"Copiar también a":"Días"}</div>
+    <div class="ch-dias">${CH_DIAS.map((d,i)=>`<label class="ch-dchk"><input type="checkbox" value="${i}" ${i===dia?"checked":""} ${k&&i===dia?"disabled":""}><span>${d}</span></label>`).join("")}</div>
+    <div class="ch-btns">
+      ${k?`<button class="ph-btn ph-danger-outline" onclick="chBorrar()">Borrar</button>`:""}
+      <span style="flex:1"></span>
+      <button class="ph-btn ph-outline-rl" onclick="chCerrar()">Cancelar</button>
+      <button class="ph-btn ph-dark" onclick="chGuardar()">Guardar</button>
+    </div></div>`;
+  m.addEventListener("click",chCerrar);
+  document.body.appendChild(m);
+}
+function chCerrar(){document.getElementById("ch-modal")?.remove();chEdit=null;}
+function chGuardar(){
+  if(!chEdit)return;
+  const D=chData(),{suc,dia,id}=chEdit;
+  const ci=document.getElementById("ch-f-ci").value;
+  const ini=+document.getElementById("ch-f-ini").value, fin=+document.getElementById("ch-f-fin").value;
+  const lane=+document.getElementById("ch-f-lane").value;
+  if(fin<=ini){alert("La hora de salida tiene que ser después de la de entrada.");return;}
+  const dias=[...document.querySelectorAll("#ch-modal .ch-dchk input:checked")].map(x=>+x.value);
+  if(!dias.includes(dia))dias.push(dia);
+  dias.forEach(d=>{
+    if(id&&d===dia){const k=D.bloques[suc].find(x=>x.id===id);Object.assign(k,{ci,ini,fin,lane});return;}
+    // en los demás días, reemplaza lo que se empalme en esa misma columna
+    D.bloques[suc]=D.bloques[suc].filter(k=>!(k.dia===d&&k.lane===lane&&k.ini<fin&&k.fin>ini));
+    D.bloques[suc].push(chB(d,lane,ci,ini,fin));
+  });
+  rlSave();chCerrar();renderHorCoord();
+}
+function chBorrar(){
+  if(!chEdit)return;const D=chData(),{suc,id}=chEdit;
+  D.bloques[suc]=D.bloques[suc].filter(k=>k.id!==id);
+  rlSave();chCerrar();renderHorCoord();
+}
+
+async function chImagen(){
+  flash("⏳ Generando imagen...");
+  try{
+    if(!window.html2canvas){
+      await new Promise((res,rej)=>{const s=document.createElement("script");
+        s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+    }
+    const D=chData();
+    const wrap=document.createElement("div");
+    wrap.style.cssText="position:fixed;left:-9999px;top:0;background:#fff";
+    wrap.innerHTML=`<div class="ch-img">
+      <div class="rl-img-h"><div><span style="font-weight:300">PATIO </span><b>CINCO</b></div><div class="rl-img-t">Horario coordinadores</div></div>
+      <div class="ch-img-leg">${D.coords.map(c=>`<span style="background:${c.color};color:${chTxt(c.color)}">${esc(c.nombre)}</span>`).join("")}</div>
+      ${RL_SUCS.map(s=>`<div class="ch-img-suc">${s.replace("PC ","").toUpperCase()}</div>${chTimeline(s,true)}`).join("")}
+    </div>`;
+    document.body.appendChild(wrap);
+    await new Promise(r=>setTimeout(r,80));
+    const canvas=await html2canvas(wrap.firstElementChild,{scale:2,backgroundColor:"#ffffff",logging:false});
+    document.body.removeChild(wrap);
+    const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
+    const file=new File([blob],"horario-coordinadores.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:"Horario coordinadores"});flash("✓ Listo");return;}catch(e){if(e&&e.name==="AbortError")return;}
+    }
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="horario-coordinadores.png";a.click();
+    flash("✓ Imagen descargada");
+  }catch(e){console.error(e);flash("⚠️ No se pudo generar la imagen");}
+}
+
+function setHorQuien(q){
+  horQuien=q;
+  document.querySelectorAll("#hr-quien .fbtn").forEach(b=>b.classList.toggle("on",b.dataset.q===q));
+  document.getElementById("hr-lav").style.display=q==="lav"?"":"none";
+  document.getElementById("hr-coo").style.display=q==="coo"?"":"none";
+  if(q==="coo")renderHorCoord();else renderRol();
+}
+function renderHorarios(){setHorQuien(horQuien);}
 
 // Patch goTab to also update mobile nav
 const _origGoTab=goTab;
