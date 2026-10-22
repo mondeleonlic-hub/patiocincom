@@ -54,7 +54,11 @@ body{
 @media(prefers-reduced-motion:reduce){.pnl.on{animation:none}}
 
 /* ── COORDINADORES: pago por turno ── */
-.co-tabla{min-width:1280px}
+.co-tabla{min-width:1380px}
+.co-deuda-add{background:none;border:1px dashed #d8d4c8;border-radius:8px;padding:4px 9px;font-size:10.5px;font-weight:700;color:#aaa;cursor:pointer}
+.co-deuda-add:hover{border-color:#e53e3e;color:#e53e3e}
+.co-deuda-link{cursor:pointer;text-decoration:none;display:block}
+.dc-coord{display:inline-block;vertical-align:middle;margin-left:6px;background:#1c3a61;color:#fff;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:10px}
 .co-ret-det{font-size:10px;color:#999;font-weight:500;margin-top:2px;line-height:1.35}
 .co-imss-warn{display:inline-block;background:#fff6dc;color:#8a6500;border:1px solid #f3c64a;border-radius:8px;padding:2px 7px;font-size:10.5px;font-weight:800}
 .co-tabla th.co-dh{text-align:center;min-width:54px;padding-left:2px;padding-right:2px}
@@ -1592,7 +1596,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
     <!-- SUB-PANEL: Pagos semanales -->
     <div class="spnl on" id="spnl-pagos">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px;flex-wrap:wrap">
-        <p class="it" style="margin:0">Pago por día según turno (≤6h · 8h · 11h), faltas, incapacidades y descuentos de Food, Merch, IMSS, ISR e Infonavit. Configura el acuerdo de cada uno en ⚙.</p>
+        <p class="it" style="margin:0">Pago por día según turno (≤6h · 8h · 11h), faltas, incapacidades y descuentos de Food, Merch, deudas, IMSS, ISR e Infonavit. Configura el acuerdo de cada uno en ⚙.</p>
         <div style="display:flex;gap:8px">
           <select class="hist-select" id="coords-hist-sel" onchange="cargarSemanaHistCoords()">
             <option value="">Semana actual</option>
@@ -1611,6 +1615,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
             <th class="co-nh">Comisión</th>
             <th class="co-nh">Food (−)</th>
             <th class="co-nh">Merch (−)</th>
+            <th class="co-nh" style="min-width:104px">Deuda (−)</th>
             <th class="co-nh" style="min-width:110px">IMSS · ISR · Inf. (−)</th>
             <th class="co-nh" style="text-align:right">Total</th>
             <th></th>
@@ -1623,6 +1628,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
             <td id="coord-t-com" class="co-num" style="color:#1c3a61">$0.00</td>
             <td id="coord-t-food" class="co-num" style="color:#e53e3e">$0.00</td>
             <td id="coord-t-merch" class="co-num" style="color:#e53e3e">$0.00</td>
+            <td id="coord-t-deuda" class="co-num" style="color:#e53e3e">$0.00</td>
             <td id="coord-t-imss" class="co-num" style="color:#e53e3e">$0.00</td>
             <td id="coord-total" style="text-align:right;font-weight:900;font-size:13px">$0.00</td>
             <td></td>
@@ -4288,6 +4294,21 @@ function guardarSucursales(){
 }
 
 // ── DEUDAS ────────────────────────────────────────────────────────────────────
+// Deudas de coordinadores: se guardan en el mismo objeto `deudas` con clave "coord:<id>"
+// (id estable del coordinador, así sobrevive a cambios de nombre y no choca con lavadores).
+// Avanzan al "Guardar semana" de Coordinadores, no al cerrar la semana de lavadores.
+function esDeudaCoord(n){return String(n).indexOf("coord:")===0;}
+function dNom(n){
+  if(!esDeudaCoord(n))return n;
+  const id=n.slice(6), c=(typeof coords!=="undefined"?coords:[]).find(x=>x.id===id);
+  return (c&&c.nombre)||(deudas[n]&&deudas[n].nombre)||"Coordinador";
+}
+function avanzarDeuda(d){
+  if(!d||!(d.total>0))return;
+  if(d.pagoActual===0){d.pagoActual=d._pagoPrev||1;delete d._pagoPrev;}
+  else if(d.pagoActual>=d.numPagos){d.total=0;}
+  else d.pagoActual=(d.pagoActual||1)+1;
+}
 function renderD(){
   const gA=document.getElementById("dg-activas"),gS=document.getElementById("dg-saldadas");
   gA.innerHTML="";gS.innerHTML="";
@@ -4308,7 +4329,7 @@ function tarjetaDeuda(nombre,d,saldada){
   const saldo=Math.max(0,d.total-mpp*(_pa-1));
   div.innerHTML=`
     <button class="dc-borrar" onclick="borrarDeuda('${nombre}')">✕</button>
-    <div class="dc-nom">${nombre}</div>
+    <div class="dc-nom">${esc(dNom(nombre))}${esDeudaCoord(nombre)?' <span class="dc-coord">Coordinador</span>':''}</div>
     <div class="dc-campo"><label>¿Qué debe?</label><textarea onchange="actDeuda('${nombre}','concepto',this.value)">${d.concepto||""}</textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <div class="dc-campo"><label>Monto total</label><input type="number" min="0" step="0.5" value="${d.total||""}" onchange="actDeuda('${nombre}','total',+this.value)"></div>
@@ -4584,10 +4605,10 @@ function ajustarPagosHechos(nombre,hechos){
   const hechosClamped=Math.min(Math.max(0,hechos),d.numPagos);
   // pagoActual = siguiente pago a cobrar = hechos+1, o 0 si ya están todos
   d.pagoActual=hechosClamped>=d.numPagos?d.numPagos+1:hechosClamped+1;
-  sv("pc4_deudas",deudas);renderD();renderT();
+  sv("pc4_deudas",deudas);_dRefresh(nombre);
   const mpp = d.montoPorPago || (d.total/d.numPagos) || 0;
   const saldoRest = Math.max(0, d.total - mpp*hechosClamped);
-  flash(`✏️ ${nombre}: ${hechosClamped} pagos de ${fmt(mpp)} — saldo restante ${fmt(saldoRest)}`);
+  flash(`✏️ ${dNom(nombre)}: ${hechosClamped} pagos de ${fmt(mpp)} — saldo restante ${fmt(saldoRest)}`);
 }
 function actDeuda(nombre,campo,valor){
   if(!deudas[nombre])return;
@@ -4596,18 +4617,19 @@ function actDeuda(nombre,campo,valor){
   if(campo==="total"||campo==="numPagos"){
     if(!deudas[nombre]._mppManual) deudas[nombre].montoPorPago=deudas[nombre].total/deudas[nombre].numPagos;
   }
-  sv("pc4_deudas",deudas);renderD();renderT();
+  sv("pc4_deudas",deudas);_dRefresh(nombre);
 }
 function actDeudaMpp(nombre, mpp){
   if(!deudas[nombre])return;
   deudas[nombre].montoPorPago = mpp;
   deudas[nombre]._mppManual = true; // marcar como manual para no pisarlo
-  sv("pc4_deudas",deudas); renderD(); renderT();
+  sv("pc4_deudas",deudas); _dRefresh(nombre);
   flash("✓ Monto por pago actualizado");
 }
-function borrarDeuda(n){if(!confirm("¿Eliminar deuda de "+n+"?"))return;delete deudas[n];sv("pc4_deudas",deudas);renderD();renderT()}
-function pausarDeuda(n){deudas[n]._pagoPrev=deudas[n].pagoActual||1;deudas[n].pagoActual=0;sv("pc4_deudas",deudas);renderD();renderT();flash("⏸ Deuda de "+n+" pausada esta semana")}
-function reanudarDeuda(n){deudas[n].pagoActual=deudas[n]._pagoPrev||1;delete deudas[n]._pagoPrev;sv("pc4_deudas",deudas);renderD();renderT();flash("▶ Deuda de "+n+" se cobra esta semana")}
+function _dRefresh(n){renderD();renderT();if(esDeudaCoord(n)&&typeof renderCoords==="function")renderCoords();}
+function borrarDeuda(n){if(!confirm("¿Eliminar deuda de "+dNom(n)+"?"))return;delete deudas[n];sv("pc4_deudas",deudas);_dRefresh(n)}
+function pausarDeuda(n){deudas[n]._pagoPrev=deudas[n].pagoActual||1;deudas[n].pagoActual=0;sv("pc4_deudas",deudas);_dRefresh(n);flash("⏸ Deuda de "+dNom(n)+" pausada esta semana")}
+function reanudarDeuda(n){deudas[n].pagoActual=deudas[n]._pagoPrev||1;delete deudas[n]._pagoPrev;sv("pc4_deudas",deudas);_dRefresh(n);flash("▶ Deuda de "+dNom(n)+" se cobra esta semana")}
 
 function merchADeuda(i){
   const row=rows[i];
@@ -4626,17 +4648,25 @@ function abrirNuevaDeuda(prefill){
   prefill = prefill || {};
   const nombres = prefill.lockNombre
     ? [prefill.nombre]
-    : rows.filter(r=>r.nombre&&!deudas[r.nombre]).map(r=>r.nombre);
-  if(!nombres.length&&!prefill.lockNombre){alert("Todos los lavadores ya tienen deuda.");return}
+    : [...new Set(rows.filter(r=>r.nombre&&!deudas[r.nombre]).map(r=>r.nombre))];
+  const coordOpts = (typeof coords!=="undefined"?coords:[]).filter(c=>c.nombre&&c.id&&!(deudas["coord:"+c.id]&&deudas["coord:"+c.id].total>0));
+  if(!nombres.length&&!coordOpts.length&&!prefill.lockNombre&&!prefill.coordKey){alert("Todos ya tienen deuda activa.");return}
   const modal=document.createElement("div");
   modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:center;justify-content:center";
 
-  const nombreField = prefill.lockNombre
+  const nombreField = prefill.coordKey
+    ? `<div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:#888;display:block;margin-bottom:3px;text-transform:uppercase">Coordinador</label>
+        <div style="padding:6px 10px;background:#f5f5f5;border-radius:4px;font-weight:700;font-size:12px">${esc(prefill.coordNombre)}</div>
+        <input type="hidden" id="nd-nom" value="${prefill.coordKey}"></div>`
+    : prefill.lockNombre
     ? `<div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:#888;display:block;margin-bottom:3px;text-transform:uppercase">Lavador</label>
         <div style="padding:6px 10px;background:#f5f5f5;border-radius:4px;font-weight:700;font-size:12px">${prefill.nombre}</div>
         <input type="hidden" id="nd-nom" value="${prefill.nombre}"></div>`
-    : `<div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:#888;display:block;margin-bottom:3px;text-transform:uppercase">Lavador</label>
-        <select id="nd-nom" style="width:100%"><option value="">Seleccionar...</option>${nombres.map(n=>`<option>${n}</option>`).join("")}</select></div>`;
+    : `<div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:#888;display:block;margin-bottom:3px;text-transform:uppercase">Persona</label>
+        <select id="nd-nom" style="width:100%"><option value="">Seleccionar...</option>
+          ${nombres.length?`<optgroup label="Lavadores">${nombres.map(n=>`<option>${n}</option>`).join("")}</optgroup>`:""}
+          ${coordOpts.length?`<optgroup label="Coordinadores">${coordOpts.map(c=>`<option value="coord:${c.id}">${esc(c.nombre)}</option>`).join("")}</optgroup>`:""}
+        </select></div>`;
 
   modal.innerHTML=`<div style="background:#fff;border-radius:10px;padding:22px;width:min(420px,95vw);font-family:'Segoe UI',sans-serif">
     <h3 style="font-size:14px;font-weight:900;margin-bottom:6px">Registrar deuda</h3>
@@ -4693,10 +4723,11 @@ function abrirNuevaDeuda(prefill){
     const total=parseFloat(document.getElementById("nd-tot").value)||0;
     const numPagos=parseInt(document.getElementById("nd-pag").value)||1;
     const proxima=document.getElementById("nd-proxima").value==="1";
-    if(!nombre){alert("Selecciona un lavador");return}
+    if(!nombre){alert("Selecciona a quién");return}
     if(total<=0){alert("El monto debe ser mayor a 0");return}
     // pagoActual:0 = no descuenta esta semana, al cerrar semana avanza a 1
     deudas[nombre]={concepto,total,numPagos,pagoActual:proxima?0:1,montoPorPago:total/numPagos};
+    if(esDeudaCoord(nombre)){deudas[nombre].tipo="coord";deudas[nombre].nombre=dNom(nombre);}
     sv("pc4_deudas",deudas);
     // Limpiar merch del row si: vino del botón "📋→ A deuda" (lockNombre)
     // O si el monto coincide con el merch del lavador
@@ -4710,8 +4741,8 @@ function abrirNuevaDeuda(prefill){
       }
     });
     if(_changed)sv("pc4_rows",rows);}
-    modal.remove();renderD();renderT();
-    flash("✓ Deuda de "+nombre+" registrada"+(proxima?" — empieza la próxima semana":""));
+    modal.remove();_dRefresh(nombre);
+    flash("✓ Deuda de "+dNom(nombre)+" registrada"+(proxima?" — empieza la próxima semana":""));
   };
 }
 
@@ -5135,16 +5166,8 @@ function cerrarSemana(){
   flujoDias=[];
   // ── Avanzar deudas ───────────────────────────────────────────────────────
   for(const n in deudas){
-    const d=deudas[n];
-    if(d.total>0){
-      if(d.pagoActual===0){
-        d.pagoActual=d._pagoPrev||1;delete d._pagoPrev;
-      } else if(d.pagoActual>=d.numPagos){
-        d.total=0; // ya se completaron todos los pagos
-      } else {
-        d.pagoActual=(d.pagoActual||1)+1;
-      }
-    }
+    if(esDeudaCoord(n))continue; // las de coordinadores avanzan al guardar su semana
+    avanzarDeuda(deudas[n]);
   }
   const arr=ld("pc4_hist",[]);
   arr.unshift({semana:sem,fecha:new Date().toLocaleDateString("es-MX"),
@@ -6242,9 +6265,11 @@ function coCalc(c){
   const isr=coIsr(c,dd,base+c.extra+c.comision);
   const inf=coInf(c,dd,imss.sbc||(c.sdImss?Math.max(c.sdImss,CO_IMSS.smg)*(+c.factorInt||CO_IMSS.factor):0));
   const ret=Math.round((imss.monto+isr.monto+inf.monto)*100)/100;
+  const dk=c.id?"coord:"+c.id:null, dObj=dk&&typeof deudas!=="undefined"?deudas[dk]:null;
+  const deuda=dk&&typeof getDesc==="function"?Math.round(getDesc(dk)*100)/100:0;
   const desc=c.food+c.merch;
-  const total=Math.round((base+c.extra+c.comision-desc-ret)*100)/100;
-  return {base,det,pagoInc,desc,imss,isr,inf,ret,total,porTarifa};
+  const total=Math.round((base+c.extra+c.comision-desc-ret-deuda)*100)/100;
+  return {base,det,pagoInc,desc,imss,isr,inf,ret,deuda,dk,dObj,total,porTarifa};
 }
 function coResumen(det,seguro){
   if(!det)return "";
@@ -6277,6 +6302,9 @@ function renderCoords(){
     const msg=document.getElementById("coord-empty-msg");
     if(msg) msg.remove();
   }
+  let _nuevosIds=false;
+  coords.forEach(c=>{if(!c.id){c.id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);_nuevosIds=true;}});
+  if(_nuevosIds)coGuardar();
   coords.forEach((c,i)=>{
     coNorm(c);
     const r=coCalc(c);
@@ -6296,6 +6324,7 @@ function renderCoords(){
       <td><input class="co-in" type="number" min="0" step="0.5" value="${c.comision||""}" placeholder="0" oninput="ufc(${i},'comision',+this.value)" style="color:#1c3a61"></td>
       <td><input class="co-in co-neg" type="number" min="0" step="0.5" value="${c.food||""}" placeholder="0" oninput="ufc(${i},'food',+this.value)" title="Consumo en Food (se descuenta)"></td>
       <td><input class="co-in co-neg" type="number" min="0" step="0.5" value="${c.merch||""}" placeholder="0" oninput="ufc(${i},'merch',+this.value)" title="Consumo de Merch (se descuenta)"></td>
+      <td class="co-num" id="co-deuda-${i}">${coDeudaCell(c,r,i)}</td>
       <td class="co-num" id="co-imss-${i}">${coImssCell(r)}</td>
       <td class="co-num co-tot" id="co-tot-${i}" style="color:${r.total<0?"#e53e3e":"#1c3a61"}">${fmt(r.total)}</td>
       <td class="co-act">
@@ -6307,7 +6336,7 @@ function renderCoords(){
     cfg.className="co-cfg";
     cfg.id="co-cfg-"+i;
     cfg.style.display=c._cfgOpen?"":"none";
-    cfg.innerHTML=`<td colspan="16">${coCfgHtml(c,i)}</td>`;
+    cfg.innerHTML=`<td colspan="17">${coCfgHtml(c,i)}</td>`;
     tbody.appendChild(cfg);
   });
   coTotales();
@@ -6337,6 +6366,22 @@ function coImssNote(c,i){
     :`<b>Infonavit:</b> <b style="color:#e53e3e">${fmt(f.monto)}</b> (incluye seguro de daños).`);
   L.push(`<b>Se le paga: ${fmt(r.total)}</b>`);
   return L.join("<br>");
+}
+function coDeudaCell(c,r,i){
+  const d=r.dObj;
+  if(!d||!(d.total>0))return `<button class="co-deuda-add" onclick="coNuevaDeuda(${i})" title="Registrar deuda de ${esc(c.nombre)}">+ deuda</button>`;
+  const mpp=d.montoPorPago||(d.total/d.numPagos)||0;
+  const pa=d.pagoActual===0?(d._pagoPrev||1):d.pagoActual;
+  const saldo=Math.max(0,d.total-mpp*(pa-1));
+  const sub=d.pagoActual===0?"no se cobra esta semana":`pago ${pa} de ${d.numPagos} · resta ${fmt(Math.max(0,saldo-mpp))}`;
+  return `<a class="co-deuda-link" onclick="goTab('deudas')" title="${esc(d.concepto||"Deuda")} — ver en Deudas">
+    <span style="color:${r.deuda?"#e53e3e":"#999"}">${r.deuda?"−"+fmt(r.deuda):"$0.00"}</span>
+    <div class="co-ret-det">${sub}</div></a>`;
+}
+function coNuevaDeuda(i){
+  const c=coords[i];
+  if(!c.nombre){alert("Primero ponle nombre al coordinador");return;}
+  abrirNuevaDeuda({coordKey:"coord:"+c.id,coordNombre:c.nombre});
 }
 function coSumHtml(c,r){
   if(!r.porTarifa)return `<span style="color:#C8960C">Pago fijo · configura tarifas en ⚙</span>`;
@@ -6437,20 +6482,23 @@ function coUpdateRow(i){
   if(s)s.innerHTML=coSumHtml(c,r);
   const im=document.getElementById("co-imss-"+i);
   if(im)im.innerHTML=coImssCell(r);
+  const dd=document.getElementById("co-deuda-"+i);
+  if(dd)dd.innerHTML=coDeudaCell(c,r,i);
   const ni=document.getElementById("co-note-imss-"+i);
   if(ni)ni.innerHTML=coImssNote(c,i);
   coTotales();
 }
 
 function coTotales(){
-  let base=0,extra=0,com=0,food=0,merch=0,imss=0,tot=0;
-  coords.forEach(c=>{const r=coCalc(c);base+=r.base;extra+=c.extra;com+=c.comision;food+=c.food;merch+=c.merch;imss+=r.ret;tot+=r.total;});
+  let base=0,extra=0,com=0,food=0,merch=0,imss=0,deu=0,tot=0;
+  coords.forEach(c=>{const r=coCalc(c);base+=r.base;extra+=c.extra;com+=c.comision;food+=c.food;merch+=c.merch;imss+=r.ret;deu+=r.deuda;tot+=r.total;});
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   set("coord-t-base",fmt(base));
   set("coord-t-extra",fmt(extra));
   set("coord-t-com",fmt(com));
   set("coord-t-food",food?"−"+fmt(food):fmt(0));
   set("coord-t-merch",merch?"−"+fmt(merch):fmt(0));
+  set("coord-t-deuda",deu?"−"+fmt(deu):fmt(0));
   set("coord-t-imss",imss?"−"+fmt(imss):fmt(0));
   set("coord-total",fmt(tot));
 }
@@ -6481,7 +6529,7 @@ function guardarSemanaCoords(){
   if(!confirm("¿Guardar pagos de coordinadores para la semana "+sem+"?"))return;
   const lista=coords.map(c=>{
     const r=coCalc(c);
-    const o={...c,sueldo:r.base,base:r.base,detalle:r.porTarifa?r.det:null,pagoInc:r.pagoInc,imss:r.imss.monto,isr:r.isr.monto,infonavit:r.inf.monto,total:r.total};
+    const o={...c,sueldo:r.base,base:r.base,detalle:r.porTarifa?r.det:null,pagoInc:r.pagoInc,imss:r.imss.monto,isr:r.isr.monto,infonavit:r.inf.monto,deudaDesc:r.deuda,deudaCon:r.deuda?(r.dObj.concepto||""):"",deudaPago:r.deuda?r.dObj.pagoActual+"/"+r.dObj.numPagos:"",total:r.total};
     delete o._cfgOpen;
     if(!r.porTarifa)delete o.dias;
     return o;
@@ -6494,6 +6542,10 @@ function guardarSemanaCoords(){
   };
   coordHist=[entry,...coordHist].slice(0,20);
   sv("pc4_coord_hist",coordHist);
+  // Avanzar deudas de coordinadores (un pago por semana guardada)
+  let _dCambio=false;
+  coords.forEach(c=>{const k="coord:"+c.id;if(c.id&&deudas[k]&&deudas[k].total>0){avanzarDeuda(deudas[k]);_dCambio=true;}});
+  if(_dCambio){sv("pc4_deudas",deudas);renderD();}
   // Siguiente semana: se conserva el acuerdo (tarifas, turno, descanso, seguro);
   // los días vuelven al turno habitual y se limpian extra, comisión, food y merch
   coords=coords.map(c=>{const n={...coNorm(c),extra:0,comision:0,food:0,merch:0};n.dias=coDiasDefault(n);delete n._cfgOpen;return n;});
@@ -6503,7 +6555,7 @@ function guardarSemanaCoords(){
 }
 
 function coHistTotal(c){
-  return Math.round(((+c.sueldo||0)+(+c.extra||0)+(+c.comision||0)-(+c.food||0)-(+c.merch||0)-(+c.imss||0)-(+c.isr||0)-(+c.infonavit||0))*100)/100;
+  return Math.round(((+c.sueldo||0)+(+c.extra||0)+(+c.comision||0)-(+c.food||0)-(+c.merch||0)-(+c.imss||0)-(+c.isr||0)-(+c.infonavit||0)-(+c.deudaDesc||0))*100)/100;
 }
 
 function renderCoordHist(){
@@ -6537,6 +6589,7 @@ function renderCoordHist(){
               ${(c.imss||0)>0?`<span style="font-size:11px;color:#888">IMSS <strong style="color:#e53e3e">−${fmt(c.imss)}</strong></span>`:""}
               ${(c.isr||0)>0?`<span style="font-size:11px;color:#888">ISR <strong style="color:#e53e3e">−${fmt(c.isr)}</strong></span>`:""}
               ${(c.infonavit||0)>0?`<span style="font-size:11px;color:#888">Infonavit <strong style="color:#e53e3e">−${fmt(c.infonavit)}</strong></span>`:""}
+              ${(c.deudaDesc||0)>0?`<span style="font-size:11px;color:#888" title="${esc(c.deudaCon)}">Deuda${c.deudaPago?" "+c.deudaPago:""} <strong style="color:#e53e3e">−${fmt(c.deudaDesc)}</strong></span>`:""}
             </div>
             ${c.detalle?`<div style="font-size:10.5px;color:#aaa;margin-top:2px">${coResumen(c.detalle,c.seguro)}</div>`:""}
           </div>
@@ -6549,7 +6602,7 @@ function renderCoordHist(){
           <div style="background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:12px 14px;margin-bottom:8px">
             <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#1c3a61">${esc(c.nombre)}</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px">
-              ${[["sueldo",c.detalle?"Pago días":"Pago fijo"],["extra","Extra"],["comision","Comisión"],["food","Food (−)"],["merch","Merch (−)"],["imss","IMSS (−)"],["isr","ISR (−)"],["infonavit","Infonavit (−)"]].map(([k,l])=>`
+              ${[["sueldo",c.detalle?"Pago días":"Pago fijo"],["extra","Extra"],["comision","Comisión"],["food","Food (−)"],["merch","Merch (−)"],["imss","IMSS (−)"],["isr","ISR (−)"],["infonavit","Infonavit (−)"],["deudaDesc","Deuda (−)"]].map(([k,l])=>`
               <div>
                 <label style="font-size:10px;color:#888;display:block;margin-bottom:2px">${l}</label>
                 <input type="number" min="0" step="0.5" value="${c[k]||0}" onchange="editCoordHist(${idx},${ci},'${k}',+this.value)" style="width:100%;font-size:12px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;text-align:right">
