@@ -402,6 +402,78 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .dc-status{border-top:0.5px solid #e0ddd4;margin-top:10px;padding-top:10px;}
 .dr{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;}
 
+
+/* ── ROL DE LAVADORES ── */
+.rl-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.rl-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.ph-outline-rl{background:#fff;color:#333;border:1.5px solid var(--border)}
+.rl-min{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.rl-min input{width:52px;padding:6px 8px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;text-align:center}
+.rl-help{font-size:11px;color:#999;line-height:1.5}
+.rl-av{background:#fff4e5;border-left:3px solid #e8930c;border-radius:8px;padding:9px 12px;font-size:12px;color:#7a4b00;line-height:1.6;margin-bottom:12px}
+.rl-tab{border-collapse:separate;border-spacing:0;width:100%;min-width:720px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.rl-tab th{font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;padding:10px 4px;background:#faf8f3;border-bottom:1px solid var(--border)}
+.rl-tab th.rl-nh{text-align:left;padding-left:14px;min-width:120px}
+.rl-tab th.rl-hoy,.rl-tab td.rl-hoy{background:#fdf6e3}
+.rl-grp td{background:#f8ba00;color:#000;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px}
+.rl-grp td span{background:rgba(0,0,0,.12);border-radius:10px;padding:1px 7px;margin-left:6px}
+.rl-row td{border-bottom:1px solid #f1eee6;padding:4px 3px}
+.rl-name{padding-left:12px!important;min-width:120px}
+.rl-name input{border:none;background:transparent;font-size:13px;font-weight:700;font-family:inherit;width:100%;padding:6px 2px;color:#111}
+.rl-name input:focus{outline:none;background:#fdf8ec;border-radius:6px}
+.rl-sel{border:1px solid #e5e0d3;border-radius:8px;padding:6px 4px;font-size:11px;font-family:inherit;background:#fff}
+.rl-c{text-align:center}
+.rl-cell{width:100%;min-width:62px;border:none;border-radius:8px;padding:9px 2px;font-size:11px;font-weight:800;font-family:inherit;cursor:pointer;transition:transform .1s}
+.rl-cell:active{transform:scale(.93)}
+.rl-t8{background:#fff6dc;color:#8a6500}
+.rl-tc{background:#e8f0fb;color:#1c3a61}
+.rl-d{background:#2b2b2b;color:#fff}
+.rl-cnt td{font-size:15px;font-weight:900;text-align:center;padding:10px 4px;border-top:2px solid #111;background:#faf8f3}
+.rl-cnt td:first-child{text-align:left;padding-left:14px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#888}
+.rl-cnt td.rl-bajo{color:#c53030;background:#fde8e8}
+.rl-cnt small{display:block;font-size:9px;font-weight:700}
+.rl-desc-row td{font-size:11px;color:#555;text-align:center;vertical-align:top;padding:8px 4px;line-height:1.5}
+.rl-desc-row td:first-child{text-align:left;padding-left:14px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#888}
+.rl-vacio{font-size:11px;color:#bbb;padding:8px 14px!important}
+.rl-warn-s{font-size:10px;color:#c53030;font-weight:700;padding-left:2px}
+.rl-empty{text-align:center;padding:40px 20px;color:#888;font-size:13px;line-height:1.7;background:#fff;border-radius:12px}
+.rl-as{width:100%;min-width:58px;border:1px solid #e5e0d3;border-radius:8px;padding:8px 2px;font-size:11px;font-weight:800;font-family:inherit;text-align:center;text-align-last:center;background:#fff;color:#bbb;-webkit-appearance:none;appearance:none;cursor:pointer}
+.rl-as[data-v=""][data-plan="D"]{background:#f0efea;color:#aaa}
+.rl-as[data-v="A"]{background:#e6f6ec;color:#2f855a;border-color:#b7e2c6}
+.rl-as[data-v="R"]{background:#fff6dc;color:#8a6500;border-color:#f3dfa0}
+.rl-as[data-v="FJ"]{background:#efe7fb;color:#6b46c1;border-color:#d6c5f3}
+.rl-as[data-v="F"]{background:#fde8e8;color:#c53030;border-color:#f5bcbc}
+.rl-as[data-v="D"]{background:#2b2b2b;color:#fff;border-color:#2b2b2b}
+.rl-as[data-v="X"]{background:#1c3a61;color:#fff;border-color:#1c3a61}
+#pnl-rol select.rl-as{padding:8px 2px!important;font-size:11px!important;background-image:none!important;height:auto!important}
+#pnl-rol select.rl-sel{font-size:12px!important;padding:6px 22px 6px 8px!important;background-position:right 6px center!important}
+#pnl-rol .rl-name input{font-size:14px!important}
+.rl-sm{display:none}
+.rl-tab td.rl-name,.rl-tab th.rl-nh{position:sticky;left:0;z-index:2;background:#fff}
+.rl-tab th.rl-nh,.rl-cnt td:first-child,.rl-desc-row td:first-child{background:#faf8f3}
+.rl-cnt td:first-child,.rl-desc-row td:first-child{position:sticky;left:0;z-index:2}
+@media(max-width:768px){.rl-lg{display:none}.rl-sm{display:inline}.rl-name{min-width:92px!important;max-width:110px}#pnl-rol select.rl-sel{width:92px}.rl-tab{min-width:600px}}
+#pnl-rol .rl-min input{font-size:13px!important}
+.rl-num{text-align:center;font-weight:800;font-size:13px}
+.rl-num small{display:block;font-size:9px;color:#6b46c1}
+.rl-am{color:#b7791f}.rl-rj{color:#c53030}
+.rl-sh{min-width:44px}
+.rl-hit{font-size:10px;font-weight:800;color:#1c3a61}
+.rl-act{text-align:center;width:34px}
+@media(max-width:768px){.rl-tab{min-width:640px}.rl-cell{min-width:52px;padding:10px 1px}.rl-name{min-width:96px}}
+/* imagen para WhatsApp */
+.rl-img{width:820px;background:#fff;font-family:-apple-system,'Inter','Segoe UI',Arial,sans-serif;color:#111;padding:0 0 10px}
+.rl-img-h{background:#111;color:#f8ba00;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;font-size:18px;letter-spacing:5px}
+.rl-img-t{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#fff;font-weight:800}
+.rl-img table{width:100%;border-collapse:collapse;table-layout:fixed}
+.rl-img th{font-size:13px;font-weight:900;padding:10px 4px;border-bottom:2px solid #111}
+.rl-img td{font-size:14px;text-align:center;vertical-align:top;padding:7px 4px;line-height:1.55;border-right:1px solid #eee}
+.rl-img td:last-child{border-right:none}
+.rl-img-band td{background:#f8ba00;font-weight:900;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:7px}
+.rl-img-band2 td{background:#fbe39b}
+.rl-img-desc td{font-weight:800}
+.rl-img-tot td{font-size:18px;font-weight:900;border-top:2px solid #111;padding-top:8px}
+
 /* ── TICKETS / SOBRES ── */
 .sg{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
 .sobre{width:252px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#000;font-family:'Courier New',monospace;overflow:hidden;page-break-inside:avoid;break-inside:avoid;cursor:pointer;transition:box-shadow .15s,border-color .15s}
@@ -1266,6 +1338,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   <button class="tab" data-t="datos">Datos</button>
   <button class="tab" data-t="sobres">Tickets</button>
   <button class="tab" data-t="coords">Coordinadores</button>
+  <button class="tab" data-t="rol">Rol</button>
   <button class="tab" data-t="deudas">Deudas</button>
   <button class="tab" data-t="ahorros">Ahorros</button>
   <button class="tab" data-t="sucursales">Analytics</button>
@@ -1567,7 +1640,12 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
   <div class="pnl" id="pnl-sobres">
     <div class="ph">
       <h2 id="stit">Tickets</h2>
+      <div class="fseg" id="tk-modos" style="margin:6px 0 8px;display:inline-flex">
+        <button class="fbtn on" data-m="lav" onclick="setTicketsModo('lav')">Lavadores</button>
+        <button class="fbtn" data-m="coord" onclick="setTicketsModo('coord')">Coordinadores</button>
+      </div>
       <div class="bg">
+        <select id="tk-coord-sem" onchange="setTkCoordSem(this.value)" style="display:none;padding:6px 10px;border-radius:8px;border:1px solid #ddd;font-size:12px;font-family:inherit;background:#fff"></select>
         <button class="fbtn on" id="fs-all" onclick="setFS('all')">Todos</button>
         <button class="fbtn ref" id="fs-ref" onclick="setFS('PC Refugio')">PC Refugio</button>
         <button class="fbtn ala" id="fs-ala" onclick="setFS('PC Álamos')">PC Álamos</button>
@@ -1645,6 +1723,37 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
       </div>
       <div id="coord-liquidaciones"></div>
     </div>
+  </div>
+
+  <!-- ROL: DESCANSOS Y ASISTENCIA -->
+  <div class="pnl" id="pnl-rol">
+    <div class="ph">
+      <h2>Rol de lavadores <span id="rl-sem-lbl" style="color:#C8960C"></span></h2>
+    </div>
+    <div class="rl-bar">
+      <div class="fseg" id="rl-sucs">
+        <button class="fbtn ref on" data-s="PC Refugio" onclick="rlSetSuc('PC Refugio')">Refugio</button>
+        <button class="fbtn ala" data-s="PC Álamos" onclick="rlSetSuc('PC Álamos')">Álamos</button>
+      </div>
+      <div class="fseg" id="rl-modos">
+        <button class="fbtn on" data-m="rol" onclick="rlSetModo('rol')">Rol fijo</button>
+        <button class="fbtn" data-m="asis" onclick="rlSetModo('asis')">Asistencia de la semana</button>
+      </div>
+    </div>
+    <div class="rl-tools" id="rl-tools-rol">
+      <button class="ph-btn ph-navy" onclick="rlAdd()">＋ Lavador</button>
+      <button class="ph-btn ph-outline-rl" onclick="rlTraerNomina()" title="Agrega los de la nómina de esta semana que aún no están en el rol">Traer de nómina</button>
+      <button class="ph-btn ph-gold" onclick="rlImagen()">Imagen para el grupo</button>
+      <label class="rl-min">Mínimo Lun–Jue <input id="rl-min-sem" type="number" min="0" placeholder="—" onchange="rlSetMin('minSem',this.value)"></label>
+      <label class="rl-min">Mínimo Vie–Dom <input id="rl-min-fin" type="number" min="0" placeholder="—" onchange="rlSetMin('minFin',this.value)"></label>
+    </div>
+    <div class="rl-tools" id="rl-tools-asis" style="display:none">
+      <button class="ph-btn ph-dark" onclick="rlMarcarHoy()">✓ Marcar hoy según el rol</button>
+      <span class="rl-help">Toca cada día para marcar: ✓ asistió · Ret. · Just. · Falta · Desc. · Cubrió (trabajó en su descanso = +1 hit). La semana es la del recuadro de arriba.</span>
+    </div>
+    <p class="rl-help" id="rl-help-rol" style="margin:0 0 10px">Toca el día en que descansa cada lavador. El conteo y la lista de quién descansa se arman solos.</p>
+    <div id="rl-avisos"></div>
+    <div class="tw" id="rl-grid"></div>
   </div>
 
   <!-- FLUJO DE EFECTIVO -->
@@ -2918,7 +3027,8 @@ const GS_KEY_MAP = {
   "pc4_ah_retiros":    "ah_retiros",
   "pc4_ah_inicial":    "ah_inicial",
   "pc4_ah_abonos":     "ah_abonos",
-  "pc4_inventario":    "inventario"
+  "pc4_inventario":    "inventario",
+  "pc4_rol":           "rol"
 };
 // Cache local para evitar múltiples fetches
 const _cache = {};
@@ -3100,6 +3210,7 @@ async function init(){
       gsLoad("pc4_ah_inicial",{}).then(v=>{ _cache["pc4_ah_inicial"]=v; }),
       gsLoad("pc4_ah_abonos",[]).then(v=>{ _cache["pc4_ah_abonos"]=v; }),
       gsLoad("pc4_inventario",[]).then(v=>{ _cache["pc4_inventario"]=v; }),
+      gsLoad("pc4_rol",null).then(v=>{ if(v) _cache["pc4_rol"]=v; }),
     ]);
     // Migrar a Firebase para que próximas cargas sean más rápidas
     _sobSaveToFirebase();
@@ -3168,6 +3279,7 @@ function goTab(id){
   if(id==="sobres")renderS();if(id==="hist")renderH();
   if(id==="deudas")renderD();if(id==="sucursales")renderSucursales();
   if(id==="ahorros")renderAhorros();
+  if(id==="rol")renderRol();
   if(id==="coords"){renderCoords();renderLiquidaciones();syncSemana(document.getElementById("sem").value);goSubTab("pagos");}
   if(id==="flujo"){initFlujo();syncSemana(document.getElementById("sem").value);}
   if(id==="datos"){renderT();}
@@ -4837,6 +4949,12 @@ let colaImpresion = [];
 let colaIndex = 0;
 
 function printTermica(){
+  if(ticketsModo==="coord"){
+    const L=tkCoordLista();
+    if(!L.list.length){alert("No hay tickets de coordinadores para imprimir.");return;}
+    colaImpresion=L.list.map(t=>({nombre:t.nombre,html:bcoordTicket(t,L.sem)}));
+    colaIndex=0;mostrarCola();return;
+  }
   let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir.");return;}
@@ -5016,8 +5134,12 @@ function bsobre(row,sem){
   </div>`;
 }
 let sobreSeleccionado = null; // nombre del lavador seleccionado
+let ticketsModo="lav";   // "lav" | "coord"
+let tkCoordSem="";       // "" = semana en captura; si no, índice en coordHist
+let rolData=null, rolSuc="PC Refugio", rolModo="rol";
 
 function renderS(){
+  if(ticketsModo==="coord"){renderSCoord();return;}
   const sem=document.getElementById("sem").value,g=document.getElementById("sg");
   let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
@@ -5048,12 +5170,19 @@ function renderS(){
 function printSeleccionado(){
   if(!sobreSeleccionado) return;
   const sem=document.getElementById("sem").value;
-  const allMatch=rows.filter(r=>normN(r.nombre)===normN(sobreSeleccionado)&&(num(r.comision)>0||num(r.autos)>0));
-  if(!allMatch.length) return;
-  const row=mergeRows(allMatch)[0]; // ticket combinado si es dual-sucursal
+  let _tkH;
+  if(ticketsModo==="coord"){
+    const L=tkCoordLista();const t=L.list.find(x=>normN(x.nombre)===normN(sobreSeleccionado));
+    if(!t)return; _tkH=bcoordTicket(t,L.sem);
+  } else {
+    const allMatch=rows.filter(r=>normN(r.nombre)===normN(sobreSeleccionado)&&(num(r.comision)>0||num(r.autos)>0));
+    if(!allMatch.length) return;
+    const row=mergeRows(allMatch)[0]; // ticket combinado si es dual-sucursal
+    _tkH=bsobreTermica(row,sem);
+  }
   const pa=document.getElementById("print-area");
   pa.style.cssText="display:block;position:fixed;top:0;left:0;width:58mm;background:#fff;padding:0;z-index:9999";
-  pa.innerHTML=bsobreTermica(row,sem)+
+  pa.innerHTML=_tkH+
     `<div id="print-btns-t" style="position:fixed;bottom:12px;right:12px;display:flex;gap:8px">
       <button onclick="window.print()" style="padding:10px 18px;background:#f8ba00;color:#000;border:none;border-radius:6px;font-weight:900;font-size:13px;cursor:pointer">Imprimir</button>
       <button onclick="closePrint()" style="padding:10px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">✕</button>
@@ -5082,11 +5211,16 @@ function printSobres(){
 }
 
 async function guardarTicketsHTML(){
-  const sem=document.getElementById("sem").value;
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
-  if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
+  let sem=document.getElementById("sem").value, act, _tkHtml, _tkPref="tickets";
+  if(ticketsModo==="coord"){
+    const L=tkCoordLista(); sem=String(L.sem||""); act=L.list; _tkHtml=t=>bcoordTicket(t,sem); _tkPref="tickets-coordinadores";
+  } else {
+    act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+    if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
+    act=mergeRows(act); // 1 ticket por lavador
+    _tkHtml=r=>bsobreTermica(r,sem);
+  }
   if(!act.length){flash("Sin tickets para guardar");return;}
-  act=mergeRows(act); // 1 ticket por lavador
 
   flash("⏳ Cargando herramientas...");
 
@@ -5112,7 +5246,7 @@ async function guardarTicketsHTML(){
   // Render tickets off-screen
   const wrap=document.createElement("div");
   wrap.style.cssText="position:fixed;left:-9999px;top:0;z-index:-999;background:#fff";
-  wrap.innerHTML=act.map(r=>bsobreTermica(r,sem)).join("");
+  wrap.innerHTML=act.map(_tkHtml).join("");
   document.body.appendChild(wrap);
 
   // Small delay to allow render
@@ -5145,9 +5279,9 @@ async function guardarTicketsHTML(){
   const zipBlob=await zip.generateAsync({type:"blob"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(zipBlob);
-  a.download=`tickets-S${sem.replace("/","-")}.zip`;
+  a.download=`${_tkPref}-S${sem.replace("/","-")}.zip`;
   a.click();
-  flash(`✓ Descargado: tickets-S${sem.replace("/","-")}.zip (${act.length} imágenes)`);
+  flash(`✓ Descargado: ${_tkPref}-S${sem.replace("/","-")}.zip (${act.length} imágenes)`);
 }
 
 // ── CERRAR SEMANA ─────────────────────────────────────────────────────────────
@@ -10671,6 +10805,7 @@ function dash_init() {
 
 (function(){
   const SVG={
+    rol:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 15l2 2 4-4"/></svg>`,
     flujo:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-3-4.5c0 1.38 1.34 2.5 3 2.5s3-1.12 3-2.5-1.34-2.5-3-2.5-3-1.12-3-2.5S10.66 7 12 7s3 1.12 3 2.5"/></svg>`,
     datos:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>`,
     sobres:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>`,
@@ -10693,6 +10828,7 @@ function dash_init() {
   const MORE_TABS=[
     {t:"sobres",     icon:"sobres",     label:"Tickets"},
     {t:"coords",     icon:"coords",     label:"Coords"},
+    {t:"rol",        icon:"rol",        label:"Rol"},
     {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
     {t:"sucursales", icon:"sucursales", label:"Analytics"},
     {t:"hist",       icon:"hist",       label:"Historial"},
@@ -10754,6 +10890,336 @@ function dash_init() {
   const initTab=document.querySelector(".tab.on");
   if(initTab)window.syncMobNav(initTab.dataset.t);
 })();
+
+// ══ TICKETS DE COORDINADORES (misma pestaña Tickets) ═════════════════════════
+const TK_DIA_S={"6":"≤6h","8":"8h","11":"11h",D:"Desc",FJ:"Just",FI:"Falta",INC:"Incap","":"—"};
+
+function coTicketData(c,hist){
+  if(!hist){
+    const r=coCalc(c);
+    return {nombre:c.nombre,seguro:c.seguro,porTarifa:r.porTarifa,dias:r.porTarifa?c.dias.slice():null,det:r.porTarifa?r.det:null,
+      base:r.base,extra:+c.extra||0,comision:+c.comision||0,food:+c.food||0,merch:+c.merch||0,
+      imss:r.imss.monto,isr:r.isr.monto,inf:r.inf.monto,deuda:r.deuda,
+      deudaCon:r.deuda?(r.dObj.concepto||"Deuda"):"",deudaPago:r.deuda?(r.dObj.pagoActual+"/"+r.dObj.numPagos):"",total:r.total};
+  }
+  return {nombre:c.nombre,seguro:!!c.seguro,porTarifa:!!c.detalle,dias:Array.isArray(c.dias)&&c.dias.length===7?c.dias:null,det:c.detalle||null,
+    base:+(c.base!==undefined?c.base:c.sueldo)||0,extra:+c.extra||0,comision:+c.comision||0,food:+c.food||0,merch:+c.merch||0,
+    imss:+c.imss||0,isr:+c.isr||0,inf:+c.infonavit||0,deuda:+c.deudaDesc||0,deudaCon:c.deudaCon||"Deuda",deudaPago:c.deudaPago||"",
+    total:(c.total!==undefined&&c.total!==null)?+c.total:coHistTotal(c)};
+}
+function tkCoordLista(){
+  if(tkCoordSem===""||!coordHist[+tkCoordSem]){
+    return {sem:document.getElementById("sem").value,list:(coords||[]).filter(c=>c.nombre).map(c=>coTicketData(c,false))};
+  }
+  const e=coordHist[+tkCoordSem];
+  return {sem:e.semana||"",list:(e.coords||[]).filter(c=>c.nombre).map(c=>coTicketData(c,true))};
+}
+
+function bcoordTicket(t,sem){
+  const F="'Courier New',monospace";
+  const SEP=`<div style="font-family:${F};font-size:9px;color:#000;text-align:center;padding:3px 0;line-height:1">------------------------------------</div>`;
+  const rowS=`display:flex;justify-content:space-between;font-size:10px;line-height:1.8;font-family:${F}`;
+  const L=(lbl,v,sig)=>`<div style="${rowS}"><span>${lbl}</span><span>${sig}${fmt(v)}</span></div>`;
+  let mas="",menos="";
+  if(t.extra>0)mas+=L("Extra / Bono",t.extra,"+");
+  if(t.comision>0)mas+=L("Comisión",t.comision,"+");
+  if(t.food>0)menos+=L("Food",t.food,"-");
+  if(t.merch>0)menos+=L("Merch",t.merch,"-");
+  if(t.deuda>0)menos+=L(esc(t.deudaCon||"Deuda")+(t.deudaPago?` (P${t.deudaPago})`:""),t.deuda,"-");
+  if(t.imss>0)menos+=L("IMSS",t.imss,"-");
+  if(t.isr>0)menos+=L("ISR",t.isr,"-");
+  if(t.inf>0)menos+=L("Infonavit",t.inf,"-");
+  const strip=t.dias?`<div style="display:flex;gap:2px;padding:2px 10px 6px">${CO_DIAS.map((d,i)=>{
+      const v=t.dias[i]||"";const off=v==="D"||v==="FI"||v==="";
+      return `<div style="flex:1;text-align:center;font-family:${F};border:1px solid #000;${off?"":"background:#000;color:#fff;"}-webkit-print-color-adjust:exact;print-color-adjust:exact">
+        <div style="font-size:7px;font-weight:700;line-height:1.5">${d}</div><div style="font-size:8px;font-weight:900;line-height:1.4">${TK_DIA_S[v]||v}</div></div>`;}).join("")}</div>`:"";
+  const res=t.det?coResumen(t.det,t.seguro):"";
+  return `<div class="sobre" style="width:260px;background:#fff;color:#000;font-family:${F};overflow:hidden;page-break-inside:avoid;break-inside:avoid">
+  <div style="padding:10px 12px 4px;text-align:center">
+    <div style="font-size:12px;letter-spacing:4px;line-height:1.3;margin-bottom:2px"><span style="font-weight:300">PATIO </span><b style="font-weight:900">CINCO</b></div>
+    <div style="font-size:8px;letter-spacing:2px;font-weight:700;text-transform:uppercase">COORDINADORES · S${esc(String(sem||""))}</div>
+  </div>
+  ${SEP}
+  <div style="text-align:center;font-size:24px;font-weight:900;padding:6px 12px 4px;line-height:1.1">${esc(t.nombre)}</div>
+  ${strip}
+  ${res?`<div style="text-align:center;font-size:9px;font-weight:700;padding:0 10px 4px;line-height:1.5">${res}</div>`:""}
+  ${SEP}
+  <div style="background:#f8ba00;padding:8px 12px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+    <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">${t.porTarifa?"PAGO POR DÍAS":"SUELDO SEMANAL"}</div>
+    <div style="font-size:22px;font-weight:900">${fmt(t.base)}</div>
+  </div>
+  ${(mas||menos)?`${SEP}<div style="padding:4px 12px 2px">${mas}${menos}</div>`:""}
+  ${SEP}
+  <div style="text-align:center;padding:6px 12px 12px">
+    <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">TOTAL A PAGAR</div>
+    <div style="font-size:24px;font-weight:900">${fmt(t.total)}</div>
+  </div>
+</div>`;
+}
+
+function setTicketsModo(m){
+  ticketsModo=m;
+  sobreSeleccionado=null;
+  const b=document.getElementById("btn-imprimir-sel");if(b)b.style.display="none";
+  document.querySelectorAll("#tk-modos .fbtn").forEach(x=>x.classList.toggle("on",x.dataset.m===m));
+  ["fs-all","fs-ref","fs-ala"].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=m==="coord"?"none":"";});
+  const sel=document.getElementById("tk-coord-sem");
+  if(sel){
+    sel.style.display=m==="coord"?"":"none";
+    if(m==="coord"){
+      const semAct=document.getElementById("sem").value;
+      sel.innerHTML=`<option value="">Semana en captura${semAct?" (S"+esc(semAct)+")":""}</option>`+
+        (coordHist||[]).map((e,i)=>`<option value="${i}">S${esc(String(e.semana||"?"))} · guardada ${esc(e.fecha||"")}</option>`).join("");
+      sel.value=tkCoordSem;
+      if(sel.value!==tkCoordSem){tkCoordSem="";sel.value="";}
+    }
+  }
+  renderS();
+}
+function setTkCoordSem(v){tkCoordSem=v;sobreSeleccionado=null;const b=document.getElementById("btn-imprimir-sel");if(b)b.style.display="none";renderS();}
+
+function renderSCoord(){
+  const g=document.getElementById("sg");
+  const {sem,list}=tkCoordLista();
+  if(!list.length){g.innerHTML='<p class="nd">Sin coordinadores capturados.</p>';return;}
+  g.innerHTML=list.map(t=>bcoordTicket(t,sem)).join("");
+  g.querySelectorAll(".sobre").forEach((el,i)=>{
+    const nombre=list[i].nombre;
+    if(nombre===sobreSeleccionado)el.classList.add("seleccionado");
+    el.addEventListener("click",()=>{
+      const btn=document.getElementById("btn-imprimir-sel");
+      if(sobreSeleccionado===nombre){sobreSeleccionado=null;el.classList.remove("seleccionado");btn.style.display="none";}
+      else{sobreSeleccionado=nombre;g.querySelectorAll(".sobre").forEach(s=>s.classList.remove("seleccionado"));el.classList.add("seleccionado");
+        btn.style.display="block";btn.textContent="Imprimir — "+nombre;}
+    });
+  });
+}
+
+// ══ ROL DE LAVADORES: DESCANSO Y ASISTENCIA POR SUCURSAL ═════════════════════
+// Cada lavador tiene UN dato de descanso y UN turno → la tabla se arma sola,
+// así nunca hay contradicciones entre "quién descansa" y "quién está en turno".
+// Días en orden Lun..Dom (índice 0 = lunes), igual que la hoja de rol.
+const RL_DIAS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+const RL_DIAS_L=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const RL_SUCS=["PC Refugio","PC Álamos"];
+const RL_TURNOS={"8":"8:00 am","corto":"Corto 35%"};
+const RL_AS=[
+  {v:"",  s:"·",       l:"Sin marcar"},
+  {v:"A", s:"✓",       l:"Asistió"},
+  {v:"R", s:"Ret.",    l:"Retardo"},
+  {v:"FJ",s:"Just.",   l:"Falta justificada"},
+  {v:"F", s:"Falta",   l:"Falta"},
+  {v:"D", s:"Desc.",   l:"Descansó"},
+  {v:"X", s:"Cubrió",  l:"Trabajó en su descanso (+1 hit)"}
+];
+
+function rlId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function rlL(nombre,descanso,turno){return {id:rlId(),nombre,descanso,turno:turno||"8"};}
+// Rol inicial: el que se llevaba en la hoja (oct 2026)
+function rlSeed(){
+  return {
+    sucs:{
+      "PC Refugio":{minSem:0,minFin:0,lavs:[
+        rlL("Emma",2),rlL("Charlie",1),rlL("Bryan",3),rlL("Arellano",2),rlL("Angel",1),
+        rlL("Chiquis",1),rlL("Robert",0),rlL("Jesus",0),rlL("Resendis",3),rlL("Dorado",2)]},
+      "PC Álamos":{minSem:0,minFin:0,lavs:[
+        rlL("Valente",3),rlL("Toño",2),rlL("Marvin",2),rlL("Jose Jr",3),
+        rlL("Lopez",1),rlL("Gio",0),rlL("Luis Ángel",1),rlL("Joaquin",0)]}
+    },
+    asis:{}
+  };
+}
+function rlLoad(){
+  if(rolData)return rolData;
+  const v=ld("pc4_rol",null);
+  rolData=(v&&v.sucs)?v:rlSeed(); // la semilla no se guarda hasta el primer cambio
+  RL_SUCS.forEach(s=>{if(!rolData.sucs[s])rolData.sucs[s]={minSem:0,minFin:0,lavs:[]};});
+  if(!rolData.asis)rolData.asis={};
+  return rolData;
+}
+function rlSave(){sv("pc4_rol",rolData);}
+function rlSuc(){return rlLoad().sucs[rolSuc];}
+function rlSem(){return (document.getElementById("sem")?.value||"").trim()||"sin-semana";}
+function rlAsis(lav,crear){
+  const d=rlLoad(), s=rlSem();
+  if(!d.asis[s]){if(!crear)return null;d.asis[s]={};}
+  if(!d.asis[s][rolSuc]){if(!crear)return null;d.asis[s][rolSuc]={};}
+  if(!d.asis[s][rolSuc][lav.id]){if(!crear)return null;d.asis[s][rolSuc][lav.id]=["","","","","","",""];}
+  return d.asis[s][rolSuc][lav.id];
+}
+function rlHoy(){const g=new Date().getDay();return g===0?6:g-1;}
+function rlMin(suc,d){return d>=4?(+suc.minFin||0):(+suc.minSem||0);}
+// ¿Trabaja ese día? En modo asistencia usa lo marcado; si no hay marca, el rol.
+function rlTrabaja(lav,d,usarAsis){
+  if(usarAsis){const a=rlAsis(lav,false);const v=a?a[d]:"";
+    if(v==="A"||v==="R"||v==="X")return true;
+    if(v==="F"||v==="FJ"||v==="D")return false;}
+  return lav.descanso!==d;
+}
+
+function renderRol(){
+  rlLoad();
+  const suc=rlSuc(), asis=rolModo==="asis";
+  document.querySelectorAll("#rl-sucs .fbtn").forEach(b=>b.classList.toggle("on",b.dataset.s===rolSuc));
+  document.querySelectorAll("#rl-modos .fbtn").forEach(b=>b.classList.toggle("on",b.dataset.m===rolModo));
+  const sem=rlSem();
+  const lblSem=document.getElementById("rl-sem-lbl");
+  if(lblSem)lblSem.textContent=asis?("Semana "+(sem==="sin-semana"?"—":sem)):"";
+  document.getElementById("rl-tools-rol").style.display=asis?"none":"flex";
+  document.getElementById("rl-tools-asis").style.display=asis?"flex":"none";
+  document.getElementById("rl-help-rol").style.display=asis?"none":"";
+  document.getElementById("rl-min-sem").value=suc.minSem||"";
+  document.getElementById("rl-min-fin").value=suc.minFin||"";
+
+  const hoy=rlHoy();
+  const lavs=suc.lavs;
+  const grupos=[["8","8:00 am"],["corto","Horario corto · tope comisión 35%"]];
+  let h=`<table class="rl-tab"><thead><tr><th class="rl-nh">Lavador</th>${asis?"":`<th class="rl-th-t">Turno</th>`}
+    ${RL_DIAS.map((d,i)=>`<th class="rl-dh${asis&&i===hoy?" rl-hoy":""}">${d}</th>`).join("")}
+    ${asis?`<th class="rl-sh" title="Días trabajados">Trab.</th><th class="rl-sh">Ret.</th><th class="rl-sh">Faltas</th>`:""}<th></th></tr></thead><tbody>`;
+  grupos.forEach(([t,lbl])=>{
+    const g=lavs.map((l,i)=>({l,i})).filter(x=>(x.l.turno||"8")===t);
+    if(!g.length&&t==="corto"&&asis)return;
+    h+=`<tr class="rl-grp"><td colspan="${asis?12:10}">${lbl} <span>${g.length}</span></td></tr>`;
+    if(!g.length)h+=`<tr><td colspan="${asis?12:10}" class="rl-vacio">Nadie en este horario</td></tr>`;
+    g.forEach(({l,i})=>{h+=asis?rlFilaAsis(l,i,hoy):rlFilaRol(l,i);});
+  });
+  h+=`</tbody><tfoot>`;
+  // Conteo por día
+  const cuenta=RL_DIAS.map((_,d)=>lavs.filter(l=>rlTrabaja(l,d,asis)).length);
+  h+=`<tr class="rl-cnt"><td>${asis?"Trabajaron":"En turno"}</td>${asis?"":"<td></td>"}${cuenta.map((n,d)=>{
+    const m=rlMin(suc,d), bajo=m&&n<m;
+    return `<td class="${bajo?"rl-bajo":""}" title="${bajo?"Debajo del mínimo ("+m+")":""}">${n}${bajo?`<small>mín ${m}</small>`:""}</td>`;}).join("")}${asis?"<td></td><td></td><td></td>":""}<td></td></tr>`;
+  if(!asis){
+    h+=`<tr class="rl-desc-row"><td>Descansan</td><td></td>${RL_DIAS.map((_,d)=>{
+      const n=lavs.filter(l=>l.descanso===d).map(l=>esc(l.nombre||"—"));
+      return `<td>${n.length?n.join("<br>"):'<span style="color:#ccc">—</span>'}</td>`;}).join("")}<td></td></tr>`;
+  }
+  h+=`</tfoot></table>`;
+  document.getElementById("rl-grid").innerHTML=lavs.length?h:`<div class="rl-empty">Sin lavadores en el rol de ${rolSuc.replace("PC ","")}.<br>Usa <b>+ Lavador</b> o <b>Traer de nómina</b>.</div>`;
+  rlAvisos(cuenta,asis);
+}
+
+function rlFilaRol(l,i){
+  const cells=RL_DIAS.map((_,d)=>{
+    const desc=l.descanso===d;
+    const tt=(l.turno||"8")==="corto"?"Corto":"8:00";
+    return `<td class="rl-c"><button class="rl-cell ${desc?"rl-d":(l.turno==="corto"?"rl-tc":"rl-t8")}" onclick="rlSetDescanso(${i},${d})" title="${desc?"Descansa "+RL_DIAS_L[d]+" (toca para quitar)":"Toca para que descanse "+RL_DIAS_L[d]}">${desc?'<span class="rl-lg">Descansa</span><span class="rl-sm">Desc.</span>':tt}</button></td>`;
+  }).join("");
+  return `<tr class="rl-row"><td class="rl-name"><input value="${esc(l.nombre)}" placeholder="Nombre" onchange="rlSet(${i},'nombre',this.value)">${l.descanso<0?'<div class="rl-warn-s">Sin día de descanso</div>':""}</td>
+    <td><select class="rl-sel" onchange="rlSet(${i},'turno',this.value)">${Object.entries(RL_TURNOS).map(([k,v])=>`<option value="${k}" ${(l.turno||"8")===k?"selected":""}>${v}</option>`).join("")}</select></td>
+    ${cells}<td class="rl-act"><button class="xb" onclick="rlDel(${i})" title="Quitar del rol">✕</button></td></tr>`;
+}
+
+function rlFilaAsis(l,i,hoy){
+  const a=rlAsis(l,false)||["","","","","","",""];
+  let tr=0,ret=0,fal=0,fj=0,hit=0;
+  a.forEach(v=>{if(v==="A"||v==="R"||v==="X")tr++;if(v==="R")ret++;if(v==="F")fal++;if(v==="FJ")fj++;if(v==="X")hit++;});
+  const cells=RL_DIAS.map((_,d)=>{
+    const v=a[d]||"", desc=l.descanso===d;
+    const ph=desc?"Desc.":"·";
+    return `<td class="rl-c${d===hoy?" rl-hoy":""}"><select class="rl-as" data-v="${v}" data-plan="${desc?"D":"T"}" onchange="rlSetAs(${i},${d},this)" title="${RL_DIAS_L[d]}${desc?" · le toca descanso":""}">
+      ${RL_AS.map(o=>`<option value="${o.v}" ${o.v===v?"selected":""}>${o.v===""?ph:o.s}</option>`).join("")}</select></td>`;
+  }).join("");
+  return `<tr class="rl-row"><td class="rl-name"><b>${esc(l.nombre)}</b>${hit?`<div class="rl-hit">+${hit} hit sin descanso</div>`:""}</td>
+    ${cells}
+    <td class="rl-num">${tr}</td><td class="rl-num ${ret?"rl-am":""}">${ret}</td><td class="rl-num ${fal?"rl-rj":""}">${fal}${fj?`<small>+${fj} just.</small>`:""}</td><td></td></tr>`;
+}
+
+function rlAvisos(cuenta,asis){
+  const suc=rlSuc(), av=[];
+  if(!asis){
+    const sinDesc=suc.lavs.filter(l=>l.descanso<0&&l.nombre).map(l=>l.nombre);
+    if(sinDesc.length)av.push(`<b>Sin día de descanso:</b> ${sinDesc.map(esc).join(", ")}`);
+    const vistos={},dup=[];
+    suc.lavs.forEach(l=>{const k=normN(l.nombre||"");if(!k)return;if(vistos[k])dup.push(l.nombre);vistos[k]=1;});
+    if(dup.length)av.push(`<b>Repetido en el rol:</b> ${dup.map(esc).join(", ")}`);
+  }
+  cuenta.forEach((n,d)=>{const m=rlMin(suc,d);if(m&&n<m)av.push(`<b>${RL_DIAS_L[d]}:</b> ${n} ${asis?"trabajaron":"en turno"}, el mínimo es ${m}`);});
+  const box=document.getElementById("rl-avisos");
+  box.innerHTML=av.length?`<div class="rl-av">${av.join("<br>")}</div>`:"";
+}
+
+function rlSetSuc(s){rolSuc=s;renderRol();}
+function rlSetModo(m){rolModo=m;renderRol();}
+function rlSet(i,k,v){const l=rlSuc().lavs[i];l[k]=k==="nombre"?v.trim():v;rlSave();renderRol();}
+function rlSetDescanso(i,d){const l=rlSuc().lavs[i];l.descanso=l.descanso===d?-1:d;rlSave();renderRol();}
+function rlSetMin(k,v){rlSuc()[k]=+v||0;rlSave();renderRol();}
+function rlAdd(){
+  const n=prompt("Nombre del lavador:");if(!n||!n.trim())return;
+  rlSuc().lavs.push(rlL(n.trim(),-1,"8"));rlSave();renderRol();
+  flash("✓ "+n.trim()+" agregado — toca el día que descansa");
+}
+function rlDel(i){
+  const l=rlSuc().lavs[i];
+  if(!confirm("¿Quitar a "+(l.nombre||"este lavador")+" del rol de "+rolSuc.replace("PC ","")+"?"))return;
+  rlSuc().lavs.splice(i,1);rlSave();renderRol();
+}
+function rlTraerNomina(){
+  const suc=rlSuc();
+  const ya=new Set(suc.lavs.map(l=>normN(l.nombre||"")));
+  const nuevos=[...new Set((rows||[]).filter(r=>r.nombre&&r.sucursal===rolSuc).map(r=>r.nombre.trim()))].filter(n=>!ya.has(normN(n)));
+  if(!nuevos.length){flash("Todos los de nómina de "+rolSuc.replace("PC ","")+" ya están en el rol");return;}
+  if(!confirm("Agregar al rol de "+rolSuc.replace("PC ","")+":\n\n"+nuevos.join(", ")+"\n\n(Quedan sin día de descanso; tócalo en la tabla)"))return;
+  nuevos.forEach(n=>suc.lavs.push(rlL(n,-1,"8")));
+  rlSave();renderRol();
+}
+function rlSetAs(i,d,sel){
+  const l=rlSuc().lavs[i];const a=rlAsis(l,true);
+  a[d]=sel.value;sel.dataset.v=sel.value;
+  rlSave();renderRol();
+}
+// Marca el día de hoy según el rol: los que tocaba trabajar = asistió, los de descanso = descansó.
+function rlMarcarHoy(){
+  const d=rlHoy(),suc=rlSuc();
+  if(!suc.lavs.length)return;
+  if(!confirm("¿Marcar "+RL_DIAS_L[d]+" según el rol?\n\nA los que les tocaba trabajar: ✓ Asistió\nA los que descansan: Descansó\n\nNo cambia lo que ya marcaste. Después ajusta faltas y retardos."))return;
+  suc.lavs.forEach(l=>{const a=rlAsis(l,true);if(!a[d])a[d]=l.descanso===d?"D":"A";});
+  rlSave();renderRol();flash("✓ "+RL_DIAS_L[d]+" marcado");
+}
+
+// ── Imagen del rol para mandar al grupo ──
+function rlHtmlImagen(){
+  const suc=rlSuc(), lavs=suc.lavs.filter(l=>l.nombre);
+  const col=(arr)=>RL_DIAS.map((_,d)=>`<td>${arr(d).map(esc).join("<br>")||"&nbsp;"}</td>`).join("");
+  const bloque=(t)=>col(d=>lavs.filter(l=>(l.turno||"8")===t&&l.descanso!==d).map(l=>l.nombre));
+  const hayCorto=lavs.some(l=>l.turno==="corto");
+  return `<div class="rl-img">
+    <div class="rl-img-h"><div><span style="font-weight:300">PATIO </span><b>CINCO</b></div><div class="rl-img-t">Rol gladiadores · ${rolSuc.replace("PC ","")}</div></div>
+    <table>
+      <tr class="rl-img-dias">${RL_DIAS_L.map(d=>`<th>${d}</th>`).join("")}</tr>
+      <tr class="rl-img-band"><td colspan="7">Descansan</td></tr>
+      <tr class="rl-img-desc">${col(d=>lavs.filter(l=>l.descanso===d).map(l=>l.nombre))}</tr>
+      <tr class="rl-img-band"><td colspan="7">En turno · 8:00 am</td></tr>
+      <tr>${bloque("8")}</tr>
+      ${hayCorto?`<tr class="rl-img-band rl-img-band2"><td colspan="7">Horario corto · tope comisión 35%</td></tr><tr>${bloque("corto")}</tr>`:""}
+      <tr class="rl-img-tot">${RL_DIAS.map((_,d)=>`<td>${lavs.filter(l=>l.descanso!==d).length}</td>`).join("")}</tr>
+    </table></div>`;
+}
+async function rlImagen(){
+  if(!rlSuc().lavs.length){flash("No hay lavadores en el rol");return;}
+  flash("⏳ Generando imagen...");
+  try{
+    if(!window.html2canvas){
+      await new Promise((res,rej)=>{const s=document.createElement("script");
+        s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+    }
+    const wrap=document.createElement("div");
+    wrap.style.cssText="position:fixed;left:-9999px;top:0;background:#fff";
+    wrap.innerHTML=rlHtmlImagen();document.body.appendChild(wrap);
+    await new Promise(r=>setTimeout(r,80));
+    const canvas=await html2canvas(wrap.firstElementChild,{scale:2,backgroundColor:"#ffffff",logging:false});
+    document.body.removeChild(wrap);
+    const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
+    const fname=`rol-${rolSuc.replace("PC ","").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}.png`;
+    const file=new File([blob],fname,{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:"Rol "+rolSuc});flash("✓ Listo");return;}catch(e){if(e&&e.name==="AbortError")return;}
+    }
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fname;a.click();
+    flash("✓ Imagen descargada");
+  }catch(e){console.error(e);flash("⚠️ No se pudo generar la imagen");}
+}
 
 // Patch goTab to also update mobile nav
 const _origGoTab=goTab;
