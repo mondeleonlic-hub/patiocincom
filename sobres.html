@@ -7,9 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PatioCinco · Sobres</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script defer src="sobres-inv.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -9969,6 +9968,17 @@ function dash_getFilteredWeeks(weekSelId, monthSelId) {
 }
 
 function dash_renderCharts() {
+  if (typeof Chart === 'undefined') {
+    if (!window._chartWait) {
+      window._chartWait = true;
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+      s.onload = () => { window._chartWait = false; dash_renderCharts(); };
+      s.onerror = () => { window._chartWait = false; };
+      document.head.appendChild(s);
+    }
+    return;
+  }
   const weeks = dash_getFilteredWeeks('chart-week-select', 'chart-month-select');
   if (weeks.length === 0) return;
   const s = dash_getAggregated(weeks);
@@ -10375,7 +10385,14 @@ function dash_fileToBase64(file) {
   });
 }
 
+function dash_loadScript(src){
+  return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+}
 async function dash_scanWithTesseract(file) {
+  if (typeof Tesseract === 'undefined') {
+    dash_setScanStatus('loading', '⏳ Preparando lector de tickets...');
+    try { await dash_loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'); } catch(e) {}
+  }
   if (typeof Tesseract === 'undefined') {
     dash_setScanStatus('err', '❌ Tesseract no cargó. Verifica tu conexión e intenta de nuevo.');
     return;
