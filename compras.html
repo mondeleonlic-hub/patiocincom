@@ -404,12 +404,30 @@ async function loadOverrides(){
     overrides = {};
   }
 }
-async function saveOverrides(){
-  try {
-    await api('catalog_set', { overrides });
-  } catch(e){
-    console.error('No se pudo guardar el catálogo', e);
+function showSaveError(msg){
+  let t = document.getElementById('saveErrToast');
+  if (!t){
+    t = document.createElement('div');
+    t.id = 'saveErrToast';
+    t.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9998;background:#b3261e;color:#fff;padding:12px 16px;border-radius:12px;font:600 13px Manrope,sans-serif;max-width:92vw;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.25);';
+    document.body.appendChild(t);
   }
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._h);
+  t._h = setTimeout(() => { t.style.display = 'none'; }, 8000);
+}
+async function saveOverrides(){
+  for (let attempt = 0; attempt < 2; attempt++){
+    try {
+      await api('catalog_set', { overrides });
+      return true;
+    } catch(e){
+      console.error('No se pudo guardar el catálogo', e);
+      if (attempt === 1) showSaveError('⚠ No se pudo guardar el cambio en el catálogo (' + (e.message || 'error de red') + '). Inténtalo de nuevo.');
+    }
+  }
+  return false;
 }
 async function init(){
   await loadOverrides();
