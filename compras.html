@@ -573,6 +573,7 @@ async function runAnalysis(){
   const byName = {};
   extracted.forEach(r => { byName[normalize(r.i)] = r; });
   workingRows = Object.values(byName).map((r, idx) => Object.assign({_id: 'r'+idx}, r));
+  if (typeof deletedStack !== 'undefined') deletedStack.length = 0;
 
   renderResults();
   loadUsageBadge();
@@ -896,12 +897,52 @@ function closeRowEdit(rowId){
   if (editRow) editRow.style.display = 'none';
 }
 
+// Borrar sin confirmar; se puede deshacer con Cmd/Ctrl+Z o con el botón del aviso
+const deletedStack = [];
+let undoToastTimer = null;
+function showUndoToast(name){
+  let t = document.getElementById('undoToast');
+  if (!t){
+    t = document.createElement('div');
+    t.id = 'undoToast';
+    t.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9997;background:#002852;color:#fff;padding:10px 14px;border-radius:12px;font:600 13px Manrope,sans-serif;max-width:92vw;display:flex;align-items:center;gap:12px;box-shadow:0 6px 20px rgba(0,0,0,.25);';
+    t.innerHTML = '<span id="undoToastMsg"></span><button id="undoToastBtn" type="button" style="background:#e0a614;color:#002852;border:0;border-radius:8px;padding:6px 10px;font:800 12px Manrope,sans-serif;cursor:pointer;">Deshacer</button>';
+    document.body.appendChild(t);
+    document.getElementById('undoToastBtn').onclick = undoDelete;
+  }
+  document.getElementById('undoToastMsg').textContent = 'Eliminado: ' + name + '  (Cmd/Ctrl+Z para deshacer)';
+  t.style.display = 'flex';
+  clearTimeout(undoToastTimer);
+  undoToastTimer = setTimeout(() => { t.style.display = 'none'; }, 8000);
+}
+function undoDelete(){
+  const last = deletedStack.pop();
+  if (!last) return false;
+  const idx = Math.min(last.index, workingRows.length);
+  workingRows.splice(idx, 0, last.row);
+  renderResults();
+  const t = document.getElementById('undoToast');
+  if (t) t.style.display = deletedStack.length ? t.style.display : 'none';
+  if (deletedStack.length) showUndoToast(deletedStack[deletedStack.length-1].row.i);
+  return true;
+}
 function deleteRow(rowId){
-  if (!confirm('¿Eliminar este insumo de la lista de compras?')) return;
+  const index = workingRows.findIndex(x => x._id === rowId);
+  if (index < 0) return;
+  const row = workingRows[index];
+  deletedStack.push({ row, index });
   workingRows = workingRows.filter(x => x._id !== rowId);
   renderResults();
+  showUndoToast(row.i);
 }
 window.deleteRow = deleteRow;
+document.addEventListener('keydown', (e) => {
+  if (!(e.metaKey || e.ctrlKey) || e.shiftKey || String(e.key).toLowerCase() !== 'z') return;
+  const el = document.activeElement;
+  const typing = el && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type !== 'checkbox' && el.type !== 'button' && el.type !== 'file'));
+  if (typing) return; // dentro de un campo de texto, Cmd/Ctrl+Z deshace el texto como siempre
+  if (deletedStack.length){ e.preventDefault(); undoDelete(); }
+});
 
 async function saveRowEdit(rowId){
   const r = workingRows.find(x => x._id === rowId);
