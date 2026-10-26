@@ -1354,7 +1354,16 @@ async function toggleSnapshot(timestamp){
     const snap = got.snapshot;
     if (!snap || !snap.rows){ cell.innerHTML = 'No se encontró esta lista.'; return; }
     cell.innerHTML = buildTable(snap.rows, ['Insumo','Unidad','Refugio','Álamos'],
-      r => [r.i, r.u, fmt(r.cr), fmt(r.ca)]);
+      r => [r.i, r.u, fmt(r.cr), fmt(r.ca)]) +
+      '<div style="margin:10px 0 4px;"><button class="btn secondary small" id="restoreSnapBtn" type="button">Restaurar en Compras</button></div>';
+    document.getElementById('restoreSnapBtn').onclick = () => {
+      workingRows = snap.rows.map((r, i) => Object.assign({}, r, { _id: 'r' + i }));
+      if (typeof deletedStack !== 'undefined') deletedStack.length = 0;
+      statusEl.className = 'status';
+      statusEl.textContent = 'Lista del ' + formatTimestamp(timestamp) + ' restaurada.';
+      switchTab('compras');
+      renderResults();
+    };
   } catch(e){
     cell.innerHTML = 'Error al cargar.';
   }
