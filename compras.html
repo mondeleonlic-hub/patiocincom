@@ -438,6 +438,7 @@ async function saveOverrides(){
 async function init(){
   await loadOverrides();
   renderCatalogTab();
+  restoreLast();
   loadUsageBadge();
 }
 init();
@@ -616,8 +617,25 @@ function scheduleAutoAnalyze(){
   }, 1200);
 }
 
+const LAST_KEY = 'pc_compras_ultimo_analisis';
+function persistLast(){
+  try { localStorage.setItem(LAST_KEY, JSON.stringify({ t: Date.now(), rows: workingRows })); } catch(e){}
+}
+function restoreLast(){
+  try {
+    const d = JSON.parse(localStorage.getItem(LAST_KEY) || 'null');
+    if (d && Array.isArray(d.rows) && d.rows.length){
+      workingRows = d.rows;
+      statusEl.className = 'status';
+      statusEl.textContent = 'Último análisis recuperado (' + new Date(d.t).toLocaleString('es-MX', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ').';
+      renderResults();
+    }
+  } catch(e){}
+}
+
 function renderResults(){
   const rows = workingRows;
+  persistLast();
 
   const transferSet = new Set();
   rows.forEach(r => {
