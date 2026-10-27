@@ -5621,6 +5621,10 @@ let liquidaciones=[];
 
 function initLiquidaciones(){
   liquidaciones=ld("pc4_liquidaciones",[]);
+  // Sin comisión fija: se quita de las liquidaciones que la traían
+  let _sinFija=false;
+  liquidaciones.forEach(l=>{if(l.metas&&l.metas.some(m=>m.regla==="fija")){l.metas=l.metas.filter(m=>m.regla!=="fija");_sinFija=true;}});
+  if(_sinFija)sv("pc4_liquidaciones",liquidaciones);
   // Pre-cargar liquidación de Hugo si no existe
   if(!liquidaciones.find(l=>l.nombre==="Hugo Sánchez")){
     liquidaciones.push({
@@ -5726,18 +5730,17 @@ function renderLiquidaciones(){
 // La comisión de los coordinadores es un % de las VENTAS DEL MES de su sucursal
 // (campo "Ventas del mes" que se captura en cada liquidación).
 // Reglas de cada renglón:
-//   fija  → % de las ventas del mes, siempre (ej. comisión fija 1.5%)
+//   fija  → (ya no se usa: no hay comisión fija; se quita al cargar)
 //   prop  → % de las ventas del mes × lo logrado de la meta (tope 100%)
 //   todo  → % de las ventas del mes solo si llega a la meta
 //   exc   → % sobre lo que pase de la meta (ej. bono 5% sobre venta arriba de la meta)
 //   pct   → % de lo vendido en ese concepto (comisión por membresías 20%, detallados 5%)
 // "Llave": si una meta llave no se cumple, prop/todo/exc pagan $0
-//   (la comisión fija y las comisiones por venta se pagan igual).
+//   (las comisiones de membresías y detallados se pagan igual).
 // Compatibilidad: metas viejas con "monto" fijo y sin % de ventas siguen pagando ese monto.
-const LQ_REGLAS={fija:"% fijo de ventas",prop:"Proporcional",todo:"Todo o nada",exc:"% sobre excedente",pct:"Comisión de venta"};
+const LQ_REGLAS={prop:"Proporcional",todo:"Todo o nada",exc:"% sobre excedente",pct:"Comisión de venta"};
 function lqPlanBase(){
   return [
-    {ind:"Comisión fija",regla:"fija",pct:1.5},
     {ind:"Membresías vendidas",regla:"prop",meta:20,pv:0.5,logrado:0},
     {ind:"Detallados vendidos",regla:"prop",meta:5,pv:0.5,logrado:0},
     {ind:"Reseñas 5 estrellas",regla:"prop",meta:20,pv:0.5,logrado:0},
@@ -5748,7 +5751,7 @@ function lqPlanBase(){
 }
 function lqPlanPara(nombre,excluir){
   const prev=[...liquidaciones].reverse().find(x=>x!==excluir&&x.metas&&x.metas.length&&normN(x.nombre||"")===normN(nombre||""));
-  return (prev?prev.metas:lqPlanBase()).map(m=>({...m,logrado:0}));
+  return (prev?prev.metas:lqPlanBase()).filter(m=>m.regla!=="fija").map(m=>({...m,logrado:0}));
 }
 const lqEsMeta=m=>m.regla==="prop"||m.regla==="todo";
 // Lo que paga una meta al 100%: % de ventas, o el monto fijo viejo
@@ -5813,7 +5816,7 @@ function lqMetasHtml(l,i,r){
   return `<div class="lq-metas">
     <div class="lq-mh"><span>Metas del mes</span><span id="lq-cum-${i}" class="lq-cum ${r.llaveFalla.length?"lq-no":""}">${lqCumTxt(r)}</span></div>
     <div class="lq-mr lq-ventas">
-      <div class="lq-mn"><b>Ventas del mes</b><small>de su sucursal</small></div>
+      <div class="lq-mn"><b>Ventas del mes</b><small>para calcular su bono por KPIs</small></div>
       <input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${l.ventas||""}" placeholder="$" onchange="lqSetVentas(${i},+this.value)" title="Ventas del mes">
     </div>
     ${r.det.map((x,mi)=>{const m=x.m;const ok=lqEsMeta(m)&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
@@ -5822,12 +5825,12 @@ function lqMetasHtml(l,i,r){
       ${m.regla==="fija"?`<div></div>`:`<input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${m.logrado||""}" placeholder="${m.regla==="pct"||m.regla==="exc"?"$ vendido":"0"}" onchange="lqSetMeta(${i},${mi},'logrado',+this.value)" title="${m.regla==="pct"?"Lo vendido este mes":"Logrado este mes"}">`}
       <div id="lq-mp-${i}-${mi}" class="lq-mp ${x.pago?"":"lq-cero"}">${ok?'<i class="lq-ok">✓</i>':""}${fmt(x.pago)}</div>
     </div>`;}).join("")}
-    <div class="lq-mt"><span>Comisión del mes</span><b id="lq-mt-${i}">${fmt(r.metasPago)}</b></div>
+    <div class="lq-mt"><span>Bono y comisiones del mes</span><b id="lq-mt-${i}">${fmt(r.metasPago)}</b></div>
     <div class="lq-warn" id="lq-warn-${i}">${lqWarn(r)}</div>
   </div>`;
 }
 function lqWarn(r){
-  if(r.llaveFalla.length)return `No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes (la comisión fija y las de venta sí).`;
+  if(r.llaveFalla.length)return `No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: el bono por KPIs no se paga este mes (las comisiones de membresías y detallados sí).`;
   return "";
 }
 function lqCfgHtml(l,i){
@@ -5874,9 +5877,9 @@ function lqImgHtml(l){
     <table>
       <thead><tr><th class="li-n">Meta</th><th>Objetivo</th><th>Paga</th>${conRes?"<th>Logrado</th><th class=\"li-r\">Ganas</th>":""}</tr></thead>
       <tbody>${filas}</tbody>
-      ${conRes?`<tfoot><tr><td colspan="4">Comisión del mes${r.ventas?` <span>· ventas ${fmt(r.ventas)}</span>`:""}</td><td class="li-r">${fmt(r.metasPago)}</td></tr></tfoot>`:""}
+      ${conRes?`<tfoot><tr><td colspan="4">Bono y comisiones del mes${r.ventas?` <span>· ventas ${fmt(r.ventas)}</span>`:""}</td><td class="li-r">${fmt(r.metasPago)}</td></tr></tfoot>`:""}
     </table>
-    ${llaves.length?`<div class="li-note">Llave: si no llegas a <b>${llaves.map(esc).join(", ")}</b>, las metas no se pagan ese mes. La comisión fija y las de venta sí.</div>`:""}
+    ${llaves.length?`<div class="li-note">Llave: si no llegas a <b>${llaves.map(esc).join(", ")}</b>, el bono por KPIs no se paga ese mes. Las comisiones de membresías y detallados sí.</div>`:""}
     ${r.llaveFalla.length&&conRes?`<div class="li-note li-bad">Este mes no se cumplió la llave.</div>`:""}
   </div>`;
 }
