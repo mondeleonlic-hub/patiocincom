@@ -2014,7 +2014,6 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
     <div id="hr-coo" style="display:none">
       <div class="rl-tools">
         <button class="ph-btn ph-navy" onclick="chAddCo()">＋ Coordinador</button>
-        <button class="ph-btn ph-outline-rl" onclick="chTraerPagos()" title="Agrega los coordinadores de la pestaña Coordinadores que aún no están aquí">Traer de Pagos</button>
         <button class="ph-btn ph-gold" onclick="chImagen()">Imagen para el grupo</button>
       </div>
       <p class="rl-help" style="margin:0 0 8px">Toca a un coordinador para ver solo sus turnos (puedes elegir varios). Con <b>Editar</b> cambias nombres y colores. En el horario, toca un turno para editar sus horas o un espacio vacío para agregar uno.</p>
@@ -5438,7 +5437,7 @@ function bsobre(row,sem){
 let sobreSeleccionado = null; // nombre del lavador seleccionado
 let ticketsModo="lav";   // "lav" | "coord"
 let tkCoordSem="";       // "" = semana en captura; si no, índice en coordHist
-let rolData=null, rolSuc="PC Refugio", rolModo="rol", horQuien="lav", chEdit=null, chFiltro=new Set(), chEditNom=false;
+let rolData=null, rolSuc="PC Refugio", rolModo="rol", horQuien="lav", chEdit=null, chFiltro=new Set(), chEditNom=false, chUltimoCi=null;
 
 function renderS(){
   if(ticketsModo==="coord"){renderSCoord();return;}
@@ -11763,7 +11762,45 @@ async function rlImagen(){
 const CH_DIAS=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 const CH_DIAS_L=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 const CH_ABRE=8, CH_CIERRA=19;
-const CH_COLORES=["#E8C454","#BDD7AA","#B87F9E","#5183C2","#8B7DBB","#DF9C9A","#9FC385","#F2A65A","#5BB5A8","#9AA5B1"];
+const CH_COLORES=["#E8C454","#BDD7AA","#B87F9E","#5183C2","#8B7DBB","#DF9C9A","#F2A65A","#5BB5A8","#C0504D","#7A8B2E","#2F4858","#9AA5B1","#D4A5E8","#8B5A2B","#00A6D6","#F4D6A0"];
+// Diferencia de color como la percibe el ojo (CIE76 en Lab); < 22 = se parecen
+function chLab(hex){
+  let h=(hex||"#999").replace("#","");if(h.length===3)h=h.split("").map(x=>x+x).join("");
+  let [r,g,b]=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v>0.04045?Math.pow((v+0.055)/1.055,2.4):v/12.92);
+  let x=(r*0.4124+g*0.3576+b*0.1805)/0.95047,y=r*0.2126+g*0.7152+b*0.0722,z=(r*0.0193+g*0.1192+b*0.9505)/1.08883;
+  const f=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116;x=f(x);y=f(y);z=f(z);
+  return [116*y-16,500*(x-y),200*(y-z)];
+}
+function chDist(a,b){const A=chLab(a),B=chLab(b);return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]);}
+const CH_MIN_DIST=22;
+// El color de la paleta más distinto a los que ya se usan
+function chColorLibre(usados){
+  let best=CH_COLORES[0],bd=-1;
+  CH_COLORES.forEach(c=>{const d=usados.length?Math.min(...usados.map(u=>chDist(c,u))):999;if(d>bd){bd=d;best=c;}});
+  return best;
+}
+// Si dos coordinadores tienen colores parecidos, al más nuevo se le asigna otro
+function chArreglarColores(D){
+  let cambio=false;
+  D.coords.forEach((c,i)=>{
+    const prev=D.coords.slice(0,i).map(x=>x.color);
+    if(prev.some(u=>chDist(c.color,u)<CH_MIN_DIST)){c.color=chColorLibre(prev);cambio=true;}
+  });
+  return cambio;
+}
+// Los coordinadores de Pagos aparecen solos en Horarios (salvo los que quitaste aquí)
+function chSincronizarPagos(D){
+  const ya=new Set(D.coords.map(c=>normN(c.nombre)));
+  const ign=new Set((D.ignorar||[]).map(normN));
+  let n=0;
+  (typeof coords!=="undefined"?coords:[]).forEach(c=>{
+    const nom=(c.nombre||"").trim();
+    if(!nom||ya.has(normN(nom))||ign.has(normN(nom)))return;
+    D.coords.push({id:"c_"+rlId(),nombre:nom,color:chColorLibre(D.coords.map(x=>x.color))});
+    ya.add(normN(nom));n++;
+  });
+  return n;
+}
 
 function chB(dia,lane,ci,ini,fin){return {id:rlId(),dia,lane,ci,ini,fin};}
 // Horario inicial: el último que se llevaba en la hoja (oct 2026)
@@ -11858,6 +11895,7 @@ function chAvisos(){
 
 function renderHorCoord(){
   const D=chData();
+  if(chSincronizarPagos(D)+(chArreglarColores(D)?1:0))rlSave();
   [...chFiltro].forEach(id=>{if(!chCo(id))chFiltro.delete(id);});
   document.getElementById("ch-coords").innerHTML=(chEditNom
     ? D.coords.map((c,i)=>`
@@ -11880,19 +11918,32 @@ function renderHorCoord(){
 
 function chVisible(id){return !chFiltro.size||chFiltro.has(id);}
 function chToggleFiltro(id){chFiltro.has(id)?chFiltro.delete(id):chFiltro.add(id);renderHorCoord();}
-function chSetCo(i,k,v){const c=chData().coords[i];c[k]=k==="nombre"?v.trim():v;rlSave();renderHorCoord();}
+function chSetCo(i,k,v){
+  const D=chData(),c=D.coords[i];
+  if(k==="color"){
+    const otro=D.coords.find((x,j)=>j!==i&&chDist(v,x.color)<CH_MIN_DIST);
+    if(otro){flash("Ese color se parece al de "+otro.nombre+" — elige otro");renderHorCoord();return;}
+  }
+  c[k]=k==="nombre"?v.trim():v;rlSave();renderHorCoord();
+}
 function chAddCo(){
   const n=prompt("Nombre del coordinador:");if(!n||!n.trim())return;
-  const D=chData();const usados=new Set(D.coords.map(c=>c.color.toLowerCase()));
-  const color=CH_COLORES.find(x=>!usados.has(x.toLowerCase()))||CH_COLORES[D.coords.length%CH_COLORES.length];
-  D.coords.push({id:"c_"+rlId(),nombre:n.trim(),color});rlSave();renderHorCoord();
+  const D=chData();
+  const id="c_"+rlId();
+  D.coords.push({id,nombre:n.trim(),color:chColorLibre(D.coords.map(c=>c.color))});
+  D.ignorar=(D.ignorar||[]).filter(x=>normN(x)!==normN(n));
+  if(chFiltro.size)chFiltro.add(id);
+  chUltimoCi=id;
+  rlSave();renderHorCoord();flash("✓ "+n.trim()+" agregado — toca un espacio vacío del horario para darle turno");
 }
 function chDelCo(i){
   const D=chData(),c=D.coords[i];
   const n=RL_SUCS.reduce((s,x)=>s+D.bloques[x].filter(k=>k.ci===c.id).length,0);
   if(!confirm("¿Quitar a "+c.nombre+"?"+(n?"\nTambién se borran sus "+n+" turnos del horario.":"")))return;
   RL_SUCS.forEach(x=>{D.bloques[x]=D.bloques[x].filter(k=>k.ci!==c.id);});
-  D.coords.splice(i,1);rlSave();renderHorCoord();
+  D.coords.splice(i,1);
+  D.ignorar=[...(D.ignorar||[]),c.nombre];
+  rlSave();renderHorCoord();
 }
 function chTraerPagos(){
   const D=chData();const ya=new Set(D.coords.map(c=>normN(c.nombre)));
@@ -11919,7 +11970,8 @@ function chAbrir(suc,dia,lane,id,ini,fin){
   if(!D.coords.length){flash("Primero agrega un coordinador");return;}
   const k=id?D.bloques[suc].find(x=>x.id===id):null;
   chEdit={suc,dia,lane,id};
-  const ci=k?k.ci:D.coords[0].id;
+  const sug=(chUltimoCi&&chCo(chUltimoCi))?chUltimoCi:(chFiltro.size===1?[...chFiltro][0]:D.coords[0].id);
+  const ci=k?k.ci:sug;
   const m=document.createElement("div");m.id="ch-modal";m.className="ch-ov";
   m.innerHTML=`<div class="ch-box" onclick="event.stopPropagation()">
     <div class="ch-box-t">${k?"Editar":"Nuevo"} turno · ${suc.replace("PC ","")} · ${CH_DIAS_L[dia]}</div>
@@ -11956,6 +12008,8 @@ function chGuardar(){
     D.bloques[suc]=D.bloques[suc].filter(k=>!(k.dia===d&&k.lane===lane&&k.ini<fin&&k.fin>ini));
     D.bloques[suc].push(chB(d,lane,ci,ini,fin));
   });
+  if(chFiltro.size&&!chFiltro.has(ci))chFiltro.add(ci);
+  chUltimoCi=ci;
   rlSave();chCerrar();renderHorCoord();
 }
 function chBorrar(){
