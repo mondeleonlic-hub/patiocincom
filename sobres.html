@@ -641,6 +641,27 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .lq-ok{font-style:normal;color:#2f855a;margin-right:4px;font-size:11px}
 .lq-mt{display:flex;justify-content:space-between;border-top:1.5px solid #111;margin-top:4px;padding-top:7px;font-size:12px;font-weight:700}
 .lq-mt b{font-size:14px}
+
+/* imagen de metas para el coordinador */
+.li.li-res{width:640px}
+.li .li-n{white-space:nowrap}
+.li{width:520px;background:#fff;color:#111;font-family:-apple-system,'Inter','Segoe UI',Arial,sans-serif;padding-bottom:14px}
+.li-h{background:#111;color:#f8ba00;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:15px;letter-spacing:4px}
+.li-t{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#fff;font-weight:800}
+.li-who{padding:12px 16px 8px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.li-who b{font-size:20px;font-weight:900}
+.li-who span{font-size:12px;color:#777}
+.li table{width:calc(100% - 32px);margin:0 16px;border-collapse:collapse}
+.li th{font-size:9.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#888;text-align:center;padding:6px 4px;border-bottom:2px solid #111}
+.li td{font-size:12.5px;padding:7px 4px;border-bottom:1px solid #eee;vertical-align:middle}
+.li .li-n{text-align:left;font-weight:700;padding-left:0}
+.li .li-c{text-align:center;white-space:nowrap;color:#333}
+.li .li-r{text-align:right;font-weight:800;white-space:nowrap;padding-right:0}
+.li-k{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;background:#f8ba00;color:#111;border-radius:3px;padding:1px 4px;vertical-align:middle}
+.li tfoot td{border-bottom:none;border-top:2px solid #111;font-weight:800;font-size:13px;padding-top:8px}
+.li tfoot td span{font-weight:600;color:#888;font-size:11px}
+.li-note{margin:10px 16px 0;font-size:11px;color:#555;line-height:1.45}
+.li-bad{color:#c53030;font-weight:700}
 .lq-ventas{border-top:none;padding-top:2px}
 .lq-ventas .lq-in{grid-column:2 / 4}
 .lq-ventas .lq-mn b{color:#8a6500}
@@ -5645,6 +5666,7 @@ function renderLiquidaciones(){
           <div style="font-size:10px;color:#888" id="lq-per-${i}">${esc(l.periodo||"")} · ${esc(l.concepto||"")}</div>
         </div>
         <div style="display:flex;gap:8px">
+          ${l.metas&&l.metas.length?`<button onclick="lqImagen(${i})" style="background:#fff;color:#111;border:1px solid #d8d2c2;border-radius:5px;padding:5px 10px;font-weight:700;font-size:11px;cursor:pointer" title="Imagen de sus metas para mandársela">Enviar metas</button>`:""}
           <button onclick="imprimirLiquidacion(${i})" style="background:#f8ba00;color:#000;border:none;border-radius:5px;padding:5px 10px;font-weight:700;font-size:11px;cursor:pointer">Imprimir</button>
           <button onclick="delLiquidacion(${i})" style="background:none;border:none;color:#666;cursor:pointer;font-size:14px">✕</button>
         </div>
@@ -5824,6 +5846,63 @@ function lqCfgHtml(l,i){
       <button onclick="lqAddMeta(${i})" style="font-size:11px;padding:4px 10px;border:1px dashed #ddd;border-radius:4px;background:#fff;cursor:pointer">+ Renglón</button>
       <button onclick="lqResetPlan(${i})" style="font-size:11px;padding:4px 10px;border:none;background:none;color:#999;cursor:pointer;text-decoration:underline">Usar plan base</button>
     </div>`;
+}
+
+// ── Imagen de metas para mandar al coordinador ──
+function lqImgHtml(l){
+  const r=lqCalc(l);
+  const conRes=r.ventas>0||(l.metas||[]).some(m=>(+m.logrado||0)>0);
+  const objetivo=m=>m.regla==="fija"?"—":m.regla==="pct"?"—":m.regla==="exc"?"Arriba de "+lqFmtN(m,m.meta):lqFmtN(m,m.meta)+(/%/.test(m.ind||"")?"%":"");
+  const paga=m=>{
+    if(m.regla==="fija")return `${+m.pct||0}% de ventas`;
+    if(m.regla==="pct")return `${+m.pct||0}% de lo vendido`;
+    if(m.regla==="exc")return `${+m.pct||0}% del excedente`;
+    const v=(+m.pv||0)>0?`${+m.pv}% de ventas`:fmt(+m.monto||0);
+    return v+(m.regla==="todo"?" si llegas":"");
+  };
+  const llaves=(l.metas||[]).filter(m=>m.llave).map(m=>m.ind);
+  const filas=r.det.map(x=>{const m=x.m;const ok=lqEsMeta(m)&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
+    return `<tr>
+      <td class="li-n">${esc(m.ind)}${m.llave?' <span class="li-k">llave</span>':""}</td>
+      <td class="li-c">${objetivo(m)}</td>
+      <td class="li-c">${paga(m)}</td>
+      ${conRes?`<td class="li-c">${m.regla==="fija"?"—":m.regla==="pct"||m.regla==="exc"?fmt(+m.logrado||0):lqFmtN(m,m.logrado)+(/%/.test(m.ind||"")?"%":"")+(ok?" ✓":"")}</td><td class="li-r">${fmt(x.pago)}</td>`:""}
+    </tr>`;}).join("");
+  return `<div class="li${conRes?" li-res":""}">
+    <div class="li-h"><div><span style="font-weight:300">PATIO </span><b>CINCO</b></div><div class="li-t">Metas del mes</div></div>
+    <div class="li-who"><b>${esc(l.nombre||"")}</b><span>${esc(l.periodo||"")}${l.concepto?" · "+esc(l.concepto):""}</span></div>
+    <table>
+      <thead><tr><th class="li-n">Meta</th><th>Objetivo</th><th>Paga</th>${conRes?"<th>Logrado</th><th class=\"li-r\">Ganas</th>":""}</tr></thead>
+      <tbody>${filas}</tbody>
+      ${conRes?`<tfoot><tr><td colspan="4">Comisión del mes${r.ventas?` <span>· ventas ${fmt(r.ventas)}</span>`:""}</td><td class="li-r">${fmt(r.metasPago)}</td></tr></tfoot>`:""}
+    </table>
+    ${llaves.length?`<div class="li-note">Llave: si no llegas a <b>${llaves.map(esc).join(", ")}</b>, las metas no se pagan ese mes. La comisión fija y las de venta sí.</div>`:""}
+    ${r.llaveFalla.length&&conRes?`<div class="li-note li-bad">Este mes no se cumplió la llave.</div>`:""}
+  </div>`;
+}
+async function lqImagen(i){
+  const l=liquidaciones[i];
+  flash("⏳ Generando imagen...");
+  try{
+    if(!window.html2canvas){
+      await new Promise((res,rej)=>{const s=document.createElement("script");
+        s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+    }
+    const wrap=document.createElement("div");
+    wrap.style.cssText="position:fixed;left:-9999px;top:0;background:#fff";
+    wrap.innerHTML=lqImgHtml(l);document.body.appendChild(wrap);
+    await new Promise(r=>setTimeout(r,80));
+    const canvas=await html2canvas(wrap.firstElementChild,{scale:2,backgroundColor:"#ffffff",logging:false});
+    document.body.removeChild(wrap);
+    const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
+    const fname=("metas-"+(l.nombre||"coordinador")+"-"+(l.periodo||"")).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/gi,"-").toLowerCase().replace(/-+$/,"")+".png";
+    const file=new File([blob],fname,{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:"Metas "+(l.nombre||"")});flash("✓ Listo");return;}catch(e){if(e&&e.name==="AbortError")return;}
+    }
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fname;a.click();
+    flash("✓ Imagen descargada");
+  }catch(e){console.error(e);flash("⚠️ No se pudo generar la imagen");}
 }
 function lqSave(){sv("pc4_liquidaciones",liquidaciones);renderLiquidaciones();}
 function lqActivarMetas(i){const l=liquidaciones[i];l.metas=lqPlanPara(l.nombre,l);lqSave();}
