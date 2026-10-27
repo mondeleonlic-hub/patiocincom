@@ -479,6 +479,12 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .hr-top{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
 #hr-quien .fbtn{font-size:13px;padding:6px 16px}
 .ch-coords{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.ch-fchip{display:inline-flex;align-items:center;gap:7px;border:1px solid #e5e0d3;background:#fff;border-radius:20px;padding:6px 13px 6px 9px;font-size:13px;font-weight:700;font-family:inherit;color:#222;cursor:pointer;transition:opacity .15s,border-color .15s}
+.ch-fchip i{width:11px;height:11px;border-radius:50%;flex:none}
+.ch-fchip:hover{border-color:#cfc8b6}
+.ch-fchip.off{opacity:.38}
+.ch-flink{border:none;background:none;font-size:12px;font-weight:700;font-family:inherit;color:#999;cursor:pointer;padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
+.ch-flink:hover{color:#555}
 .ch-chip{display:flex;align-items:center;gap:4px;border-radius:10px;padding:4px 6px 4px 4px}
 .ch-chip input[type=color]{width:26px;height:26px;border:2px solid rgba(255,255,255,.7);border-radius:7px;padding:0;background:none;cursor:pointer}
 .ch-chip input[type=color]::-webkit-color-swatch-wrapper{padding:0}
@@ -527,7 +533,7 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .ch-dchk input:checked+span{background:#111;color:#f8ba00}
 .ch-dchk input:disabled+span{opacity:.55;cursor:default}
 .ch-btns{display:flex;gap:8px;align-items:center;margin-top:4px}
-@media(max-width:768px){.ch-tl{min-width:600px}.ch-blk{font-size:9.5px;padding:3px 2px}.ch-blk b{white-space:normal;overflow-wrap:anywhere}.ch-blk span{font-size:8.5px}}
+@media(max-width:768px){.ch-tl{min-width:600px}.ch-blk{font-size:9.5px;padding:3px 2px}.ch-blk b{font-size:9px;letter-spacing:-.2px;text-overflow:clip}.ch-blk span{font-size:8.5px}}
 /* imagen */
 .ch-img{width:1000px;background:#fff;font-family:-apple-system,'Inter','Segoe UI',Arial,sans-serif;color:#111;padding-bottom:16px}
 .ch-img .ch-tl{box-shadow:none;min-width:0;margin:0 16px}
@@ -1829,7 +1835,7 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
         <button class="ph-btn ph-outline-rl" onclick="chTraerPagos()" title="Agrega los coordinadores de la pestaña Coordinadores que aún no están aquí">Traer de Pagos</button>
         <button class="ph-btn ph-gold" onclick="chImagen()">Imagen para el grupo</button>
       </div>
-      <p class="rl-help" style="margin:0 0 8px">Toca un nombre para cambiarlo y el cuadrito para cambiar su color. En el horario, toca un turno para editar sus horas o un espacio vacío para agregar uno.</p>
+      <p class="rl-help" style="margin:0 0 8px">Toca a un coordinador para ver solo sus turnos (puedes elegir varios). Con <b>Editar</b> cambias nombres y colores. En el horario, toca un turno para editar sus horas o un espacio vacío para agregar uno.</p>
       <div class="ch-coords" id="ch-coords"></div>
       <div id="ch-avisos"></div>
       <div id="ch-tls"></div>
@@ -5218,7 +5224,7 @@ function bsobre(row,sem){
 let sobreSeleccionado = null; // nombre del lavador seleccionado
 let ticketsModo="lav";   // "lav" | "coord"
 let tkCoordSem="";       // "" = semana en captura; si no, índice en coordHist
-let rolData=null, rolSuc="PC Refugio", rolModo="rol", horQuien="lav", chEdit=null;
+let rolData=null, rolSuc="PC Refugio", rolModo="rol", horQuien="lav", chEdit=null, chFiltro=new Set(), chEditNom=false;
 
 function renderS(){
   if(ticketsModo==="coord"){renderSCoord();return;}
@@ -11349,7 +11355,7 @@ function chTimeline(suc,estatico){
   const alto=(b-a)*H;
   const horas=[];for(let h=a;h<=b;h++)horas.push(h);
   const col=(dia)=>{
-    const bl=D.bloques[suc].filter(k=>k.dia===dia);
+    const bl=D.bloques[suc].filter(k=>k.dia===dia&&chVisible(k.ci));
     const lanes=[0,1].map(l=>estatico?"":`<div class="ch-lane" style="left:${l*50}%" onclick="chNuevoClick(event,'${suc}',${dia},${l})" title="Agregar ${l?"2do":"1er"} turno"></div>`).join("");
     const blks=bl.map(k=>{
       const c=chCo(k.ci)||{nombre:"?",color:"#ccc"};
@@ -11404,21 +11410,28 @@ function chAvisos(){
 
 function renderHorCoord(){
   const D=chData();
-  document.getElementById("ch-coords").innerHTML=D.coords.map((c,i)=>`
+  [...chFiltro].forEach(id=>{if(!chCo(id))chFiltro.delete(id);});
+  document.getElementById("ch-coords").innerHTML=(chEditNom
+    ? D.coords.map((c,i)=>`
     <div class="ch-chip" style="background:${c.color};color:${chTxt(c.color)}">
       <input type="color" value="${c.color}" onchange="chSetCo(${i},'color',this.value)" title="Color">
       <input class="ch-chip-n" value="${esc(c.nombre)}" onchange="chSetCo(${i},'nombre',this.value)" style="color:${chTxt(c.color)}">
       <button onclick="chDelCo(${i})" title="Quitar" style="color:${chTxt(c.color)}">✕</button>
-    </div>`).join("");
+    </div>`).join("")
+    : D.coords.map(c=>`<button class="ch-fchip${chVisible(c.id)?"":" off"}" onclick="chToggleFiltro('${c.id}')" title="${chFiltro.size?"":"Ver solo a "+esc(c.nombre)}"><i style="background:${c.color}"></i>${esc(c.nombre)}</button>`).join(""))
+    +(!chEditNom&&chFiltro.size?`<button class="ch-flink" onclick="chFiltro.clear();renderHorCoord()">Ver todos</button>`:"")
+    +`<button class="ch-flink" onclick="chEditNom=!chEditNom;renderHorCoord()">${chEditNom?"Listo":"Editar"}</button>`;
   const av=chAvisos();
   document.getElementById("ch-avisos").innerHTML=av.length?`<details class="rl-av" ${av.length<=4?"open":""}><summary>${av.length} aviso${av.length>1?"s":""} del horario</summary>${av.join("<br>")}</details>`:"";
   document.getElementById("ch-tls").innerHTML=RL_SUCS.map(s=>`<h3 class="ch-suc">${s.replace("PC ","")}</h3><div class="tw">${chTimeline(s,false)}</div>`).join("");
   const R=chResumen();
   document.getElementById("ch-res").innerHTML=`<table class="ch-rt"><thead><tr><th style="text-align:left">Coordinador</th>${CH_DIAS.map(d=>`<th>${d}</th>`).join("")}<th>Horas</th><th>Días</th></tr></thead><tbody>
-    ${R.map(r=>`<tr><td class="ch-rn"><i style="background:${r.c.color}"></i>${esc(r.c.nombre)}</td>${r.dias.map(x=>x.hrs?`<td><b>${Math.round(x.hrs*10)/10}h</b><small>${x.sucs}</small></td>`:`<td class="ch-desc">Desc.</td>`).join("")}<td><b>${Math.round(r.total*10)/10}</b></td><td>${r.nd}</td></tr>`).join("")}
+    ${R.filter(r=>chVisible(r.c.id)).map(r=>`<tr><td class="ch-rn"><i style="background:${r.c.color}"></i>${esc(r.c.nombre)}</td>${r.dias.map(x=>x.hrs?`<td><b>${Math.round(x.hrs*10)/10}h</b><small>${x.sucs}</small></td>`:`<td class="ch-desc">Desc.</td>`).join("")}<td><b>${Math.round(r.total*10)/10}</b></td><td>${r.nd}</td></tr>`).join("")}
   </tbody></table>`;
 }
 
+function chVisible(id){return !chFiltro.size||chFiltro.has(id);}
+function chToggleFiltro(id){chFiltro.has(id)?chFiltro.delete(id):chFiltro.add(id);renderHorCoord();}
 function chSetCo(i,k,v){const c=chData().coords[i];c[k]=k==="nombre"?v.trim():v;rlSave();renderHorCoord();}
 function chAddCo(){
   const n=prompt("Nombre del coordinador:");if(!n||!n.trim())return;
@@ -11515,7 +11528,7 @@ async function chImagen(){
     wrap.style.cssText="position:fixed;left:-9999px;top:0;background:#fff";
     wrap.innerHTML=`<div class="ch-img">
       <div class="rl-img-h"><div><span style="font-weight:300">PATIO </span><b>CINCO</b></div><div class="rl-img-t">Horario coordinadores</div></div>
-      <div class="ch-img-leg">${D.coords.map(c=>`<span style="background:${c.color};color:${chTxt(c.color)}">${esc(c.nombre)}</span>`).join("")}</div>
+      <div class="ch-img-leg">${D.coords.filter(c=>chVisible(c.id)).map(c=>`<span style="background:${c.color};color:${chTxt(c.color)}">${esc(c.nombre)}</span>`).join("")}</div>
       ${RL_SUCS.map(s=>`<div class="ch-img-suc">${s.replace("PC ","").toUpperCase()}</div>${chTimeline(s,true)}`).join("")}
     </div>`;
     document.body.appendChild(wrap);
