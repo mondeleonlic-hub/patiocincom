@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>PatioCinco · Sobres</title>
 <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script defer src="sobres-inv.js"></script>
@@ -1430,6 +1430,140 @@ table.cmp tbody tr.total-row td { background: #111 !important; }
 
 .vs-row { font-size: 12px; }
 
+</style>
+<style id="pc-movil">
+/* ══════════════════════════════════════════════════════════════════
+   VERSIÓN CELULAR — ajustes solo para pantallas chicas.
+   En computadora nada de esto aplica (todo va dentro de @media).
+   ══════════════════════════════════════════════════════════════════ */
+.mc-sum{display:none}
+/* patio-cinco.css quita la apariencia a todos los inputs (para iOS) y las casillas quedaban invisibles, p. ej. "Recibido" en Flujo */
+input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
+@media(min-width:769px){
+  /* la celda de resumen va primero (oculta en compu): el nombre sigue fijo al deslizar */
+  #pnl-datos .tw table td.mc-sum+td{position:sticky;left:0;z-index:3;background:inherit;box-shadow:2px 0 4px rgba(0,0,0,.05)}
+}
+@media(max-width:768px){
+  /* ── Encabezado: respeta la muesca/hora del iPhone y deja ver la semana completa ── */
+  .hdr{height:calc(50px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  .hdr img{height:18px;width:auto}
+  #sem{width:94px;padding:5px 10px}
+  #fmsg{position:fixed;left:50%;top:calc(58px + env(safe-area-inset-top));transform:translateX(-50%);min-width:0;max-width:calc(100vw - 32px);background:#111;color:#e0a614;padding:7px 14px;border-radius:16px;font-size:12px;z-index:400;box-shadow:0 4px 14px rgba(0,0,0,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+  #fmsg:empty{display:none!important}
+
+  /* ── Nómina: filtros de sucursal (las filas ocultas sí se ocultan) ── */
+  #pnl-datos .tw>table tbody tr.hidden{display:none!important}
+  #resumen{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #resumen .rcard{min-width:0}
+  #resumen .rv{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ph-toolbar .ph h2{white-space:normal}
+  .filtros .busq-inp{width:100%;font-size:14px;padding:8px 12px}
+  .filtros>div[style*="margin-left:auto"]{margin-left:0!important;width:100%}
+
+  /* ── Nómina: tarjetas compactas que se abren al tocarlas ── */
+  #pnl-datos .tw>table td.mc-sum{cursor:pointer;gap:10px;border-bottom:none;padding:10px 0!important;-webkit-user-select:none;user-select:none}
+  #pnl-datos .tw>table td.mc-sum::before{display:none!important}
+  #pnl-datos .tw>table tr.mc-open td.mc-sum{border-bottom:2px solid #f0ede4;margin-bottom:4px}
+  #pnl-datos .tw>table tr.mc-closed>td:not(.mc-sum){display:none!important}
+  #pnl-datos .tw>table td[data-label="Merch"]>*,#pnl-datos .tw>table td[data-label="Bono"]>*,#pnl-datos .tw>table td[data-label="Extra"]>*{align-self:flex-end;text-align:right;max-width:130px!important}
+  .mc-who{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;flex:1;text-align:left}
+  .mc-who b{font-size:15px;font-weight:800;color:#111;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mc-meta{font-size:11px;color:#999;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .mc-deu{color:#e53e3e}
+  .mc-tot{font-size:16px;font-weight:900;white-space:nowrap}
+  .mc-chev{color:#c9c4b6;font-size:18px;line-height:1;transition:transform .2s;flex:none;width:12px;text-align:center}
+  tr.mc-open .mc-chev{transform:rotate(90deg)}
+
+  /* ── Finanzas: captura sin cortes a la derecha ── */
+  #pnl-finanzas .form-row{padding:8px 12px;gap:8px}
+  #pnl-finanzas .form-row label{min-width:0;flex:1}
+  #pnl-finanzas .form-row input[type=number],#pnl-finanzas .form-row input[type=text]{width:118px;flex:none}
+  #dpnl-performance{padding:16px 0!important}
+  #dpnl-performance>div:first-child{flex-wrap:wrap;gap:12px}
+  #dpnl-performance>div:first-child>div:last-child{flex-wrap:wrap}
+  #perf-table th:first-child,#perf-table td:first-child{position:sticky;left:0;z-index:1;background:#fff}
+
+  /* ── Coordinadores (pagos semanales): tabla → tarjetas ── */
+  #spnl-pagos>div:first-child>div{flex-wrap:wrap;width:100%}
+  #spnl-pagos>div:first-child>div>*{flex:1 1 auto}
+  #spnl-pagos>.tw{overflow:visible;border:none;box-shadow:none;background:transparent}
+  #coord-tabla.co-tabla{min-width:0;background:transparent}
+  #coord-tabla thead{display:none}
+  #coord-tabla,#coord-tabla tbody,#coord-tabla tfoot{display:block;width:100%}
+  #coord-tabla tr.co-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;background:#fff;border:0.5px solid #e5e2d8;border-radius:16px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  #coord-tabla tr.co-row>td{display:block;padding:0;border:none;min-width:0;background:none}
+  #coord-tabla td.co-name{grid-column:1/-1;margin-bottom:6px}
+  #coord-tabla .co-name input{width:100%;font-size:15px;font-weight:700}
+  #coord-tabla .co-sum{max-width:none}
+  #coord-tabla td.co-dcell{display:flex!important;flex-direction:column;align-items:center;gap:3px}
+  #coord-tabla td.co-dcell::before{font-size:9px;font-weight:800;color:#999;letter-spacing:.3px;text-transform:uppercase}
+  #coord-tabla td.co-dcell:nth-child(2)::before{content:"Dom"}
+  #coord-tabla td.co-dcell:nth-child(3)::before{content:"Lun"}
+  #coord-tabla td.co-dcell:nth-child(4)::before{content:"Mar"}
+  #coord-tabla td.co-dcell:nth-child(5)::before{content:"Mié"}
+  #coord-tabla td.co-dcell:nth-child(6)::before{content:"Jue"}
+  #coord-tabla td.co-dcell:nth-child(7)::before{content:"Vie"}
+  #coord-tabla td.co-dcell:nth-child(8)::before{content:"Sáb"}
+  #coord-tabla select.co-day{width:100%!important}
+  #coord-tabla tr.co-row>td:nth-child(n+9){grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #f2f0ea;padding:8px 0;text-align:right}
+  #coord-tabla tr.co-row>td:nth-child(9){margin-top:8px}
+  #coord-tabla tr.co-row>td:nth-child(n+9)::before{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#999;text-align:left;flex-shrink:0}
+  #coord-tabla tr.co-row>td:nth-child(9)::before{content:"Pago días"}
+  #coord-tabla tr.co-row>td:nth-child(10)::before{content:"Extra / Bono"}
+  #coord-tabla tr.co-row>td:nth-child(11)::before{content:"Comisión"}
+  #coord-tabla tr.co-row>td:nth-child(12)::before{content:"Food (−)"}
+  #coord-tabla tr.co-row>td:nth-child(13)::before{content:"Merch (−)"}
+  #coord-tabla tr.co-row>td:nth-child(14)::before{content:"Deuda (−)"}
+  #coord-tabla tr.co-row>td:nth-child(15)::before{content:"IMSS · ISR · Inf. (−)"}
+  #coord-tabla tr.co-row>td:nth-child(16)::before{content:"Total"}
+  #coord-tabla tr.co-row>td:nth-child(16){font-size:16px;border-top:2px solid #f0ede4}
+  #coord-tabla tr.co-row>td:nth-child(17){justify-content:flex-end;border-top:none;padding:2px 0 0}
+  #coord-tabla .co-in,#coord-tabla .co-num input{width:110px}
+  #coord-tabla tr.co-cfg{display:block;background:#fff;border:0.5px solid #e5e2d8;border-radius:16px;margin:-4px 0 12px;overflow:hidden}
+  #coord-tabla tr.co-cfg>td{display:block;padding:0;border:none}
+  #coord-tabla tfoot tr{display:flex;justify-content:space-between;align-items:center;background:#111;border-radius:16px;padding:14px 16px}
+  #coord-tabla tfoot td{display:none;border:none;padding:0;color:#fff}
+  #coord-tabla tfoot td:first-child,#coord-tabla tfoot #coord-total{display:block}
+  #coord-tabla tfoot #coord-total{color:#e0a614;font-size:16px!important}
+
+  /* ── Liquidaciones: renglones de comisiones y abonos dentro de la tarjeta ── */
+  #coord-liquidaciones details input{min-width:0}
+  #coord-liquidaciones details div[style*="display:flex"]>input[style*="width:90px"]{width:84px!important;flex:none}
+
+  /* ── Horarios: la columna de nombres/horas se queda fija al deslizar ── */
+  .ch-hrs,.ch-head>div:first-child{position:sticky;left:0;z-index:4;background:#fff}
+  .ch-rt th:first-child,.ch-rt .ch-rn{position:sticky;left:0;z-index:1;background:#fff}
+  .ch-rt th:first-child{background:#faf8f3}
+
+  /* ── Ahorros: botones en su propio renglón ── */
+  .ah-header{flex-wrap:wrap;padding:12px 14px}
+  .ah-header>div:last-child{width:100%;gap:6px}
+  .ah-saldo{margin-right:auto;font-size:17px}
+
+  /* ── Analytics: pestañas deslizables ── */
+  #pnl-sucursales .ph>div{width:100%;min-width:0}
+  #pnl-sucursales .ph>div>div:first-child{overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+  #pnl-sucursales .ph>div>div:first-child::-webkit-scrollbar{display:none}
+  #pnl-sucursales .ph>div>div:first-child>button{flex:none}
+}
+@media(max-width:600px){
+  /* ── Flujo: Refugio y Álamos uno debajo del otro, campos de buen tamaño ── */
+  .fd-cols-grid{grid-template-columns:1fr}
+  .fd-col{padding:10px 12px}
+  .fd-col-label{font-size:11px}
+  .fd-recibido{font-size:11px;gap:6px}
+  .fd-corte-line{gap:8px}
+  .fd-corte-num{font-size:15px;padding:7px 8px}
+  .fd-corte-num::placeholder{font-size:11px}
+  .fd-corte-coord{font-size:13px;padding:7px 8px}
+  .fd-add-corte{font-size:11px;padding:7px 6px}
+  .fd-corte-sum{font-size:12px}
+  .fd-gasto-lbl{font-size:11px}
+  .fd-inp-gasto-card{width:120px;font-size:14px;padding:7px 8px}
+  .fd-inp-concepto-card{font-size:13px;padding:7px 8px}
+  .fd-col-total{font-size:12px}
+  .fd-inp-txt-card{font-size:15px}
+}
 </style>
 </head>
 <body>
@@ -3921,6 +4055,35 @@ function renderTHistorico(semana, tb){
   tb.innerHTML = html;
 }
 
+// ── Nómina en celular: cada lavador es una tarjeta compacta (nombre, autos y total);
+//    al tocarla se abre con todos los campos. En compu la celda .mc-sum no se ve.
+const mcAbiertas=new WeakSet();
+function mcSumInner(row,t){
+  const suc=row.sucursal==="PC Refugio"?'<span class="pill-ref">Refugio</span>':row.sucursal==="PC Álamos"?'<span class="pill-ala">Álamos</span>':'<span class="pill-sin">Sin sucursal</span>';
+  const dsc=getDesc(row.nombre);
+  const deu=dsc>0?`<span class="mc-deu">deuda −${fmt(dsc)}</span>`:"";
+  const nom=esc(row.nombre).replace(/</g,"&lt;")||"Sin nombre";
+  return `<div class="mc-who"><b>${nom}</b><div class="mc-meta">${suc}<span>${num(row.autos)} autos</span>${deu}</div></div>
+    <div class="mc-tot" style="color:${t>0?"#276749":t<0?"#c53030":"#888"}">${fmt(t)}</div><span class="mc-chev">›</span>`;
+}
+function mcSumTd(row,i,t){return `<td class="mc-sum" data-label="" onclick="mcToggle(${i})">${mcSumInner(row,t)}</td>`;}
+function mcRefresh(i,tr){
+  const s=tr&&tr.querySelector("td.mc-sum"); const r=rows[i];
+  if(s&&r) s.innerHTML=mcSumInner(r,calcT(r,r.nombre));
+}
+function mcToggle(i){
+  const r=rows[i]; if(!r)return;
+  if(mcAbiertas.has(r))mcAbiertas.delete(r); else mcAbiertas.add(r);
+  const tr=document.querySelector(`#tb tr[data-row-idx="${i}"]`);
+  if(tr){const ab=mcAbiertas.has(r);tr.classList.toggle("mc-open",ab);tr.classList.toggle("mc-closed",!ab);}
+}
+// En celular el doble clic no existe: un toque en "+ concepto" abre lo mismo
+document.addEventListener("click",e=>{
+  if(!window.matchMedia("(max-width:768px)").matches)return;
+  const el=e.target.closest&&e.target.closest("#tb [ondblclick]");
+  if(!el||el.tagName==="INPUT")return;
+  el.dispatchEvent(new MouseEvent("dblclick",{bubbles:true}));
+});
 function renderT(){
   const tb=document.getElementById("tb");tb.innerHTML="";
   poblarDatosSemSel();
@@ -4025,6 +4188,8 @@ function renderT(){
         ${desglose}
       </td>
       <td data-label="" style="padding:5px 4px"><button class="xb" onclick="rr(${i})">✕</button></td>`;
+    tr.insertAdjacentHTML("afterbegin",mcSumTd(row,i,t));
+    tr.classList.add(mcAbiertas.has(row)||!row.nombre?"mc-open":"mc-closed");
     tb.appendChild(tr);
 
     // Si es el ÚLTIMO de su grupo doble → insertar fila combinada
@@ -4217,6 +4382,7 @@ function updateTotalCell(i){
     totalTd.style.borderLeft=`2px solid ${bord}`;
     totalTd.innerHTML=`<div style="font-size:14px;font-weight:900;color:${color}">${fmt(t)}</div>${desglose}`;
   }
+  mcRefresh(i,tr);
 }
 function updateCombinedRow(nombre){
   const k=normN(nombre);
