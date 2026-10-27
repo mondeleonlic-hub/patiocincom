@@ -5624,6 +5624,8 @@ function initLiquidaciones(){
   // Sin comisión fija: se quita de las liquidaciones que la traían
   let _sinFija=false;
   liquidaciones.forEach(l=>{if(l.metas&&l.metas.some(m=>m.regla==="fija")){l.metas=l.metas.filter(m=>m.regla!=="fija");_sinFija=true;}});
+  // KPIs sin valor (ni % de ventas ni monto) → 0.5% de las ventas del mes
+  liquidaciones.forEach(l=>(l.metas||[]).forEach(m=>{if((m.regla==="prop"||m.regla==="todo")&&!(+m.pv>0)&&!(+m.monto>0)){m.pv=0.5;delete m.monto;_sinFija=true;}}));
   if(_sinFija)sv("pc4_liquidaciones",liquidaciones);
   // Pre-cargar liquidación de Hugo si no existe
   if(!liquidaciones.find(l=>l.nombre==="Hugo Sánchez")){
@@ -5810,13 +5812,14 @@ function lqResumenHtml(l,r){
     </div>
   </div>`;
 }
+function lqMaxTxt(r){return r.metasMax?"bono por KPIs de hasta "+fmt(r.metasMax):"para calcular su bono por KPIs";}
 function lqCumTxt(r){return r.cumpl===null?"":r.llaveFalla.length?"Llave no cumplida":r.cumpl+"% de cumplimiento";}
 function lqMetasHtml(l,i,r){
   if(!l.metas||!l.metas.length)return `<div class="lq-metas"><button class="lq-add" onclick="lqActivarMetas(${i})">+ Agregar metas del mes</button></div>`;
   return `<div class="lq-metas">
     <div class="lq-mh"><span>Metas del mes</span><span id="lq-cum-${i}" class="lq-cum ${r.llaveFalla.length?"lq-no":""}">${lqCumTxt(r)}</span></div>
     <div class="lq-mr lq-ventas">
-      <div class="lq-mn"><b>Ventas del mes</b><small>para calcular su bono por KPIs</small></div>
+      <div class="lq-mn"><b>Ventas del mes</b><small id="lq-max-${i}">${lqMaxTxt(r)}</small></div>
       <input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${l.ventas||""}" placeholder="$" onchange="lqSetVentas(${i},+this.value)" title="Ventas del mes">
     </div>
     ${r.det.map((x,mi)=>{const m=x.m;const ok=lqEsMeta(m)&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
@@ -5854,13 +5857,13 @@ function lqCfgHtml(l,i){
 // ── Imagen de metas para mandar al coordinador ──
 function lqImgHtml(l){
   const r=lqCalc(l);
-  const conRes=r.ventas>0||(l.metas||[]).some(m=>(+m.logrado||0)>0);
+  const conRes=(l.metas||[]).some(m=>(+m.logrado||0)>0);
   const objetivo=m=>m.regla==="fija"?"—":m.regla==="pct"?"—":m.regla==="exc"?"Arriba de "+lqFmtN(m,m.meta):lqFmtN(m,m.meta)+(/%/.test(m.ind||"")?"%":"");
   const paga=m=>{
     if(m.regla==="fija")return `${+m.pct||0}% de ventas`;
     if(m.regla==="pct")return `${+m.pct||0}% de lo vendido`;
     if(m.regla==="exc")return `${+m.pct||0}% del excedente`;
-    const v=(+m.pv||0)>0?`${+m.pv}% de ventas`:fmt(+m.monto||0);
+    const v=(+m.pv||0)>0?(r.ventas?fmt(lqValor(m,r.ventas)):`${+m.pv}% de ventas`):fmt(+m.monto||0);
     return v+(m.regla==="todo"?" si llegas":"");
   };
   const llaves=(l.metas||[]).filter(m=>m.llave).map(m=>m.ind);
@@ -5877,6 +5880,7 @@ function lqImgHtml(l){
     <table>
       <thead><tr><th class="li-n">Meta</th><th>Objetivo</th><th>Paga</th>${conRes?"<th>Logrado</th><th class=\"li-r\">Ganas</th>":""}</tr></thead>
       <tbody>${filas}</tbody>
+      ${!conRes&&r.metasMax?`<tfoot><tr><td colspan="2">Bono por KPIs si llegas a todo</td><td class="li-c" style="font-weight:900">${fmt(r.metasMax)}</td></tr></tfoot>`:""}
       ${conRes?`<tfoot><tr><td colspan="4">Bono y comisiones del mes${r.ventas?` <span>· ventas ${fmt(r.ventas)}</span>`:""}</td><td class="li-r">${fmt(r.metasPago)}</td></tr></tfoot>`:""}
     </table>
     ${llaves.length?`<div class="li-note">Llave: si no llegas a <b>${llaves.map(esc).join(", ")}</b>, el bono por KPIs no se paga ese mes. Las comisiones de membresías y detallados sí.</div>`:""}
@@ -5934,6 +5938,7 @@ function lqRefresh(i){
   const c=$("lq-cum-"+i);
   if(c){c.className="lq-cum"+(r.llaveFalla.length?" lq-no":"");c.textContent=lqCumTxt(r);}
   if($("lq-mt-"+i))$("lq-mt-"+i).textContent=fmt(r.metasPago);
+  if($("lq-max-"+i))$("lq-max-"+i).textContent=lqMaxTxt(r);
   if($("lq-warn-"+i))$("lq-warn-"+i).innerHTML=lqWarn(r);
 }
 function lqDelMeta(i,mi){liquidaciones[i].metas.splice(mi,1);lqSave();}
