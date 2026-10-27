@@ -5626,6 +5626,13 @@ function initLiquidaciones(){
   liquidaciones.forEach(l=>{if(l.metas&&l.metas.some(m=>m.regla==="fija")){l.metas=l.metas.filter(m=>m.regla!=="fija");_sinFija=true;}});
   // KPIs sin valor (ni % de ventas ni monto) → 0.5% de las ventas del mes
   liquidaciones.forEach(l=>(l.metas||[]).forEach(m=>{if((m.regla==="prop"||m.regla==="todo")&&!(+m.pv>0)&&!(+m.monto>0)){m.pv=0.5;delete m.monto;_sinFija=true;}}));
+  // Comisiones de membresías/detallados sin capturar → por pieza (Quick Pass $487 · Detallado PATIO CINCO S $1,650)
+  liquidaciones.forEach(l=>(l.metas||[]).forEach(m=>{
+    if(m.regla!=="pct"||+m.precio>0||+m.logrado>0)return;
+    const n=(m.ind||"").toLowerCase();
+    if(n.includes("membres")){m.ind="Membresías Quick Pass";m.precio=487;_sinFija=true;}
+    else if(n.includes("detall")){m.ind="Detallados PATIO CINCO S";m.precio=1650;_sinFija=true;}
+  }));
   if(_sinFija)sv("pc4_liquidaciones",liquidaciones);
   // Pre-cargar liquidación de Hugo si no existe
   if(!liquidaciones.find(l=>l.nombre==="Hugo Sánchez")){
@@ -5747,8 +5754,8 @@ function lqPlanBase(){
     {ind:"Detallados vendidos",regla:"prop",meta:5,pv:0.5,logrado:0},
     {ind:"Reseñas 5 estrellas",regla:"prop",meta:20,pv:0.5,logrado:0},
     {ind:"Auditorías bien (%)",regla:"todo",meta:80,pv:0.5,logrado:0,llave:true},
-    {ind:"Comisión membresías",regla:"pct",pct:20,logrado:0},
-    {ind:"Comisión detallados",regla:"pct",pct:5,logrado:0}
+    {ind:"Membresías Quick Pass",regla:"pct",pct:20,precio:487,logrado:0},
+    {ind:"Detallados PATIO CINCO S",regla:"pct",pct:5,precio:1650,logrado:0}
   ];
 }
 function lqPlanPara(nombre,excluir){
@@ -5761,7 +5768,7 @@ function lqValor(m,ventas){return (+m.pv||0)>0?ventas*(+m.pv)/100:(+m.monto||0);
 function lqMetaPago(m,ventas){
   const meta=+m.meta||0, log=+m.logrado||0, pct=+m.pct||0;
   if(m.regla==="fija")return ventas*pct/100;
-  if(m.regla==="pct")return log*pct/100;
+  if(m.regla==="pct")return (+m.precio>0?log*(+m.precio):log)*pct/100;
   if(m.regla==="exc")return Math.max(0,log-meta)*pct/100;
   if(!meta)return 0;
   if(m.regla==="todo")return log>=meta?lqValor(m,ventas):0;
@@ -5791,10 +5798,10 @@ function lqCalc(l){
   return {sueldo,ventas,det,metasPago,metasMax,indPago,cumpl,
     llaveFalla,manual,totalCom,totalPagar,totalAbonos,saldo:totalPagar-totalAbonos};
 }
-function lqFmtN(m,v){return m.regla==="pct"||m.regla==="exc"||/\$/.test(m.ind||"")?fmt(+v||0):(+v||0).toLocaleString("es-MX");}
+function lqFmtN(m,v){return (m.regla==="pct"&&!(+m.precio>0))||m.regla==="exc"||/\$/.test(m.ind||"")?fmt(+v||0):(+v||0).toLocaleString("es-MX");}
 function lqMetaSub(m,ventas){
   if(m.regla==="fija")return `${+m.pct||0}% de las ventas del mes`;
-  if(m.regla==="pct")return `${+m.pct||0}% de lo vendido`;
+  if(m.regla==="pct")return +m.precio>0?`${+m.pct||0}% de ${fmt(+m.precio)} = ${fmt(+m.precio*(+m.pct||0)/100)} c/u`:`${+m.pct||0}% de lo vendido`;
   if(m.regla==="exc")return `${+m.pct||0}% arriba de ${lqFmtN(m,m.meta)}`;
   const vale=(+m.pv||0)>0?`${+m.pv}% de ventas${ventas?" ("+fmt(lqValor(m,ventas))+")":""}`:fmt(+m.monto||0);
   return `meta ${lqFmtN(m,m.meta)} · ${vale}${m.regla==="todo"?" si llega":""}${m.llave?" · llave":""}`;
@@ -5825,7 +5832,7 @@ function lqMetasHtml(l,i,r){
     ${r.det.map((x,mi)=>{const m=x.m;const ok=lqEsMeta(m)&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
       return `<div class="lq-mr">
       <div class="lq-mn" id="lq-mn-${i}-${mi}"><b>${esc(m.ind)}</b><small>${lqMetaSub(m,r.ventas)}</small></div>
-      ${m.regla==="fija"?`<div></div>`:`<input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${m.logrado||""}" placeholder="${m.regla==="pct"||m.regla==="exc"?"$ vendido":"0"}" onchange="lqSetMeta(${i},${mi},'logrado',+this.value)" title="${m.regla==="pct"?"Lo vendido este mes":"Logrado este mes"}">`}
+      ${m.regla==="fija"?`<div></div>`:`<input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${m.logrado||""}" placeholder="${m.regla==="pct"&&+m.precio>0?"cant.":m.regla==="pct"||m.regla==="exc"?"$ vendido":"0"}" onchange="lqSetMeta(${i},${mi},'logrado',+this.value)" title="${m.regla==="pct"&&+m.precio>0?"Cuántas vendió":m.regla==="pct"?"Lo vendido este mes":"Logrado este mes"}">`}
       <div id="lq-mp-${i}-${mi}" class="lq-mp ${x.pago?"":"lq-cero"}">${ok?'<i class="lq-ok">✓</i>':""}${fmt(x.pago)}</div>
     </div>`;}).join("")}
     <div class="lq-mt"><span>Bono y comisiones del mes</span><b id="lq-mt-${i}">${fmt(r.metasPago)}</b></div>
@@ -5844,7 +5851,7 @@ function lqCfgHtml(l,i){
       <select onchange="lqSetMeta(${i},${mi},'regla',this.value)">${Object.entries(LQ_REGLAS).map(([k,v])=>`<option value="${k}" ${m.regla===k?"selected":""}>${v}</option>`).join("")}</select>
       ${m.regla!=="pct"&&m.regla!=="fija"?`<label>Meta<input type="number" min="0" step="any" value="${m.meta||""}" onchange="lqSetMeta(${i},${mi},'meta',+this.value)"></label>`:""}
       ${lqEsMeta(m)?`<label>% ventas<input type="number" min="0" step="any" value="${m.pv||""}" placeholder="${m.monto?"$"+m.monto:"0.5"}" onchange="lqSetMeta(${i},${mi},'pv',+this.value)"></label>`
-        :`<label>%<input type="number" min="0" step="any" value="${m.pct||""}" onchange="lqSetMeta(${i},${mi},'pct',+this.value)"></label>`}
+        :`${m.regla==="pct"?`<label>Precio $<input type="number" min="0" step="any" value="${m.precio||""}" placeholder="c/u" onchange="lqSetMeta(${i},${mi},'precio',+this.value)" title="Precio de cada una. Vacío = capturas el total vendido en $"></label>`:""}<label>%<input type="number" min="0" step="any" value="${m.pct||""}" onchange="lqSetMeta(${i},${mi},'pct',+this.value)"></label>`}
       ${m.regla!=="pct"&&m.regla!=="fija"?`<label class="lq-llave" title="Si no se cumple, las metas no se pagan"><input type="checkbox" ${m.llave?"checked":""} onchange="lqSetMeta(${i},${mi},'llave',this.checked)">Llave</label>`:""}
       <button onclick="lqDelMeta(${i},${mi})" class="lq-x">✕</button>
     </div>`).join("")}
@@ -5854,6 +5861,14 @@ function lqCfgHtml(l,i){
     </div>`;
 }
 
+// Captura un elemento completo como imagen (sin recortes en iPhone):
+// se le da a html2canvas el tamaño real del elemento y una ventana virtual del mismo ancho.
+async function pcCaptura(el){
+  const w=Math.ceil(el.scrollWidth), hh=Math.ceil(el.scrollHeight);
+  return html2canvas(el,{scale:2,backgroundColor:"#ffffff",logging:false,useCORS:true,
+    width:w,height:hh,windowWidth:Math.max(w+40,document.documentElement.clientWidth),
+    scrollX:-window.scrollX,scrollY:-window.scrollY});
+}
 // ── Imagen de metas para mandar al coordinador ──
 function lqImgHtml(l){
   const r=lqCalc(l);
@@ -5861,7 +5876,7 @@ function lqImgHtml(l){
   const objetivo=m=>m.regla==="fija"?"—":m.regla==="pct"?"—":m.regla==="exc"?"Arriba de "+lqFmtN(m,m.meta):lqFmtN(m,m.meta)+(/%/.test(m.ind||"")?"%":"");
   const paga=m=>{
     if(m.regla==="fija")return `${+m.pct||0}% de ventas`;
-    if(m.regla==="pct")return `${+m.pct||0}% de lo vendido`;
+    if(m.regla==="pct")return +m.precio>0?`${fmt(+m.precio*(+m.pct||0)/100)} c/u`:`${+m.pct||0}% de lo vendido`;
     if(m.regla==="exc")return `${+m.pct||0}% del excedente`;
     const v=(+m.pv||0)>0?(r.ventas?fmt(lqValor(m,r.ventas)):`${+m.pv}% de ventas`):fmt(+m.monto||0);
     return v+(m.regla==="todo"?" si llegas":"");
@@ -5872,7 +5887,7 @@ function lqImgHtml(l){
       <td class="li-n">${esc(m.ind)}${m.llave?' <span class="li-k">llave</span>':""}</td>
       <td class="li-c">${objetivo(m)}</td>
       <td class="li-c">${paga(m)}</td>
-      ${conRes?`<td class="li-c">${m.regla==="fija"?"—":m.regla==="pct"||m.regla==="exc"?fmt(+m.logrado||0):lqFmtN(m,m.logrado)+(/%/.test(m.ind||"")?"%":"")+(ok?" ✓":"")}</td><td class="li-r">${fmt(x.pago)}</td>`:""}
+      ${conRes?`<td class="li-c">${m.regla==="fija"?"—":(m.regla==="pct"&&!(+m.precio>0))||m.regla==="exc"?fmt(+m.logrado||0):lqFmtN(m,m.logrado)+(/%/.test(m.ind||"")?"%":"")+(ok?" ✓":"")}</td><td class="li-r">${fmt(x.pago)}</td>`:""}
     </tr>`;}).join("");
   return `<div class="li${conRes?" li-res":""}">
     <div class="li-h"><div><span style="font-weight:300">PATIO </span><b>CINCO</b></div><div class="li-t">Metas del mes</div></div>
@@ -5896,10 +5911,10 @@ async function lqImagen(i){
         s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});
     }
     const wrap=document.createElement("div");
-    wrap.style.cssText="position:fixed;left:-9999px;top:0;background:#fff";
+    wrap.style.cssText="position:fixed;left:0;top:0;z-index:-1;background:#fff;pointer-events:none;width:max-content";
     wrap.innerHTML=lqImgHtml(l);document.body.appendChild(wrap);
     await new Promise(r=>setTimeout(r,80));
-    const canvas=await html2canvas(wrap.firstElementChild,{scale:2,backgroundColor:"#ffffff",logging:false});
+    const canvas=await pcCaptura(wrap.firstElementChild);
     document.body.removeChild(wrap);
     const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
     const fname=("metas-"+(l.nombre||"coordinador")+"-"+(l.periodo||"")).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/gi,"-").toLowerCase().replace(/-+$/,"")+".png";
@@ -6016,7 +6031,7 @@ function imprimirLiquidacion(i){
   <div class="seccion">
     <div class="sec-titulo">Comisiones${r.cumpl!==null&&!r.llaveFalla.length?" · "+r.cumpl+"% de cumplimiento de metas":""}</div>
     ${l.metas&&l.metas.length?`<div class="fila"><span class="lbl">Ventas del mes</span><span class="val">${fmt(r.ventas)}</span></div>`:""}
-    ${r.det.map(x=>`<div class="fila"><span class="lbl">${esc(x.m.ind)} <span style="color:#888;font-size:10px">(${x.m.regla==="fija"?(+x.m.pct||0)+"% de ventas":x.m.regla==="pct"?(+x.m.pct||0)+"% de "+fmt(+x.m.logrado||0):x.m.regla==="exc"?(+x.m.pct||0)+"% sobre excedente de "+lqFmtN(x.m,x.m.meta):lqFmtN(x.m,x.m.logrado)+" de "+lqFmtN(x.m,x.m.meta)+((+x.m.pv||0)>0?" · "+x.m.pv+"% de ventas":"")})</span></span><span class="val">${fmt(x.pago)}</span></div>`).join("")}
+    ${r.det.map(x=>`<div class="fila"><span class="lbl">${esc(x.m.ind)} <span style="color:#888;font-size:10px">(${x.m.regla==="fija"?(+x.m.pct||0)+"% de ventas":x.m.regla==="pct"?(+x.m.precio>0?(+x.m.logrado||0)+" × "+(+x.m.pct||0)+"% de "+fmt(+x.m.precio):(+x.m.pct||0)+"% de "+fmt(+x.m.logrado||0)):x.m.regla==="exc"?(+x.m.pct||0)+"% sobre excedente de "+lqFmtN(x.m,x.m.meta):lqFmtN(x.m,x.m.logrado)+" de "+lqFmtN(x.m,x.m.meta)+((+x.m.pv||0)>0?" · "+x.m.pv+"% de ventas":"")})</span></span><span class="val">${fmt(x.pago)}</span></div>`).join("")}
     ${r.llaveFalla.length?`<div style="font-size:10px;color:#c53030;margin:4px 0">No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes.</div>`:""}
     ${(l.comisiones||[]).map(c=>`<div class="fila"><span class="lbl">${c.desc}</span><span class="val">${fmt(c.monto)}</span></div>`).join("")}
     <div class="subtotal"><span>Subtotal comisiones</span><span>${fmt(totalCom)}</span></div>
@@ -11560,10 +11575,10 @@ async function rlImagen(){
         s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});
     }
     const wrap=document.createElement("div");
-    wrap.style.cssText="position:fixed;left:-9999px;top:0;background:#fff";
+    wrap.style.cssText="position:fixed;left:0;top:0;z-index:-1;background:#fff;pointer-events:none;width:max-content";
     wrap.innerHTML=rlHtmlImagen();document.body.appendChild(wrap);
     await new Promise(r=>setTimeout(r,80));
-    const canvas=await html2canvas(wrap.firstElementChild,{scale:2,backgroundColor:"#ffffff",logging:false});
+    const canvas=await pcCaptura(wrap.firstElementChild);
     document.body.removeChild(wrap);
     const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
     const fname=`rol-${rolSuc.replace("PC ","").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}.png`;
@@ -11792,7 +11807,7 @@ async function chImagen(){
     }
     const D=chData();
     const wrap=document.createElement("div");
-    wrap.style.cssText="position:fixed;left:-9999px;top:0;background:#fff";
+    wrap.style.cssText="position:fixed;left:0;top:0;z-index:-1;background:#fff;pointer-events:none;width:max-content";
     wrap.innerHTML=`<div class="ch-img">
       <div class="rl-img-h"><div><span style="font-weight:300">PATIO </span><b>CINCO</b></div><div class="rl-img-t">Horario coordinadores</div></div>
       <div class="ch-img-leg">${D.coords.filter(c=>chVisible(c.id)).map(c=>`<span style="background:${c.color};color:${chTxt(c.color)}">${esc(c.nombre)}</span>`).join("")}</div>
@@ -11800,7 +11815,7 @@ async function chImagen(){
     </div>`;
     document.body.appendChild(wrap);
     await new Promise(r=>setTimeout(r,80));
-    const canvas=await html2canvas(wrap.firstElementChild,{scale:2,backgroundColor:"#ffffff",logging:false});
+    const canvas=await pcCaptura(wrap.firstElementChild);
     document.body.removeChild(wrap);
     const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
     const file=new File([blob],"horario-coordinadores.png",{type:"image/png"});
