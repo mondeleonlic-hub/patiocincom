@@ -628,6 +628,29 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
   box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.035);
 }
 .rcard{display:flex;flex-direction:column;}
+.lq-metas{margin:0 14px 14px;border:1px solid #eee9dd;border-radius:10px;padding:10px 12px;background:#fdfcf9}
+.lq-add{border:1px dashed #d8d2c2;background:#fff;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;font-family:inherit;color:#8a6500;cursor:pointer;width:100%}
+.lq-mh{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:6px}
+.lq-cum{color:#2f855a;letter-spacing:.3px}.lq-cum.lq-no{color:#c53030}
+.lq-mr{display:grid;grid-template-columns:1fr 92px 86px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid #f1eee6}
+.lq-mn b{display:block;font-size:12.5px;font-weight:700;color:#111}
+.lq-mn small{display:block;font-size:10.5px;color:#999;margin-top:1px}
+#coord-liquidaciones .lq-in{width:100%;padding:7px 8px;border:1px solid #e3ddcf;border-radius:8px;font-size:14px!important;text-align:right;font-family:inherit;background:#fff}
+.lq-mp{text-align:right;font-weight:800;font-size:13px;color:#1c3a61}
+.lq-mp.lq-cero{color:#bbb;font-weight:600}
+.lq-ok{font-style:normal;color:#2f855a;margin-right:4px;font-size:11px}
+.lq-mt{display:flex;justify-content:space-between;border-top:1.5px solid #111;margin-top:4px;padding-top:7px;font-size:12px;font-weight:700}
+.lq-mt b{font-size:14px}
+.lq-warn{font-size:11px;color:#c53030;margin-top:6px;line-height:1.4}
+.lq-cfg{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;padding:6px 0;border-bottom:1px dashed #eee}
+#coord-liquidaciones .lq-cfg input,#coord-liquidaciones .lq-cfg select{font-size:12px!important;padding:5px 6px;border:1px solid #ddd;border-radius:6px;background-color:#fff;font-family:inherit}
+.lq-cfg .lq-cfg-n{flex:1 1 150px}
+.lq-cfg label{font-size:9px;font-weight:700;color:#999;text-transform:uppercase;display:flex;flex-direction:column;gap:2px}
+.lq-cfg label input{width:72px}
+.lq-cfg label.lq-llave{flex-direction:row;align-items:center;gap:4px;padding-bottom:6px}
+#coord-liquidaciones .lq-cfg .lq-llave input{width:auto;-webkit-appearance:checkbox;appearance:auto}
+.lq-x{background:none;border:none;cursor:pointer;color:#ccc;font-size:13px;padding-bottom:6px}
+@media(max-width:480px){.lq-mr{grid-template-columns:1fr 78px 76px;gap:6px}}
 .rl{font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:3px;min-height:22px;display:flex;align-items:flex-start;}
 .rv{font-size:17px;font-weight:600;color:#111;line-height:1.1;}
 .rsub{font-size:9.5px;color:#999;margin-top:2px;font-weight:400;}
@@ -5606,11 +5629,8 @@ function renderLiquidaciones(){
   const el=document.getElementById("coord-liquidaciones");
   if(!liquidaciones.length){el.innerHTML='<p class="it">Sin liquidaciones registradas.</p>';return;}
   el.innerHTML=liquidaciones.map((l,i)=>{
-    const sueldo=(l.diasNormales||0)*(l.tarifaDia||0);
-    const totalCom=(l.comisiones||[]).reduce((s,c)=>s+c.monto,0);
-    const totalPagar=sueldo+totalCom;
-    const totalAbonos=(l.abonos||[]).reduce((s,a)=>s+a.monto,0);
-    const saldo=totalPagar-totalAbonos;
+    const r=lqCalc(l);
+    const {sueldo,totalCom,totalPagar,totalAbonos,saldo}=r;
     return`<div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;overflow:hidden;margin-bottom:12px">
       <div style="background:#f0ede6;color:#111;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e0ddd4">
         <div>
@@ -5626,7 +5646,7 @@ function renderLiquidaciones(){
       <!-- RESUMEN CARDS -->
       <div style="padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px">
         <div class="rcard"><div class="rl">Sueldo (${l.diasNormales} días)</div><div class="rv">${fmt(sueldo)}</div></div>
-        <div class="rcard"><div class="rl">Comisiones</div><div class="rv">${fmt(totalCom)}</div></div>
+        <div class="rcard"><div class="rl">Comisiones${r.cumpl!==null?" · "+(r.llaveFalla.length?"llave ✕":r.cumpl+"%"):""}</div><div class="rv">${fmt(totalCom)}</div></div>
         <div class="rcard"><div class="rl">Total a pagar</div><div class="rv" style="color:#1c3a61;font-size:16px">${fmt(totalPagar)}</div></div>
         <div class="rcard"><div class="rl">Ya pagado</div><div class="rv" style="color:#38a169">${fmt(totalAbonos)}</div></div>
         <div class="rcard" style="border-color:${saldo>0?"#e53e3e":"#38a169"}">
@@ -5634,6 +5654,8 @@ function renderLiquidaciones(){
           <div class="rv" style="color:${saldo>0?"#e53e3e":"#38a169"};font-size:16px">${fmt(Math.abs(saldo))}</div>
         </div>
       </div>
+
+      ${lqMetasHtml(l,i,r)}
 
       <!-- CAMPOS EDITABLES -->
       <details style="border-top:1px solid #eee">
@@ -5653,7 +5675,8 @@ function renderLiquidaciones(){
               <input type="number" value="${l.tarifaDia}" onchange="editLiq(${i},'tarifaDia',+this.value);renderLiquidaciones()" style="width:100%"></div>
           </div>
 
-          <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Comisiones</div>
+          ${lqCfgHtml(l,i)}
+          <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">${l.metas&&l.metas.length?"Otras comisiones":"Comisiones"}</div>
           ${(l.comisiones||[]).map((c,ci)=>`
           <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
             <input type="text" value="${c.desc}" onchange="editComLiq(${i},${ci},'desc',this.value)" style="flex:1;font-size:11px">
@@ -5679,6 +5702,102 @@ function renderLiquidaciones(){
   }).join("");
 }
 
+// ── METAS DEL MES (comisión por indicadores) ─────────────────────────────────
+// Cada meta tiene una regla:
+//   prop  → paga proporcional a lo logrado (tope 100%): logrado/meta × monto
+//   todo  → paga el monto completo solo si llega a la meta
+//   exc   → % sobre lo que pase de la meta (ej. bono 5% sobre venta arriba de la meta)
+//   pct   → % sobre lo logrado (ej. 20% de lo vendido en membresías)
+// "Llave": si una meta llave no se cumple, las metas prop/todo/exc pagan $0
+//   (las comisiones por venta % se pagan igual).
+const LQ_REGLAS={prop:"Proporcional",todo:"Todo o nada",exc:"% sobre excedente",pct:"% de venta"};
+function lqPlanBase(){
+  return [
+    {ind:"Membresías vendidas",regla:"prop",meta:20,monto:1000,logrado:0},
+    {ind:"Detallados vendidos",regla:"prop",meta:5,monto:1000,logrado:0},
+    {ind:"Reseñas 5 estrellas",regla:"prop",meta:20,monto:1000,logrado:0},
+    {ind:"Auditorías bien (%)",regla:"todo",meta:80,monto:1000,logrado:0,llave:true},
+    {ind:"Venta de membresías ($)",regla:"pct",pct:20,logrado:0},
+    {ind:"Venta de detallados ($)",regla:"pct",pct:5,logrado:0}
+  ];
+}
+function lqPlanPara(nombre,excluir){
+  const prev=[...liquidaciones].reverse().find(x=>x!==excluir&&x.metas&&x.metas.length&&normN(x.nombre||"")===normN(nombre||""));
+  return (prev?prev.metas:lqPlanBase()).map(m=>({...m,logrado:0}));
+}
+function lqMetaPago(m){
+  const meta=+m.meta||0, log=+m.logrado||0, monto=+m.monto||0, pct=+m.pct||0;
+  if(m.regla==="pct")return log*pct/100;
+  if(m.regla==="exc")return Math.max(0,log-meta)*pct/100;
+  if(!meta)return 0;
+  if(m.regla==="todo")return log>=meta?monto:0;
+  return Math.min(log/meta,1)*monto;
+}
+function lqMetaMax(m){return (m.regla==="prop"||m.regla==="todo")?(+m.monto||0):0;}
+function lqCalc(l){
+  const sueldo=(l.diasNormales||0)*(l.tarifaDia||0);
+  const metas=l.metas||[];
+  const llaveFalla=metas.filter(m=>m.llave&&(+m.logrado||0)<(+m.meta||0));
+  const det=metas.map(m=>{
+    let pago=lqMetaPago(m);
+    const bloqueada=llaveFalla.length>0&&m.regla!=="pct"&&!m.llave;
+    if(llaveFalla.length&&m.regla!=="pct")pago=0;
+    return {m,pago:Math.round(pago*100)/100,bloqueada};
+  });
+  const metasPago=det.reduce((s,x)=>s+x.pago,0);
+  const metasMax=metas.reduce((s,m)=>s+lqMetaMax(m),0);
+  const indPago=det.filter(x=>x.m.regla==="prop"||x.m.regla==="todo").reduce((s,x)=>s+x.pago,0);
+  const manual=(l.comisiones||[]).reduce((s,c)=>s+(+c.monto||0),0);
+  const totalCom=Math.round((metasPago+manual)*100)/100;
+  const totalPagar=sueldo+totalCom;
+  const totalAbonos=(l.abonos||[]).reduce((s,a)=>s+(+a.monto||0),0);
+  return {sueldo,det,metasPago,metasMax,indPago,cumpl:metasMax?Math.round(indPago/metasMax*100):null,
+    llaveFalla,manual,totalCom,totalPagar,totalAbonos,saldo:totalPagar-totalAbonos};
+}
+function lqFmtN(m,v){return m.regla==="pct"||m.regla==="exc"||/\$/.test(m.ind||"")?fmt(+v||0):(+v||0).toLocaleString("es-MX");}
+function lqMetaSub(m){
+  if(m.regla==="pct")return `${+m.pct||0}% de lo vendido`;
+  if(m.regla==="exc")return `${+m.pct||0}% arriba de ${lqFmtN(m,m.meta)}`;
+  return `meta ${lqFmtN(m,m.meta)} · ${fmt(+m.monto||0)}${m.regla==="todo"?" si llega":""}${m.llave?" · llave":""}`;
+}
+function lqMetasHtml(l,i,r){
+  if(!l.metas||!l.metas.length)return `<div class="lq-metas"><button class="lq-add" onclick="lqActivarMetas(${i})">+ Agregar metas del mes</button></div>`;
+  return `<div class="lq-metas">
+    <div class="lq-mh"><span>Metas del mes</span>${r.cumpl!==null?`<span class="lq-cum ${r.llaveFalla.length?"lq-no":""}">${r.llaveFalla.length?"Llave no cumplida":r.cumpl+"% de cumplimiento"}</span>`:""}</div>
+    ${r.det.map((x,mi)=>{const m=x.m;const ok=(m.regla==="prop"||m.regla==="todo")&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
+      return `<div class="lq-mr">
+      <div class="lq-mn"><b>${esc(m.ind)}</b><small>${lqMetaSub(m)}</small></div>
+      <input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${m.logrado||""}" placeholder="${m.regla==="pct"||m.regla==="exc"?"$":"0"}" onchange="lqSetMeta(${i},${mi},'logrado',+this.value)" title="Logrado este mes">
+      <div class="lq-mp ${x.pago?"":"lq-cero"}">${ok?'<i class="lq-ok">✓</i>':""}${fmt(x.pago)}</div>
+    </div>`;}).join("")}
+    <div class="lq-mt"><span>Comisión por metas</span><b>${fmt(r.metasPago)}</b></div>
+    ${r.llaveFalla.length?`<div class="lq-warn">No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes (las comisiones por venta sí).</div>`:""}
+  </div>`;
+}
+function lqCfgHtml(l,i){
+  if(!l.metas||!l.metas.length)return "";
+  return `<div style="font-size:11px;font-weight:700;color:#888;margin:4px 0 6px;text-transform:uppercase;letter-spacing:.5px">Plan de metas</div>
+    ${l.metas.map((m,mi)=>`<div class="lq-cfg">
+      <input type="text" value="${esc(m.ind)}" onchange="lqSetMeta(${i},${mi},'ind',this.value)" class="lq-cfg-n">
+      <select onchange="lqSetMeta(${i},${mi},'regla',this.value)">${Object.entries(LQ_REGLAS).map(([k,v])=>`<option value="${k}" ${m.regla===k?"selected":""}>${v}</option>`).join("")}</select>
+      ${m.regla!=="pct"?`<label>Meta<input type="number" min="0" step="any" value="${m.meta||""}" onchange="lqSetMeta(${i},${mi},'meta',+this.value)"></label>`:""}
+      ${m.regla==="prop"||m.regla==="todo"?`<label>Paga $<input type="number" min="0" step="any" value="${m.monto||""}" onchange="lqSetMeta(${i},${mi},'monto',+this.value)"></label>`
+        :`<label>%<input type="number" min="0" step="any" value="${m.pct||""}" onchange="lqSetMeta(${i},${mi},'pct',+this.value)"></label>`}
+      ${m.regla!=="pct"?`<label class="lq-llave" title="Si no se cumple, las metas no se pagan"><input type="checkbox" ${m.llave?"checked":""} onchange="lqSetMeta(${i},${mi},'llave',this.checked)">Llave</label>`:""}
+      <button onclick="lqDelMeta(${i},${mi})" class="lq-x">✕</button>
+    </div>`).join("")}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px">
+      <button onclick="lqAddMeta(${i})" style="font-size:11px;padding:4px 10px;border:1px dashed #ddd;border-radius:4px;background:#fff;cursor:pointer">+ Meta</button>
+      <button onclick="lqResetPlan(${i})" style="font-size:11px;padding:4px 10px;border:none;background:none;color:#999;cursor:pointer;text-decoration:underline">Usar plan base</button>
+    </div>`;
+}
+function lqSave(){sv("pc4_liquidaciones",liquidaciones);renderLiquidaciones();}
+function lqActivarMetas(i){const l=liquidaciones[i];l.metas=lqPlanPara(l.nombre,l);lqSave();}
+function lqSetMeta(i,mi,k,v){liquidaciones[i].metas[mi][k]=v;lqSave();}
+function lqDelMeta(i,mi){liquidaciones[i].metas.splice(mi,1);lqSave();}
+function lqAddMeta(i){liquidaciones[i].metas.push({ind:"Nueva meta",regla:"prop",meta:1,monto:0,logrado:0});lqSave();}
+function lqResetPlan(i){if(!confirm("¿Reemplazar las metas de esta liquidación por el plan base?"))return;liquidaciones[i].metas=lqPlanBase();lqSave();}
+
 function editLiq(i,campo,val){liquidaciones[i][campo]=val;sv("pc4_liquidaciones",liquidaciones);}
 function editComLiq(i,ci,campo,val){liquidaciones[i].comisiones[ci][campo]=val;sv("pc4_liquidaciones",liquidaciones);}
 function delComLiq(i,ci){liquidaciones[i].comisiones.splice(ci,1);sv("pc4_liquidaciones",liquidaciones);renderLiquidaciones();}
@@ -5694,11 +5813,8 @@ function delLiquidacion(i){
 
 function imprimirLiquidacion(i){
   const l=liquidaciones[i];
-  const sueldo=(l.diasNormales||0)*(l.tarifaDia||0);
-  const totalCom=(l.comisiones||[]).reduce((s,c)=>s+c.monto,0);
-  const totalPagar=sueldo+totalCom;
-  const totalAbonos=(l.abonos||[]).reduce((s,a)=>s+a.monto,0);
-  const saldo=totalPagar-totalAbonos;
+  const r=lqCalc(l);
+  const {sueldo,totalCom,totalPagar,totalAbonos,saldo}=r;
 
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
   <style>
@@ -5751,7 +5867,9 @@ function imprimirLiquidacion(i){
   </div>
 
   <div class="seccion">
-    <div class="sec-titulo">Comisiones</div>
+    <div class="sec-titulo">Comisiones${r.cumpl!==null&&!r.llaveFalla.length?" · "+r.cumpl+"% de cumplimiento de metas":""}</div>
+    ${r.det.map(x=>`<div class="fila"><span class="lbl">${esc(x.m.ind)} <span style="color:#888;font-size:10px">${x.m.regla==="pct"?"("+(+x.m.pct||0)+"% de "+fmt(+x.m.logrado||0)+")":x.m.regla==="exc"?"("+(+x.m.pct||0)+"% sobre excedente de "+lqFmtN(x.m,x.m.meta)+")":"("+lqFmtN(x.m,x.m.logrado)+" de "+lqFmtN(x.m,x.m.meta)+")"}</span></span><span class="val">${fmt(x.pago)}</span></div>`).join("")}
+    ${r.llaveFalla.length?`<div style="font-size:10px;color:#c53030;margin:4px 0">No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes.</div>`:""}
     ${(l.comisiones||[]).map(c=>`<div class="fila"><span class="lbl">${c.desc}</span><span class="val">${fmt(c.monto)}</span></div>`).join("")}
     <div class="subtotal"><span>Subtotal comisiones</span><span>${fmt(totalCom)}</span></div>
   </div>
@@ -5812,7 +5930,7 @@ function abrirLiquidacion(){
       <div><label style="font-size:10px;font-weight:700;color:#888;display:block;margin-bottom:3px;text-transform:uppercase">Días normales</label><input id="lq-dias" type="number" min="0" placeholder="0" style="width:100%"></div>
       <div><label style="font-size:10px;font-weight:700;color:#888;display:block;margin-bottom:3px;text-transform:uppercase">Tarifa por día ($)</label><input id="lq-tarifa" type="number" min="0" placeholder="450" style="width:100%"></div>
     </div>
-    <p style="font-size:11px;color:#aaa;margin-bottom:8px">Extras, comisiones y abonos se pueden editar después desde la tarjeta.</p>
+    <p style="font-size:11px;color:#aaa;margin-bottom:8px">Se le cargan las metas de su liquidación anterior (o el plan base). Metas, comisiones y abonos se editan desde la tarjeta.</p>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button onclick="this.closest('div[style*=fixed]').remove()" style="padding:8px 14px;border-radius:5px;border:1px solid #ddd;background:#fff;cursor:pointer;font-weight:700;font-size:12px">Cancelar</button>
       <button onclick="guardarLiquidacion()" style="padding:8px 14px;border-radius:5px;border:none;background:#f8ba00;color:#000;cursor:pointer;font-weight:700;font-size:12px">Crear</button>
@@ -5828,7 +5946,8 @@ function abrirLiquidacion(){
       fecha:new Date().toLocaleDateString("es-MX"),
       diasNormales:+document.getElementById("lq-dias").value||0,
       tarifaDia:+document.getElementById("lq-tarifa").value||0,
-      diasFestivos:[],hrsExtra:[],comisiones:[],abonos:[]
+      diasFestivos:[],hrsExtra:[],comisiones:[],abonos:[],
+      metas:lqPlanPara(nom)
     });
     sv("pc4_liquidaciones",liquidaciones);
     modal.remove();renderLiquidaciones();
