@@ -641,6 +641,9 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .lq-ok{font-style:normal;color:#2f855a;margin-right:4px;font-size:11px}
 .lq-mt{display:flex;justify-content:space-between;border-top:1.5px solid #111;margin-top:4px;padding-top:7px;font-size:12px;font-weight:700}
 .lq-mt b{font-size:14px}
+.lq-ventas{border-top:none;padding-top:2px}
+.lq-ventas .lq-in{grid-column:2 / 4}
+.lq-ventas .lq-mn b{color:#8a6500}
 .lq-warn{font-size:11px;color:#c53030;margin-top:6px;line-height:1.4}
 .lq-warn:empty{display:none}
 .lq-cfg{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;padding:6px 0;border-bottom:1px dashed #eee}
@@ -5698,62 +5701,76 @@ function renderLiquidaciones(){
 }
 
 // ── METAS DEL MES (comisión por indicadores) ─────────────────────────────────
-// Cada meta tiene una regla:
-//   prop  → paga proporcional a lo logrado (tope 100%): logrado/meta × monto
-//   todo  → paga el monto completo solo si llega a la meta
+// La comisión de los coordinadores es un % de las VENTAS DEL MES de su sucursal
+// (campo "Ventas del mes" que se captura en cada liquidación).
+// Reglas de cada renglón:
+//   fija  → % de las ventas del mes, siempre (ej. comisión fija 1.5%)
+//   prop  → % de las ventas del mes × lo logrado de la meta (tope 100%)
+//   todo  → % de las ventas del mes solo si llega a la meta
 //   exc   → % sobre lo que pase de la meta (ej. bono 5% sobre venta arriba de la meta)
-//   pct   → % sobre lo logrado (ej. 20% de lo vendido en membresías)
-// "Llave": si una meta llave no se cumple, las metas prop/todo/exc pagan $0
-//   (las comisiones por venta % se pagan igual).
-const LQ_REGLAS={prop:"Proporcional",todo:"Todo o nada",exc:"% sobre excedente",pct:"% de venta"};
+//   pct   → % de lo vendido en ese concepto (comisión por membresías 20%, detallados 5%)
+// "Llave": si una meta llave no se cumple, prop/todo/exc pagan $0
+//   (la comisión fija y las comisiones por venta se pagan igual).
+// Compatibilidad: metas viejas con "monto" fijo y sin % de ventas siguen pagando ese monto.
+const LQ_REGLAS={fija:"% fijo de ventas",prop:"Proporcional",todo:"Todo o nada",exc:"% sobre excedente",pct:"Comisión de venta"};
 function lqPlanBase(){
   return [
-    {ind:"Membresías vendidas",regla:"prop",meta:20,monto:1000,logrado:0},
-    {ind:"Detallados vendidos",regla:"prop",meta:5,monto:1000,logrado:0},
-    {ind:"Reseñas 5 estrellas",regla:"prop",meta:20,monto:1000,logrado:0},
-    {ind:"Auditorías bien (%)",regla:"todo",meta:80,monto:1000,logrado:0,llave:true},
-    {ind:"Venta de membresías ($)",regla:"pct",pct:20,logrado:0},
-    {ind:"Venta de detallados ($)",regla:"pct",pct:5,logrado:0}
+    {ind:"Comisión fija",regla:"fija",pct:1.5},
+    {ind:"Membresías vendidas",regla:"prop",meta:20,pv:0.5,logrado:0},
+    {ind:"Detallados vendidos",regla:"prop",meta:5,pv:0.5,logrado:0},
+    {ind:"Reseñas 5 estrellas",regla:"prop",meta:20,pv:0.5,logrado:0},
+    {ind:"Auditorías bien (%)",regla:"todo",meta:80,pv:0.5,logrado:0,llave:true},
+    {ind:"Comisión membresías",regla:"pct",pct:20,logrado:0},
+    {ind:"Comisión detallados",regla:"pct",pct:5,logrado:0}
   ];
 }
 function lqPlanPara(nombre,excluir){
   const prev=[...liquidaciones].reverse().find(x=>x!==excluir&&x.metas&&x.metas.length&&normN(x.nombre||"")===normN(nombre||""));
   return (prev?prev.metas:lqPlanBase()).map(m=>({...m,logrado:0}));
 }
-function lqMetaPago(m){
-  const meta=+m.meta||0, log=+m.logrado||0, monto=+m.monto||0, pct=+m.pct||0;
+const lqEsMeta=m=>m.regla==="prop"||m.regla==="todo";
+// Lo que paga una meta al 100%: % de ventas, o el monto fijo viejo
+function lqValor(m,ventas){return (+m.pv||0)>0?ventas*(+m.pv)/100:(+m.monto||0);}
+function lqMetaPago(m,ventas){
+  const meta=+m.meta||0, log=+m.logrado||0, pct=+m.pct||0;
+  if(m.regla==="fija")return ventas*pct/100;
   if(m.regla==="pct")return log*pct/100;
   if(m.regla==="exc")return Math.max(0,log-meta)*pct/100;
   if(!meta)return 0;
-  if(m.regla==="todo")return log>=meta?monto:0;
-  return Math.min(log/meta,1)*monto;
+  if(m.regla==="todo")return log>=meta?lqValor(m,ventas):0;
+  return Math.min(log/meta,1)*lqValor(m,ventas);
 }
-function lqMetaMax(m){return (m.regla==="prop"||m.regla==="todo")?(+m.monto||0):0;}
 function lqCalc(l){
   const sueldo=(l.diasNormales||0)*(l.tarifaDia||0);
+  const ventas=+l.ventas||0;
   const metas=l.metas||[];
   const llaveFalla=metas.filter(m=>m.llave&&(+m.logrado||0)<(+m.meta||0));
   const det=metas.map(m=>{
-    let pago=lqMetaPago(m);
-    const bloqueada=llaveFalla.length>0&&m.regla!=="pct"&&!m.llave;
-    if(llaveFalla.length&&m.regla!=="pct")pago=0;
-    return {m,pago:Math.round(pago*100)/100,bloqueada};
+    let pago=lqMetaPago(m,ventas);
+    if(llaveFalla.length&&(lqEsMeta(m)||m.regla==="exc"))pago=0;
+    return {m,pago:Math.round(pago*100)/100};
   });
   const metasPago=det.reduce((s,x)=>s+x.pago,0);
-  const metasMax=metas.reduce((s,m)=>s+lqMetaMax(m),0);
-  const indPago=det.filter(x=>x.m.regla==="prop"||x.m.regla==="todo").reduce((s,x)=>s+x.pago,0);
+  const metasMax=metas.filter(lqEsMeta).reduce((s,m)=>s+lqValor(m,ventas),0);
+  const indPago=det.filter(x=>lqEsMeta(x.m)).reduce((s,x)=>s+x.pago,0);
+  const indMetas=metas.filter(lqEsMeta);
+  // % de cumplimiento: por valor si hay ventas, si no por avance de cada meta
+  const cumpl=!indMetas.length?null:metasMax?Math.round(indPago/metasMax*100)
+    :Math.round(indMetas.reduce((s,m)=>s+(m.regla==="todo"?((+m.logrado||0)>=(+m.meta||0)?1:0):Math.min((+m.logrado||0)/((+m.meta)||1),1)),0)/indMetas.length*100);
   const manual=(l.comisiones||[]).reduce((s,c)=>s+(+c.monto||0),0);
   const totalCom=Math.round((metasPago+manual)*100)/100;
   const totalPagar=sueldo+totalCom;
   const totalAbonos=(l.abonos||[]).reduce((s,a)=>s+(+a.monto||0),0);
-  return {sueldo,det,metasPago,metasMax,indPago,cumpl:metasMax?Math.round(indPago/metasMax*100):null,
+  return {sueldo,ventas,det,metasPago,metasMax,indPago,cumpl,
     llaveFalla,manual,totalCom,totalPagar,totalAbonos,saldo:totalPagar-totalAbonos};
 }
 function lqFmtN(m,v){return m.regla==="pct"||m.regla==="exc"||/\$/.test(m.ind||"")?fmt(+v||0):(+v||0).toLocaleString("es-MX");}
-function lqMetaSub(m){
+function lqMetaSub(m,ventas){
+  if(m.regla==="fija")return `${+m.pct||0}% de las ventas del mes`;
   if(m.regla==="pct")return `${+m.pct||0}% de lo vendido`;
   if(m.regla==="exc")return `${+m.pct||0}% arriba de ${lqFmtN(m,m.meta)}`;
-  return `meta ${lqFmtN(m,m.meta)} · ${fmt(+m.monto||0)}${m.regla==="todo"?" si llega":""}${m.llave?" · llave":""}`;
+  const vale=(+m.pv||0)>0?`${+m.pv}% de ventas${ventas?" ("+fmt(lqValor(m,ventas))+")":""}`:fmt(+m.monto||0);
+  return `meta ${lqFmtN(m,m.meta)} · ${vale}${m.regla==="todo"?" si llega":""}${m.llave?" · llave":""}`;
 }
 function lqResumenHtml(l,r){
   const {sueldo,totalCom,totalPagar,totalAbonos,saldo}=r;
@@ -5768,41 +5785,53 @@ function lqResumenHtml(l,r){
     </div>
   </div>`;
 }
+function lqCumTxt(r){return r.cumpl===null?"":r.llaveFalla.length?"Llave no cumplida":r.cumpl+"% de cumplimiento";}
 function lqMetasHtml(l,i,r){
   if(!l.metas||!l.metas.length)return `<div class="lq-metas"><button class="lq-add" onclick="lqActivarMetas(${i})">+ Agregar metas del mes</button></div>`;
   return `<div class="lq-metas">
-    <div class="lq-mh"><span>Metas del mes</span><span id="lq-cum-${i}" class="lq-cum ${r.llaveFalla.length?"lq-no":""}">${r.cumpl===null?"":r.llaveFalla.length?"Llave no cumplida":r.cumpl+"% de cumplimiento"}</span></div>
-    ${r.det.map((x,mi)=>{const m=x.m;const ok=(m.regla==="prop"||m.regla==="todo")&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
+    <div class="lq-mh"><span>Metas del mes</span><span id="lq-cum-${i}" class="lq-cum ${r.llaveFalla.length?"lq-no":""}">${lqCumTxt(r)}</span></div>
+    <div class="lq-mr lq-ventas">
+      <div class="lq-mn"><b>Ventas del mes</b><small>de su sucursal</small></div>
+      <input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${l.ventas||""}" placeholder="$" onchange="lqSetVentas(${i},+this.value)" title="Ventas del mes">
+    </div>
+    ${r.det.map((x,mi)=>{const m=x.m;const ok=lqEsMeta(m)&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
       return `<div class="lq-mr">
-      <div class="lq-mn" id="lq-mn-${i}-${mi}"><b>${esc(m.ind)}</b><small>${lqMetaSub(m)}</small></div>
-      <input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${m.logrado||""}" placeholder="${m.regla==="pct"||m.regla==="exc"?"$":"0"}" onchange="lqSetMeta(${i},${mi},'logrado',+this.value)" title="Logrado este mes">
+      <div class="lq-mn" id="lq-mn-${i}-${mi}"><b>${esc(m.ind)}</b><small>${lqMetaSub(m,r.ventas)}</small></div>
+      ${m.regla==="fija"?`<div></div>`:`<input class="lq-in" type="number" min="0" step="any" inputmode="decimal" value="${m.logrado||""}" placeholder="${m.regla==="pct"||m.regla==="exc"?"$ vendido":"0"}" onchange="lqSetMeta(${i},${mi},'logrado',+this.value)" title="${m.regla==="pct"?"Lo vendido este mes":"Logrado este mes"}">`}
       <div id="lq-mp-${i}-${mi}" class="lq-mp ${x.pago?"":"lq-cero"}">${ok?'<i class="lq-ok">✓</i>':""}${fmt(x.pago)}</div>
     </div>`;}).join("")}
-    <div class="lq-mt"><span>Comisión por metas</span><b id="lq-mt-${i}">${fmt(r.metasPago)}</b></div>
-    <div class="lq-warn" id="lq-warn-${i}">${r.llaveFalla.length?`No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes (las comisiones por venta sí).`:""}</div>
+    <div class="lq-mt"><span>Comisión del mes</span><b id="lq-mt-${i}">${fmt(r.metasPago)}</b></div>
+    <div class="lq-warn" id="lq-warn-${i}">${lqWarn(r)}</div>
   </div>`;
+}
+function lqWarn(r){
+  if(r.llaveFalla.length)return `No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes (la comisión fija y las de venta sí).`;
+  return "";
 }
 function lqCfgHtml(l,i){
   if(!l.metas||!l.metas.length)return "";
-  return `<div style="font-size:11px;font-weight:700;color:#888;margin:4px 0 6px;text-transform:uppercase;letter-spacing:.5px">Plan de metas</div>
+  return `<div style="font-size:11px;font-weight:700;color:#888;margin:4px 0 6px;text-transform:uppercase;letter-spacing:.5px">Plan de comisiones</div>
     ${l.metas.map((m,mi)=>`<div class="lq-cfg">
       <input type="text" value="${esc(m.ind)}" onchange="lqSetMeta(${i},${mi},'ind',this.value)" class="lq-cfg-n">
       <select onchange="lqSetMeta(${i},${mi},'regla',this.value)">${Object.entries(LQ_REGLAS).map(([k,v])=>`<option value="${k}" ${m.regla===k?"selected":""}>${v}</option>`).join("")}</select>
-      ${m.regla!=="pct"?`<label>Meta<input type="number" min="0" step="any" value="${m.meta||""}" onchange="lqSetMeta(${i},${mi},'meta',+this.value)"></label>`:""}
-      ${m.regla==="prop"||m.regla==="todo"?`<label>Paga $<input type="number" min="0" step="any" value="${m.monto||""}" onchange="lqSetMeta(${i},${mi},'monto',+this.value)"></label>`
+      ${m.regla!=="pct"&&m.regla!=="fija"?`<label>Meta<input type="number" min="0" step="any" value="${m.meta||""}" onchange="lqSetMeta(${i},${mi},'meta',+this.value)"></label>`:""}
+      ${lqEsMeta(m)?`<label>% ventas<input type="number" min="0" step="any" value="${m.pv||""}" placeholder="${m.monto?"$"+m.monto:"0.5"}" onchange="lqSetMeta(${i},${mi},'pv',+this.value)"></label>`
         :`<label>%<input type="number" min="0" step="any" value="${m.pct||""}" onchange="lqSetMeta(${i},${mi},'pct',+this.value)"></label>`}
-      ${m.regla!=="pct"?`<label class="lq-llave" title="Si no se cumple, las metas no se pagan"><input type="checkbox" ${m.llave?"checked":""} onchange="lqSetMeta(${i},${mi},'llave',this.checked)">Llave</label>`:""}
+      ${m.regla!=="pct"&&m.regla!=="fija"?`<label class="lq-llave" title="Si no se cumple, las metas no se pagan"><input type="checkbox" ${m.llave?"checked":""} onchange="lqSetMeta(${i},${mi},'llave',this.checked)">Llave</label>`:""}
       <button onclick="lqDelMeta(${i},${mi})" class="lq-x">✕</button>
     </div>`).join("")}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px">
-      <button onclick="lqAddMeta(${i})" style="font-size:11px;padding:4px 10px;border:1px dashed #ddd;border-radius:4px;background:#fff;cursor:pointer">+ Meta</button>
+      <button onclick="lqAddMeta(${i})" style="font-size:11px;padding:4px 10px;border:1px dashed #ddd;border-radius:4px;background:#fff;cursor:pointer">+ Renglón</button>
       <button onclick="lqResetPlan(${i})" style="font-size:11px;padding:4px 10px;border:none;background:none;color:#999;cursor:pointer;text-decoration:underline">Usar plan base</button>
     </div>`;
 }
 function lqSave(){sv("pc4_liquidaciones",liquidaciones);renderLiquidaciones();}
 function lqActivarMetas(i){const l=liquidaciones[i];l.metas=lqPlanPara(l.nombre,l);lqSave();}
+function lqSetVentas(i,v){liquidaciones[i].ventas=v;sv("pc4_liquidaciones",liquidaciones);lqRefresh(i);}
 function lqSetMeta(i,mi,k,v){
-  liquidaciones[i].metas[mi][k]=v;
+  const m=liquidaciones[i].metas[mi];
+  m[k]=v;
+  if(k==="pv"&&v>0)delete m.monto; // ya paga por % de ventas
   if(k==="regla"){lqSave();return;} // cambia qué campos se muestran
   sv("pc4_liquidaciones",liquidaciones);lqRefresh(i);
 }
@@ -5814,19 +5843,19 @@ function lqRefresh(i){
   if($("lq-per-"+i))$("lq-per-"+i).textContent=(l.periodo||"")+" · "+(l.concepto||"");
   if(!l.metas||!l.metas.length)return;
   r.det.forEach((x,mi)=>{
-    const m=x.m, ok=(m.regla==="prop"||m.regla==="todo")&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
+    const m=x.m, ok=lqEsMeta(m)&&(+m.logrado||0)>=(+m.meta||0)&&m.meta;
     const p=$("lq-mp-"+i+"-"+mi);
     if(p){p.className="lq-mp"+(x.pago?"":" lq-cero");p.innerHTML=(ok?'<i class="lq-ok">✓</i>':"")+fmt(x.pago);}
     const n=$("lq-mn-"+i+"-"+mi);
-    if(n)n.innerHTML=`<b>${esc(m.ind)}</b><small>${lqMetaSub(m)}</small>`;
+    if(n)n.innerHTML=`<b>${esc(m.ind)}</b><small>${lqMetaSub(m,r.ventas)}</small>`;
   });
   const c=$("lq-cum-"+i);
-  if(c){c.className="lq-cum"+(r.llaveFalla.length?" lq-no":"");c.textContent=r.cumpl===null?"":(r.llaveFalla.length?"Llave no cumplida":r.cumpl+"% de cumplimiento");}
+  if(c){c.className="lq-cum"+(r.llaveFalla.length?" lq-no":"");c.textContent=lqCumTxt(r);}
   if($("lq-mt-"+i))$("lq-mt-"+i).textContent=fmt(r.metasPago);
-  if($("lq-warn-"+i))$("lq-warn-"+i).innerHTML=r.llaveFalla.length?`No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes (las comisiones por venta sí).`:"";
+  if($("lq-warn-"+i))$("lq-warn-"+i).innerHTML=lqWarn(r);
 }
 function lqDelMeta(i,mi){liquidaciones[i].metas.splice(mi,1);lqSave();}
-function lqAddMeta(i){liquidaciones[i].metas.push({ind:"Nueva meta",regla:"prop",meta:1,monto:0,logrado:0});lqSave();}
+function lqAddMeta(i){liquidaciones[i].metas.push({ind:"Nueva meta",regla:"prop",meta:1,pv:0.5,logrado:0});lqSave();}
 function lqResetPlan(i){if(!confirm("¿Reemplazar las metas de esta liquidación por el plan base?"))return;liquidaciones[i].metas=lqPlanBase();lqSave();}
 
 function editLiq(i,campo,val){liquidaciones[i][campo]=val;sv("pc4_liquidaciones",liquidaciones);lqRefresh(i);}
@@ -5899,7 +5928,8 @@ function imprimirLiquidacion(i){
 
   <div class="seccion">
     <div class="sec-titulo">Comisiones${r.cumpl!==null&&!r.llaveFalla.length?" · "+r.cumpl+"% de cumplimiento de metas":""}</div>
-    ${r.det.map(x=>`<div class="fila"><span class="lbl">${esc(x.m.ind)} <span style="color:#888;font-size:10px">${x.m.regla==="pct"?"("+(+x.m.pct||0)+"% de "+fmt(+x.m.logrado||0)+")":x.m.regla==="exc"?"("+(+x.m.pct||0)+"% sobre excedente de "+lqFmtN(x.m,x.m.meta)+")":"("+lqFmtN(x.m,x.m.logrado)+" de "+lqFmtN(x.m,x.m.meta)+")"}</span></span><span class="val">${fmt(x.pago)}</span></div>`).join("")}
+    ${l.metas&&l.metas.length?`<div class="fila"><span class="lbl">Ventas del mes</span><span class="val">${fmt(r.ventas)}</span></div>`:""}
+    ${r.det.map(x=>`<div class="fila"><span class="lbl">${esc(x.m.ind)} <span style="color:#888;font-size:10px">(${x.m.regla==="fija"?(+x.m.pct||0)+"% de ventas":x.m.regla==="pct"?(+x.m.pct||0)+"% de "+fmt(+x.m.logrado||0):x.m.regla==="exc"?(+x.m.pct||0)+"% sobre excedente de "+lqFmtN(x.m,x.m.meta):lqFmtN(x.m,x.m.logrado)+" de "+lqFmtN(x.m,x.m.meta)+((+x.m.pv||0)>0?" · "+x.m.pv+"% de ventas":"")})</span></span><span class="val">${fmt(x.pago)}</span></div>`).join("")}
     ${r.llaveFalla.length?`<div style="font-size:10px;color:#c53030;margin:4px 0">No se cumplió ${r.llaveFalla.map(m=>esc(m.ind)).join(", ")}: las metas no se pagan este mes.</div>`:""}
     ${(l.comisiones||[]).map(c=>`<div class="fila"><span class="lbl">${c.desc}</span><span class="val">${fmt(c.monto)}</span></div>`).join("")}
     <div class="subtotal"><span>Subtotal comisiones</span><span>${fmt(totalCom)}</span></div>
