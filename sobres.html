@@ -11210,7 +11210,7 @@ const PF_COLS = [
 ];
 const PF_MET = ['puntos','pct','estrellas','hits','lavDiarios','entregas','calidad','strikes','retardos','falta','faltaJust'];
 
-// Captura de AppSheet al 29/oct/2026 (base hasta S43) — Valente, Jose Jr, Juan Lopez, Toño, Gio y Luis Ángel corregidos por Montse
+// Captura de AppSheet al 29/oct/2026 (base hasta S43) — Valente, Jose Jr, Juan Lopez, Toño, Gio, Luis Ángel y Pablo R corregidos por Montse
 const PF_SEED = (()=>{
   const R='PC Refugio', A='PC Álamos';
   const t={
@@ -11224,7 +11224,7 @@ const PF_SEED = (()=>{
     'Dorado':    [R, 403, 15.68,40,4.0,3,10,67,0,2,0,0],
     'Robert':    [R,  47, 12.13,35,3.5,1, 9,73,3,0,2,0],
     'Alexey':    [R,   0,  null,40,null,0,null,33,0,0,0,0],
-    'Pablo R':   [A,   0,  6.47,40,2.1,1, 6,65,0,0,7,0],
+    'Pablo R':   [A,  23,  6.47,40,2.1,1, 6,65,0,0,7,0],
     'Jesús':     [A,  40, -1.75,40,1.0,2, 7,55,4,0,2,2],
     'Jose Jr':   [A,2975, 18.29,40,4.0,2, 9,84,0,0,1,0],
     'Toño':      [A,4335, 18.03,40,4.0,1, 9,81,0,0,0,0],
@@ -11241,7 +11241,7 @@ const PF_SEED = (()=>{
       puntos:v[2],pct:v[3],estrellas:v[4],hits:v[5],lavDiarios:v[6],entregas:v[7],
       calidad:v[8],strikes:v[9],retardos:v[10],falta:v[11],faltaJust:null};
   });
-  return {actualizado:'29/10/2026', corrVer:1, lav};
+  return {actualizado:'29/10/2026', corrVer:2, lav};
 })();
 
 let pfData = null;
@@ -11259,8 +11259,8 @@ function pf_load(){
   return pfData;
 }
 // Correcciones de Montse a la base de AppSheet (se aplican una sola vez)
-const PF_CORR_VER = 1;
-const PF_CORR = {'Valente':3795,'Jose Jr':2975,'Juan Lopez':1630,'Toño':4335,'Gio':2478,'Luis Ángel':652};
+const PF_CORR_VER = 2;
+const PF_CORR = {'Valente':3795,'Jose Jr':2975,'Juan Lopez':1630,'Toño':4335,'Gio':2478,'Luis Ángel':652,'Pablo R':23};
 function pf_aplicarCorrecciones(){
   if(!pfData || (pfData.corrVer||0) >= PF_CORR_VER) return;
   Object.entries(PF_CORR).forEach(([n,base])=>{
