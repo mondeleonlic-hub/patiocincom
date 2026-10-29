@@ -614,6 +614,11 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .va-op-nav{background:#e0a614!important;color:#111!important}
 .va-op-ano{background:#1c3a61!important}
 .va-op-ambos{background:#c0392b!important}
+.va-op-otra{background:#2f855a!important}
+.va-otra{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#555}
+#pnl-rol .va-otra input{font-size:12px!important;padding:4px 6px;border:1px solid #e0ddd4;border-radius:8px;font-family:inherit;background:#fff}
+#pnl-rol .va-otra input[type=number]{width:52px;text-align:center}
+.va-otra-info{font-size:11px;color:#999}
 .va-est{border:none;border-radius:10px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit}
 .va-est-pend{background:#f3f1ec;color:#888}
 .va-est-conf{background:#eafaf1;color:#1B5E20}
@@ -631,6 +636,7 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 #pnl-rol .va-cfg input{font-size:13px!important;padding:5px 8px;border:1px solid #e0ddd4;border-radius:8px;font-family:inherit;background:#fff}
 #pnl-rol .va-cfg input[type=number]{width:60px;text-align:center}
 @media(max-width:768px){.va-acts{width:100%}.va-cfg-f span{min-width:100%}}
+.fi-img-otras{padding:10px 20px 0;font-size:13px;color:#333;line-height:1.5}
 .fi-img .fi-img-op{font-size:10px;font-weight:700;color:#8a6500;letter-spacing:.3px;margin-top:3px;text-transform:none}
 /* ── TICKETS / SOBRES ── */
 .sg{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
@@ -12483,9 +12489,22 @@ function vaDias(){const V=vaData(),out=[];for(let f=V.desde;f<=V.hasta;f=vaMas(f
 function vaP(id){const V=vaData();return V.pers[id]=V.pers[id]||{viaja:false,anio:false,per:"",est:"pend",otros:""};}
 function vaPer(id){return vaData().periodos.find(p=>p.id===id);}
 // ¿Está fuera ese día por permiso? (y si está "en riesgo", desde que sale ya no se cuenta)
+// Periodos de una persona; "otra" = fecha libre (ej. 7 días desde el 15 de enero)
+function vaPersPers(p){
+  if(!p||!p.per)return [];
+  if(p.per==="otra")return p.otraIni?[{ini:p.otraIni,fin:vaMas(p.otraIni,Math.max(1,+p.otraDias||6)-1)}]:[];
+  return p.per==="ambos"?vaData().periodos:[vaPer(p.per)].filter(Boolean);
+}
+// Lavadores disponibles en un día cualquiera
+function vaDia(sucN,f){
+  const suc=rlLoad().sucs[sucN], lavs=(suc.lavs||[]).filter(l=>l.nombre), dowRol=(vaF(f).getDay()+6)%7;
+  let hay=0,riesgo=0;
+  lavs.forEach(l=>{if(l.descanso===dowRol)return;const x=vaFuera(l.id,f);if(!x)hay++;else if(x==="R")riesgo++;});
+  return {f,hay,riesgo,min:vaMin(suc,f)};
+}
 function vaFuera(id,f){
   const p=vaData().pers[id];if(!p||!p.per)return false;
-  const ps=p.per==="ambos"?vaData().periodos:[vaPer(p.per)].filter(Boolean);
+  const ps=vaPersPers(p);
   if(ps.some(x=>f>=x.ini&&f<=x.fin))return "P";
   const sale=ps.reduce((a,x)=>x.ini<a?x.ini:a,"9");
   if(p.est==="riesgo"&&f>=sale)return "R"; // puede no regresar
@@ -12494,12 +12513,20 @@ function vaFuera(id,f){
 function vaMin(suc,f){const dow=vaF(f).getDay();return dow===0||dow>=5?(+suc.minFin||0):(+suc.minSem||0);}
 function vaCobertura(sucN){
   const suc=rlLoad().sucs[sucN], lavs=(suc.lavs||[]).filter(l=>l.nombre);
-  return vaDias().map(f=>{
-    const dowRol=(vaF(f).getDay()+6)%7; // rol: 0 = lunes
-    let hay=0,riesgo=0;
-    lavs.forEach(l=>{if(l.descanso===dowRol)return;const x=vaFuera(l.id,f);if(!x)hay++;else if(x==="R")riesgo++;});
-    return {f,hay,riesgo,min:vaMin(suc,f)};
-  });
+  return vaDias().map(f=>vaDia(sucN,f));
+}
+function vaOtraHtml(l,x){
+  const r=vaPersPers(x)[0];
+  let info="";
+  if(r){
+    const dd=[];for(let f=r.ini;f<=r.fin;f=vaMas(f,1))dd.push(vaDia(vaSuc,f));
+    const quedan=Math.min(...dd.map(c=>c.hay)), falta=Math.max(0,...dd.map(c=>c.min?c.min-c.hay:0));
+    info=`<span class="va-otra-info">regresa ${vaLbl(vaMas(r.fin,1),true)} · te quedan ${quedan}${falta?` · <b style="color:#c0392b">faltan ${falta}</b>`:""}</span>`;
+  }
+  return `<span class="va-otra">
+    <input type="date" value="${x.otraIni||""}" onchange="vaSet('${l.id}','otraIni',this.value)">
+    <input type="number" min="1" max="30" value="${x.otraDias||6}" onchange="vaSet('${l.id}','otraDias',+this.value)"> días
+    ${info}</span>`;
 }
 function vaRango(p){return `${vaLbl(p.ini,true)} – ${vaLbl(p.fin,true)}`;}
 function renderVac(){
@@ -12525,12 +12552,13 @@ function renderVac(){
   const tagCls=vaSuc==="PC Álamos"?"ah-tag-ala":"ah-tag-ref";
   document.getElementById("va-lista").innerHTML=lavs.length?lavs.map(l=>{
     const x=V.pers[l.id]||{}, per=x.per||"", est=x.est||"pend";
-    const ops=[["","No sale"],["nav","Navidad"],["ano","Año Nuevo"]].concat(x.anio?[["ambos","Los 2"]]:[]);
+    const ops=[["","No sale"],["nav","Navidad"],["ano","Año Nuevo"]].concat(x.anio?[["ambos","Los 2"]]:[]).concat([["otra","Otra fecha"]]);
     return `<div class="ah-card"><div class="ah-header va-row">
       <div class="va-who">
         <span class="ah-name">${esc(l.nombre)}</span>
         <button class="ah-tag va-anio${x.anio?" on":""}" onclick="vaSet('${l.id}','anio',${!x.anio})" title="Lleva más de un año (le tocan 12 días)">+1 año</button>
-        ${x.anio&&per&&per!=="ambos"?`<input class="va-otros" value="${esc(x.otros||"")}" placeholder="¿Cuándo los otros 6?" onchange="vaSet('${l.id}','otros',this.value)">`:""}
+        ${per==="otra"?vaOtraHtml(l,x):""}
+        ${x.anio&&per&&per!=="ambos"&&per!=="otra"?`<input class="va-otros" value="${esc(x.otros||"")}" placeholder="¿Cuándo los otros 6?" onchange="vaSet('${l.id}','otros',this.value)">`:""}
       </div>
       <div class="va-acts">
         ${ops.map(([k,t])=>`<button class="va-op${per===k?" on va-op-"+(k||"no"):""}" onclick="vaSet('${l.id}','per','${k}')">${t}</button>`).join("")}
@@ -12559,6 +12587,7 @@ function vaSet(id,k,v){
   const p=vaP(id);
   if(k==="per"&&v==="ambos"&&!confirm("Con los 2 periodos se va casi medio mes ("+vaRango({ini:vaData().periodos[0].ini,fin:vaData().periodos[1].fin})+").\n¿Seguro? Lo recomendable es 6 días ahora y los otros 6 en otra fecha."))return;
   p[k]=v;
+  if(k==="per"&&v==="otra"&&!p.otraDias)p.otraDias=6;
   if(k==="anio"&&!v&&p.per==="ambos")p.per="";
   rlSave();renderVac();
 }
@@ -12574,7 +12603,9 @@ function vaImgHtml(){
     const col=p=>lavs.filter(l=>{const x=V.pers[l.id];return x&&(x.per===p.id||x.per==="ambos");}).map(l=>esc(l.nombre)).join("<br>")||"—";
     return `<div class="ch-img-suc">${s.replace("PC ","").toUpperCase()}</div><table>
       <tr class="rl-img-dias">${V.periodos.map(p=>`<th>${p.nombre}<div class="fi-img-op">${vaLbl(p.ini,true)} al ${vaLbl(p.fin,true)} · regresan ${vaLbl(vaMas(p.fin,1),true)}</div></th>`).join("")}</tr>
-      <tr class="rl-img-desc">${V.periodos.map(p=>`<td>${col(p)}</td>`).join("")}</tr></table>`;
+      <tr class="rl-img-desc">${V.periodos.map(p=>`<td>${col(p)}</td>`).join("")}</tr></table>
+      ${(()=>{const ot=lavs.filter(l=>{const x=V.pers[l.id];return x&&x.per==="otra"&&x.otraIni;});
+        return ot.length?`<div class="fi-img-otras"><b>Otras fechas:</b> ${ot.map(l=>{const r=vaPersPers(V.pers[l.id])[0];return esc(l.nombre)+" del "+vaLbl(r.ini,true)+" al "+vaLbl(r.fin,true)+" (regresa "+vaLbl(vaMas(r.fin,1),true)+")";}).join(" · ")}</div>`:"";})()}`;
   }).join("");
   return `<div class="rl-img fi-img" style="width:620px">
     <div class="rl-img-h"><img src="logo.png" alt="PATIO CINCO" style="height:20px;width:auto;display:block"><div class="rl-img-t">Permisos de fiestas</div></div>
