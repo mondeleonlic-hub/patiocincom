@@ -421,6 +421,17 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .pf-alert-it{display:flex;align-items:center;gap:8px;font-size:12px;color:#333}
 .pf-alert-it b{color:#111}
 .pf-alert-it span.m{color:#999;font-size:11px}
+.pf-ben{background:#fff;border:0.5px solid #e5e2d8;border-radius:12px;padding:12px 16px;margin-bottom:12px}
+.pf-ben-h{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
+.pf-ben-h .s{font-size:12px;color:#555}
+.pf-ben-h .s b{color:#111}
+.pf-ben-h .tg{font-size:11px;color:#999;white-space:nowrap}
+.pf-ben-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid #f5f3ee}
+.pf-ben-row:first-child{border-top:none}
+.pf-ben-n{font-size:12px;font-weight:700;color:#111;min-width:96px}
+.pf-pill{border:1px dashed #d8d3c6;background:#fff;color:#555;border-radius:14px;padding:3px 10px;font-size:11px;font-family:inherit;cursor:pointer}
+.pf-pill.ok{border-style:solid;border-color:#e5e2d8;background:#f6f5f1;color:#aaa;text-decoration:line-through}
+.pf-all{border:none;background:none;color:#C8960C;font-size:11px;font-weight:700;cursor:pointer;margin-left:auto;font-family:inherit}
 .pf-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:10px;color:#999;align-items:center}
 .pf-x{border:none;background:none;color:#bbb;cursor:pointer;font-size:13px;padding:0 4px}
 .pf-x:hover{color:#C62828}
@@ -1770,6 +1781,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
 
   <!-- Avisos de rango -->
   <div id="pf-alertas"></div>
+  <div id="pf-benef"></div>
 
   <!-- Tabla -->
   <div class="pf-card">
@@ -11368,6 +11380,7 @@ function dash_renderPerformance(){
     ` · métricas al ${pf_load().actualizado||'—'}`;
 
   pf_renderAlertas(lista);
+  pf_renderBenef(lista);
 
   // Orden
   const val = e => pfSort.k==='nombre' ? normN(e.nombre)
@@ -11445,6 +11458,81 @@ function pf_renderAlertas(lista){
       `</div></div>`;
   }
   el.innerHTML = h;
+}
+
+// ── Beneficios por rango (Manual Maestro 2.2) ──
+const PF_BENEF = {
+  Pro:      [['uniforme','1 playera'],  ['food','$500 food']],
+  Master:   [['uniforme','1 playera'],  ['food','$1,000 food'], ['cash','$1,000 cash']],
+  Elite:    [['uniforme','2 playeras'], ['food','$1,000 food'], ['cash','$1,000 cash']],
+  Champion: [['uniforme','2 playeras'], ['food','$2,000 food'], ['cash','$1,000 cash']],
+  Legend:   [['regalo','Regalo Legend']],
+};
+let pfBenOpen = false;
+
+// La primera vez: lo de rangos anteriores al actual se da por entregado
+function pf_benefInit(lista){
+  if(!pfData || pfData.benefInit) return;
+  pfData.benef = pfData.benef || {};
+  lista.forEach(e=>{
+    const b = pfData.benef[e.nombre] = pfData.benef[e.nombre] || {};
+    for(let i=1;i<e.c.rg.i;i++) b[PF_RANGOS[i].n] = 'ok';
+  });
+  pfData.benefInit = true;
+  pf_save();
+}
+function pf_pendientes(e){
+  const b = (pfData && pfData.benef && pfData.benef[e.nombre]) || {};
+  const out = [];
+  for(let i=1;i<=e.c.rg.i;i++){
+    const r = PF_RANGOS[i], st = b[r.n];
+    if(st==='ok') continue;
+    (PF_BENEF[r.n]||[]).forEach(([k,label])=>out.push({r, k, label, ok: !!(st && st[k])}));
+  }
+  return out;
+}
+function pf_renderBenef(lista){
+  const el = document.getElementById('pf-benef');
+  if(!el) return;
+  if(!pfData){ el.innerHTML=''; return; }
+  if(!pfData.benefInit) pf_benefInit(pf_lista());
+  const conPend = lista.map(e=>({e, p:pf_pendientes(e)})).filter(x=>x.p.some(i=>!i.ok))
+    .sort((a,b)=>b.e.c.rg.i-a.e.c.rg.i || a.e.nombre.localeCompare(b.e.nombre));
+  if(!conPend.length){ el.innerHTML=''; return; }
+  const total = conPend.reduce((s,x)=>s+x.p.filter(i=>!i.ok).length,0);
+  const play = conPend.filter(x=>x.p.some(i=>i.k==='uniforme'&&!i.ok)).map(x=>esc(x.e.nombre));
+  const resumen = play.length ? `Playeras: <b>${play.slice(0,4).join(', ')}${play.length>4?' +'+(play.length-4):''}</b>` : `<b>${total}</b> por entregar`;
+  pfVistaBen = conPend.map(x=>x.e);
+  el.innerHTML = `<div class="pf-ben">
+    <div class="pf-ben-h" onclick="pfBenOpen=!pfBenOpen;dash_renderPerformance()">
+      <div><div class="pf-alert-t" style="margin-bottom:4px">Beneficios por entregar · ${total}</div><div class="s">${resumen}</div></div>
+      <span class="tg">${pfBenOpen?'ocultar':'ver'}</span>
+    </div>
+    ${pfBenOpen ? `<div style="margin-top:10px">${conPend.map((x,i)=>`
+      <div class="pf-ben-row">
+        <span class="pf-ben-n">${esc(x.e.nombre)}</span>
+        ${[...new Set(x.p.map(it=>it.r.n))].map(rn=>{ const g=x.p.filter(it=>it.r.n===rn);
+          return `<span style="display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap">${pf_chip(g[0].r)}${g.map(it=>`<button class="pf-pill${it.ok?' ok':''}" onclick="pf_benToggle(${i},'${it.r.n}','${it.k}')">${it.label}</button>`).join('')}</span>`;}).join('')}
+        <button class="pf-all" onclick="pf_benTodo(${i})">Todo entregado ✓</button>
+      </div>`).join('')}</div>` : ''}
+  </div>`;
+}
+let pfVistaBen = [];
+function pf_benToggle(i, rango, k){
+  const e = pfVistaBen[i]; if(!e || !pfData) return;
+  const b = pfData.benef[e.nombre] = pfData.benef[e.nombre] || {};
+  let st = b[rango]; if(st==='ok') return;
+  st = b[rango] = (st && typeof st==='object') ? st : {};
+  st[k] = !st[k];
+  if((PF_BENEF[rango]||[]).every(([kk])=>st[kk])) b[rango] = 'ok';
+  pf_save(); dash_renderPerformance();
+}
+function pf_benTodo(i){
+  const e = pfVistaBen[i]; if(!e || !pfData) return;
+  const b = pfData.benef[e.nombre] = pfData.benef[e.nombre] || {};
+  for(let j=1;j<=e.c.rg.i;j++) b[PF_RANGOS[j].n] = 'ok';
+  pf_save(); dash_renderPerformance();
+  flash('✓ Beneficios de '+e.nombre+' entregados');
 }
 
 // Para el aviso al cerrar semana
