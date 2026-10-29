@@ -599,24 +599,44 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .ch-img-suc{font-size:26px;font-weight:900;margin:14px 24px 4px}
 
 
-/* ── FIESTAS ── */
-.fi-tab{min-width:560px}
-.fi-dh{vertical-align:top}
-.fi-dh>div{margin-bottom:5px}
-.fi-big>div{color:#111}
-#pnl-rol select.fi-op{font-size:10px!important;padding:4px 18px 4px 6px!important;border:1px solid #e5e0d3;border-radius:7px;background-color:#fff;font-weight:700;color:#555;background-position:right 4px center!important;max-width:110px}
-#pnl-rol select.fi-op-corto{color:#8a6500;border-color:#e0a614}
-#pnl-rol select.fi-op-cerrado{color:#c53030;border-color:#f5bcbc}
-.fi-cell{width:100%;min-width:66px;border:none;border-radius:8px;padding:9px 2px;font-size:11px;font-weight:800;font-family:inherit;cursor:pointer;display:block}
-.fi-T{background:#fff6dc;color:#8a6500}
-.fi-P{background:#e0a614;color:#111}
-.fi-D{background:#2b2b2b;color:#fff}
-.fi-O{background:#f1efe9;color:#999}
-.fi-x{background:#f3f1ec;color:#bbb;cursor:default}
-.fi-man{box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.25)}
-.fi-cnt2 td{border-top:1px solid #eee!important;font-size:13px!important;padding-top:6px!important}
-.fi-img .fi-img-op{font-size:10px;font-weight:700;color:#8a6500;letter-spacing:.5px;margin-top:2px}
-
+/* ── FIESTAS (permisos) ── */
+.va-pers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:10px}
+.va-per{background:#fff;border-radius:12px;padding:10px 12px;box-shadow:var(--shadow);border-left:4px solid #e0a614;display:flex;flex-direction:column;gap:4px}
+.va-per-ano{border-left-color:#1c3a61}
+.va-per b{font-size:14px}
+.va-per span{font-size:12px;color:#555;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#pnl-rol .va-per input[type=date]{font-size:13px!important;padding:4px 6px;border:1px solid #e5e0d3;border-radius:7px;font-family:inherit;background:#fff}
+.va-per small{font-size:11px;color:#999}
+.va-res{background:#fff;border-radius:12px;padding:10px 14px;font-size:12.5px;line-height:1.7;margin-bottom:12px;box-shadow:var(--shadow)}
+.va-rojo{color:#c53030;font-weight:800}
+.va-tab{min-width:560px}
+.va-tab th{text-align:center}
+.va-c{text-align:center}
+.va-off .rl-name b{color:#999}
+.va-sub{display:block;font-size:10px;color:#999;font-weight:600}
+#pnl-rol .va-otros{display:block;margin-top:3px;width:100%;max-width:150px;font-size:11px!important;padding:3px 6px;border:1px dashed #d8d2c2;border-radius:6px;font-family:inherit;background:#fff}
+.va-tg{border:1px solid #e5e0d3;background:#fff;border-radius:16px;padding:5px 12px;font-size:11px;font-weight:800;font-family:inherit;color:#aaa;cursor:pointer}
+.va-tg.on{background:#111;color:#fff;border-color:#111}
+.va-seg{display:inline-flex;background:#f1efe9;border-radius:9px;padding:2px;gap:2px}
+.va-seg button{border:none;background:transparent;border-radius:7px;padding:6px 9px;font-size:11px;font-weight:700;font-family:inherit;color:#888;cursor:pointer;white-space:nowrap}
+.va-seg button.on{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.va-seg button.va-amb.on{background:#c53030;color:#fff}
+#pnl-rol select.va-est{font-size:11px!important;padding:5px 20px 5px 8px!important;border-radius:8px;border:1px solid #e5e0d3;font-weight:800;background-color:#fff;background-position:right 5px center!important}
+#pnl-rol select.va-est-conf{color:#2f855a;border-color:#b7e2c6;background-color:#e6f6ec}
+#pnl-rol select.va-est-riesgo{color:#c53030;border-color:#f5bcbc;background-color:#fde8e8}
+.va-dim{color:#ccc}
+.va-cal{display:grid;grid-template-columns:repeat(16,minmax(40px,1fr));gap:4px;min-width:680px}
+.va-d{background:#fff;border-radius:9px;padding:6px 2px;text-align:center;display:flex;flex-direction:column;gap:1px;border:1px solid #eee9dd}
+.va-dn{font-size:9px;font-weight:800;color:#999;text-transform:uppercase}
+.va-dd{font-size:11px;font-weight:700;color:#555}
+.va-d b{font-size:16px;font-weight:900}
+.va-d i{font-style:normal;font-size:10px;font-weight:800;color:#c53030;min-height:12px}
+.va-d i.va-r{color:#b7791f}
+.va-in-nav{border-color:#e0a614;background:#fffaf0}
+.va-in-ano{border-color:#1c3a61;background:#f2f5fa}
+.va-falta{background:#fde8e8!important;border-color:#f5bcbc!important}
+.va-dom .va-dn{color:#111}
+.fi-img .fi-img-op{font-size:10px;font-weight:700;color:#8a6500;letter-spacing:.3px;margin-top:3px;text-transform:none}
 /* ── TICKETS / SOBRES ── */
 .sg{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
 .sobre{width:252px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#000;font-family:'Courier New',monospace;overflow:hidden;page-break-inside:avoid;break-inside:avoid;cursor:pointer;transition:box-shadow .15s,border-color .15s}
@@ -2128,19 +2148,23 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
     </div>
     <div id="hr-fie" style="display:none">
       <div class="rl-bar">
-        <div class="fseg" id="fi-sucs">
-          <button class="fbtn ref on" data-s="PC Refugio" onclick="fiSetSuc('PC Refugio')">Refugio</button>
-          <button class="fbtn ala" data-s="PC Álamos" onclick="fiSetSuc('PC Álamos')">Álamos</button>
+        <div class="fseg" id="va-sucs">
+          <button class="fbtn ref on" data-s="PC Refugio" onclick="vaSetSuc('PC Refugio')">Refugio</button>
+          <button class="fbtn ala" data-s="PC Álamos" onclick="vaSetSuc('PC Álamos')">Álamos</button>
         </div>
       </div>
+      <div class="va-pers" id="va-pers"></div>
+      <div id="va-res"></div>
       <div class="rl-tools">
-        <button class="ph-btn ph-navy" onclick="fiRepartir()">Repartir mitad y mitad</button>
-        <button class="ph-btn ph-gold" onclick="fiImagen()">Imagen para el grupo</button>
-        <button class="ch-flink" onclick="fiLimpiar()">Limpiar</button>
+        <button class="ph-btn ph-navy" onclick="vaRepartir()">Repartir a los que se van</button>
+        <button class="ph-btn ph-gold" onclick="vaImagen()">Imagen para el grupo</button>
+        <label class="rl-min">Mínimo Lun–Jue <input id="va-min-sem" type="number" min="0" placeholder="—" onchange="vaSetMin('minSem',this.value)"></label>
+        <label class="rl-min">Mínimo Vie–Dom <input id="va-min-fin" type="number" min="0" placeholder="—" onchange="vaSetMin('minFin',this.value)"></label>
       </div>
-      <p class="rl-help" style="margin:0 0 10px">Toca una casilla para cambiar entre Trabaja · Permiso · Desc. Arriba de cada día eliges si abre normal, en horario corto o cerrado.</p>
-      <div id="fi-avisos"></div>
-      <div class="tw" id="fi-grid"></div>
+      <div class="tw" id="va-tabla"></div>
+      <h3 class="ch-suc" style="font-size:14px;letter-spacing:1.5px;color:#888;margin-top:22px">Lavadores disponibles por día</h3>
+      <p class="rl-help" style="margin:0 0 8px">Ya descuenta descansos del rol y permisos. En rojo, cuántos te faltan para tu mínimo; "?" son los que están en riesgo de no regresar.</p>
+      <div class="tw" id="va-cob"></div>
     </div>
   </div>
 
@@ -12439,150 +12463,153 @@ async function chImagen(){
   }catch(e){console.error(e);flash("⚠️ No se pudo generar la imagen");}
 }
 
-// ══ PERMISOS DE FIESTAS (Navidad y Año Nuevo) ═══════════════════════════════
-// Por persona (lavador o coordinador) y por día: T = trabaja · P = permiso · D = descanso.
-// Si no hay nada marcado: lavador → su descanso del rol; coordinador → si tiene turno ese día en el horario.
-// Regla "mitad y mitad": la mitad tiene permiso en Navidad y la otra mitad en Año Nuevo.
-const FI_EST={T:"Trabaja",P:"Permiso",D:"Desc.",O:"Otra suc."};
-const FI_OPS={normal:"Horario normal",corto:"Horario corto",cerrado:"Cerrado"};
-let fiSuc="PC Refugio";
-function fiDiasBase(){
-  return [
-    {f:"2026-12-24",fiesta:"nav",op:"normal"},
-    {f:"2026-12-25",fiesta:"nav",op:"normal",grande:true},
-    {f:"2026-12-31",fiesta:"ano",op:"normal"},
-    {f:"2027-01-01",fiesta:"ano",op:"normal",grande:true}
-  ];
+// ══ PERMISOS DE FIESTAS: 2 periodos de 6 días (Navidad / Año Nuevo) ═══════════
+// Por lavador: viaja (se va a su tierra), anio (+1 año → le tocan 12 días),
+// per ("nav" | "ano" | "ambos" | ""), est ("pend" | "conf" | "riesgo"), otros (cuándo toma los otros 6 días).
+// Cobertura: cada día cuenta los lavadores que NO están de permiso y no descansan por rol.
+// "En riesgo" = puede no regresar: deja de contarse desde que sale.
+const VA_EST={pend:"Pendiente",conf:"Confirmó",riesgo:"En riesgo"};
+let vaSuc="PC Refugio";
+function vaBase(){
+  return {periodos:[
+    {id:"nav",nombre:"Navidad",ini:"2026-12-21",fin:"2026-12-26"},
+    {id:"ano",nombre:"Año Nuevo",ini:"2026-12-28",fin:"2027-01-02"}],
+    desde:"2026-12-20",hasta:"2027-01-04",pers:{}};
 }
-function fiData(){
+function vaData(){
   const d=rlLoad();
-  if(!d.fiestas)d.fiestas={dias:fiDiasBase(),asig:{}};
-  if(!d.fiestas.asig)d.fiestas.asig={};
-  return d.fiestas;
+  if(!d.vac)d.vac=vaBase();
+  if(!d.vac.pers)d.vac.pers={};
+  return d.vac;
 }
-function fiFecha(f){const [y,m,dd]=f.split("-").map(Number);return new Date(y,m-1,dd);}
-function fiDow(f){return fiFecha(f).getDay();} // 0 = domingo
-function fiLbl(f,largo){
-  const d=fiFecha(f), dias=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"], meses=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-  return (largo?CH_DIAS_L[d.getDay()]:dias[d.getDay()])+" "+d.getDate()+" "+meses[d.getMonth()];
+function vaF(f){const [y,m,dd]=f.split("-").map(Number);return new Date(y,m-1,dd);}
+function vaISO(dt){return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");}
+function vaMas(f,n){const d=vaF(f);d.setDate(d.getDate()+n);return vaISO(d);}
+const VA_DS=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"], VA_MS=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+function vaLbl(f,dia){const d=vaF(f);return (dia?VA_DS[d.getDay()]+" ":"")+d.getDate()+" "+VA_MS[d.getMonth()];}
+function vaDias(){const V=vaData(),out=[];for(let f=V.desde;f<=V.hasta;f=vaMas(f,1))out.push(f);return out;}
+function vaP(id){const V=vaData();return V.pers[id]=V.pers[id]||{viaja:false,anio:false,per:"",est:"pend",otros:""};}
+function vaPer(id){return vaData().periodos.find(p=>p.id===id);}
+// ¿Está fuera ese día por permiso? (y si está "en riesgo", desde que sale ya no se cuenta)
+function vaFuera(id,f){
+  const p=vaData().pers[id];if(!p||!p.per)return false;
+  const ps=p.per==="ambos"?vaData().periodos:[vaPer(p.per)].filter(Boolean);
+  if(ps.some(x=>f>=x.ini&&f<=x.fin))return "P";
+  const sale=ps.reduce((a,x)=>x.ini<a?x.ini:a,"9");
+  if(p.est==="riesgo"&&f>=sale)return "R"; // puede no regresar
+  return false;
 }
-// Personas de una sucursal: lavadores del rol + coordinadores con turnos en esa sucursal
-function fiPersonas(suc){
-  const lavs=(rlLoad().sucs[suc]?.lavs||[]).filter(l=>l.nombre).map(l=>({id:l.id,nombre:l.nombre,tipo:"lav",lav:l}));
-  const D=chData();
-  const cos=D.coords.filter(c=>(D.bloques[suc]||[]).some(k=>k.ci===c.id)).map(c=>({id:c.id,nombre:c.nombre,tipo:"coo",co:c}));
-  return {lavs,cos};
-}
-// Coordinador: T si tiene turno ese día en ESTA sucursal; O si ese día está en la otra; D si no tiene turno
-function fiNormal(p,f,suc){
-  const dow=fiDow(f);
-  if(p.tipo==="lav")return p.lav.descanso===(dow+6)%7?"D":"T"; // rol: 0 = lunes
-  const D=chData(), aqui=(D.bloques[suc||fiSuc]||[]).some(k=>k.ci===p.id&&k.dia===dow);
-  if(aqui)return "T";
-  return RL_SUCS.some(s=>(D.bloques[s]||[]).some(k=>k.ci===p.id&&k.dia===dow))?"O":"D";
-}
-function fiEstado(p,f,suc){
-  const a=fiData().asig[p.id], v=a&&a[f];
-  if(v==="P")return "P";
-  if(v==="T")return p.tipo==="coo"&&fiNormal(p,f,suc)==="O"?"O":"T";
-  return v||fiNormal(p,f,suc);
-}
-function fiCuenta(suc,dia){
-  const {lavs,cos}=fiPersonas(suc);
-  const t=arr=>arr.filter(p=>fiEstado(p,dia.f,suc)==="T").length;
-  return {lav:t(lavs),coo:t(cos)};
-}
-
-function renderFiestas(){
-  const F=fiData();
-  document.querySelectorAll("#fi-sucs .fbtn").forEach(b=>b.classList.toggle("on",b.dataset.s===fiSuc));
-  const {lavs,cos}=fiPersonas(fiSuc);
-  const suc=rlLoad().sucs[fiSuc];
-  const head=F.dias.map((d,di)=>`<th class="fi-dh${d.grande?" fi-big":""}">
-      <div>${fiLbl(d.f)}</div>
-      <select class="fi-op fi-op-${d.op}" onchange="fiSetOp(${di},this.value)" title="Cómo abre ese día">${Object.entries(FI_OPS).map(([k,v])=>`<option value="${k}" ${d.op===k?"selected":""}>${v}</option>`).join("")}</select>
-    </th>`).join("");
-  const fila=p=>`<tr class="rl-row"><td class="rl-name"><b>${esc(p.nombre)}</b></td>${F.dias.map(d=>{
-      if(d.op==="cerrado")return `<td class="rl-c"><span class="fi-cell fi-x">Cerrado</span></td>`;
-      const e=fiEstado(p,d.f), man=!!(F.asig[p.id]&&F.asig[p.id][d.f]);
-      return `<td class="rl-c"><button class="fi-cell fi-${e}${man?" fi-man":""}" onclick="fiToggle('${p.id}','${d.f}')" title="Toca para cambiar">${FI_EST[e]}</button></td>`;
-    }).join("")}</tr>`;
-  const grupo=(t,arr)=>arr.length?`<tr class="rl-grp"><td colspan="${F.dias.length+1}">${t} <span>${arr.length}</span></td></tr>`+arr.map(fila).join(""):"";
-  const cnt=F.dias.map(d=>d.op==="cerrado"?null:fiCuenta(fiSuc,d));
-  const minDe=d=>{const dow=fiDow(d.f);return dow===0||dow>=5?(+suc.minFin||0):(+suc.minSem||0);};
-  let h=`<table class="rl-tab fi-tab"><thead><tr><th class="rl-nh"></th>${head}</tr></thead><tbody>
-    ${grupo("Coordinadores",cos)}${grupo("Lavadores",lavs)}
-  </tbody><tfoot>
-    <tr class="rl-cnt"><td>Lavadores</td>${cnt.map((c,i)=>{if(!c)return "<td>—</td>";const m=minDe(F.dias[i]);const bajo=m&&c.lav<m;return `<td class="${bajo?"rl-bajo":""}">${c.lav}${bajo?`<small>mín ${m}</small>`:""}</td>`;}).join("")}</tr>
-    <tr class="rl-cnt fi-cnt2"><td>Coordinador</td>${cnt.map(c=>!c?"<td>—</td>":`<td class="${c.coo?"":"rl-bajo"}">${c.coo||"0"}</td>`).join("")}</tr>
-  </tfoot></table>`;
-  document.getElementById("fi-grid").innerHTML=(lavs.length||cos.length)?h:`<div class="rl-empty">No hay lavadores ni coordinadores en ${fiSuc.replace("PC ","")}.</div>`;
-  // Avisos
-  const av=[];
-  F.dias.forEach((d,i)=>{const c=cnt[i];if(!c)return;
-    if(!c.coo&&cos.length)av.push(`<b>${fiLbl(d.f,true)}:</b> ningún coordinador trabaja`);
-    const m=minDe(d);if(m&&c.lav<m)av.push(`<b>${fiLbl(d.f,true)}:</b> ${c.lav} lavadores, el mínimo es ${m}`);
+function vaMin(suc,f){const dow=vaF(f).getDay();return dow===0||dow>=5?(+suc.minFin||0):(+suc.minSem||0);}
+function vaCobertura(sucN){
+  const suc=rlLoad().sucs[sucN], lavs=(suc.lavs||[]).filter(l=>l.nombre);
+  return vaDias().map(f=>{
+    const dowRol=(vaF(f).getDay()+6)%7; // rol: 0 = lunes
+    let hay=0,riesgo=0;
+    lavs.forEach(l=>{if(l.descanso===dowRol)return;const x=vaFuera(l.id,f);if(!x)hay++;else if(x==="R")riesgo++;});
+    return {f,hay,riesgo,min:vaMin(suc,f)};
   });
-  const sinPerm=[...cos,...lavs].filter(p=>!F.dias.some(d=>d.op!=="cerrado"&&fiEstado(p,d.f)==="P"));
-  if(sinPerm.length&&sinPerm.length<[...cos,...lavs].length)av.push(`<b>Sin permiso todavía:</b> ${sinPerm.map(p=>esc(p.nombre)).join(", ")}`);
-  document.getElementById("fi-avisos").innerHTML=av.length?`<div class="rl-av">${av.join("<br>")}</div>`:"";
 }
-function fiSetSuc(s){fiSuc=s;renderFiestas();}
-function fiSetOp(di,v){fiData().dias[di].op=v;rlSave();renderFiestas();}
-function fiToggle(id,f){
-  const F=fiData(), p=[...fiPersonas(fiSuc).lavs,...fiPersonas(fiSuc).cos].find(x=>x.id===id);
-  const norm=fiNormal(p,f), act=fiEstado(p,f);
-  const orden=norm==="O"?["O","P","D"]:["T","P","D"];
-  const sig=orden[(orden.indexOf(act)+1)%3];
-  F.asig[id]=F.asig[id]||{};
-  if(sig===norm)delete F.asig[id][f];else F.asig[id][f]=sig==="O"?"T":sig;
-  rlSave();renderFiestas();
-}
-// Mitad y mitad: permiso el 25 (Navidad) o el 1 (Año Nuevo), alternando; coordinadores y lavadores por separado
-function fiRepartir(){
-  const F=fiData();
-  const nav=F.dias.find(d=>d.fiesta==="nav"&&d.grande), ano=F.dias.find(d=>d.fiesta==="ano"&&d.grande);
-  if(!nav||!ano)return;
-  if(!confirm("¿Repartir mitad y mitad en "+fiSuc.replace("PC ","")+"?\n\nLa mitad tiene permiso en Navidad ("+fiLbl(nav.f)+") y la otra mitad en Año Nuevo ("+fiLbl(ano.f)+").\nReemplaza lo marcado esos dos días en esta sucursal."))return;
-  const {lavs,cos}=fiPersonas(fiSuc);
-  const asignar=(arr,offset)=>arr.forEach((p,i)=>{
-    const a=F.asig[p.id]=F.asig[p.id]||{};
-    delete a[nav.f];delete a[ano.f];
-    const enNav=(i+offset)%2===0;
-    a[enNav?nav.f:ano.f]="P";
-    // el otro día trabaja (aunque le toque descanso, se le avisa con el conteo)
+function renderVac(){
+  const V=vaData(), suc=rlLoad().sucs[vaSuc], lavs=(suc.lavs||[]).filter(l=>l.nombre);
+  document.querySelectorAll("#va-sucs .fbtn").forEach(b=>b.classList.toggle("on",b.dataset.s===vaSuc));
+  document.getElementById("va-min-sem").value=suc.minSem||"";
+  document.getElementById("va-min-fin").value=suc.minFin||"";
+  // Periodos (fechas editables)
+  document.getElementById("va-pers").innerHTML=V.periodos.map((p,i)=>{
+    const n=lavs.filter(l=>{const x=V.pers[l.id];return x&&(x.per===p.id||x.per==="ambos");}).length;
+    return `<div class="va-per va-per-${p.id}">
+      <b>${p.nombre}</b>
+      <span><input type="date" value="${p.ini}" onchange="vaSetPer(${i},'ini',this.value)"> al <input type="date" value="${p.fin}" onchange="vaSetPer(${i},'fin',this.value)"></span>
+      <small>Regresan ${vaLbl(vaMas(p.fin,1),true)} · ${n} fuera</small>
+    </div>`;}).join("");
+  // Lavadores
+  const filas=lavs.map(l=>{
+    const x=V.pers[l.id]||{};
+    const segs=[["","—"],["nav","Navidad"],["ano","Año Nuevo"]].concat(x.anio?[["ambos","Los 2"]]:[]);
+    return `<tr class="rl-row${x.viaja?"":" va-off"}">
+      <td class="rl-name"><b>${esc(l.nombre)}</b><small class="va-sub">${x.anio?"+1 año · 12 días":"6 días"}</small>${x.anio&&x.per&&x.per!=="ambos"?`<input class="va-otros" value="${esc(x.otros||"")}" placeholder="¿Cuándo los otros 6?" onchange="vaSet('${l.id}','otros',this.value)">`:""}</td>
+      <td class="va-c"><button class="va-tg${x.viaja?" on":""}" onclick="vaSet('${l.id}','viaja',${!x.viaja})" title="Se va a su tierra">${x.viaja?"Sí":"No"}</button></td>
+      <td class="va-c"><button class="va-tg${x.anio?" on":""}" onclick="vaSet('${l.id}','anio',${!x.anio})" title="Lleva más de un año">${x.anio?"Sí":"No"}</button></td>
+      <td class="va-c"><div class="va-seg">${segs.map(([k,t])=>`<button class="${(x.per||"")===k?"on":""}${k==="ambos"?" va-amb":""}" onclick="vaSet('${l.id}','per','${k}')">${t}</button>`).join("")}</div></td>
+      <td class="va-c">${x.per?`<select class="va-est va-est-${x.est||"pend"}" onchange="vaSet('${l.id}','est',this.value)">${Object.entries(VA_EST).map(([k,t])=>`<option value="${k}" ${(x.est||"pend")===k?"selected":""}>${t}</option>`).join("")}</select>`:'<span class="va-dim">—</span>'}</td>
+    </tr>`;}).join("");
+  document.getElementById("va-tabla").innerHTML=lavs.length?`<table class="rl-tab va-tab"><thead><tr>
+      <th class="rl-nh">Lavador</th><th>Se va</th><th>+1 año</th><th>Periodo</th><th>¿Confirmó?</th></tr></thead><tbody>${filas}</tbody></table>`
+    :`<div class="rl-empty">No hay lavadores en el rol de ${vaSuc.replace("PC ","")}.</div>`;
+  // Cobertura día por día
+  const cob=vaCobertura(vaSuc);
+  const enPer=f=>V.periodos.find(p=>f>=p.ini&&f<=p.fin);
+  document.getElementById("va-cob").innerHTML=`<div class="va-cal" style="grid-template-columns:repeat(${cob.length},minmax(40px,1fr));min-width:${cob.length*44}px">${cob.map(c=>{
+      const falta=c.min?Math.max(0,c.min-c.hay):0, p=enPer(c.f), dow=vaF(c.f).getDay();
+      const fiesta=["12-24","12-25","12-31","01-01"].includes(c.f.slice(5));
+      return `<div class="va-d${p?" va-in-"+p.id:""}${falta?" va-falta":""}${dow===0?" va-dom":""}">
+        <span class="va-dn">${VA_DS[dow]}</span><span class="va-dd">${vaF(c.f).getDate()}${fiesta?"★":""}</span>
+        <b>${c.hay}</b>${falta?`<i>−${falta}</i>`:c.riesgo?`<i class="va-r">?${c.riesgo}</i>`:"<i>&nbsp;</i>"}
+      </div>`;}).join("")}</div>`;
+  // Resumen: cuántos faltan
+  const res=[];
+  const sinMin=!suc.minSem&&!suc.minFin;
+  V.periodos.forEach(p=>{
+    const dd=cob.filter(c=>c.f>=p.ini&&c.f<=p.fin);
+    const falta=Math.max(0,...dd.map(c=>c.min?c.min-c.hay:0));
+    const quedan=Math.min(...dd.map(c=>c.hay));
+    res.push(`<b>${p.nombre}:</b> te quedan mínimo ${quedan} lavadores al día${sinMin?"":falta?` — <span class="va-rojo">necesitas ${falta} más</span>`:" — cubierto ✓"}`);
   });
-  asignar(cos,0);asignar(lavs,cos.length%2); // así no caen todos los "primeros" el mismo día
-  rlSave();renderFiestas();flash("✓ Repartido — toca cualquier casilla para ajustar");
+  const ries=lavs.filter(l=>(V.pers[l.id]||{}).est==="riesgo"&&(V.pers[l.id]||{}).per);
+  if(ries.length)res.push(`<b>En riesgo de no regresar:</b> ${ries.map(l=>esc(l.nombre)).join(", ")} — ve buscando ${ries.length} de reemplazo`);
+  const pend=lavs.filter(l=>{const x=V.pers[l.id]||{};return x.per&&(x.est||"pend")==="pend";});
+  if(pend.length)res.push(`<b>Falta que confirmen:</b> ${pend.map(l=>esc(l.nombre)).join(", ")}`);
+  const sinPer=lavs.filter(l=>{const x=V.pers[l.id]||{};return x.viaja&&!x.per;});
+  if(sinPer.length)res.push(`<b>Se van y no tienen periodo:</b> ${sinPer.map(l=>esc(l.nombre)).join(", ")}`);
+  if(sinMin)res.push(`Pon tu mínimo de lavadores por día para que te diga cuántos te faltan.`);
+  document.getElementById("va-res").innerHTML=`<div class="va-res">${res.join("<br>")}</div>`;
 }
-function fiLimpiar(){
-  if(!confirm("¿Borrar lo marcado en fiestas para "+fiSuc.replace("PC ","")+"? Regresa al rol normal."))return;
-  const F=fiData(),{lavs,cos}=fiPersonas(fiSuc);
-  [...lavs,...cos].forEach(p=>delete F.asig[p.id]);
-  rlSave();renderFiestas();
+function vaSetSuc(s){vaSuc=s;renderVac();}
+function vaSetPer(i,k,v){if(!v)return;vaData().periodos[i][k]=v;
+  const V=vaData();V.desde=vaMas(V.periodos.reduce((a,p)=>p.ini<a?p.ini:a,"9"),-1);V.hasta=vaMas(V.periodos.reduce((a,p)=>p.fin>a?p.fin:a,"0"),2);
+  rlSave();renderVac();}
+function vaSet(id,k,v){
+  const p=vaP(id);p[k]=v;
+  if(k==="anio"&&!v&&p.per==="ambos")p.per="";
+  if(k==="per"&&v&&!p.viaja)p.viaja=true;
+  if(k==="per"&&v==="ambos"&&!confirm("Con los 2 periodos se va casi medio mes (del "+vaLbl(vaData().periodos[0].ini)+" al "+vaLbl(vaData().periodos[1].fin)+").\n¿Seguro? Lo recomendable es 6 días ahora y los otros 6 en otra fecha.")){p.per="";}
+  rlSave();renderVac();
 }
-function fiImgHtml(){
-  const F=fiData();
+function vaSetMin(k,v){rlLoad().sucs[vaSuc][k]=+v||0;rlSave();renderVac();}
+// Reparte a los que se van entre los 2 periodos, cuidando que en cada uno se vaya la misma cantidad
+// y que no se vayan juntos los que descansan el mismo día.
+function vaRepartir(){
+  const V=vaData(), lavs=(rlLoad().sucs[vaSuc].lavs||[]).filter(l=>l.nombre&&(V.pers[l.id]||{}).viaja);
+  if(!lavs.length){flash("Primero marca quién se va a su tierra");return;}
+  if(!confirm("¿Repartir a los "+lavs.length+" que se van entre Navidad y Año Nuevo?\nReemplaza el periodo que ya tenían (no a los de “Los 2”)."))return;
+  const cuenta={nav:0,ano:0};
+  lavs.filter(l=>V.pers[l.id].per==="ambos").forEach(()=>{cuenta.nav++;cuenta.ano++;});
+  const libres=lavs.filter(l=>V.pers[l.id].per!=="ambos");
+  // primero los que descansan el mismo día, para separarlos
+  libres.sort((a,b)=>(a.descanso??-1)-(b.descanso??-1));
+  let ult=null;
+  libres.forEach(l=>{
+    let k=cuenta.nav<=cuenta.ano?"nav":"ano";
+    if(cuenta.nav===cuenta.ano&&ult&&ult.desc===l.descanso)k=ult.per==="nav"?"ano":"nav";
+    V.pers[l.id].per=k;cuenta[k]++;ult={desc:l.descanso,per:k};
+  });
+  rlSave();renderVac();flash("✓ Repartidos: "+cuenta.nav+" en Navidad · "+cuenta.ano+" en Año Nuevo");
+}
+function vaImgHtml(){
+  const V=vaData();
   const bloques=RL_SUCS.map(s=>{
-    const {lavs,cos}=fiPersonas(s);
-    const col=fn=>F.dias.map(d=>`<td>${d.op==="cerrado"?'<span style="color:#999">Cerrado</span>':fn(d).map(esc).join("<br>")||"&nbsp;"}</td>`).join("");
-    const de=(arr,e)=>d=>arr.filter(p=>fiEstado(p,d.f,s)===e).map(p=>p.nombre);
-    return `<div class="ch-img-suc">${s.replace("PC ","").toUpperCase()}</div>
-      <table>
-        <tr class="rl-img-dias">${F.dias.map(d=>`<th>${fiLbl(d.f)}<div class="fi-img-op">${d.op==="normal"?"":FI_OPS[d.op]}</div></th>`).join("")}</tr>
-        <tr class="rl-img-band"><td colspan="${F.dias.length}">Permiso</td></tr>
-        <tr class="rl-img-desc">${col(d=>[...de(cos,"P")(d),...de(lavs,"P")(d)])}</tr>
-        <tr class="rl-img-band rl-img-band2"><td colspan="${F.dias.length}">Coordinador</td></tr>
-        <tr>${col(de(cos,"T"))}</tr>
-        <tr class="rl-img-band rl-img-band2"><td colspan="${F.dias.length}">Lavadores</td></tr>
-        <tr>${col(de(lavs,"T"))}</tr>
-      </table>`;
+    const lavs=(rlLoad().sucs[s].lavs||[]).filter(l=>l.nombre);
+    const col=p=>lavs.filter(l=>{const x=V.pers[l.id];return x&&(x.per===p.id||x.per==="ambos");}).map(l=>esc(l.nombre)).join("<br>")||"—";
+    return `<div class="ch-img-suc">${s.replace("PC ","").toUpperCase()}</div><table>
+      <tr class="rl-img-dias">${V.periodos.map(p=>`<th>${p.nombre}<div class="fi-img-op">${vaLbl(p.ini,true)} al ${vaLbl(p.fin,true)} · regresan ${vaLbl(vaMas(p.fin,1),true)}</div></th>`).join("")}</tr>
+      <tr class="rl-img-desc">${V.periodos.map(p=>`<td>${col(p)}</td>`).join("")}</tr></table>`;
   }).join("");
-  return `<div class="rl-img fi-img">
-    <div class="rl-img-h"><img src="logo.png" alt="PATIO CINCO" style="height:20px;width:auto;display:block"><div class="rl-img-t">Navidad y Año Nuevo</div></div>
-    ${bloques}</div>`;
+  return `<div class="rl-img fi-img" style="width:620px">
+    <div class="rl-img-h"><img src="logo.png" alt="PATIO CINCO" style="height:20px;width:auto;display:block"><div class="rl-img-t">Permisos de fiestas</div></div>
+    ${bloques}
+    <div style="padding:12px 20px 4px;font-size:13px;color:#555">Regresar a tiempo es lo que nos permite seguir dando estos días. ¡Felices fiestas!</div></div>`;
 }
-async function fiImagen(){
+async function vaImagen(){
   flash("⏳ Generando imagen...");
   try{
     if(!window.html2canvas){
@@ -12591,16 +12618,16 @@ async function fiImagen(){
     }
     const wrap=document.createElement("div");
     wrap.style.cssText="position:fixed;left:0;top:0;z-index:-1;background:#fff;pointer-events:none;width:max-content";
-    wrap.innerHTML=fiImgHtml();document.body.appendChild(wrap);
+    wrap.innerHTML=vaImgHtml();document.body.appendChild(wrap);
     await new Promise(r=>setTimeout(r,80));
     const canvas=await pcCaptura(wrap.firstElementChild);
     document.body.removeChild(wrap);
     const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
-    const file=new File([blob],"permisos-navidad-ano-nuevo.png",{type:"image/png"});
+    const file=new File([blob],"permisos-fiestas.png",{type:"image/png"});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:"Permisos Navidad y Año Nuevo"});flash("✓ Listo");return;}catch(e){if(e&&e.name==="AbortError")return;}
+      try{await navigator.share({files:[file],title:"Permisos de fiestas"});flash("✓ Listo");return;}catch(e){if(e&&e.name==="AbortError")return;}
     }
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="permisos-navidad-ano-nuevo.png";a.click();
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="permisos-fiestas.png";a.click();
     flash("✓ Imagen descargada");
   }catch(e){console.error(e);flash("⚠️ No se pudo generar la imagen");}
 }
@@ -12611,7 +12638,7 @@ function setHorQuien(q){
   document.getElementById("hr-lav").style.display=q==="lav"?"":"none";
   document.getElementById("hr-coo").style.display=q==="coo"?"":"none";
   document.getElementById("hr-fie").style.display=q==="fie"?"":"none";
-  if(q==="coo")renderHorCoord();else if(q==="fie")renderFiestas();else renderRol();
+  if(q==="coo")renderHorCoord();else if(q==="fie")renderVac();else renderRol();
 }
 function renderHorarios(){setHorQuien(horQuien);}
 
