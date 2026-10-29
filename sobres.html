@@ -378,6 +378,52 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .fil-btn.on{background:var(--gold);color:#fff;border-color:var(--gold);}
 .fil-btn:hover{border-color:var(--gold);color:var(--gold);}
 
+/* ── PERFORMANCE (Dashboard) · Escalera Gladiadora ── */
+.pf-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.pf-kicker{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#aaa;text-transform:uppercase;margin-bottom:4px}
+.pf-sub{font-size:13px;color:#555}
+.pf-sub b{color:#111;font-weight:700}
+.pf-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pf-btn{display:inline-flex;align-items:center;padding:6px 14px;border:1px solid #e0ddd4;background:#fff;color:#333;border-radius:20px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.3px;transition:border-color .15s}
+.pf-btn:hover{border-color:#bbb}
+.pf-btn-dark{background:#111;border-color:#111;color:#fff}
+.pf-btn-dark:hover{border-color:#111}
+.pf-btn-gold{background:#e0a614;border-color:#e0a614;color:#111}
+.pf-hint{font-size:11px;color:#999;margin-right:10px}
+.pf-card{background:#fff;border:0.5px solid #e5e2d8;border-radius:16px;overflow:hidden}
+.pf-empty{padding:36px;text-align:center;color:#bbb;font-size:13px}
+.pf-table{width:100%;border-collapse:collapse;font-size:12px;min-width:980px}
+.pf-table th{padding:10px 8px;font-size:9px;font-weight:700;letter-spacing:1px;color:#999;text-align:center;background:#faf9f7;border-bottom:1px solid #f0ede6;white-space:nowrap;cursor:pointer;user-select:none}
+.pf-table th:first-child{text-align:left;padding-left:16px}
+.pf-table th.on{color:#111}
+.pf-table th .ar{font-size:9px;margin-left:2px;color:#e0a614}
+.pf-table td{padding:9px 8px;text-align:center;border-bottom:1px solid #f5f3ee;color:#333;white-space:nowrap}
+.pf-table td:first-child{text-align:left;padding-left:16px}
+.pf-table tr:last-child td{border-bottom:none}
+.pf-table tr.pf-dim td{opacity:.45}
+.pf-name{font-weight:700;color:#111}
+.pf-suc{display:block;font-size:10px;color:#aaa;font-weight:500;margin-top:1px}
+.pf-rank{min-width:150px;text-align:left!important}
+.pf-chip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;padding:2px 8px;border-radius:10px;line-height:1.5}
+.pf-bar{height:3px;background:#f0ede6;border-radius:2px;margin-top:5px;overflow:hidden;width:120px}
+.pf-bar i{display:block;height:3px;border-radius:2px}
+.pf-falta{font-size:10px;color:#999;margin-top:3px}
+.pf-falta.hot{color:#C8960C;font-weight:700}
+.pf-lav{font-weight:700;color:#111}
+.pf-lav small{display:block;font-size:10px;color:#3B6D11;font-weight:600}
+.pf-table input{width:58px;border:1px solid #e0ddd4;border-radius:6px;padding:4px 6px;font-size:12px;text-align:center;font-family:inherit;outline:none;background:#fff}
+.pf-table input:focus{border-color:#e0a614}
+.pf-table input[data-k="base"]{width:76px}
+.pf-alert{background:#fff;border:0.5px solid #e5e2d8;border-left:3px solid #e0a614;border-radius:12px;padding:12px 16px;margin-bottom:12px}
+.pf-alert.up{border-left-color:#3B6D11}
+.pf-alert-t{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:8px}
+.pf-alert-list{display:flex;flex-wrap:wrap;gap:8px 18px}
+.pf-alert-it{display:flex;align-items:center;gap:8px;font-size:12px;color:#333}
+.pf-alert-it b{color:#111}
+.pf-alert-it span.m{color:#999;font-size:11px}
+.pf-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:10px;color:#999;align-items:center}
+.pf-x{border:none;background:none;color:#bbb;cursor:pointer;font-size:13px;padding:0 4px}
+.pf-x:hover{color:#C62828}
 /* ── PERFORMANCE TABLE ── */
 .perf-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
 .perf-card h4{margin:0 0 10px;font-size:13px;font-weight:800;color:var(--black);}
@@ -1482,6 +1528,8 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   #dpnl-performance>div:first-child{flex-wrap:wrap;gap:12px}
   #dpnl-performance>div:first-child>div:last-child{flex-wrap:wrap}
   #perf-table th:first-child,#perf-table td:first-child{position:sticky;left:0;z-index:1;background:#fff}
+  .pf-head{align-items:flex-start}
+  .pf-hint{display:block;margin:0 0 8px}
 
   /* ── Coordinadores (pagos semanales): tabla → tarjetas ── */
   #spnl-pagos>div:first-child>div{flex-wrap:wrap;width:100%}
@@ -2958,71 +3006,47 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
 <div class="dpnl" id="dpnl-performance" style="padding:28px 32px;max-width:1400px;margin:0 auto;">
 
   <!-- Header -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+  <div class="pf-head">
     <div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#aaa;text-transform:uppercase;margin-bottom:4px;">Semana activa</div>
-      <div style="font-size:18px;font-weight:700;color:#111;letter-spacing:.5px;" id="perf-week-label">—</div>
+      <div class="pf-kicker">Performance · Escalera Gladiadora</div>
+      <div class="pf-sub" id="pf-sub">—</div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button class="fbtn" id="perf-btn-s1" onclick="dash_perfSetSuc(1)"
-        style="padding:7px 20px;border:1.5px solid #C8960C;background:#C8960C;color:#fff;font-size:11px;letter-spacing:1px;">
-        SUCURSAL 1
-      </button>
-      <button class="fbtn" id="perf-btn-s2" onclick="dash_perfSetSuc(2)"
-        style="padding:7px 20px;border:1.5px solid #e0ddd4;background:#fff;color:#888;font-size:11px;letter-spacing:1px;">
-        SUCURSAL 2
-      </button>
-      <div style="width:1px;height:28px;background:#e0ddd4;margin:0 4px;"></div>
-      <button id="perf-edit-btn" onclick="dash_perfToggleEdit()"
-        style="padding:7px 20px;border:1.5px solid #111;background:#111;color:#fff;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">
-        EDITAR
-      </button>
+    <div class="pf-actions">
+      <div class="fseg" id="pf-suc">
+        <button class="fbtn on" data-suc="all" onclick="pf_setSuc('all')">Todas</button>
+        <button class="fbtn ref" data-suc="PC Refugio" onclick="pf_setSuc('PC Refugio')">Refugio</button>
+        <button class="fbtn ala" data-suc="PC Álamos" onclick="pf_setSuc('PC Álamos')">Álamos</button>
+      </div>
+      <label class="pf-btn" title="Sube la captura de PERFORMANCE de AppSheet">
+        Leer AppSheet
+        <input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)">
+      </label>
+      <button class="pf-btn pf-btn-dark" id="pf-edit-btn" onclick="pf_toggleEdit()">Editar</button>
     </div>
   </div>
+
+  <!-- Avisos de rango -->
+  <div id="pf-alertas"></div>
 
   <!-- Tabla -->
-  <div style="background:#fff;border:0.5px solid #e5e2d8;border-radius:16px;overflow:hidden;">
-    <div class="form-card-header" style="padding:14px 20px;border-bottom:1px solid #f0ede6;">
-      <span id="perf-suc-label">SUCURSAL 1</span>
-    </div>
+  <div class="pf-card">
     <div style="overflow-x:auto;">
-      <table id="perf-table" style="width:100%;border-collapse:collapse;font-size:12px;min-width:900px;">
-        <thead>
-          <tr style="background:#faf9f7;border-bottom:1px solid #f0ede6;">
-            <th style="text-align:left;padding:10px 14px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">ALIAS</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">PUNTOS</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">LAVADOS</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">COMISIÓN</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">ESTRELLAS</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">HITS</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">LAV/DÍA</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">ENTREGAS %</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">CALIDAD</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">STRIKES</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">RETARDOS</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">FALTA</th>
-            <th style="padding:10px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#888;">FALTA JUST</th>
-          </tr>
-        </thead>
-        <tbody id="perf-tbody"></tbody>
+      <table id="perf-table" class="pf-table">
+        <thead id="pf-thead"></thead>
+        <tbody id="pf-tbody"></tbody>
       </table>
     </div>
-    <div id="perf-empty" style="padding:40px;text-align:center;color:#bbb;font-size:13px;display:none;">
-      Sin datos — presiona EDITAR para capturar
-    </div>
+    <div id="pf-empty" class="pf-empty" style="display:none;">Sin lavadores en esta sucursal</div>
   </div>
 
-  <!-- Botón guardar (solo en edit mode) -->
-  <div id="perf-save-bar" style="display:none;margin-top:16px;text-align:right;">
-    <button onclick="dash_perfCancelEdit()"
-      style="padding:10px 24px;border:1.5px solid #e0ddd4;background:#fff;color:#666;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-right:8px;">
-      Cancelar
-    </button>
-    <button onclick="dash_perfGuardar()"
-      style="padding:10px 28px;border:none;background:#C8960C;color:#fff;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;">
-      GUARDAR
-    </button>
+  <!-- Barra guardar (solo en edición) -->
+  <div id="pf-save-bar" style="display:none;margin-top:14px;text-align:right;">
+    <span class="pf-hint">En edición, “Lavados” es la base de AppSheet; las semanas pagadas se suman solas.</span>
+    <button class="pf-btn" onclick="pf_cancelEdit()">Cancelar</button>
+    <button class="pf-btn pf-btn-gold" onclick="pf_saveEdit()">Guardar</button>
   </div>
+
+  <div class="pf-legend" id="pf-legend"></div>
 </div>
 
 <!-- Modal Inventario -->
@@ -3297,7 +3321,8 @@ const GS_KEY_MAP = {
   "pc4_ah_inicial":    "ah_inicial",
   "pc4_ah_abonos":     "ah_abonos",
   "pc4_inventario":    "inventario",
-  "pc4_rol":           "rol"
+  "pc4_rol":           "rol",
+  "pc4_perf_lav":      "perf_lav"
 };
 // Cache local para evitar múltiples fetches
 const _cache = {};
@@ -3480,6 +3505,7 @@ async function init(){
       gsLoad("pc4_ah_abonos",[]).then(v=>{ _cache["pc4_ah_abonos"]=v; }),
       gsLoad("pc4_inventario",[]).then(v=>{ _cache["pc4_inventario"]=v; }),
       gsLoad("pc4_rol",null).then(v=>{ if(v) _cache["pc4_rol"]=v; }),
+      gsLoad("pc4_perf_lav",null).then(v=>{ if(v) _cache["pc4_perf_lav"]=v; }),
     ]);
     // Migrar a Firebase para que próximas cargas sean más rápidas
     _sobSaveToFirebase();
@@ -3487,6 +3513,7 @@ async function init(){
 
   migrarHistorialDuplicados();
   agregarSemanasFaltantes();
+  window._pfInitDone = true;
 
   Object.entries(PERFILES_DEFAULT).forEach(([n,v])=>{if(!perfiles[n])perfiles[n]=v;});
 
@@ -5615,7 +5642,8 @@ function cerrarSemana(){
   popularSelectores();sv("pc4_rows",rows);
   document.getElementById("sem").value = nextSem;
   syncSemana(nextSem);
-  renderT();renderD();renderFlujoHist();flash("✓ Semana "+sem+" cerrada — flujo guardado — ahora en semana "+nextSem);
+  renderT();renderD();renderFlujoHist();flash("✓ Semana "+sem+" cerrada — ahora en semana "+nextSem+(typeof pf_ascensosTexto==="function"?pf_ascensosTexto():""));
+  if(typeof dash_renderPerformance==="function") dash_renderPerformance();
 }
 
 // ── HISTORIAL: corrige entradas con el mismo número de semana pero fecha distinta ──
@@ -11150,158 +11178,390 @@ function dash_saveApiKey() {
 }
 
 
-// ══ PERFORMANCE ══════════════════════════════════════════════════════
-const PERF_KEY = 'pc4_perf';
-let perfSuc = 1;      // sucursal activa: 1 o 2
-let perfEditMode = false;
+// ══ PERFORMANCE · Escalera Gladiadora ═══════════════════════════════
+// Lavados totales = base de AppSheet (hasta semBase) + autos de cada semana
+// de nómina cerrada después de semBase (suma Refugio + Álamos).
+const PF_KEY = 'pc4_perf_lav';
+const PF_SEM_INICIO = '43/2026';      // la base de AppSheet llega hasta la S43
+const PF_ALERTA_SEM = 3;              // avisar si llega en ≤3 semanas a su ritmo
+const PF_RANGOS = [
+  {n:'Washer',   min:0,     fg:'#777',    bg:'#f2f1ee', bar:'#bdb8ad'},
+  {n:'Pro',      min:500,   fg:'#8a5a2b', bg:'#f6ede3', bar:'#b07a45'},
+  {n:'Master',   min:2000,  fg:'#4f5b6a', bg:'#eceff3', bar:'#8d98a6'},
+  {n:'Elite',    min:5000,  fg:'#8a6400', bg:'#fbf1d6', bar:'#e0a614'},
+  {n:'Champion', min:10000, fg:'#0c7e9a', bg:'#e3f5fa', bar:'#14AACE'},
+  {n:'Legend',   min:15000, fg:'#e0a614', bg:'#111',    bar:'#e0a614'},
+];
+const PF_COLS = [
+  {k:'nombre',     label:'LAVADOR'},
+  {k:'rango',      label:'RANGO'},
+  {k:'lavados',    label:'LAVADOS'},
+  {k:'puntos',     label:'PUNTOS',    edit:true, step:'0.01'},
+  {k:'pct',        label:'COMISIÓN',  edit:true},
+  {k:'estrellas',  label:'ESTRELLAS', edit:true, step:'0.1'},
+  {k:'hits',       label:'HITS',      edit:true},
+  {k:'lavDiarios', label:'LAV/DÍA',   edit:true},
+  {k:'entregas',   label:'ENTREGAS',  edit:true},
+  {k:'calidad',    label:'CALIDAD',   edit:true},
+  {k:'strikes',    label:'STRIKES',   edit:true},
+  {k:'retardos',   label:'RETARDOS',  edit:true},
+  {k:'falta',      label:'FALTA',     edit:true},
+  {k:'faltaJust',  label:'F. JUST',   edit:true},
+];
+const PF_MET = ['puntos','pct','estrellas','hits','lavDiarios','entregas','calidad','strikes','retardos','falta','faltaJust'];
 
-const PERF_EMPLEADOS = {
-  1: ['Mogli','Cristian','Ivan','El güero','Arellano','Emma','Cesar','Antonio','Francisco','Uli','Charlie','Cheque'],
-  2: ['Jacobo','Poli','Mauri','Juan Lopez','Marvin','Toño','Jose Jr','Valente','Juaquin','Fercho']
-};
+// Captura de AppSheet al 29/oct/2026 (base hasta S43) — Valente, Jose Jr, Juan Lopez, Toño y Gio corregidos por Montse
+const PF_SEED = (()=>{
+  const R='PC Refugio', A='PC Álamos';
+  const t={
+    'Charlie':   [R,8959, 19.75,45,4.5,3, 9,78,0,0,0,0],
+    'Emma':      [R,4454, 14.35,35,3.5,1, 8,86,0,0,3,0],
+    'Arellano':  [R,1631, 20.67,45,4.5,6,10,85,2,1,0,0],
+    'Angel':     [R,1043,  3.68,30,1.5,2, 9,81,0,1,3,1],
+    'Bryan':     [R, 989, 19.28,40,4.0,2, 9,86,0,0,0,0],
+    'Chiquis':   [R, 697, 21.05,45,4.5,4,11,89,0,0,3,0],
+    'Resendis':  [R, 607, 22.46,45,4.5,5,10,74,0,0,0,0],
+    'Dorado':    [R, 403, 15.68,40,4.0,3,10,67,0,2,0,0],
+    'Robert':    [R,  47, 12.13,35,3.5,1, 9,73,3,0,2,0],
+    'Alexey':    [R,   0,  null,40,null,0,null,33,0,0,0,0],
+    'Pablo R':   [A,   0,  6.47,40,2.1,1, 6,65,0,0,7,0],
+    'Jesús':     [A,  40, -1.75,40,1.0,2, 7,55,4,0,2,2],
+    'Jose Jr':   [A,2975, 18.29,40,4.0,2, 9,84,0,0,1,0],
+    'Toño':      [A,4335, 18.03,40,4.0,1, 9,81,0,0,0,0],
+    'Marvin':    [A,2245, 17.13,40,4.0,1, 9,81,1,0,0,0],
+    'Valente':   [A,3795, 16.70,40,4.0,0, 9,90,0,0,1,0],
+    'Luis Ángel':[A, 428, 15.55,40,4.0,3, 7,52,0,0,0,0],
+    'Juan Lopez':[A,1630,  9.10,30,2.6,2, 8,90,0,0,0,1],
+    'Gio':       [A,2478,  7.90,30,2.4,1, 9,80,0,0,0,1],
+    'Juaquin':   [A,1076,  0.00,30,0.8,0, 5,34,0,0,6,8],
+  };
+  const lav={};
+  Object.entries(t).forEach(([n,v])=>{
+    lav[n]={suc:v[0],base:v[1],semBase:PF_SEM_INICIO,appsheet:v[1],
+      puntos:v[2],pct:v[3],estrellas:v[4],hits:v[5],lavDiarios:v[6],entregas:v[7],
+      calidad:v[8],strikes:v[9],retardos:v[10],falta:v[11],faltaJust:null};
+  });
+  return {actualizado:'29/10/2026', lav};
+})();
 
-const PERF_FIELDS = ['puntos','lavados','comision','estrellas','hits','lavDiarios','entregas','calidad','strikes','retardos','falta','faltaJust'];
+let pfData = null;
+let pfSucSel = 'all';
+let pfSort = {k:'lavados', dir:-1};
+let pfEdit = false;
+let pfVista = [];
 
-function dash_getPerf() {
-  try { return JSON.parse(localStorage.getItem(PERF_KEY)) || {}; } catch(e) { return {}; }
+function pf_load(){
+  if(pfData) return pfData;
+  const v = ld(PF_KEY, null);
+  if(!window._pfInitDone && !(v && v.lav)) return JSON.parse(JSON.stringify(PF_SEED)); // aún cargando: no pisar la nube
+  if(v && v.lav){ pfData = v; }
+  else { pfData = JSON.parse(JSON.stringify(PF_SEED)); sv(PF_KEY, pfData); }
+  return pfData;
 }
-function dash_savePerf(obj) { localStorage.setItem(PERF_KEY, JSON.stringify(obj)); }
+function pf_save(){ if(pfData) sv(PF_KEY, pfData); }
 
-function dash_perfKey() { return `s${perfSuc}`; }
+function pf_hist(){ return (historial && historial.length) ? historial : ld('pc4_hist', []); }
+function pf_n(v){ const x=parseFloat(v); return isNaN(x)?0:x; }
+function pf_fmtN(v){ return Math.round(v).toLocaleString('es-MX'); }
+function pf_semCorta(s){ return 'S' + String(s||'').split('/')[0]; }
 
-function dash_perfGetData() {
-  const all = dash_getPerf();
-  const key = dash_perfKey();
-  if (all[key] && all[key].length > 0) return all[key];
-  // Devolver filas vacías con los empleados de la sucursal
-  return PERF_EMPLEADOS[perfSuc].map(alias => ({
-    alias, puntos:'', lavados:'', comision:'', estrellas:'', hits:'',
-    lavDiarios:'', entregas:'', calidad:'', strikes:'', retardos:'', falta:'', faltaJust:''
-  }));
+// Semanas cerradas, de la más reciente a la más vieja
+function pf_semanas(){
+  return [...pf_hist()].filter(w=>w && (w.semana||w.sem))
+    .sort((a,b)=>semKey(b.semana||b.sem)-semKey(a.semana||a.sem));
+}
+function pf_autosEn(w, nombre){
+  const nn = normN(nombre);
+  return (w.rows||[]).reduce((s,r)=> s + (normN(r.nombre)===nn ? pf_n(r.autos) : 0), 0);
+}
+function pf_aparece(w, nombre){
+  const nn = normN(nombre);
+  return (w.rows||[]).some(r=>normN(r.nombre)===nn && pf_n(r.autos)>0);
 }
 
-function dash_perfSetSuc(n) {
-  if (perfEditMode) dash_perfCancelEdit();
-  perfSuc = n;
-  document.getElementById('perf-btn-s1').style.background = n===1 ? '#C8960C' : '#fff';
-  document.getElementById('perf-btn-s1').style.color      = n===1 ? '#fff'    : '#888';
-  document.getElementById('perf-btn-s1').style.borderColor= n===1 ? '#C8960C' : '#e0ddd4';
-  document.getElementById('perf-btn-s2').style.background = n===2 ? '#C8960C' : '#fff';
-  document.getElementById('perf-btn-s2').style.color      = n===2 ? '#fff'    : '#888';
-  document.getElementById('perf-btn-s2').style.borderColor= n===2 ? '#C8960C' : '#e0ddd4';
-  document.getElementById('perf-suc-label').textContent = `SUCURSAL ${n}`;
+function pf_rango(total){
+  let i = 0;
+  PF_RANGOS.forEach((r,j)=>{ if(total>=r.min) i=j; });
+  return {i, cur:PF_RANGOS[i], next:PF_RANGOS[i+1]||null};
+}
+
+// Calcula todo lo de un lavador
+function pf_calc(nombre, d){
+  const sems = pf_semanas();
+  const kBase = semKey(d.semBase || PF_SEM_INICIO);
+  let sumadas = 0, nSem = 0;
+  sems.forEach(w=>{ if(semKey(w.semana||w.sem) > kBase){ const a=pf_autosEn(w,nombre); sumadas+=a; if(a>0) nSem++; } });
+  const total = pf_n(d.base) + sumadas;
+  // ritmo: promedio de las últimas 4 semanas en que trabajó
+  const ult = sems.filter(w=>pf_aparece(w,nombre)).slice(0,4);
+  let ritmo = ult.length ? ult.reduce((s,w)=>s+pf_autosEn(w,nombre),0)/ult.length : pf_n(d.lavDiarios)*6;
+  const rg = pf_rango(total);
+  const faltan = rg.next ? rg.next.min - total : 0;
+  const semanas = rg.next && ritmo>0 ? Math.ceil(faltan/ritmo) : null;
+  // ¿subió de rango con la última semana cerrada?
+  let subio = null;
+  const last = sems[0];
+  if(last && semKey(last.semana||last.sem) > kBase){
+    const a = pf_autosEn(last, nombre);
+    if(a>0){ const antes = pf_rango(total - a); if(antes.i < rg.i) subio = {de:antes.cur, a:rg.cur, sem:last.semana||last.sem}; }
+  }
+  return {total, sumadas, nSem, ritmo, rg, faltan, semanas, subio};
+}
+
+function pf_sucDe(nombre, d){
+  const nn = normN(nombre);
+  const pk = Object.keys(perfiles||{}).find(k=>normN(k)===nn);
+  const cur = (rows||[]).find(r=>normN(r.nombre)===nn && r.sucursal);
+  return (cur && cur.sucursal) || (pk && perfiles[pk].sucursal) || d.suc || '';
+}
+
+// Lista: los de AppSheet + quien esté en la nómina actual y aún no tenga base
+function pf_lista(){
+  const data = pf_load();
+  const out = [];
+  const vistos = new Set();
+  Object.entries(data.lav).forEach(([n,d])=>{
+    vistos.add(normN(n));
+    if(d.oculto) return;
+    out.push({nombre:n, d, nuevo:false});
+  });
+  (rows||[]).forEach(r=>{
+    if(!r.nombre) return;
+    const nn = normN(r.nombre);
+    if(vistos.has(nn)) return;
+    vistos.add(nn);
+    out.push({nombre:r.nombre, d:{suc:r.sucursal, base:0, semBase:PF_SEM_INICIO}, nuevo:true});
+  });
+  out.forEach(e=>{ e.suc = pf_sucDe(e.nombre, e.d); e.c = pf_calc(e.nombre, e.d); });
+  return out;
+}
+
+function pf_chip(r){ return `<span class="pf-chip" style="color:${r.fg};background:${r.bg}">${r.n.toUpperCase()}</span>`; }
+
+function pf_color(k, v){
+  if(v===null || v===undefined || v==='') return '#bbb';
+  const x = parseFloat(v);
+  if(k==='puntos') return x<0 ? '#C62828' : '#111';
+  if(k==='hits' || k==='lavDiarios') return x>0 ? '#2E7D32' : '#999';
+  if(k==='entregas') return x>=70 ? '#2E7D32' : x>=50 ? '#E65100' : '#C62828';
+  if(['calidad','strikes','retardos','falta'].includes(k)) return x>0 ? '#C62828' : '#bbb';
+  return '#333';
+}
+function pf_fmt(k, v){
+  if(v===null || v===undefined || v==='') return '—';
+  if(k==='pct' || k==='entregas') return v + '%';
+  if(k==='puntos') return Number(v).toFixed(2);
+  if(k==='estrellas') return Number(v).toFixed(1);
+  return v;
+}
+
+function pf_setSuc(s){
+  if(pfEdit) pf_cancelEdit();
+  pfSucSel = s;
+  document.querySelectorAll('#pf-suc .fbtn').forEach(b=>b.classList.toggle('on', b.dataset.suc===s));
+  dash_renderPerformance();
+}
+function pf_setSort(k){
+  if(pfEdit) return;
+  if(pfSort.k===k) pfSort.dir *= -1; else pfSort = {k, dir: k==='nombre' ? 1 : -1};
   dash_renderPerformance();
 }
 
-function dash_perfToggleEdit() {
-  if (perfEditMode) { dash_perfGuardar(); return; }
-  perfEditMode = true;
-  document.getElementById('perf-edit-btn').textContent = 'GUARDAR';
-  document.getElementById('perf-save-bar').style.display = 'block';
-  dash_renderPerfTable(dash_perfGetData(), true);
-}
+function dash_renderPerformance(){
+  if(!document.getElementById('pf-tbody')) return;
+  let lista = pf_lista();
+  if(pfSucSel!=='all') lista = lista.filter(e=>normN(e.suc)===normN(pfSucSel));
 
-function dash_perfCancelEdit() {
-  perfEditMode = false;
-  document.getElementById('perf-edit-btn').textContent = 'EDITAR';
-  document.getElementById('perf-save-bar').style.display = 'none';
-  dash_renderPerfTable(dash_perfGetData(), false);
-}
+  // Subtítulo
+  const sems = pf_semanas();
+  const ultSem = sems[0] ? (sems[0].semana||sems[0].sem) : null;
+  const sumando = ultSem && semKey(ultSem) > semKey(PF_SEM_INICIO);
+  document.getElementById('pf-sub').innerHTML =
+    `Lavados: base AppSheet ${pf_semCorta(PF_SEM_INICIO)}` +
+    (sumando ? ` + nómina hasta <b>${pf_semCorta(ultSem)}</b>` : ` · se suman solos al cerrar cada semana`) +
+    ` · métricas al ${pf_load().actualizado||'—'}`;
 
-function dash_perfGuardar() {
-  const tbody = document.getElementById('perf-tbody');
-  const rows = tbody.querySelectorAll('tr');
-  const data = [];
-  rows.forEach(row => {
-    const inputs = row.querySelectorAll('input');
-    const alias = row.querySelector('td:first-child').textContent;
-    const obj = { alias };
-    PERF_FIELDS.forEach((f, i) => {
-      obj[f] = inputs[i] ? inputs[i].value : '';
-    });
-    data.push(obj);
+  pf_renderAlertas(lista);
+
+  // Orden
+  const val = e => pfSort.k==='nombre' ? normN(e.nombre)
+    : (pfSort.k==='lavados' || pfSort.k==='rango') ? e.c.total
+    : pf_n(e.d[pfSort.k]);
+  lista.sort((a,b)=>{
+    const va=val(a), vb=val(b);
+    if(typeof va==='string') return va.localeCompare(vb)*pfSort.dir;
+    return (va-vb)*pfSort.dir;
   });
-  const all = dash_getPerf();
-  all[dash_perfKey()] = data;
-  dash_savePerf(all);
-  perfEditMode = false;
-  document.getElementById('perf-edit-btn').textContent = 'EDITAR';
-  document.getElementById('perf-save-bar').style.display = 'none';
-  dash_renderPerfTable(data, false);
-  dash_showToast('Performance guardado ✓');
-}
+  pfVista = lista;
 
-function dash_renderPerformance() {
-  // Week label
-  const weeks = dashData.weeks || [];
-  const lbl = weeks.length > 0 ? (weeks[0].label || '—') : '—';
-  const el = document.getElementById('perf-week-label');
-  if (el) el.textContent = lbl;
-  dash_renderPerfTable(dash_perfGetData(), false);
-}
+  document.getElementById('pf-thead').innerHTML = '<tr>' + PF_COLS.map(c=>
+    `<th class="${pfSort.k===c.k?'on':''}" onclick="pf_setSort('${c.k}')">${c.label}${pfSort.k===c.k?`<span class="ar">${pfSort.dir<0?'↓':'↑'}</span>`:''}</th>`
+  ).join('') + (pfEdit?'<th></th>':'') + '</tr>';
 
-function dash_perfColor(field, val) {
-  const v = parseFloat(val);
-  if (isNaN(v) || val === '') return '#999';
-  if (field === 'puntos')     return v >= 0 ? '#2E7D32' : '#C62828';
-  if (field === 'hits')       return v > 0  ? '#2E7D32' : '#999';
-  if (field === 'lavDiarios') return v > 0  ? '#2E7D32' : '#999';
-  if (field === 'entregas') {
-    if (v >= 70) return '#2E7D32';
-    if (v >= 50) return '#E65100';
-    return '#C62828';
-  }
-  if (['calidad','strikes','retardos','falta'].includes(field))
-    return v > 0 ? '#C62828' : '#2E7D32';
-  if (field === 'faltaJust') return '#888';
-  return '#111';
-}
+  const empty = document.getElementById('pf-empty');
+  empty.style.display = lista.length ? 'none' : 'block';
 
-function dash_perfFmt(field, val) {
-  if (val === '' || val === null || val === undefined) return '—';
-  if (field === 'comision') return val + '%';
-  if (field === 'entregas') return val + '%';
-  return val;
-}
+  document.getElementById('pf-tbody').innerHTML = lista.map((e,i)=>{
+    const {d, c} = e;
+    const sucCorta = e.suc ? e.suc.replace('PC ','') : '';
+    const nombre = `<td><span class="pf-name">${esc(e.nombre)}</span><span class="pf-suc">${esc(sucCorta)}${e.nuevo?' · nuevo':''}</span></td>`;
 
-function dash_renderPerfTable(rows, editMode) {
-  const tbody = document.getElementById('perf-tbody');
-  const emptyEl = document.getElementById('perf-empty');
-  if (!rows || rows.length === 0) {
-    tbody.innerHTML = '';
-    if (emptyEl) emptyEl.style.display = 'block';
-    return;
-  }
-  if (emptyEl) emptyEl.style.display = 'none';
+    // Rango + progreso
+    let rango;
+    if(c.rg.next){
+      const span = c.rg.next.min - c.rg.cur.min;
+      const pct = Math.max(2, Math.min(100, (c.total - c.rg.cur.min)/span*100));
+      const hot = c.semanas!==null && c.semanas<=PF_ALERTA_SEM;
+      const eta = c.semanas!==null ? ` · ~${c.semanas} sem` : '';
+      rango = `<td class="pf-rank">${pf_chip(c.rg.cur)}
+        <div class="pf-bar"><i style="width:${pct}%;background:${c.rg.next.bar}"></i></div>
+        <div class="pf-falta${hot?' hot':''}">${pf_fmtN(c.faltan)} para ${c.rg.next.n}${eta}</div></td>`;
+    } else {
+      rango = `<td class="pf-rank">${pf_chip(c.rg.cur)}<div class="pf-falta">Rango máximo</div></td>`;
+    }
 
-  const hasData = rows.some(r => PERF_FIELDS.some(f => r[f] !== '' && r[f] !== undefined));
+    // Lavados
+    let lav;
+    if(pfEdit){
+      lav = `<td><input type="number" step="1" data-i="${i}" data-k="base" value="${pf_n(d.base)}" title="Base de AppSheet hasta ${pf_semCorta(d.semBase||PF_SEM_INICIO)}"></td>`;
+    } else {
+      const tip = `Base AppSheet ${pf_fmtN(pf_n(d.base))} (hasta ${pf_semCorta(d.semBase||PF_SEM_INICIO)})` + (c.sumadas?` + ${pf_fmtN(c.sumadas)} de nómina`:'');
+      lav = `<td class="pf-lav" title="${tip}">${pf_fmtN(c.total)}${c.sumadas?`<small>+${pf_fmtN(c.sumadas)}</small>`:''}</td>`;
+    }
 
-  tbody.innerHTML = rows.map((row, ri) => {
-    const bg = ri % 2 === 0 ? '#fff' : '#faf9f7';
-    const alias = `<td style="padding:9px 14px;font-weight:600;color:#111;border-bottom:1px solid #f5f3ee;white-space:nowrap;">${row.alias}</td>`;
-
-    const cells = PERF_FIELDS.map(f => {
-      const val = row[f] !== undefined ? row[f] : '';
-      if (editMode) {
-        const type = ['puntos','lavados','estrellas','hits','lavDiarios','entregas','calidad','strikes','retardos','falta','faltaJust'].includes(f) ? 'number' : 'text';
-        const step = f === 'estrellas' ? '0.1' : '1';
-        return `<td style="padding:4px 6px;border-bottom:1px solid #f5f3ee;text-align:center;">
-          <input type="${type}" step="${step}" value="${val}"
-            style="width:58px;border:1px solid #e0ddd4;border-radius:6px;padding:4px 6px;font-size:12px;text-align:center;font-family:inherit;outline:none;"
-            onfocus="this.style.borderColor='#C8960C'" onblur="this.style.borderColor='#e0ddd4'">
-        </td>`;
-      } else {
-        const color = dash_perfColor(f, val);
-        return `<td style="padding:9px 10px;border-bottom:1px solid #f5f3ee;text-align:center;color:${color};font-weight:${['puntos'].includes(f)?'700':'500'};">
-          ${dash_perfFmt(f, val)}
-        </td>`;
-      }
+    const mets = PF_COLS.filter(col=>col.edit).map(col=>{
+      const v = d[col.k];
+      if(pfEdit) return `<td><input type="number" step="${col.step||'1'}" data-i="${i}" data-k="${col.k}" value="${v===null||v===undefined?'':v}"></td>`;
+      return `<td style="color:${pf_color(col.k,v)};${col.k==='puntos'?'font-weight:700':''}">${pf_fmt(col.k,v)}</td>`;
     }).join('');
 
-    return `<tr style="background:${bg};">${alias}${cells}</tr>`;
+    const x = pfEdit ? `<td><button class="pf-x" title="Ocultar de Performance" onclick="pf_ocultar(${i})">✕</button></td>` : '';
+    return `<tr>${nombre}${rango}${lav}${mets}${x}</tr>`;
   }).join('');
+
+  document.getElementById('pf-legend').innerHTML = PF_RANGOS.map(r=>
+    `<span>${pf_chip(r)} ${pf_fmtN(r.min)}+</span>`).join('');
 }
 
+function pf_renderAlertas(lista){
+  const el = document.getElementById('pf-alertas');
+  const cerca = lista.filter(e=>e.c.semanas!==null && e.c.semanas<=PF_ALERTA_SEM)
+    .sort((a,b)=>a.c.semanas-b.c.semanas || a.c.faltan-b.c.faltan);
+  const subieron = lista.filter(e=>e.c.subio);
+  let h = '';
+  if(subieron.length){
+    h += `<div class="pf-alert up"><div class="pf-alert-t">Subieron de rango en ${pf_semCorta(subieron[0].c.subio.sem)}</div><div class="pf-alert-list">` +
+      subieron.map(e=>`<div class="pf-alert-it"><b>${esc(e.nombre)}</b> ${pf_chip(e.c.subio.a)}</div>`).join('') + `</div></div>`;
+  }
+  if(cerca.length){
+    h += `<div class="pf-alert"><div class="pf-alert-t">Por subir de rango</div><div class="pf-alert-list">` +
+      cerca.map(e=>`<div class="pf-alert-it"><b>${esc(e.nombre)}</b> ${pf_chip(e.c.rg.next)} <span class="m">faltan ${pf_fmtN(e.c.faltan)} · ~${e.c.semanas} sem</span></div>`).join('') +
+      `</div></div>`;
+  }
+  el.innerHTML = h;
+}
+
+// Para el aviso al cerrar semana
+function pf_ascensosTexto(){
+  try{
+    const ups = pf_lista().filter(e=>e.c.subio);
+    if(!ups.length) return '';
+    return ' — 🏆 ' + ups.map(e=>`${e.nombre} subió a ${e.c.subio.a.n}`).join(', ');
+  }catch(e){ return ''; }
+}
+
+// ── Edición ──
+function pf_toggleEdit(){
+  if(pfEdit){ pf_saveEdit(); return; }
+  pfEdit = true;
+  document.getElementById('pf-edit-btn').textContent = 'Guardar';
+  document.getElementById('pf-save-bar').style.display = 'block';
+  dash_renderPerformance();
+}
+function pf_cancelEdit(){
+  pfEdit = false;
+  document.getElementById('pf-edit-btn').textContent = 'Editar';
+  document.getElementById('pf-save-bar').style.display = 'none';
+  dash_renderPerformance();
+}
+function pf_entry(i){
+  const e = pfVista[i];
+  pf_load();
+  if(!e || !pfData) return null;
+  if(!pfData.lav[e.nombre]) pfData.lav[e.nombre] = {...e.d, suc:e.suc};
+  return pfData.lav[e.nombre];
+}
+function pf_saveEdit(){
+  document.querySelectorAll('#pf-tbody input[data-k]').forEach(inp=>{
+    const e = pfVista[+inp.dataset.i];
+    if(!e) return;
+    const k = inp.dataset.k;
+    const nuevo = inp.value==='' ? null : parseFloat(inp.value);
+    const prev = e.d[k];
+    if(String(prev??'')===String(nuevo??'')) return;
+    const en = pf_entry(+inp.dataset.i); if(en) en[k] = (k==='base') ? (nuevo||0) : nuevo;
+  });
+  pf_save();
+  pfEdit = false;
+  document.getElementById('pf-edit-btn').textContent = 'Editar';
+  document.getElementById('pf-save-bar').style.display = 'none';
+  dash_renderPerformance();
+  dash_showToast('Performance guardado ✓');
+}
+function pf_ocultar(i){
+  const e = pfVista[i];
+  if(!e || !confirm(`¿Quitar a ${e.nombre} de Performance?`)) return;
+  const en = pf_entry(i); if(!en) return; en.oculto = true;
+  pf_save();
+  dash_renderPerformance();
+}
+
+// ── Leer captura de AppSheet ──
+function pf_onFile(inp){
+  const file = inp.files && inp.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = e => pf_leerAppSheet(e.target.result.split(',')[1], file.type||'image/png');
+  r.readAsDataURL(file); inp.value = '';
+}
+async function pf_leerAppSheet(b64, mime){
+  dash_showToast('Leyendo AppSheet…');
+  const prompt = `Analiza esta captura de pantalla de AppSheet con la tabla PERFORMANCE de un autolavado.
+Columnas: ALIAS, PUNTOS, LAVADOS_#, COMISIÓN, ESTRELLAS, HITS, # LAVADOS DIARIOS, ENTREGAS EN TIEMPO, CALIDAD, STRIKES, RETARDOS, FALTA, FALTA JUST (puede no verse).
+Lee TODOS los lavadores visibles. Porcentajes como número ("85%" → 85). Puntos con decimales, pueden ser negativos. Celda vacía → null. Los colores rojo/verde son solo alertas.
+Devuelve SOLO este JSON (sin markdown):
+{"lavadores":[{"nombre":"","puntos":0,"lavTotal":0,"pct":40,"estrellas":0,"hits":0,"lavDiarios":0,"entregas":0,"calidad":0,"strikes":0,"retardos":0,"falta":0,"faltaJust":null}]}`;
+  try{
+    const parsed = await callGemini(b64, mime, prompt);
+    const lst = (parsed && parsed.lavadores) || [];
+    if(!lst.length){ dash_showToast('No se pudo leer la tabla'); return; }
+    pf_load();
+    if(!pfData){ dash_showToast('Espera a que terminen de cargar los datos'); return; }
+    const ultSem = pf_semanas()[0];
+    const semNueva = ultSem && semKey(ultSem.semana||ultSem.sem) > semKey(PF_SEM_INICIO) ? (ultSem.semana||ultSem.sem) : PF_SEM_INICIO;
+    let act=0, nuevos=0;
+    lst.forEach(l=>{
+      if(!l.nombre) return;
+      const nn = normN(l.nombre);
+      let key = Object.keys(pfData.lav).find(k=>normN(k)===nn);
+      if(!key){
+        const enNom = (rows||[]).find(r=>normN(r.nombre)===nn);
+        key = enNom ? enNom.nombre : l.nombre;
+        pfData.lav[key] = {suc: pfSucSel!=='all' ? pfSucSel : (enNom?.sucursal||''), base: pf_n(l.lavTotal), semBase: semNueva};
+        nuevos++;
+      } else act++;
+      const d = pfData.lav[key];
+      d.oculto = false;
+      d.appsheet = l.lavTotal ?? d.appsheet;
+      PF_MET.forEach(k=>{ if(l[k]!==undefined) d[k] = l[k]; });
+    });
+    pfData.actualizado = new Date().toLocaleDateString('es-MX');
+    pf_save();
+    dash_renderPerformance();
+    dash_showToast(`✓ ${act} actualizados${nuevos?` · ${nuevos} nuevos`:''}`);
+  }catch(e){
+    dash_showToast(e.message==='QUOTA_429' ? 'Cuota de Gemini agotada, captura con Editar' : 'Error: '+e.message);
+  }
+}
 
 // ── Inventario: auto-calcular costo unitario ──
 function dash_invCalcUnit() {
