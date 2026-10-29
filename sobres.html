@@ -378,6 +378,87 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .fil-btn.on{background:var(--gold);color:#fff;border-color:var(--gold);}
 .fil-btn:hover{border-color:var(--gold);color:var(--gold);}
 
+/* ── ANALYTICS · Resumen / Equipo ── */
+.an-sel{padding:6px 12px!important;border-radius:20px;border:1px solid #e0ddd4;font-size:12px!important;font-weight:700;font-family:inherit;background:#fff;color:#111}
+.an-link{margin-left:auto;border:none;background:none;color:#999;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 2px}
+.an-link:hover,.an-link.on{color:#C8960C}
+.an-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.an-kpis .ah-kpi{padding:16px}
+.an-v{color:#111!important;font-size:24px!important}
+.an-d{font-size:11px;font-weight:600;margin-top:6px}
+.an-d.up{color:#2E7D32}.an-d.down{color:#C62828}.an-d.n{color:#999}
+.an-d span{color:#aaa;font-weight:500}
+.an-row2{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.an-card{background:#fff;border:0.5px solid #e5e2d8;border-radius:16px;padding:16px 18px}
+.an-ct{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.an-leg{display:flex;gap:12px;font-size:11px;color:#888}
+.an-leg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.an-al{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid #f3f1ec}
+.an-al:nth-child(2){border-top:none;padding-top:2px}
+.an-al b{display:block;font-size:13px;color:#111}
+.an-al span{font-size:11px;color:#999}
+.an-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none}
+.lm{background:#111;color:#fff;border-radius:16px;padding:18px 20px;margin-bottom:12px;display:grid;grid-template-columns:1.1fr 2fr;gap:20px}
+.lm-k{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888}
+.lm-sel{-webkit-appearance:none;appearance:none;background:transparent!important;border:none!important;color:#888;font-size:10px!important;height:auto!important;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:inherit;cursor:pointer;padding:0}
+.lm-name{margin:6px 0 2px;font-size:24px;font-weight:700;color:#e0a614}
+.lm-why{font-size:12px;color:#bbb;line-height:1.6}
+.lm-past{font-size:11px;color:#777;margin-top:10px}
+.lm-c{display:grid;grid-template-columns:18px 1fr 120px 96px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid #222;font-size:12px}
+.lm-c:last-of-type{border-bottom:none}
+.lm-n{color:#888}
+.lm-c small{color:#888;font-size:10px;display:block}
+.lm-c .lm-no{color:#e57373}
+.lm-sb{height:4px;background:#2a2a2a;border-radius:2px;overflow:hidden}.lm-sb i{display:block;height:4px;background:#e0a614}
+.lm-b{white-space:nowrap;border:1px solid #444;background:transparent;color:#e0a614;border-radius:14px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.lm-b.on{background:#e0a614;color:#111;border-color:#e0a614}
+.lm-crit{font-size:10px;color:#777;margin-top:8px}
+.pf-tr{cursor:pointer}
+.pf-tr:hover td{background:#fcfbf8}
+.pf-lnk{cursor:pointer}
+.pf-crown{font-size:11px;margin-left:4px}
+.pf-inc{display:inline-flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.pf-inc span{font-size:10px;font-weight:700;color:#C62828;background:#fdeeee;border-radius:8px;padding:1px 6px}
+.pf-semc b{font-weight:700}
+.pf-wk{display:block;font-size:10px;font-weight:600}
+.pf-table:not(.pf-edit){min-width:760px}
+.pf-mob{display:none}
+.pf-mc{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f5f3ee;cursor:pointer}
+.pf-mc:last-child{border-bottom:none}
+.pf-mc .l{flex:1;min-width:0}
+.pf-mc .r{text-align:right;font-size:15px}
+.pf-ov{position:fixed;inset:0;background:rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s;z-index:400}
+.pf-ov.on{opacity:1;pointer-events:auto}
+.pf-fi{position:fixed;top:0;right:0;bottom:0;width:390px;max-width:100%;background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.12);transform:translateX(110%);visibility:hidden;transition:transform .25s cubic-bezier(.32,.72,0,1),visibility .25s;overflow-y:auto;padding:22px 22px calc(40px + env(safe-area-inset-bottom));z-index:401}
+.pf-fi.on{transform:none;visibility:visible}
+.pf-fx{float:right;border:none;background:#f3f1ec;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:14px;color:#666}
+.pf-fn{margin:2px 0 0;font-size:22px;font-weight:700;color:#111}
+.pf-fmini{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.pf-fmini div{background:#f8f7f3;border-radius:10px;padding:8px}
+.pf-fmini span{font-size:9px;letter-spacing:.8px;color:#999;font-weight:700}
+.pf-fmini b{display:block;font-size:16px;margin-top:2px;color:#111}
+.pf-fsec{font-size:10px;font-weight:700;letter-spacing:1px;color:#999;text-transform:uppercase;margin:18px 0 8px}
+.pf-ftxt{font-size:12px;color:#555;line-height:1.6}
+.pf-fbars{display:flex;gap:6px}
+.pf-fbars>div{flex:1;text-align:center}
+.pf-fbars .b{height:70px;display:flex;align-items:flex-end}
+.pf-fbars .b i{display:block;width:100%;border-radius:4px}
+.pf-fbars b{display:block;font-size:10px;color:#555;margin-top:3px;min-height:12px}
+.pf-fbars span{font-size:9px;color:#aaa}
+.pf-bi{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f5f3ee;font-size:12px}
+.pf-bi .ck{width:20px;height:20px;border-radius:50%;border:1.5px solid #d8d3c6;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;flex:none}
+.pf-bi .ck.on{background:#2E7D32;border-color:#2E7D32;color:#fff}
+.pf-bi .dt{margin-left:auto;font-size:10px;color:#aaa}
+@media(max-width:760px){
+  .an-kpis{grid-template-columns:1fr 1fr}
+  .an-v{font-size:20px!important}
+  .an-row2{grid-template-columns:1fr}
+  .an-link{margin-left:0}
+  .lm{grid-template-columns:1fr;gap:12px}
+  .lm-c{grid-template-columns:18px 1fr 40px 92px}
+  #pf-card:not(.pf-editing) .pf-desk{display:none}
+  #pf-card:not(.pf-editing) .pf-mob{display:block}
+}
 /* ── PERFORMANCE (Dashboard) · Escalera Gladiadora ── */
 .pf-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .pf-kicker{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#aaa;text-transform:uppercase;margin-bottom:4px}
@@ -1766,22 +1847,132 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
     </div>
   </div>
 
-  <!-- SUCURSALES -->
+  <!-- SUCURSALES / ANALYTICS -->
   <div class="pnl" id="pnl-sucursales">
     <div class="ph">
-      <h2>Analytics por Sucursal</h2>
-      <div style="display:flex;gap:8px;align-items:center">
-        <div style="display:flex;background:#f0f0f0;border-radius:8px;padding:3px;gap:2px">
-          <button onclick="setSucTab('pagos')" id="suctab-pagos" class="ph-btn ph-dark" style="border-radius:20px;font-size:11px;padding:5px 14px">💰 Pagos</button>
-          <button onclick="setSucTab('performance')" id="suctab-performance" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">⭐ Performance</button>
-          <button onclick="setSucTab('hist')" id="suctab-hist" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">📈 Histórico</button>
-          <button onclick="setSucTab('ranking')" id="suctab-ranking" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">🏆 Ranking</button>
-          <button onclick="setSucTab('insumos')" id="suctab-insumos" class="ph-btn" style="background:#f0ede6;color:#555;border-radius:20px;font-size:11px;padding:5px 14px">🧴 Insumos</button>
-        </div>
-        <button class="btn by" onclick="renderSucursales()" style="padding:5px 10px">🔄</button>
+      <h2>Analytics</h2>
+      <div class="bg"><select id="an-sem" class="an-sel" onchange="anSemSel=this.value;an_render()"></select></div>
+    </div>
+    <div class="hr-top">
+      <div class="fseg" id="an-vista">
+        <button class="fbtn on" data-v="res" onclick="an_setVista('res')">Resumen</button>
+        <button class="fbtn" data-v="eq" onclick="an_setVista('eq')">Equipo</button>
+      </div>
+      <div id="an-suc" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="fbtn on" data-s="all" onclick="an_setSuc('all')">Todos</button>
+        <button class="fbtn ref" data-s="PC Refugio" onclick="an_setSuc('PC Refugio')">PC Refugio</button>
+        <button class="fbtn ala" data-s="PC Álamos" onclick="an_setSuc('PC Álamos')">PC Álamos</button>
+      </div>
+      <button class="an-link" id="an-ins-link" onclick="an_setVista(anVista==='ins'?'res':'ins')">Insumos</button>
+    </div>
+
+    <div id="an-res">
+      <div id="an-kpis" class="an-kpis"></div>
+      <div class="an-row2">
+        <div class="an-card" id="an-chart"></div>
+        <div class="an-card" id="an-atencion"></div>
       </div>
     </div>
 
+    <div id="an-eq" style="display:none">
+<div id="pf-wrap" style="margin-bottom:16px">
+
+  <!-- Header -->
+  <div class="pf-head">
+    <div>
+      <div class="pf-kicker">Equipo · Escalera Gladiadora</div>
+      <div class="pf-sub" id="pf-sub">—</div>
+    </div>
+    <div class="pf-actions">
+      <label class="pf-btn" title="Sube la captura de PERFORMANCE de AppSheet">
+        Leer AppSheet
+        <input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)">
+      </label>
+      <button class="pf-btn pf-btn-dark" id="pf-edit-btn" onclick="pf_toggleEdit()">Editar</button>
+    </div>
+  </div>
+
+  <!-- Avisos de rango -->
+  <div id="pf-alertas"></div>
+  <div id="pf-lm"></div>
+  <div id="pf-benef"></div>
+
+  <!-- Tabla -->
+  <div class="pf-card" id="pf-card">
+    <div class="pf-desk" style="overflow-x:auto;">
+      <table id="perf-table" class="pf-table">
+        <thead id="pf-thead"></thead>
+        <tbody id="pf-tbody"></tbody>
+      </table>
+    </div>
+    <div id="pf-mob" class="pf-mob"></div>
+    <div id="pf-empty" class="pf-empty" style="display:none;">Sin lavadores en esta sucursal</div>
+  </div>
+
+  <!-- Barra guardar (solo en edición) -->
+  <div id="pf-save-bar" style="display:none;margin-top:14px;text-align:right;">
+    <span class="pf-hint">En edición, “Lavados” es la base de AppSheet; las semanas pagadas se suman solas.</span>
+    <button class="pf-btn" onclick="pf_cancelEdit()">Cancelar</button>
+    <button class="pf-btn pf-btn-gold" onclick="pf_saveEdit()">Guardar</button>
+  </div>
+
+  <div class="pf-legend" id="pf-legend"></div>
+</div>
+
+    </div>
+
+    <div id="an-ins" style="display:none">
+    <div id="suc-view-insumos">
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:12px">Registrar compra de insumos</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Fecha</label>
+            <input type="date" id="ins-fecha" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px"></div>
+          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Semana</label>
+            <select id="ins-sem-sel" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-weight:700"></select></div>
+          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Sucursal</label>
+            <select id="ins-suc-sel" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
+              <option value="PC Refugio">PC Refugio</option>
+              <option value="PC Álamos">PC Álamos</option>
+            </select></div>
+        </div>
+        <div id="ins-items-tabla" style="margin-bottom:8px"></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+          <select id="ins-item-prod" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px"><option value="Cera Líquida">Cera Líquida</option><option value="Shampoo">Shampoo</option><option value="Almorol Gel">Almorol Gel</option><option value="Almorol Líquido">Almorol Líquido</option><option value="Desengrasante">Desengrasante</option><option value="Filtro Solar">Filtro Solar</option><option value="APC Tapicería">APC Tapicería</option><option value="Otro">Otro</option></select>
+          <input type="number" id="ins-item-litros" placeholder="Litros" style="width:70px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
+          <input type="number" id="ins-item-costo" placeholder="Costo $" style="width:80px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
+          <button onclick="agregarInsumoItem()" style="background:#f0ede6;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">+ Agregar</button>
+          <label style="background:#1c3a61;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer">📷 Leer nota
+            <input type="file" accept="image/*,application/pdf" style="display:none" onchange="onInsumoFile(this)">
+          </label>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:12px;font-weight:700">Total: $<span id="ins-total">0</span></div>
+          <button onclick="guardarInsumo()" style="background:#000;color:#e0a614;border:none;border-radius:6px;padding:6px 16px;font-size:11px;font-weight:700;cursor:pointer">Guardar compra</button>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div style="font-weight:700;font-size:13px">Indicadores de consumo</div>
+          <select id="ins-periodo-sel" onchange="renderInsumos()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px">
+            <option value="">Todas las semanas</option>
+          </select>
+        </div>
+        <div id="ins-indicadores" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px"></div>
+        <div id="ins-insight" style="font-size:12px;color:#555;background:#faf8f2;border-radius:8px;padding:10px 12px;margin-bottom:14px"></div>
+        <div style="font-weight:700;font-size:12px;margin-bottom:8px">Consumo por producto</div>
+        <div id="ins-productos-tabla" style="overflow-x:auto"></div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px">Historial de compras</div>
+        <div id="ins-hist"></div>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Vistas anteriores (ocultas; sus funciones siguen corriendo sin romper nada) -->
+    <div id="an-legacy" style="display:none">
     <!-- VISTA PAGOS -->
     <div id="suc-view-pagos">
       <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
@@ -1797,53 +1988,6 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
 
     <!-- VISTA PERFORMANCE -->
     <div id="suc-view-performance" style="display:none">
-<div id="pf-wrap" style="margin-bottom:16px">
-
-  <!-- Header -->
-  <div class="pf-head">
-    <div>
-      <div class="pf-kicker">Performance · Escalera Gladiadora</div>
-      <div class="pf-sub" id="pf-sub">—</div>
-    </div>
-    <div class="pf-actions">
-      <div class="fseg" id="pf-suc">
-        <button class="fbtn on" data-suc="all" onclick="pf_setSuc('all')">Todas</button>
-        <button class="fbtn ref" data-suc="PC Refugio" onclick="pf_setSuc('PC Refugio')">Refugio</button>
-        <button class="fbtn ala" data-suc="PC Álamos" onclick="pf_setSuc('PC Álamos')">Álamos</button>
-      </div>
-      <label class="pf-btn" title="Sube la captura de PERFORMANCE de AppSheet">
-        Leer AppSheet
-        <input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)">
-      </label>
-      <button class="pf-btn pf-btn-dark" id="pf-edit-btn" onclick="pf_toggleEdit()">Editar</button>
-    </div>
-  </div>
-
-  <!-- Avisos de rango -->
-  <div id="pf-alertas"></div>
-  <div id="pf-benef"></div>
-
-  <!-- Tabla -->
-  <div class="pf-card">
-    <div style="overflow-x:auto;">
-      <table id="perf-table" class="pf-table">
-        <thead id="pf-thead"></thead>
-        <tbody id="pf-tbody"></tbody>
-      </table>
-    </div>
-    <div id="pf-empty" class="pf-empty" style="display:none;">Sin lavadores en esta sucursal</div>
-  </div>
-
-  <!-- Barra guardar (solo en edición) -->
-  <div id="pf-save-bar" style="display:none;margin-top:14px;text-align:right;">
-    <span class="pf-hint">En edición, “Lavados” es la base de AppSheet; las semanas pagadas se suman solas.</span>
-    <button class="pf-btn" onclick="pf_cancelEdit()">Cancelar</button>
-    <button class="pf-btn pf-btn-gold" onclick="pf_saveEdit()">Guardar</button>
-  </div>
-
-  <div class="pf-legend" id="pf-legend"></div>
-</div>
-
       <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
         <div style="font-weight:700;font-size:13px;margin-bottom:10px">Historial de semanas (métricas de AppSheet)</div>
         <div id="perf-hist"></div>
@@ -1920,53 +2064,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
       </div>
     </div>
 
-    <div id="suc-view-insumos" style="display:none">
-      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
-        <div style="font-weight:700;font-size:13px;margin-bottom:12px">Registrar compra de insumos</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Fecha</label>
-            <input type="date" id="ins-fecha" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px"></div>
-          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Semana</label>
-            <select id="ins-sem-sel" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-weight:700"></select></div>
-          <div><label style="font-size:10px;color:#888;display:block;margin-bottom:2px">Sucursal</label>
-            <select id="ins-suc-sel" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
-              <option value="PC Refugio">PC Refugio</option>
-              <option value="PC Álamos">PC Álamos</option>
-            </select></div>
-        </div>
-        <div id="ins-items-tabla" style="margin-bottom:8px"></div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
-          <select id="ins-item-prod" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px"><option value="Cera Líquida">Cera Líquida</option><option value="Shampoo">Shampoo</option><option value="Almorol Gel">Almorol Gel</option><option value="Almorol Líquido">Almorol Líquido</option><option value="Desengrasante">Desengrasante</option><option value="Filtro Solar">Filtro Solar</option><option value="APC Tapicería">APC Tapicería</option><option value="Otro">Otro</option></select>
-          <input type="number" id="ins-item-litros" placeholder="Litros" style="width:70px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
-          <input type="number" id="ins-item-costo" placeholder="Costo $" style="width:80px;font-size:12px;border:1px solid #ddd;border-radius:6px;padding:5px 8px">
-          <button onclick="agregarInsumoItem()" style="background:#f0ede6;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">+ Agregar</button>
-          <label style="background:#1c3a61;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer">📷 Leer nota
-            <input type="file" accept="image/*,application/pdf" style="display:none" onchange="onInsumoFile(this)">
-          </label>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:12px;font-weight:700">Total: $<span id="ins-total">0</span></div>
-          <button onclick="guardarInsumo()" style="background:#000;color:#e0a614;border:none;border-radius:6px;padding:6px 16px;font-size:11px;font-weight:700;cursor:pointer">Guardar compra</button>
-        </div>
-      </div>
-      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-          <div style="font-weight:700;font-size:13px">Indicadores de consumo</div>
-          <select id="ins-periodo-sel" onchange="renderInsumos()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px">
-            <option value="">Todas las semanas</option>
-          </select>
-        </div>
-        <div id="ins-indicadores" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px"></div>
-        <div id="ins-insight" style="font-size:12px;color:#555;background:#faf8f2;border-radius:8px;padding:10px 12px;margin-bottom:14px"></div>
-        <div style="font-weight:700;font-size:12px;margin-bottom:8px">Consumo por producto</div>
-        <div id="ins-productos-tabla" style="overflow-x:auto"></div>
-      </div>
-      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
-        <div style="font-weight:700;font-size:13px;margin-bottom:10px">Historial de compras</div>
-        <div id="ins-hist"></div>
-      </div>
     </div>
-
   </div>
 
   <!-- DEUDAS -->
@@ -3618,7 +3716,7 @@ function goTab(id){
   document.querySelectorAll(".pnl").forEach(p=>p.classList.remove("on"));
   document.getElementById("pnl-"+id).classList.add("on");
   if(id==="sobres")renderS();if(id==="hist")renderH();
-  if(id==="deudas")renderD();if(id==="sucursales")renderSucursales();
+  if(id==="deudas")renderD();if(id==="sucursales"){renderSucursales();}
   if(id==="ahorros")renderAhorros();
   if(id==="rol")renderHorarios();
   if(id==="coords"){renderCoords();renderLiquidaciones();syncSemana(document.getElementById("sem").value);goSubTab("pagos");}
@@ -4629,6 +4727,10 @@ function poblarPagosSemSel(){
 }
 
 function renderSucursales(){
+  try{ _renderSucursalesLegacy(); }catch(e){ console.warn("legacy analytics",e); }
+  if(typeof an_render==="function") an_render();
+}
+function _renderSucursalesLegacy(){
   // ── CONFIG GRID (sin cambios) ─────────────────────────────────────
   const grid=document.getElementById("suc-grid");
   if(grid){
@@ -5688,7 +5790,7 @@ function cerrarSemana(){
   document.getElementById("sem").value = nextSem;
   syncSemana(nextSem);
   renderT();renderD();renderFlujoHist();flash("✓ Semana "+sem+" cerrada — ahora en semana "+nextSem+(typeof pf_ascensosTexto==="function"?pf_ascensosTexto():""));
-  if(typeof dash_renderPerformance==="function") dash_renderPerformance();
+  if(typeof an_render==="function") an_render();
 }
 
 // ── HISTORIAL: corrige entradas con el mismo número de semana pero fecha distinta ──
@@ -11411,110 +11513,266 @@ function pf_fmt(k, v){
   return v;
 }
 
-function pf_setSuc(s){
+// ══ ANALYTICS · Resumen + Equipo ═══════════════════════════════════
+let anVista = 'res';
+let anSemSel = '';           // '' = la más reciente con datos
+
+function an_semanas(){
+  // semanas cerradas + la semana en curso si ya tiene autos capturados
+  const out = pf_semanas().map(w=>({sem:String(w.semana||w.sem), fecha:w.fecha||'', rows:w.rows||[], actual:false}));
+  const semAct = document.getElementById('sem')?.value || '';
+  if(semAct && (rows||[]).some(r=>pf_n(r.autos)>0) && !out.some(w=>w.sem===semAct)){
+    out.push({sem:semAct, fecha:new Date().toLocaleDateString('es-MX'), rows:(rows||[]).map(r=>({...r, total: typeof calcT==='function' ? calcT(r,r.nombre) : pf_n(r.comision)})), actual:true});
+  }
+  return out.sort((a,b)=>semKey(b.sem)-semKey(a.sem));
+}
+function an_sucOk(suc){ return pfSucSel==='all' || normN(suc)===normN(pfSucSel); }
+function an_rowsDe(w){ return (w && w.rows || []).filter(r=>r.nombre && an_sucOk(r.sucursal)); }
+function an_idxSel(sems){ if(!anSemSel) return 0; const i=sems.findIndex(w=>w.sem===anSemSel); return i<0?0:i; }
+function an_autos(w, nombre){ return w ? pf_autosEn(w, nombre) : 0; }
+
+function an_setVista(v){
+  if(pfEdit) pf_cancelEdit();
+  anVista = v;
+  document.querySelectorAll('#an-vista .fbtn').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+  ['res','eq','ins'].forEach(k=>{ const el=document.getElementById('an-'+k); if(el) el.style.display = k===v ? 'block' : 'none'; });
+  const ins=document.getElementById('an-ins-link'); if(ins) ins.classList.toggle('on', v==='ins');
+  if(v==='ins' && typeof renderInsumos==='function'){ try{ renderInsumos(); }catch(e){} }
+  an_render();
+}
+function an_setSuc(s){
   if(pfEdit) pf_cancelEdit();
   pfSucSel = s;
-  document.querySelectorAll('#pf-suc .fbtn').forEach(b=>b.classList.toggle('on', b.dataset.suc===s));
-  dash_renderPerformance();
+  document.querySelectorAll('#an-suc .fbtn').forEach(b=>b.classList.toggle('on', b.dataset.s===s));
+  an_render();
 }
+function an_render(){
+  if(!document.getElementById('an-res')) return;
+  const sems = an_semanas();
+  const sel = document.getElementById('an-sem');
+  if(sel){
+    sel.innerHTML = sems.slice(0,12).map(w=>`<option value="${esc(w.sem)}">${pf_semCorta(w.sem)}${w.actual?' · en curso':''}</option>`).join('') || '<option value="">Sin semanas</option>';
+    if(anSemSel && sems.some(w=>w.sem===anSemSel)) sel.value = anSemSel;
+  }
+  if(anVista==='res') an_renderResumen(sems);
+  if(anVista==='eq') dash_renderPerformance();
+}
+
+function an_renderResumen(sems){
+  const k = document.getElementById('an-kpis'), ch = document.getElementById('an-chart'), at = document.getElementById('an-atencion');
+  if(!sems.length){ k.innerHTML=''; ch.innerHTML='<p class="it" style="margin:0">Cuando cierres la primera semana aquí verás el resumen.</p>'; at.innerHTML=''; return; }
+  const i = an_idxSel(sems), W = sems[i], P = sems[i+1];
+  const sum = (w,f)=>an_rowsDe(w).reduce((s,r)=>s+f(r),0);
+  const autos = sum(W,r=>pf_n(r.autos)), autosP = P?sum(P,r=>pf_n(r.autos)):0;
+  const nom = sum(W,r=>pf_n(r.total)), nomP = P?sum(P,r=>pf_n(r.total)):0;
+  const com = sum(W,r=>pf_n(r.comision)), comP = P?sum(P,r=>pf_n(r.comision)):0;
+  const cpa = autos? com/autos : 0, cpaP = autosP? comP/autosP : 0;
+  const act = n=>{ const s=new Set(an_rowsDe(W).filter(r=>pf_n(r.autos)>0 && (!n||normN(r.sucursal)===normN(n))).map(r=>normN(r.nombre))); return s.size; };
+  const pct = (a,b)=> b ? Math.round((a-b)/b*100) : null;
+  const delta = (d, good, txt)=> d===null ? `<div class="an-d n">${txt||'&nbsp;'}</div>` :
+    `<div class="an-d ${d===0?'n':(good?(d>0?'up':'down'):(d>0?'down':'up'))}">${d>0?'↑':d<0?'↓':'='} ${Math.abs(d)}${txt||'%'} <span>vs ${pf_semCorta(P.sem)}</span></div>`;
+  const fmt$ = v=>'$'+Math.round(v).toLocaleString('es-MX');
+  k.innerHTML = `
+    <div class="ah-kpi"><div class="ah-kpi-val an-v">${pf_fmtN(autos)}</div><div class="ah-kpi-lbl">Autos lavados</div>${delta(pct(autos,autosP),true)}</div>
+    <div class="ah-kpi"><div class="ah-kpi-val an-v">${fmt$(nom)}</div><div class="ah-kpi-lbl">Nómina lavadores</div>${P?`<div class="an-d n">${pct(nom,nomP)>0?'↑':pct(nom,nomP)<0?'↓':'='} ${Math.abs(pct(nom,nomP)||0)}% <span>vs ${pf_semCorta(P.sem)}</span></div>`:'<div class="an-d n">&nbsp;</div>'}</div>
+    <div class="ah-kpi"><div class="ah-kpi-val an-v">${fmt$(cpa)}</div><div class="ah-kpi-lbl">Comisión por auto</div>${P&&autosP?delta(Math.round(cpa-cpaP),false,''):'<div class="an-d n">&nbsp;</div>'}</div>
+    <div class="ah-kpi"><div class="ah-kpi-val an-v">${act()}</div><div class="ah-kpi-lbl">Lavadores activos</div><div class="an-d n">${pfSucSel==='all'?`Refugio ${act('PC Refugio')} · Álamos ${act('PC Álamos')}`:'&nbsp;'}</div></div>`;
+
+  // Gráfica: hasta 8 semanas terminando en la seleccionada
+  const ws = sems.slice(i, i+8).reverse();
+  const series = pfSucSel==='all' ? [['PC Refugio','#1c3a61'],['PC Álamos','#14AACE']] : [[pfSucSel, normN(pfSucSel).includes('alamos')?'#14AACE':'#1c3a61']];
+  const val = (w,s)=>(w.rows||[]).filter(r=>normN(r.sucursal)===normN(s)).reduce((a,r)=>a+pf_n(r.autos),0);
+  const mx = Math.max(10, ...ws.flatMap(w=>series.map(([s])=>val(w,s))));
+  const VW=640, H=170, gw=VW/Math.max(ws.length,1), bw=Math.min(26,(gw-16)/series.length);
+  let svg = `<svg viewBox="0 0 ${VW} ${H+22}" width="100%" style="display:block">`;
+  ws.forEach((w,j)=>{
+    const x0 = j*gw + (gw - bw*series.length - 3*(series.length-1))/2;
+    series.forEach(([s,c],q)=>{ const v=val(w,s), h=v/mx*H; const last=j===ws.length-1;
+      svg += `<rect x="${x0+q*(bw+3)}" y="${H-h}" width="${bw}" height="${Math.max(h,1)}" rx="4" fill="${c}" opacity="${last?1:.55}"><title>${s.replace('PC ','')} ${pf_semCorta(w.sem)}: ${v} autos</title></rect>`;
+      if(last && v) svg += `<text x="${x0+q*(bw+3)+bw/2}" y="${H-h-5}" font-size="10" text-anchor="middle" fill="#555" font-weight="700">${v}</text>`; });
+    svg += `<text x="${j*gw+gw/2}" y="${H+16}" font-size="10" text-anchor="middle" fill="${j===ws.length-1?'#111':'#aaa'}" font-weight="${j===ws.length-1?700:400}">${pf_semCorta(w.sem)}</text>`;
+  });
+  svg += '</svg>';
+  ch.innerHTML = `<div class="an-ct"><div class="pf-alert-t" style="margin:0">Autos por semana</div><div class="an-leg">${series.map(([s,c])=>`<span><i style="background:${c}"></i>${s.replace('PC ','')}</span>`).join('')}</div></div>${svg}`;
+
+  // Atención
+  const items = [];
+  const nombres = [...new Set(an_rowsDe(W).filter(r=>pf_n(r.autos)>0).map(r=>r.nombre))];
+  const baja = nombres.filter(n=>{ const a=[0,1,2].map(j=>sems[i+j]?an_autos(sems[i+j],n):null); return a.every(v=>v!==null&&v>0) && a[0]<a[1] && a[1]<a[2]; });
+  baja.forEach(n=>{ const a=[2,1,0].map(j=>an_autos(sems[i+j],n)); items.push(['#C62828', `${esc(n)} · 3 semanas a la baja`, a.join(' → ')+' autos', n]); });
+  if(P){
+    const caidas = nombres.map(n=>({n, d:an_autos(W,n)-an_autos(P,n), p:an_autos(P,n)})).filter(x=>x.p>0 && x.d<=-8 && !baja.includes(x.n)).sort((a,b)=>a.d-b.d);
+    if(caidas[0]) items.push(['#C62828', `${esc(caidas[0].n)} · mayor caída`, `${caidas[0].d} autos vs ${pf_semCorta(P.sem)}`, caidas[0].n]);
+  }
+  const lista = pf_lista().filter(e=>an_sucOk(e.suc));
+  const faltas = lista.filter(e=>pf_n(e.d.falta)>0).sort((a,b)=>pf_n(b.d.falta)-pf_n(a.d.falta));
+  if(faltas.length) items.push(['#E65100','Faltas (AppSheet)', faltas.map(e=>`${esc(e.nombre)} ${e.d.falta}`).join(' · ')]);
+  lista.filter(e=>e.c.semanas!==null && e.c.semanas<=PF_ALERTA_SEM).forEach(e=>items.push(['#e0a614', `${esc(e.nombre)} · a ${pf_fmtN(e.c.faltan)} de ${e.c.rg.next.n}`, `~${e.c.semanas} sem a su ritmo`, e.nombre]));
+  lista.filter(e=>e.c.subio).forEach(e=>items.push(['#2E7D32', `${esc(e.nombre)} subió a ${e.c.subio.a.n}`, 'Revisa sus beneficios en Equipo', e.nombre]));
+  const mesP = lm_mesDefault(); if(mesP && !lm_get(mesP.key)) items.push(['#111', 'Lavador del mes por nombrar', mesP.label]);
+  at.innerHTML = `<div class="pf-alert-t">Atención · ${pf_semCorta(W.sem)}</div>` + (items.length ? items.map(([c,t,s,n])=>
+    `<div class="an-al"${n?` onclick="pf_ficha('${esc(n).replace(/'/g,"\\'")}')" style="cursor:pointer"`:''}><span class="an-dot" style="background:${c}"></span><div><b>${t}</b><span>${s}</span></div></div>`).join('')
+    : '<div class="an-al"><span class="an-dot" style="background:#2E7D32"></span><div><b>Todo en orden</b><span>Sin alertas esta semana</span></div></div>');
+}
+
+// ── Lavador del mes ──
+const LM_MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+let lmMesSel = '';
+function lm_key(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+function lm_label(key){ const [y,m]=key.split('-'); const s=LM_MESES[+m-1]; return s.charAt(0).toUpperCase()+s.slice(1)+' '+y; }
+function lm_get(key){ return pfData && pfData.lavMes && pfData.lavMes[key]; }
+function lm_mesDefault(){
+  const hoy=new Date(), cur=lm_key(hoy), prev=lm_key(new Date(hoy.getFullYear(), hoy.getMonth()-1, 1));
+  if(hoy.getDate()<=7 && !lm_get(prev)) return {key:prev, label:lm_label(prev)};
+  return null; // solo es "pendiente" en la primera semana del mes siguiente
+}
+function lm_mesActual(){ if(lmMesSel) return lmMesSel; const p=lm_mesDefault(); return p ? p.key : lm_key(new Date()); }
+function lm_fecha(f){ const m=String(f||'').match(/(\d+)\/(\d+)\/(\d+)/); return m ? new Date(+m[3], +m[2]-1, +m[1]) : null; }
+function lm_autosMes(nombre, key){
+  return an_semanas().filter(w=>{ const d=lm_fecha(w.fecha); return d && lm_key(d)===key; }).reduce((s,w)=>s+pf_autosEn(w,nombre),0);
+}
+function lm_candidatos(key){
+  const lista = pf_lista().filter(e=>an_sucOk(e.suc)).map(e=>({e, autos:lm_autosMes(e.nombre,key)})).filter(x=>x.autos>0);
+  const mx = Math.max(1, ...lista.map(x=>x.autos));
+  lista.forEach(x=>{ const d=x.e.d;
+    x.sc = Math.max(0,pf_n(d.puntos))/25*50 + x.autos/mx*30 + pf_n(d.entregas)/100*20 - pf_n(d.retardos)*2;
+    x.ok = !(pf_n(d.strikes) || pf_n(d.falta)); });
+  return lista.sort((a,b)=>b.sc-a.sc);
+}
+function lm_render(){
+  const el = document.getElementById('pf-lm'); if(!el) return;
+  if(!pfData){ el.innerHTML=''; return; }
+  const key = lm_mesActual(), w = lm_get(key);
+  const cands = lm_candidatos(key);
+  const top = cands.filter(x=>x.ok).slice(0,3), fuera = cands.find(x=>!x.ok && (!top.length || x.sc>top[top.length-1].sc));
+  const hist = Object.entries(pfData.lavMes||{}).filter(([k])=>k!==key).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,4);
+  const meses = [...new Set([lm_key(new Date()), lm_key(new Date(new Date().getFullYear(), new Date().getMonth()-1, 1)), ...Object.keys(pfData.lavMes||{})])].sort().reverse().slice(0,6);
+  el.innerHTML = `<div class="lm">
+    <div>
+      <div class="lm-k">🏆 Lavador del mes ·
+        <select class="lm-sel" onchange="lmMesSel=this.value;lm_render()">${meses.map(m=>`<option value="${m}"${m===key?' selected':''}>${lm_label(m)}</option>`).join('')}</select></div>
+      <div class="lm-name">${w ? esc(w.nombre) : 'Por nombrar'}</div>
+      <div class="lm-why">${w ? `${Number(w.pts||0).toFixed(1)} puntos · ${w.autos} autos · ${w.ent||0}% entregas a tiempo` : 'La app te propone el top 3 con los números del mes. Tú decides y le das “Nombrar”.'}</div>
+      ${hist.length ? `<div class="lm-past">Anteriores: ${hist.map(([k,v])=>`${lm_label(k).split(' ')[0].slice(0,3)} · ${esc(v.nombre)}`).join(' &nbsp;·&nbsp; ')}</div>` : ''}
+    </div>
+    <div>
+      <div class="lm-k" style="margin-bottom:6px">Candidatos</div>
+      ${top.length ? top.map((x,k)=>`<div class="lm-c"><span class="lm-n">${k+1}</span><div><b>${esc(x.e.nombre)}</b><small>${pf_n(x.e.d.puntos).toFixed(1)} pts · ${x.autos} autos · ${pf_n(x.e.d.entregas)}% entregas${pf_n(x.e.d.retardos)?' · '+x.e.d.retardos+' ret.':''}</small></div><div class="lm-sb"><i style="width:${Math.min(100,Math.max(4,x.sc))}%"></i></div><button class="lm-b${w&&normN(w.nombre)===normN(x.e.nombre)?' on':''}" onclick="lm_nombrar('${key}','${esc(x.e.nombre).replace(/'/g,"\\'")}',${x.sc.toFixed(1)},${x.autos})">${w&&normN(w.nombre)===normN(x.e.nombre)?'✓ Nombrado':'Nombrar'}</button></div>`).join('')
+        : '<div class="lm-why">Aún no hay autos registrados en este mes.</div>'}
+      ${fuera ? `<div class="lm-c"><span></span><div><b style="color:#888">${esc(fuera.e.nombre)}</b><small class="lm-no">Tendría ${Math.round(fuera.sc)} pts, pero tiene ${[pf_n(fuera.e.d.strikes)?fuera.e.d.strikes+' strike':'', pf_n(fuera.e.d.falta)?fuera.e.d.falta+' falta':''].filter(Boolean).join(' y ')}</small></div><span></span><span></span></div>` : ''}
+      <div class="lm-crit">50% puntos Gladiador · 30% autos del mes · 20% entregas a tiempo · −2 por retardo. No participa quien tenga strike o falta.</div>
+    </div>
+  </div>`;
+}
+function lm_nombrar(key, nombre, sc, autos){
+  pf_load(); if(!pfData) return;
+  pfData.lavMes = pfData.lavMes || {};
+  const cur = pfData.lavMes[key];
+  if(cur && normN(cur.nombre)===normN(nombre)){
+    if(!confirm(`¿Quitar a ${nombre} como lavador de ${lm_label(key)}?`)) return;
+    delete pfData.lavMes[key];
+  } else {
+    const e = pf_lista().find(x=>normN(x.nombre)===normN(nombre));
+    pfData.lavMes[key] = {nombre, fecha:new Date().toLocaleDateString('es-MX'), pts:pf_n(e?.d.puntos), autos, ent:pf_n(e?.d.entregas)};
+    flash(`🏆 ${nombre} es el lavador de ${lm_label(key)}`);
+  }
+  pf_save(); dash_renderPerformance();
+}
+function lm_ultimo(){ const ks=Object.keys((pfData&&pfData.lavMes)||{}).sort(); return ks.length ? pfData.lavMes[ks[ks.length-1]].nombre : null; }
+
+// ── Equipo (tabla) ──
+function pf_setSuc(s){ an_setSuc(s); }
 function pf_setSort(k){
   if(pfEdit) return;
   if(pfSort.k===k) pfSort.dir *= -1; else pfSort = {k, dir: k==='nombre' ? 1 : -1};
   dash_renderPerformance();
 }
+const PF_VIEW_COLS = [
+  {k:'nombre',label:'LAVADOR'},{k:'rango',label:'RANGO'},{k:'lavados',label:'LAVADOS'},{k:'semana',label:'ESTA SEM.'},
+  {k:'puntos',label:'PUNTOS'},{k:'entregas',label:'ENTREGAS'},{k:'inc',label:'INCIDENCIAS'}];
+function pf_inc(d){
+  const a=[]; if(pf_n(d.calidad))a.push(d.calidad+' calidad'); if(pf_n(d.strikes))a.push(d.strikes+' strike'); if(pf_n(d.retardos))a.push(d.retardos+' ret.'); if(pf_n(d.falta))a.push(d.falta+' falta');
+  return a.length ? `<span class="pf-inc">${a.map(x=>`<span>${x}</span>`).join('')}</span>` : '<span style="color:#ccc">—</span>';
+}
+function pf_incN(d){ return pf_n(d.calidad)+pf_n(d.strikes)+pf_n(d.retardos)+pf_n(d.falta); }
+function pf_semCell(e){
+  if(e.sem===null) return '<span style="color:#ccc">—</span>';
+  if(!e.ant) return `<b>${e.sem}</b>`;
+  const df=e.sem-e.ant;
+  return `<b>${e.sem}</b><small class="pf-wk" style="color:${df>=0?'#2E7D32':'#C62828'}">${df>0?'↑':df<0?'↓':'='} ${Math.abs(df)}</small>`;
+}
+function pf_rangoCell(c){
+  if(!c.rg.next) return `${pf_chip(c.rg.cur)}<div class="pf-falta">Rango máximo</div>`;
+  const span=c.rg.next.min-c.rg.cur.min, pct=Math.max(2,Math.min(100,(c.total-c.rg.cur.min)/span*100));
+  const hot=c.semanas!==null && c.semanas<=PF_ALERTA_SEM;
+  return `${pf_chip(c.rg.cur)}<div class="pf-bar"><i style="width:${pct}%;background:${c.rg.next.bar}"></i></div><div class="pf-falta${hot?' hot':''}">${pf_fmtN(c.faltan)} para ${c.rg.next.n}${c.semanas!==null?` · ~${c.semanas} sem`:''}</div>`;
+}
 
 function dash_renderPerformance(){
   if(!document.getElementById('pf-tbody')) return;
-  let lista = pf_lista();
-  if(pfSucSel!=='all') lista = lista.filter(e=>normN(e.suc)===normN(pfSucSel));
+  let lista = pf_lista().filter(e=>an_sucOk(e.suc));
+  const sems = an_semanas(), si = an_idxSel(sems), W = sems[si], P = sems[si+1];
+  lista.forEach(e=>{ e.sem = W ? an_autos(W,e.nombre) : null; e.ant = P ? an_autos(P,e.nombre) : 0; });
 
-  // Subtítulo
-  const sems = pf_semanas();
-  const ultSem = sems[0] ? (sems[0].semana||sems[0].sem) : null;
-  const sumando = ultSem && semKey(ultSem) > semKey(PF_SEM_INICIO);
+  const ultSem = pf_semanas()[0];
+  const sumando = ultSem && semKey(ultSem.semana||ultSem.sem) > semKey(PF_SEM_INICIO);
   document.getElementById('pf-sub').innerHTML =
-    `Lavados: base AppSheet ${pf_semCorta(PF_SEM_INICIO)}` +
-    (sumando ? ` + nómina hasta <b>${pf_semCorta(ultSem)}</b>` : ` · se suman solos al cerrar cada semana`) +
-    ` · métricas al ${pf_load().actualizado||'—'}`;
+    `Lavados: base AppSheet ${pf_semCorta(PF_SEM_INICIO)}` + (sumando ? ` + nómina hasta <b>${pf_semCorta(ultSem.semana||ultSem.sem)}</b>` : ' · se suman solos al cerrar cada semana') +
+    ` · métricas al ${pf_load().actualizado||'—'}` + (W ? ` · “Esta sem.” = ${pf_semCorta(W.sem)}` : '');
 
   pf_renderAlertas(lista);
+  lm_render();
   pf_renderBenef(lista);
 
-  // Orden
-  const val = e => pfSort.k==='nombre' ? normN(e.nombre)
-    : (pfSort.k==='lavados' || pfSort.k==='rango') ? e.c.total
-    : pf_n(e.d[pfSort.k]);
-  lista.sort((a,b)=>{
-    const va=val(a), vb=val(b);
-    if(typeof va==='string') return va.localeCompare(vb)*pfSort.dir;
-    return (va-vb)*pfSort.dir;
-  });
+  const val = e => pfSort.k==='nombre' ? normN(e.nombre) : (pfSort.k==='lavados'||pfSort.k==='rango') ? e.c.total
+    : pfSort.k==='semana' ? (e.sem||0) : pfSort.k==='inc' ? pf_incN(e.d) : pf_n(e.d[pfSort.k]);
+  lista.sort((a,b)=>{ const va=val(a), vb=val(b); return typeof va==='string' ? va.localeCompare(vb)*pfSort.dir : (va-vb)*pfSort.dir; });
   pfVista = lista;
+  const corona = lm_ultimo();
 
-  document.getElementById('pf-thead').innerHTML = '<tr>' + PF_COLS.map(c=>
-    `<th class="${pfSort.k===c.k?'on':''}" onclick="pf_setSort('${c.k}')">${c.label}${pfSort.k===c.k?`<span class="ar">${pfSort.dir<0?'↓':'↑'}</span>`:''}</th>`
-  ).join('') + (pfEdit?'<th></th>':'') + '</tr>';
+  const cols = pfEdit ? PF_COLS : PF_VIEW_COLS;
+  document.getElementById('pf-thead').innerHTML = '<tr>' + cols.map(c=>
+    `<th class="${pfSort.k===c.k?'on':''}" onclick="pf_setSort('${c.k}')">${c.label}${pfSort.k===c.k?`<span class="ar">${pfSort.dir<0?'↓':'↑'}</span>`:''}</th>`).join('') + (pfEdit?'<th></th>':'') + '</tr>';
+  document.getElementById('perf-table').classList.toggle('pf-edit', pfEdit);
+  document.getElementById('pf-card').classList.toggle('pf-editing', pfEdit);
+  document.getElementById('pf-empty').style.display = lista.length ? 'none' : 'block';
 
-  const empty = document.getElementById('pf-empty');
-  empty.style.display = lista.length ? 'none' : 'block';
-
+  const nameCell = (e,i)=>`<td><span class="pf-name pf-lnk" onclick="pf_fichaIdx(${i})">${esc(e.nombre)}</span>${corona&&normN(corona)===normN(e.nombre)?'<span class="pf-crown">🏆</span>':''}<span class="pf-suc">${esc((e.suc||'').replace('PC ',''))}${e.nuevo?' · nuevo':''}</span></td>`;
   document.getElementById('pf-tbody').innerHTML = lista.map((e,i)=>{
-    const {d, c} = e;
-    const sucCorta = e.suc ? e.suc.replace('PC ','') : '';
-    const nombre = `<td><span class="pf-name">${esc(e.nombre)}</span><span class="pf-suc">${esc(sucCorta)}${e.nuevo?' · nuevo':''}</span></td>`;
-
-    // Rango + progreso
-    let rango;
-    if(c.rg.next){
-      const span = c.rg.next.min - c.rg.cur.min;
-      const pct = Math.max(2, Math.min(100, (c.total - c.rg.cur.min)/span*100));
-      const hot = c.semanas!==null && c.semanas<=PF_ALERTA_SEM;
-      const eta = c.semanas!==null ? ` · ~${c.semanas} sem` : '';
-      rango = `<td class="pf-rank">${pf_chip(c.rg.cur)}
-        <div class="pf-bar"><i style="width:${pct}%;background:${c.rg.next.bar}"></i></div>
-        <div class="pf-falta${hot?' hot':''}">${pf_fmtN(c.faltan)} para ${c.rg.next.n}${eta}</div></td>`;
-    } else {
-      rango = `<td class="pf-rank">${pf_chip(c.rg.cur)}<div class="pf-falta">Rango máximo</div></td>`;
-    }
-
-    // Lavados
-    let lav;
+    const {d,c} = e;
     if(pfEdit){
-      lav = `<td><input type="number" step="1" data-i="${i}" data-k="base" value="${pf_n(d.base)}" title="Base de AppSheet hasta ${pf_semCorta(d.semBase||PF_SEM_INICIO)}"></td>`;
-    } else {
-      const tip = `Base AppSheet ${pf_fmtN(pf_n(d.base))} (hasta ${pf_semCorta(d.semBase||PF_SEM_INICIO)})` + (c.sumadas?` + ${pf_fmtN(c.sumadas)} de nómina`:'');
-      lav = `<td class="pf-lav" title="${tip}">${pf_fmtN(c.total)}${c.sumadas?`<small>+${pf_fmtN(c.sumadas)}</small>`:''}</td>`;
+      const mets = PF_COLS.filter(col=>col.edit).map(col=>{ const v=d[col.k]; return `<td><input type="number" step="${col.step||'1'}" data-i="${i}" data-k="${col.k}" value="${v===null||v===undefined?'':v}"></td>`; }).join('');
+      return `<tr>${nameCell(e,i)}<td class="pf-rank">${pf_rangoCell(c)}</td><td><input type="number" step="1" data-i="${i}" data-k="base" value="${pf_n(d.base)}" title="Base de AppSheet hasta ${pf_semCorta(d.semBase||PF_SEM_INICIO)}"></td>${mets}<td><button class="pf-x" title="Quitar de Performance" onclick="pf_ocultar(${i})">✕</button></td></tr>`;
     }
-
-    const mets = PF_COLS.filter(col=>col.edit).map(col=>{
-      const v = d[col.k];
-      if(pfEdit) return `<td><input type="number" step="${col.step||'1'}" data-i="${i}" data-k="${col.k}" value="${v===null||v===undefined?'':v}"></td>`;
-      return `<td style="color:${pf_color(col.k,v)};${col.k==='puntos'?'font-weight:700':''}">${pf_fmt(col.k,v)}</td>`;
-    }).join('');
-
-    const x = pfEdit ? `<td><button class="pf-x" title="Ocultar de Performance" onclick="pf_ocultar(${i})">✕</button></td>` : '';
-    return `<tr>${nombre}${rango}${lav}${mets}${x}</tr>`;
+    const tip = `Base AppSheet ${pf_fmtN(pf_n(d.base))} (hasta ${pf_semCorta(d.semBase||PF_SEM_INICIO)})` + (c.sumadas?` + ${pf_fmtN(c.sumadas)} de nómina`:'');
+    return `<tr class="pf-tr" onclick="if(!event.target.closest('button,input'))pf_fichaIdx(${i})">${nameCell(e,i)}
+      <td class="pf-rank">${pf_rangoCell(c)}</td>
+      <td class="pf-lav" title="${tip}">${pf_fmtN(c.total)}</td>
+      <td class="pf-semc">${pf_semCell(e)}</td>
+      <td><b style="color:${pf_color('puntos',d.puntos)}">${pf_fmt('puntos',d.puntos)}</b><span class="pf-suc">${d.pct!=null?d.pct+'% comisión':''}</span></td>
+      <td style="color:${pf_color('entregas',d.entregas)}">${pf_fmt('entregas',d.entregas)}</td>
+      <td>${pf_inc(d)}</td></tr>`;
   }).join('');
 
-  document.getElementById('pf-legend').innerHTML = PF_RANGOS.map(r=>
-    `<span>${pf_chip(r)} ${pf_fmtN(r.min)}+</span>`).join('');
+  // Celular: lista simple
+  const mb = document.getElementById('pf-mob');
+  if(mb) mb.innerHTML = lista.map((e,i)=>`<div class="pf-mc" onclick="pf_fichaIdx(${i})">
+      <div class="l"><span class="pf-name">${esc(e.nombre)}</span>${corona&&normN(corona)===normN(e.nombre)?'<span class="pf-crown">🏆</span>':''} ${pf_chip(e.c.rg.cur)}
+        <div class="pf-falta">${pf_fmtN(e.c.total)} lavados · ${esc((e.suc||'').replace('PC ',''))}${pf_incN(e.d)?` · <span style="color:#C62828">${pf_incN(e.d)} incid.</span>`:''}</div></div>
+      <div class="r">${pf_semCell(e)}</div></div>`).join('');
+
+  document.getElementById('pf-legend').innerHTML = PF_RANGOS.map(r=>`<span>${pf_chip(r)} ${pf_fmtN(r.min)}+</span>`).join('');
 }
 
 function pf_renderAlertas(lista){
   const el = document.getElementById('pf-alertas');
-  const cerca = lista.filter(e=>e.c.semanas!==null && e.c.semanas<=PF_ALERTA_SEM)
-    .sort((a,b)=>a.c.semanas-b.c.semanas || a.c.faltan-b.c.faltan);
+  const cerca = lista.filter(e=>e.c.semanas!==null && e.c.semanas<=PF_ALERTA_SEM).sort((a,b)=>a.c.semanas-b.c.semanas || a.c.faltan-b.c.faltan);
   const subieron = lista.filter(e=>e.c.subio);
   let h = '';
-  if(subieron.length){
-    h += `<div class="pf-alert up"><div class="pf-alert-t">Subieron de rango en ${pf_semCorta(subieron[0].c.subio.sem)}</div><div class="pf-alert-list">` +
-      subieron.map(e=>`<div class="pf-alert-it"><b>${esc(e.nombre)}</b> ${pf_chip(e.c.subio.a)}</div>`).join('') + `</div></div>`;
-  }
-  if(cerca.length){
-    h += `<div class="pf-alert"><div class="pf-alert-t">Por subir de rango</div><div class="pf-alert-list">` +
-      cerca.map(e=>`<div class="pf-alert-it"><b>${esc(e.nombre)}</b> ${pf_chip(e.c.rg.next)} <span class="m">faltan ${pf_fmtN(e.c.faltan)} · ~${e.c.semanas} sem</span></div>`).join('') +
-      `</div></div>`;
-  }
+  if(subieron.length) h += `<div class="pf-alert up"><div class="pf-alert-t">Subieron de rango en ${pf_semCorta(subieron[0].c.subio.sem)}</div><div class="pf-alert-list">` +
+    subieron.map(e=>`<div class="pf-alert-it pf-lnk" onclick="pf_ficha('${esc(e.nombre).replace(/'/g,"\\'")}')"><b>${esc(e.nombre)}</b> ${pf_chip(e.c.subio.a)}</div>`).join('') + `</div></div>`;
+  if(cerca.length) h += `<div class="pf-alert"><div class="pf-alert-t">Por subir de rango</div><div class="pf-alert-list">` +
+    cerca.map(e=>`<div class="pf-alert-it pf-lnk" onclick="pf_ficha('${esc(e.nombre).replace(/'/g,"\\'")}')"><b>${esc(e.nombre)}</b> ${pf_chip(e.c.rg.next)} <span class="m">faltan ${pf_fmtN(e.c.faltan)} · ~${e.c.semanas} sem</span></div>`).join('') + `</div></div>`;
   el.innerHTML = h;
 }
 
@@ -11527,70 +11785,116 @@ const PF_BENEF = {
   Legend:   [['regalo','Regalo Legend']],
 };
 let pfBenOpen = false;
-
-// La primera vez: lo de rangos anteriores al actual se da por entregado
+let pfVistaBen = [];
+function pf_hoy(){ return new Date().toLocaleDateString('es-MX'); }
 function pf_benefInit(lista){
   if(!pfData || pfData.benefInit) return;
   pfData.benef = pfData.benef || {};
-  lista.forEach(e=>{
-    const b = pfData.benef[e.nombre] = pfData.benef[e.nombre] || {};
-    for(let i=1;i<e.c.rg.i;i++) b[PF_RANGOS[i].n] = 'ok';
-  });
-  pfData.benefInit = true;
-  pf_save();
+  lista.forEach(e=>{ const b = pfData.benef[e.nombre] = pfData.benef[e.nombre] || {}; for(let i=1;i<e.c.rg.i;i++) b[PF_RANGOS[i].n] = 'ok'; });
+  pfData.benefInit = true; pf_save();
 }
+function pf_benKey(nombre){ const k=Object.keys((pfData&&pfData.benef)||{}).find(x=>normN(x)===normN(nombre)); return k||nombre; }
 function pf_pendientes(e){
-  const b = (pfData && pfData.benef && pfData.benef[e.nombre]) || {};
+  const b = (pfData && pfData.benef && pfData.benef[pf_benKey(e.nombre)]) || {};
   const out = [];
   for(let i=1;i<=e.c.rg.i;i++){
     const r = PF_RANGOS[i], st = b[r.n];
-    if(st==='ok') continue;
-    (PF_BENEF[r.n]||[]).forEach(([k,label])=>out.push({r, k, label, ok: !!(st && st[k])}));
+    (PF_BENEF[r.n]||[]).forEach(([k,label])=>out.push({r, k, label, f: st==='ok' ? 'ok' : (st && st[k]) || null}));
   }
   return out;
 }
 function pf_renderBenef(lista){
-  const el = document.getElementById('pf-benef');
-  if(!el) return;
+  const el = document.getElementById('pf-benef'); if(!el) return;
   if(!pfData){ el.innerHTML=''; return; }
   if(!pfData.benefInit) pf_benefInit(pf_lista());
-  const conPend = lista.map(e=>({e, p:pf_pendientes(e)})).filter(x=>x.p.some(i=>!i.ok))
+  const conPend = lista.map(e=>({e, p:pf_pendientes(e).filter(i=>!i.f)})).filter(x=>x.p.length)
     .sort((a,b)=>b.e.c.rg.i-a.e.c.rg.i || a.e.nombre.localeCompare(b.e.nombre));
   if(!conPend.length){ el.innerHTML=''; return; }
-  const total = conPend.reduce((s,x)=>s+x.p.filter(i=>!i.ok).length,0);
-  const play = conPend.filter(x=>x.p.some(i=>i.k==='uniforme'&&!i.ok)).map(x=>esc(x.e.nombre));
-  const resumen = play.length ? `Playeras: <b>${play.slice(0,4).join(', ')}${play.length>4?' +'+(play.length-4):''}</b>` : `<b>${total}</b> por entregar`;
   pfVistaBen = conPend.map(x=>x.e);
+  const total = conPend.reduce((s,x)=>s+x.p.length,0);
+  const tipos = [['uniforme','Playeras'],['food','Food'],['cash','Cash']].map(([k,l])=>{
+    const ns=conPend.filter(x=>x.p.some(i=>i.k===k)).map(x=>x.e.nombre); return ns.length?`${l}: <b>${ns.slice(0,4).map(esc).join(', ')}${ns.length>4?' +'+(ns.length-4):''}</b>`:''; }).filter(Boolean).join(' · ');
   el.innerHTML = `<div class="pf-ben">
     <div class="pf-ben-h" onclick="pfBenOpen=!pfBenOpen;dash_renderPerformance()">
-      <div><div class="pf-alert-t" style="margin-bottom:4px">Beneficios por entregar · ${total}</div><div class="s">${resumen}</div></div>
-      <span class="tg">${pfBenOpen?'ocultar':'ver'}</span>
-    </div>
-    ${pfBenOpen ? `<div style="margin-top:10px">${conPend.map((x,i)=>`
-      <div class="pf-ben-row">
-        <span class="pf-ben-n">${esc(x.e.nombre)}</span>
-        ${[...new Set(x.p.map(it=>it.r.n))].map(rn=>{ const g=x.p.filter(it=>it.r.n===rn);
-          return `<span style="display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap">${pf_chip(g[0].r)}${g.map(it=>`<button class="pf-pill${it.ok?' ok':''}" onclick="pf_benToggle(${i},'${it.r.n}','${it.k}')">${it.label}</button>`).join('')}</span>`;}).join('')}
-        <button class="pf-all" onclick="pf_benTodo(${i})">Todo entregado ✓</button>
-      </div>`).join('')}</div>` : ''}
+      <div><div class="pf-alert-t" style="margin-bottom:4px">Beneficios por entregar · ${total}</div><div class="s">${tipos}</div></div>
+      <span class="tg">${pfBenOpen?'ocultar':'ver'}</span></div>
+    ${pfBenOpen ? `<div style="margin-top:10px">${conPend.map((x,i)=>{
+        const grupos=[...new Set(x.p.map(it=>it.r.n))];
+        return `<div class="pf-ben-row"><span class="pf-ben-n pf-lnk" onclick="pf_ficha('${esc(x.e.nombre).replace(/'/g,"\\'")}')">${esc(x.e.nombre)}</span>
+          ${grupos.map(rn=>{const g=x.p.filter(it=>it.r.n===rn);return `<span style="display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap">${pf_chip(g[0].r)}${g.map(it=>`<button class="pf-pill" onclick="pf_benToggle('${esc(x.e.nombre).replace(/'/g,"\\'")}','${it.r.n}','${it.k}')">${it.label}</button>`).join('')}</span>`;}).join('')}
+          <button class="pf-all" onclick="pf_benTodo('${esc(x.e.nombre).replace(/'/g,"\\'")}')">Todo entregado ✓</button></div>`;}).join('')}</div>` : ''}
   </div>`;
 }
-let pfVistaBen = [];
-function pf_benToggle(i, rango, k){
-  const e = pfVistaBen[i]; if(!e || !pfData) return;
-  const b = pfData.benef[e.nombre] = pfData.benef[e.nombre] || {};
-  let st = b[rango]; if(st==='ok') return;
+function pf_benToggle(nombre, rango, k){
+  pf_load(); if(!pfData) return;
+  pfData.benef = pfData.benef || {};
+  const key = pf_benKey(nombre);
+  const b = pfData.benef[key] = pfData.benef[key] || {};
+  let st = b[rango];
+  if(st==='ok'){ st = b[rango] = {}; (PF_BENEF[rango]||[]).forEach(([kk])=>st[kk]='—'); }
   st = b[rango] = (st && typeof st==='object') ? st : {};
-  st[k] = !st[k];
-  if((PF_BENEF[rango]||[]).every(([kk])=>st[kk])) b[rango] = 'ok';
-  pf_save(); dash_renderPerformance();
+  if(st[k]) delete st[k]; else st[k] = pf_hoy();
+  pf_save(); dash_renderPerformance(); pf_fichaRefresh();
 }
-function pf_benTodo(i){
-  const e = pfVistaBen[i]; if(!e || !pfData) return;
-  const b = pfData.benef[e.nombre] = pfData.benef[e.nombre] || {};
-  for(let j=1;j<=e.c.rg.i;j++) b[PF_RANGOS[j].n] = 'ok';
-  pf_save(); dash_renderPerformance();
-  flash('✓ Beneficios de '+e.nombre+' entregados');
+function pf_benTodo(nombre){
+  pf_load(); if(!pfData) return;
+  const e = pf_lista().find(x=>normN(x.nombre)===normN(nombre)); if(!e) return;
+  pfData.benef = pfData.benef || {};
+  const key = pf_benKey(nombre);
+  const b = pfData.benef[key] = pfData.benef[key] || {};
+  for(let j=1;j<=e.c.rg.i;j++){ const rn=PF_RANGOS[j].n; if(b[rn]==='ok') continue; const st=b[rn]=(b[rn]&&typeof b[rn]==='object')?b[rn]:{}; (PF_BENEF[rn]||[]).forEach(([kk])=>{ if(!st[kk]) st[kk]=pf_hoy(); }); }
+  pf_save(); dash_renderPerformance(); pf_fichaRefresh();
+  flash('✓ Beneficios de '+nombre+' entregados');
+}
+
+// ── Ficha del lavador ──
+let pfFichaNombre = null;
+function pf_fichaIdx(i){ const e=pfVista[i]; if(e) pf_ficha(e.nombre); }
+function pf_fichaRefresh(){ if(pfFichaNombre && document.getElementById('pf-ficha')?.classList.contains('on')) pf_ficha(pfFichaNombre); }
+function pf_fichaCerrar(){ pfFichaNombre=null; document.getElementById('pf-ficha')?.classList.remove('on'); document.getElementById('pf-ov')?.classList.remove('on'); }
+function pf_ficha(nombre){
+  let fi = document.getElementById('pf-ficha');
+  if(!fi){
+    const ov=document.createElement('div'); ov.id='pf-ov'; ov.className='pf-ov'; ov.onclick=pf_fichaCerrar; document.body.appendChild(ov);
+    fi=document.createElement('div'); fi.id='pf-ficha'; fi.className='pf-fi'; document.body.appendChild(fi);
+  }
+  const e = pf_lista().find(x=>normN(x.nombre)===normN(nombre)); if(!e) return;
+  pfFichaNombre = e.nombre;
+  const {d,c} = e;
+  const sems = an_semanas().slice(0,8).reverse();
+  const vals = sems.map(w=>an_autos(w,e.nombre)), mx = Math.max(1,...vals);
+  const W = an_semanas()[an_idxSel(an_semanas())];
+  const bars = sems.length ? `<div class="pf-fbars">${sems.map((w,k)=>`<div><div class="b"><i style="height:${Math.max(vals[k]?4:0,vals[k]/mx*70)}px;background:${k===sems.length-1?'#e0a614':'#e8e4da'}" title="${vals[k]} autos"></i></div><b>${vals[k]||''}</b><span>${pf_semCorta(w.sem)}</span></div>`).join('')}</div>` : '<div class="pf-falta">Aún no hay semanas cerradas.</div>';
+  const wins = Object.entries((pfData&&pfData.lavMes)||{}).filter(([,v])=>normN(v.nombre)===normN(e.nombre)).map(([k])=>lm_label(k));
+  // beneficios
+  let ben = '';
+  if(c.rg.i<1) ben = `<div class="pf-falta" style="font-size:12px">Aún es Washer · su primer beneficio llega en Pro (500).</div>`;
+  else {
+    const items = pf_pendientes(e);
+    for(let j=c.rg.i;j>=1;j--){
+      const rn = PF_RANGOS[j].n, g = items.filter(it=>it.r.n===rn);
+      if(j<c.rg.i && g.every(it=>it.f)){ ben += `<div class="pf-bi">${pf_chip(PF_RANGOS[j])}<span style="color:#999">completo</span><span class="dt">✓</span></div>`; continue; }
+      ben += `<div style="margin:8px 0 2px">${pf_chip(PF_RANGOS[j])}</div>` + g.map(it=>`<div class="pf-bi"><span class="ck${it.f?' on':''}" onclick="pf_benToggle('${esc(e.nombre).replace(/'/g,"\\'")}','${rn}','${it.k}')">${it.f?'✓':''}</span><span style="${it.f?'color:#999':''}">${it.label}</span><span class="dt">${it.f ? (it.f==='ok'||it.f==='—' ? 'entregado' : 'entregado '+it.f) : 'pendiente'}</span></div>`).join('');
+    }
+    if(items.some(it=>!it.f)) ben += `<button class="pf-all" style="margin:8px 0 0;padding:0" onclick="pf_benTodo('${esc(e.nombre).replace(/'/g,"\\'")}')">Marcar todo entregado ✓</button>`;
+  }
+  fi.innerHTML = `<button class="pf-fx" onclick="pf_fichaCerrar()">✕</button>
+    <div class="pf-alert-t" style="margin:0">${esc((e.suc||'').replace('PC ',''))}</div>
+    <h2 class="pf-fn">${esc(e.nombre)}${wins.length?' <span class="pf-crown">🏆</span>':''}</h2>
+    <div style="margin-top:8px">${pf_rangoCell(c)}</div>
+    <div class="pf-fmini">
+      <div><span>PUNTOS</span><b style="color:${pf_color('puntos',d.puntos)}">${pf_fmt('puntos',d.puntos)}</b></div>
+      <div><span>COMISIÓN</span><b>${pf_fmt('pct',d.pct)}</b></div>
+      <div><span>ESTRELLAS</span><b>${pf_fmt('estrellas',d.estrellas)}</b></div>
+      <div><span>ENTREGAS</span><b style="color:${pf_color('entregas',d.entregas)}">${pf_fmt('entregas',d.entregas)}</b></div></div>
+    <div class="pf-fsec">Autos por semana</div>${bars}
+    <div class="pf-fsec">${W?pf_semCorta(W.sem):'Esta semana'}</div>
+    <div class="pf-ftxt">${W?an_autos(W,e.nombre)+' autos · ':''}${pf_n(d.hits)} hits · ${d.lavDiarios??'—'} lav/día<div style="margin-top:6px">${pf_inc(d)}</div></div>
+    <div class="pf-fsec">Total</div>
+    <div class="pf-ftxt">${pf_fmtN(c.total)} lavados · base AppSheet ${pf_fmtN(pf_n(d.base))}${c.sumadas?` + ${pf_fmtN(c.sumadas)} de nómina`:''}</div>
+    <div class="pf-fsec">Beneficios de su rango</div>${ben}
+    ${wins.length?`<div class="pf-fsec">Lavador del mes</div><div class="pf-ftxt">${wins.join(' · ')}</div>`:''}`;
+  fi.classList.add('on'); document.getElementById('pf-ov').classList.add('on');
 }
 
 // Para el aviso al cerrar semana
