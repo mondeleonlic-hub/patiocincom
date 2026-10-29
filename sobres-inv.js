@@ -278,13 +278,13 @@
     pnl.querySelector('#inv-reload').onclick=render;
     const t=document.createElement('button');t.className='tab';t.dataset.t='inventario';t.textContent='Inventario';
     t.onclick=()=>window.goTab('inventario');
-    tabs.appendChild(t);
+    const an=tabs.querySelector('.tab[data-t="sucursales"]');an?tabs.insertBefore(t,an):tabs.appendChild(t); // Analytics siempre al final
     if(grid){
       const src=grid.querySelector('.mas-item');
       if(src){const m=src.cloneNode(true);m.dataset.mt='inventario';m.classList.remove('on');
         const sp=m.querySelector('span');if(sp)sp.textContent='Inventario';
         m.addEventListener('click',()=>{if(window.closeMas)window.closeMas();window.goTab('inventario');if(window.syncMobNav)window.syncMobNav('inventario');});
-        grid.appendChild(m);}
+        const anM=grid.querySelector('.mas-item[data-mt="sucursales"]');anM?grid.insertBefore(m,anM):grid.appendChild(m);}
     }
     const orig=window.goTab;
     window.goTab=function(id){orig(id);if(id==='inventario')render();};

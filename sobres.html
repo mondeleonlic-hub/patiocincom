@@ -1524,9 +1524,6 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   #pnl-finanzas .form-row{padding:8px 12px;gap:8px}
   #pnl-finanzas .form-row label{min-width:0;flex:1}
   #pnl-finanzas .form-row input[type=number],#pnl-finanzas .form-row input[type=text]{width:118px;flex:none}
-  #dpnl-performance{padding:16px 0!important}
-  #dpnl-performance>div:first-child{flex-wrap:wrap;gap:12px}
-  #dpnl-performance>div:first-child>div:last-child{flex-wrap:wrap}
   #perf-table th:first-child,#perf-table td:first-child{position:sticky;left:0;z-index:1;background:#fff}
   .pf-head{align-items:flex-start}
   .pf-hint{display:block;margin:0 0 8px}
@@ -1638,12 +1635,12 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   <button class="tab" data-t="rol">Horarios</button>
   <button class="tab" data-t="deudas">Deudas</button>
   <button class="tab" data-t="ahorros">Ahorros</button>
-  <button class="tab" data-t="sucursales">Analytics</button>
   <button class="tab" data-t="hist">Historial</button>
   <button class="tab" data-t="crm">CRM</button>
 
     <button class="tab" data-t="finanzas">Finanzas</button>
     <button class="tab" data-t="compras">Compras</button>
+    <button class="tab" data-t="sucursales">Analytics</button>
   </div>
 </div>
 <div id="content">
@@ -1749,28 +1746,54 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
 
     <!-- VISTA PERFORMANCE -->
     <div id="suc-view-performance" style="display:none">
-      <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-          <div style="font-weight:700;font-size:13px">Datos de Performance — <span id="perf-sem-lbl" style="color:#C8960C">—</span></div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <select id="perf-sem-sel" onchange="renderPerfTabla()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-weight:700">
-              <option value="">Semana actual</option>
-            </select>
-            <select id="perf-suc-sel" onchange="renderPerfTabla()" style="font-size:12px;border:1px solid #ddd;border-radius:6px;padding:4px 8px">
-              <option value="PC Refugio">PC Refugio</option>
-              <option value="PC Álamos">PC Álamos</option>
-            </select>
-            <label style="background:#1c3a61;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer">
-              📷 Leer AppSheet
-              <input type="file" accept="image/*" style="display:none" onchange="onPerfFile(this)">
-            </label>
-            <button onclick="guardarPerf()" style="background:#000;color:#e0a614;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer">Guardar semana</button>
-          </div>
-        </div>
-        <div class="tw"><table id="perf-tabla" style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px"></table></div>
+<div id="pf-wrap" style="margin-bottom:16px">
+
+  <!-- Header -->
+  <div class="pf-head">
+    <div>
+      <div class="pf-kicker">Performance · Escalera Gladiadora</div>
+      <div class="pf-sub" id="pf-sub">—</div>
+    </div>
+    <div class="pf-actions">
+      <div class="fseg" id="pf-suc">
+        <button class="fbtn on" data-suc="all" onclick="pf_setSuc('all')">Todas</button>
+        <button class="fbtn ref" data-suc="PC Refugio" onclick="pf_setSuc('PC Refugio')">Refugio</button>
+        <button class="fbtn ala" data-suc="PC Álamos" onclick="pf_setSuc('PC Álamos')">Álamos</button>
       </div>
+      <label class="pf-btn" title="Sube la captura de PERFORMANCE de AppSheet">
+        Leer AppSheet
+        <input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)">
+      </label>
+      <button class="pf-btn pf-btn-dark" id="pf-edit-btn" onclick="pf_toggleEdit()">Editar</button>
+    </div>
+  </div>
+
+  <!-- Avisos de rango -->
+  <div id="pf-alertas"></div>
+
+  <!-- Tabla -->
+  <div class="pf-card">
+    <div style="overflow-x:auto;">
+      <table id="perf-table" class="pf-table">
+        <thead id="pf-thead"></thead>
+        <tbody id="pf-tbody"></tbody>
+      </table>
+    </div>
+    <div id="pf-empty" class="pf-empty" style="display:none;">Sin lavadores en esta sucursal</div>
+  </div>
+
+  <!-- Barra guardar (solo en edición) -->
+  <div id="pf-save-bar" style="display:none;margin-top:14px;text-align:right;">
+    <span class="pf-hint">En edición, “Lavados” es la base de AppSheet; las semanas pagadas se suman solas.</span>
+    <button class="pf-btn" onclick="pf_cancelEdit()">Cancelar</button>
+    <button class="pf-btn pf-btn-gold" onclick="pf_saveEdit()">Guardar</button>
+  </div>
+
+  <div class="pf-legend" id="pf-legend"></div>
+</div>
+
       <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px;margin-bottom:16px">
-        <div style="font-weight:700;font-size:13px;margin-bottom:10px">Historial de semanas</div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px">Historial de semanas (métricas de AppSheet)</div>
         <div id="perf-hist"></div>
       </div>
       <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:18px 20px">
@@ -2325,7 +2348,6 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
       <button class="dash-subnav-btn" onclick="dash_showPage('graficas')">Gráficas</button>
       <button class="dash-subnav-btn" onclick="dash_showPage('historial')">Historial</button>
       <button class="dash-subnav-btn" onclick="dash_showPage('inventario')">Inventario</button>
-      <button class="dash-subnav-btn" onclick="dash_showPage('performance')">Performance</button>
       <span id="dash-fb-badge" style="margin-left:auto;padding:4px 10px;font-size:10px;font-weight:700;letter-spacing:.5px;color:#888;align-self:center">☁ Conectando…</span>
     </div>
   </div>
@@ -3001,53 +3023,6 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   </div>
 </div>
 
-
-<!-- ══ PAGE PERFORMANCE ══ -->
-<div class="dpnl" id="dpnl-performance" style="padding:28px 32px;max-width:1400px;margin:0 auto;">
-
-  <!-- Header -->
-  <div class="pf-head">
-    <div>
-      <div class="pf-kicker">Performance · Escalera Gladiadora</div>
-      <div class="pf-sub" id="pf-sub">—</div>
-    </div>
-    <div class="pf-actions">
-      <div class="fseg" id="pf-suc">
-        <button class="fbtn on" data-suc="all" onclick="pf_setSuc('all')">Todas</button>
-        <button class="fbtn ref" data-suc="PC Refugio" onclick="pf_setSuc('PC Refugio')">Refugio</button>
-        <button class="fbtn ala" data-suc="PC Álamos" onclick="pf_setSuc('PC Álamos')">Álamos</button>
-      </div>
-      <label class="pf-btn" title="Sube la captura de PERFORMANCE de AppSheet">
-        Leer AppSheet
-        <input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)">
-      </label>
-      <button class="pf-btn pf-btn-dark" id="pf-edit-btn" onclick="pf_toggleEdit()">Editar</button>
-    </div>
-  </div>
-
-  <!-- Avisos de rango -->
-  <div id="pf-alertas"></div>
-
-  <!-- Tabla -->
-  <div class="pf-card">
-    <div style="overflow-x:auto;">
-      <table id="perf-table" class="pf-table">
-        <thead id="pf-thead"></thead>
-        <tbody id="pf-tbody"></tbody>
-      </table>
-    </div>
-    <div id="pf-empty" class="pf-empty" style="display:none;">Sin lavadores en esta sucursal</div>
-  </div>
-
-  <!-- Barra guardar (solo en edición) -->
-  <div id="pf-save-bar" style="display:none;margin-top:14px;text-align:right;">
-    <span class="pf-hint">En edición, “Lavados” es la base de AppSheet; las semanas pagadas se suman solas.</span>
-    <button class="pf-btn" onclick="pf_cancelEdit()">Cancelar</button>
-    <button class="pf-btn pf-btn-gold" onclick="pf_saveEdit()">Guardar</button>
-  </div>
-
-  <div class="pf-legend" id="pf-legend"></div>
-</div>
 
 <!-- Modal Inventario -->
 <div class="modal-overlay" id="inv-modal" onclick="if(event.target===this)dash_cerrarModalInv()">
@@ -7346,10 +7321,10 @@ function setSucTab(tab){
   ["pagos","performance","hist","ranking","insumos"].forEach(t=>{
     const btn=document.getElementById("suctab-"+t);
     const view=document.getElementById("suc-view-"+t);
-    if(btn){btn.style.background=t===tab?"#111":"#f0ede6";btn.style.color=t===tab?"#fff":"#555";}
+    if(btn){btn.classList.remove("ph-dark");btn.style.background=t===tab?"#111":"#f0ede6";btn.style.color=t===tab?"#fff":"#555";}
     if(view)view.style.display=t===tab?"block":"none";
   });
-  if(tab==="performance"){poblarPerfSemSel();renderPerfTabla();renderPerfHist();renderPerfTrend();}
+  if(tab==="performance"){dash_renderPerformance();renderPerfHist();renderPerfTrend();}
   if(tab==="hist"){poblarFiltroLav();renderHistPagos();}
   if(tab==="ranking"){renderRanking();}
   if(tab==="insumos"){renderInsumos();}
@@ -9412,7 +9387,6 @@ function dash_showPage(id) {
   if (id === 'historial') dash_renderHistorial();
   if (id === 'graficas') { dash_buildChartSelects(); dash_renderCharts(); }
   if (id === 'inventario') dash_renderInventario();
-  if (id === 'performance') dash_renderPerformance();
 }
 
 // ══ INVENTARIO ══════════════════════════════════════════════════
@@ -11184,13 +11158,13 @@ function dash_saveApiKey() {
 const PF_KEY = 'pc4_perf_lav';
 const PF_SEM_INICIO = '43/2026';      // la base de AppSheet llega hasta la S43
 const PF_ALERTA_SEM = 3;              // avisar si llega en ≤3 semanas a su ritmo
-const PF_RANGOS = [
-  {n:'Washer',   min:0,     fg:'#777',    bg:'#f2f1ee', bar:'#bdb8ad'},
-  {n:'Pro',      min:500,   fg:'#8a5a2b', bg:'#f6ede3', bar:'#b07a45'},
-  {n:'Master',   min:2000,  fg:'#4f5b6a', bg:'#eceff3', bar:'#8d98a6'},
-  {n:'Elite',    min:5000,  fg:'#8a6400', bg:'#fbf1d6', bar:'#e0a614'},
-  {n:'Champion', min:10000, fg:'#0c7e9a', bg:'#e3f5fa', bar:'#14AACE'},
-  {n:'Legend',   min:15000, fg:'#e0a614', bg:'#111',    bar:'#e0a614'},
+const PF_RANGOS = [  // colores del Manual Maestro (2.2 Escalera Gladiadora)
+  {n:'Washer',   min:0,     fg:'#fff', bg:'#9e9e9e', bar:'#9e9e9e'},
+  {n:'Pro',      min:500,   fg:'#111', bg:'#f8ba00', bar:'#f8ba00'},
+  {n:'Master',   min:2000,  fg:'#fff', bg:'#1a4fad', bar:'#1a4fad'},
+  {n:'Elite',    min:5000,  fg:'#fff', bg:'#2e7d32', bar:'#2e7d32'},
+  {n:'Champion', min:10000, fg:'#fff', bg:'#c62828', bar:'#c62828'},
+  {n:'Legend',   min:15000, fg:'#fff', bg:'#6a1a8a', bar:'#6a1a8a'},
 ];
 const PF_COLS = [
   {k:'nombre',     label:'LAVADOR'},
@@ -11518,7 +11492,7 @@ function pf_saveEdit(){
   document.getElementById('pf-edit-btn').textContent = 'Editar';
   document.getElementById('pf-save-bar').style.display = 'none';
   dash_renderPerformance();
-  dash_showToast('Performance guardado ✓');
+  flash('Performance guardado ✓');
 }
 function pf_ocultar(i){
   const e = pfVista[i];
@@ -11526,6 +11500,27 @@ function pf_ocultar(i){
   const en = pf_entry(i); if(!en) return; en.oculto = true;
   pf_save();
   dash_renderPerformance();
+}
+
+// Guarda la foto de la semana en el historial (alimenta Historial y Tendencia)
+function pf_guardarHist(){
+  try{
+    const sem = document.getElementById('sem')?.value || '';
+    if(!sem || typeof perfHist==='undefined') return;
+    const porSuc = {};
+    pf_lista().forEach(e=>{
+      const suc = e.suc || 'PC Refugio';
+      (porSuc[suc] = porSuc[suc] || []).push({nombre:e.nombre, lavTotal:e.c.total, ...Object.fromEntries(PF_MET.map(k=>[k, e.d[k]??0]))});
+    });
+    Object.entries(porSuc).forEach(([suc,data])=>{
+      const entry = {semana:sem, fecha:new Date().toLocaleDateString('es-MX'), suc, data};
+      const i = perfHist.findIndex(h=>String(h.semana)===String(sem) && normN(h.suc)===normN(suc));
+      if(i>=0) perfHist[i] = entry; else perfHist = [entry, ...perfHist].slice(0,60);
+    });
+    sv('pc4_perf_hist', perfHist);
+    if(typeof renderPerfHist==='function') renderPerfHist();
+    if(typeof renderPerfTrend==='function') renderPerfTrend();
+  }catch(e){ console.warn('perf hist', e); }
 }
 
 // ── Leer captura de AppSheet ──
@@ -11536,7 +11531,7 @@ function pf_onFile(inp){
   r.readAsDataURL(file); inp.value = '';
 }
 async function pf_leerAppSheet(b64, mime){
-  dash_showToast('Leyendo AppSheet…');
+  flash('Leyendo AppSheet…');
   const prompt = `Analiza esta captura de pantalla de AppSheet con la tabla PERFORMANCE de un autolavado.
 Columnas: ALIAS, PUNTOS, LAVADOS_#, COMISIÓN, ESTRELLAS, HITS, # LAVADOS DIARIOS, ENTREGAS EN TIEMPO, CALIDAD, STRIKES, RETARDOS, FALTA, FALTA JUST (puede no verse).
 Lee TODOS los lavadores visibles. Porcentajes como número ("85%" → 85). Puntos con decimales, pueden ser negativos. Celda vacía → null. Los colores rojo/verde son solo alertas.
@@ -11545,9 +11540,9 @@ Devuelve SOLO este JSON (sin markdown):
   try{
     const parsed = await callGemini(b64, mime, prompt);
     const lst = (parsed && parsed.lavadores) || [];
-    if(!lst.length){ dash_showToast('No se pudo leer la tabla'); return; }
+    if(!lst.length){ flash('No se pudo leer la tabla'); return; }
     pf_load();
-    if(!pfData){ dash_showToast('Espera a que terminen de cargar los datos'); return; }
+    if(!pfData){ flash('Espera a que terminen de cargar los datos'); return; }
     const ultSem = pf_semanas()[0];
     const semNueva = ultSem && semKey(ultSem.semana||ultSem.sem) > semKey(PF_SEM_INICIO) ? (ultSem.semana||ultSem.sem) : PF_SEM_INICIO;
     let act=0, nuevos=0;
@@ -11568,10 +11563,11 @@ Devuelve SOLO este JSON (sin markdown):
     });
     pfData.actualizado = new Date().toLocaleDateString('es-MX');
     pf_save();
+    pf_guardarHist();
     dash_renderPerformance();
-    dash_showToast(`✓ ${act} actualizados${nuevos?` · ${nuevos} nuevos`:''}`);
+    flash(`✓ ${act} actualizados${nuevos?` · ${nuevos} nuevos`:''}`);
   }catch(e){
-    dash_showToast(e.message==='QUOTA_429' ? 'Cuota de Gemini agotada, captura con Editar' : 'Error: '+e.message);
+    flash(e.message==='QUOTA_429' ? 'Cuota de Gemini agotada, captura con Editar' : 'Error: '+e.message);
   }
 }
 
@@ -11637,10 +11633,10 @@ function dash_init() {
     {t:"coords",     icon:"coords",     label:"Coords"},
     {t:"rol",        icon:"rol",        label:"Horarios"},
     {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
-    {t:"sucursales", icon:"sucursales", label:"Analytics"},
     {t:"hist",       icon:"hist",       label:"Historial"},
     {t:"compras",    icon:"compras",    label:"Compras"},
-    {t:"crm",        icon:"crm",        label:"CRM"}];
+    {t:"crm",        icon:"crm",        label:"CRM"},
+    {t:"sucursales", icon:"sucursales", label:"Analytics"}];
   // 1. Build overlay + sheet FIRST (so closeMas/toggleMas can close them)
   const overlay=document.createElement("div");
   overlay.className="mas-overlay";
