@@ -599,43 +599,38 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .ch-img-suc{font-size:26px;font-weight:900;margin:14px 24px 4px}
 
 
-/* ── FIESTAS (permisos) ── */
-.va-pers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:10px}
-.va-per{background:#fff;border-radius:12px;padding:10px 12px;box-shadow:var(--shadow);border-left:4px solid #e0a614;display:flex;flex-direction:column;gap:4px}
-.va-per-ano{border-left-color:#1c3a61}
-.va-per b{font-size:14px}
-.va-per span{font-size:12px;color:#555;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-#pnl-rol .va-per input[type=date]{font-size:13px!important;padding:4px 6px;border:1px solid #e5e0d3;border-radius:7px;font-family:inherit;background:#fff}
-.va-per small{font-size:11px;color:#999}
-.va-res{background:#fff;border-radius:12px;padding:10px 14px;font-size:12.5px;line-height:1.7;margin-bottom:12px;box-shadow:var(--shadow)}
-.va-rojo{color:#c53030;font-weight:800}
-.va-tab{min-width:560px}
-.va-tab th{text-align:center}
-.va-c{text-align:center}
-.va-off .rl-name b{color:#999}
-.va-sub{display:block;font-size:10px;color:#999;font-weight:600}
-#pnl-rol .va-otros{display:block;margin-top:3px;width:100%;max-width:150px;font-size:11px!important;padding:3px 6px;border:1px dashed #d8d2c2;border-radius:6px;font-family:inherit;background:#fff}
-.va-tg{border:1px solid #e5e0d3;background:#fff;border-radius:16px;padding:5px 12px;font-size:11px;font-weight:800;font-family:inherit;color:#aaa;cursor:pointer}
-.va-tg.on{background:#111;color:#fff;border-color:#111}
-.va-seg{display:inline-flex;background:#f1efe9;border-radius:9px;padding:2px;gap:2px}
-.va-seg button{border:none;background:transparent;border-radius:7px;padding:6px 9px;font-size:11px;font-weight:700;font-family:inherit;color:#888;cursor:pointer;white-space:nowrap}
-.va-seg button.on{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.va-seg button.va-amb.on{background:#c53030;color:#fff}
-#pnl-rol select.va-est{font-size:11px!important;padding:5px 20px 5px 8px!important;border-radius:8px;border:1px solid #e5e0d3;font-weight:800;background-color:#fff;background-position:right 5px center!important}
-#pnl-rol select.va-est-conf{color:#2f855a;border-color:#b7e2c6;background-color:#e6f6ec}
-#pnl-rol select.va-est-riesgo{color:#c53030;border-color:#f5bcbc;background-color:#fde8e8}
-.va-dim{color:#ccc}
-.va-cal{display:grid;grid-template-columns:repeat(16,minmax(40px,1fr));gap:4px;min-width:680px}
-.va-d{background:#fff;border-radius:9px;padding:6px 2px;text-align:center;display:flex;flex-direction:column;gap:1px;border:1px solid #eee9dd}
-.va-dn{font-size:9px;font-weight:800;color:#999;text-transform:uppercase}
-.va-dd{font-size:11px;font-weight:700;color:#555}
-.va-d b{font-size:16px;font-weight:900}
-.va-d i{font-style:normal;font-size:10px;font-weight:800;color:#c53030;min-height:12px}
-.va-d i.va-r{color:#b7791f}
-.va-in-nav{border-color:#e0a614;background:#fffaf0}
-.va-in-ano{border-color:#1c3a61;background:#f2f5fa}
-.va-falta{background:#fde8e8!important;border-color:#f5bcbc!important}
-.va-dom .va-dn{color:#111}
+/* ── FIESTAS (permisos) — mismo estilo que Ahorros ── */
+.va-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.va-kpi-sub{font-size:11px;color:#999;margin-top:4px}
+.va-row{cursor:default;flex-wrap:wrap}
+.va-who{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.va-anio{border:1px dashed #d8d4c8;background:#fff;color:#bbb;cursor:pointer;font-family:inherit}
+.va-anio.on{border:1px solid #e0a614;background:#fdf6e3;color:#8a6500}
+#pnl-rol .va-otros{font-size:12px!important;padding:4px 8px;border:1px dashed #d8d4c8;border-radius:8px;font-family:inherit;background:#fff;width:170px}
+.va-acts{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.va-op{background:#fff;border:1px solid #e5e2d8;color:#888;border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.va-op.on{color:#fff;border-color:transparent}
+.va-op-no{background:#556!important}
+.va-op-nav{background:#e0a614!important;color:#111!important}
+.va-op-ano{background:#1c3a61!important}
+.va-op-ambos{background:#c0392b!important}
+.va-est{border:none;border-radius:10px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit}
+.va-est-pend{background:#f3f1ec;color:#888}
+.va-est-conf{background:#eafaf1;color:#1B5E20}
+.va-est-riesgo{background:#fdecea;color:#c0392b}
+.va-cal{display:grid;gap:6px}
+.va-d{background:#fff;border:0.5px solid #e0ddd4;border-radius:10px;padding:8px 2px 6px;text-align:center;display:flex;flex-direction:column;gap:2px;border-top:3px solid #e0ddd4}
+.va-in-nav{border-top-color:#e0a614}
+.va-in-ano{border-top-color:#1c3a61}
+.va-dn{font-size:9.5px;font-weight:700;color:#999;text-transform:uppercase;white-space:nowrap}
+.va-d b{font-size:17px;font-weight:700;color:#111}
+.va-d i{font-style:normal;font-size:9.5px;font-weight:700;color:#c0392b;min-height:12px;white-space:nowrap}
+.va-cfg{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+.va-cfg-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#555}
+.va-cfg-f span{min-width:150px;font-weight:700;color:#111}
+#pnl-rol .va-cfg input{font-size:13px!important;padding:5px 8px;border:1px solid #e0ddd4;border-radius:8px;font-family:inherit;background:#fff}
+#pnl-rol .va-cfg input[type=number]{width:60px;text-align:center}
+@media(max-width:768px){.va-acts{width:100%}.va-cfg-f span{min-width:100%}}
 .fi-img .fi-img-op{font-size:10px;font-weight:700;color:#8a6500;letter-spacing:.3px;margin-top:3px;text-transform:none}
 /* ── TICKETS / SOBRES ── */
 .sg{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
@@ -2147,24 +2142,21 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
       <div class="tw" id="ch-res"></div>
     </div>
     <div id="hr-fie" style="display:none">
-      <div class="rl-bar">
-        <div class="fseg" id="va-sucs">
-          <button class="fbtn ref on" data-s="PC Refugio" onclick="vaSetSuc('PC Refugio')">Refugio</button>
-          <button class="fbtn ala" data-s="PC Álamos" onclick="vaSetSuc('PC Álamos')">Álamos</button>
+      <p class="it">Dos periodos de 6 días: uno con Navidad y otro con Año Nuevo. Elige en qué periodo sale cada lavador y marca si ya confirmó. Los que llevan +1 año pueden tomar los otros 6 días en otra fecha.</p>
+      <div class="va-bar">
+        <div id="va-sucs" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="fbtn ref on" data-s="PC Refugio" onclick="vaSetSuc('PC Refugio')">PC Refugio</button>
+          <button class="fbtn ala" data-s="PC Álamos" onclick="vaSetSuc('PC Álamos')">PC Álamos</button>
         </div>
+        <button class="btn by" onclick="vaImagen()">Imagen para el grupo</button>
       </div>
-      <div class="va-pers" id="va-pers"></div>
-      <div id="va-res"></div>
-      <div class="rl-tools">
-        <button class="ph-btn ph-navy" onclick="vaRepartir()">Repartir a los que se van</button>
-        <button class="ph-btn ph-gold" onclick="vaImagen()">Imagen para el grupo</button>
-        <label class="rl-min">Mínimo Lun–Jue <input id="va-min-sem" type="number" min="0" placeholder="—" onchange="vaSetMin('minSem',this.value)"></label>
-        <label class="rl-min">Mínimo Vie–Dom <input id="va-min-fin" type="number" min="0" placeholder="—" onchange="vaSetMin('minFin',this.value)"></label>
-      </div>
-      <div class="tw" id="va-tabla"></div>
-      <h3 class="ch-suc" style="font-size:14px;letter-spacing:1.5px;color:#888;margin-top:22px">Lavadores disponibles por día</h3>
-      <p class="rl-help" style="margin:0 0 8px">Ya descuenta descansos del rol y permisos. En rojo, cuántos te faltan para tu mínimo; "?" son los que están en riesgo de no regresar.</p>
+      <div id="va-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px"></div>
+      <div id="va-lista"></div>
+      <div class="dsec">Lavadores disponibles por día</div>
+      <p class="it" id="va-nomin">Pon tu mínimo de lavadores abajo para saber cuántos te faltan.</p>
       <div class="tw" id="va-cob"></div>
+      <div class="dsec">Fechas y mínimo</div>
+      <div id="va-cfg" class="va-cfg"></div>
     </div>
   </div>
 
@@ -12509,92 +12501,72 @@ function vaCobertura(sucN){
     return {f,hay,riesgo,min:vaMin(suc,f)};
   });
 }
+function vaRango(p){return `${vaLbl(p.ini,true)} – ${vaLbl(p.fin,true)}`;}
 function renderVac(){
   const V=vaData(), suc=rlLoad().sucs[vaSuc], lavs=(suc.lavs||[]).filter(l=>l.nombre);
   document.querySelectorAll("#va-sucs .fbtn").forEach(b=>b.classList.toggle("on",b.dataset.s===vaSuc));
-  document.getElementById("va-min-sem").value=suc.minSem||"";
-  document.getElementById("va-min-fin").value=suc.minFin||"";
-  // Periodos (fechas editables)
-  document.getElementById("va-pers").innerHTML=V.periodos.map((p,i)=>{
-    const n=lavs.filter(l=>{const x=V.pers[l.id];return x&&(x.per===p.id||x.per==="ambos");}).length;
-    return `<div class="va-per va-per-${p.id}">
-      <b>${p.nombre}</b>
-      <span><input type="date" value="${p.ini}" onchange="vaSetPer(${i},'ini',this.value)"> al <input type="date" value="${p.fin}" onchange="vaSetPer(${i},'fin',this.value)"></span>
-      <small>Regresan ${vaLbl(vaMas(p.fin,1),true)} · ${n} fuera</small>
-    </div>`;}).join("");
-  // Lavadores
-  const filas=lavs.map(l=>{
-    const x=V.pers[l.id]||{};
-    const segs=[["","—"],["nav","Navidad"],["ano","Año Nuevo"]].concat(x.anio?[["ambos","Los 2"]]:[]);
-    return `<tr class="rl-row${x.viaja?"":" va-off"}">
-      <td class="rl-name"><b>${esc(l.nombre)}</b><small class="va-sub">${x.anio?"+1 año · 12 días":"6 días"}</small>${x.anio&&x.per&&x.per!=="ambos"?`<input class="va-otros" value="${esc(x.otros||"")}" placeholder="¿Cuándo los otros 6?" onchange="vaSet('${l.id}','otros',this.value)">`:""}</td>
-      <td class="va-c"><button class="va-tg${x.viaja?" on":""}" onclick="vaSet('${l.id}','viaja',${!x.viaja})" title="Se va a su tierra">${x.viaja?"Sí":"No"}</button></td>
-      <td class="va-c"><button class="va-tg${x.anio?" on":""}" onclick="vaSet('${l.id}','anio',${!x.anio})" title="Lleva más de un año">${x.anio?"Sí":"No"}</button></td>
-      <td class="va-c"><div class="va-seg">${segs.map(([k,t])=>`<button class="${(x.per||"")===k?"on":""}${k==="ambos"?" va-amb":""}" onclick="vaSet('${l.id}','per','${k}')">${t}</button>`).join("")}</div></td>
-      <td class="va-c">${x.per?`<select class="va-est va-est-${x.est||"pend"}" onchange="vaSet('${l.id}','est',this.value)">${Object.entries(VA_EST).map(([k,t])=>`<option value="${k}" ${(x.est||"pend")===k?"selected":""}>${t}</option>`).join("")}</select>`:'<span class="va-dim">—</span>'}</td>
-    </tr>`;}).join("");
-  document.getElementById("va-tabla").innerHTML=lavs.length?`<table class="rl-tab va-tab"><thead><tr>
-      <th class="rl-nh">Lavador</th><th>Se va</th><th>+1 año</th><th>Periodo</th><th>¿Confirmó?</th></tr></thead><tbody>${filas}</tbody></table>`
-    :`<div class="rl-empty">No hay lavadores en el rol de ${vaSuc.replace("PC ","")}.</div>`;
-  // Cobertura día por día
-  const cob=vaCobertura(vaSuc);
-  const enPer=f=>V.periodos.find(p=>f>=p.ini&&f<=p.fin);
-  document.getElementById("va-cob").innerHTML=`<div class="va-cal" style="grid-template-columns:repeat(${cob.length},minmax(40px,1fr));min-width:${cob.length*44}px">${cob.map(c=>{
-      const falta=c.min?Math.max(0,c.min-c.hay):0, p=enPer(c.f), dow=vaF(c.f).getDay();
-      const fiesta=["12-24","12-25","12-31","01-01"].includes(c.f.slice(5));
-      return `<div class="va-d${p?" va-in-"+p.id:""}${falta?" va-falta":""}${dow===0?" va-dom":""}">
-        <span class="va-dn">${VA_DS[dow]}</span><span class="va-dd">${vaF(c.f).getDate()}${fiesta?"★":""}</span>
-        <b>${c.hay}</b>${falta?`<i>−${falta}</i>`:c.riesgo?`<i class="va-r">?${c.riesgo}</i>`:"<i>&nbsp;</i>"}
-      </div>`;}).join("")}</div>`;
-  // Resumen: cuántos faltan
-  const res=[];
-  const sinMin=!suc.minSem&&!suc.minFin;
-  V.periodos.forEach(p=>{
+  const cob=vaCobertura(vaSuc), sinMin=!suc.minSem&&!suc.minFin;
+  // ── Resumen (mismo estilo que los KPIs de Ahorros)
+  const kpis=V.periodos.map(p=>{
+    const salen=lavs.filter(l=>{const x=V.pers[l.id];return x&&(x.per===p.id||x.per==="ambos");}).length;
     const dd=cob.filter(c=>c.f>=p.ini&&c.f<=p.fin);
-    const falta=Math.max(0,...dd.map(c=>c.min?c.min-c.hay:0));
-    const quedan=Math.min(...dd.map(c=>c.hay));
-    res.push(`<b>${p.nombre}:</b> te quedan mínimo ${quedan} lavadores al día${sinMin?"":falta?` — <span class="va-rojo">necesitas ${falta} más</span>`:" — cubierto ✓"}`);
-  });
-  const ries=lavs.filter(l=>(V.pers[l.id]||{}).est==="riesgo"&&(V.pers[l.id]||{}).per);
-  if(ries.length)res.push(`<b>En riesgo de no regresar:</b> ${ries.map(l=>esc(l.nombre)).join(", ")} — ve buscando ${ries.length} de reemplazo`);
-  const pend=lavs.filter(l=>{const x=V.pers[l.id]||{};return x.per&&(x.est||"pend")==="pend";});
-  if(pend.length)res.push(`<b>Falta que confirmen:</b> ${pend.map(l=>esc(l.nombre)).join(", ")}`);
-  const sinPer=lavs.filter(l=>{const x=V.pers[l.id]||{};return x.viaja&&!x.per;});
-  if(sinPer.length)res.push(`<b>Se van y no tienen periodo:</b> ${sinPer.map(l=>esc(l.nombre)).join(", ")}`);
-  if(sinMin)res.push(`Pon tu mínimo de lavadores por día para que te diga cuántos te faltan.`);
-  document.getElementById("va-res").innerHTML=`<div class="va-res">${res.join("<br>")}</div>`;
+    const falta=sinMin?0:Math.max(0,...dd.map(c=>c.min?c.min-c.hay:0));
+    const color=sinMin?"#111":falta?"#c0392b":"#27ae60";
+    return `<div class="ah-kpi"><div class="ah-kpi-val" style="color:${color}">${salen}</div>
+      <div class="ah-kpi-lbl">Salen en ${p.nombre}</div>
+      <div class="va-kpi-sub">${vaRango(p)}${sinMin?"":falta?` · <b style="color:#c0392b">faltan ${falta}</b>`:" · cubierto"}</div></div>`;}).join("");
+  const conPer=lavs.filter(l=>(V.pers[l.id]||{}).per);
+  const pend=conPer.filter(l=>((V.pers[l.id]||{}).est||"pend")==="pend").length;
+  const ries=conPer.filter(l=>(V.pers[l.id]||{}).est==="riesgo").length;
+  document.getElementById("va-kpis").innerHTML=kpis+
+    `<div class="ah-kpi"><div class="ah-kpi-val" style="color:${pend?"#C8960C":"#ccc"}">${pend}</div><div class="ah-kpi-lbl">Por confirmar</div></div>
+     <div class="ah-kpi"><div class="ah-kpi-val" style="color:${ries?"#c0392b":"#ccc"}">${ries}</div><div class="ah-kpi-lbl">En riesgo de no regresar</div>${ries?`<div class="va-kpi-sub">busca ${ries} de reemplazo</div>`:""}</div>`;
+  // ── Lista (mismo estilo que las tarjetas de Ahorros)
+  const tagCls=vaSuc==="PC Álamos"?"ah-tag-ala":"ah-tag-ref";
+  document.getElementById("va-lista").innerHTML=lavs.length?lavs.map(l=>{
+    const x=V.pers[l.id]||{}, per=x.per||"", est=x.est||"pend";
+    const ops=[["","No sale"],["nav","Navidad"],["ano","Año Nuevo"]].concat(x.anio?[["ambos","Los 2"]]:[]);
+    return `<div class="ah-card"><div class="ah-header va-row">
+      <div class="va-who">
+        <span class="ah-name">${esc(l.nombre)}</span>
+        <button class="ah-tag va-anio${x.anio?" on":""}" onclick="vaSet('${l.id}','anio',${!x.anio})" title="Lleva más de un año (le tocan 12 días)">+1 año</button>
+        ${x.anio&&per&&per!=="ambos"?`<input class="va-otros" value="${esc(x.otros||"")}" placeholder="¿Cuándo los otros 6?" onchange="vaSet('${l.id}','otros',this.value)">`:""}
+      </div>
+      <div class="va-acts">
+        ${ops.map(([k,t])=>`<button class="va-op${per===k?" on va-op-"+(k||"no"):""}" onclick="vaSet('${l.id}','per','${k}')">${t}</button>`).join("")}
+        ${per?`<button class="va-est va-est-${est}" onclick="vaSet('${l.id}','est','${est==="pend"?"conf":est==="conf"?"riesgo":"pend"}')" title="Toca para cambiar">${VA_EST[est]}</button>`:""}
+      </div>
+    </div></div>`;}).join("")
+    :`<p style="text-align:center;color:#ccc;padding:30px;font-size:13px">Sin lavadores en el rol de ${vaSuc.replace("PC ","")}.</p>`;
+  // ── Disponibles por día
+  document.getElementById("va-cob").innerHTML=`<div class="va-cal" style="grid-template-columns:repeat(${cob.length},minmax(40px,1fr));min-width:${cob.length*44}px">${cob.map(c=>{
+      const falta=c.min?Math.max(0,c.min-c.hay):0, p=V.periodos.find(q=>c.f>=q.ini&&c.f<=q.fin), dow=vaF(c.f).getDay();
+      const fiesta=["12-24","12-25","12-31","01-01"].includes(c.f.slice(5));
+      return `<div class="va-d${p?" va-in-"+p.id:""}">
+        <span class="va-dn">${VA_DS[dow]} ${vaF(c.f).getDate()}${fiesta?" ★":""}</span>
+        <b style="${falta?"color:#c0392b":""}">${c.hay}</b>
+        <i>${falta?"faltan "+falta:c.riesgo?"?"+c.riesgo:"&nbsp;"}</i>
+      </div>`;}).join("")}</div>`;
+  // ── Fechas y mínimos
+  document.getElementById("va-cfg").innerHTML=V.periodos.map((p,i)=>`<label class="va-cfg-f"><span>${p.nombre}</span>
+      <input type="date" value="${p.ini}" onchange="vaSetPer(${i},'ini',this.value)"> al <input type="date" value="${p.fin}" onchange="vaSetPer(${i},'fin',this.value)"></label>`).join("")+
+    `<label class="va-cfg-f"><span>Mínimo de lavadores</span>
+      Lun–Jue <input type="number" min="0" value="${suc.minSem||""}" placeholder="—" onchange="vaSetMin('minSem',this.value)">
+      Vie–Dom <input type="number" min="0" value="${suc.minFin||""}" placeholder="—" onchange="vaSetMin('minFin',this.value)"></label>`;
+  document.getElementById("va-nomin").style.display=sinMin?"":"none";
+}
+function vaSet(id,k,v){
+  const p=vaP(id);
+  if(k==="per"&&v==="ambos"&&!confirm("Con los 2 periodos se va casi medio mes ("+vaRango({ini:vaData().periodos[0].ini,fin:vaData().periodos[1].fin})+").\n¿Seguro? Lo recomendable es 6 días ahora y los otros 6 en otra fecha."))return;
+  p[k]=v;
+  if(k==="anio"&&!v&&p.per==="ambos")p.per="";
+  rlSave();renderVac();
 }
 function vaSetSuc(s){vaSuc=s;renderVac();}
 function vaSetPer(i,k,v){if(!v)return;vaData().periodos[i][k]=v;
   const V=vaData();V.desde=vaMas(V.periodos.reduce((a,p)=>p.ini<a?p.ini:a,"9"),-1);V.hasta=vaMas(V.periodos.reduce((a,p)=>p.fin>a?p.fin:a,"0"),2);
   rlSave();renderVac();}
-function vaSet(id,k,v){
-  const p=vaP(id);p[k]=v;
-  if(k==="anio"&&!v&&p.per==="ambos")p.per="";
-  if(k==="per"&&v&&!p.viaja)p.viaja=true;
-  if(k==="per"&&v==="ambos"&&!confirm("Con los 2 periodos se va casi medio mes (del "+vaLbl(vaData().periodos[0].ini)+" al "+vaLbl(vaData().periodos[1].fin)+").\n¿Seguro? Lo recomendable es 6 días ahora y los otros 6 en otra fecha.")){p.per="";}
-  rlSave();renderVac();
-}
 function vaSetMin(k,v){rlLoad().sucs[vaSuc][k]=+v||0;rlSave();renderVac();}
-// Reparte a los que se van entre los 2 periodos, cuidando que en cada uno se vaya la misma cantidad
-// y que no se vayan juntos los que descansan el mismo día.
-function vaRepartir(){
-  const V=vaData(), lavs=(rlLoad().sucs[vaSuc].lavs||[]).filter(l=>l.nombre&&(V.pers[l.id]||{}).viaja);
-  if(!lavs.length){flash("Primero marca quién se va a su tierra");return;}
-  if(!confirm("¿Repartir a los "+lavs.length+" que se van entre Navidad y Año Nuevo?\nReemplaza el periodo que ya tenían (no a los de “Los 2”)."))return;
-  const cuenta={nav:0,ano:0};
-  lavs.filter(l=>V.pers[l.id].per==="ambos").forEach(()=>{cuenta.nav++;cuenta.ano++;});
-  const libres=lavs.filter(l=>V.pers[l.id].per!=="ambos");
-  // primero los que descansan el mismo día, para separarlos
-  libres.sort((a,b)=>(a.descanso??-1)-(b.descanso??-1));
-  let ult=null;
-  libres.forEach(l=>{
-    let k=cuenta.nav<=cuenta.ano?"nav":"ano";
-    if(cuenta.nav===cuenta.ano&&ult&&ult.desc===l.descanso)k=ult.per==="nav"?"ano":"nav";
-    V.pers[l.id].per=k;cuenta[k]++;ult={desc:l.descanso,per:k};
-  });
-  rlSave();renderVac();flash("✓ Repartidos: "+cuenta.nav+" en Navidad · "+cuenta.ano+" en Año Nuevo");
-}
 function vaImgHtml(){
   const V=vaData();
   const bloques=RL_SUCS.map(s=>{
