@@ -11210,7 +11210,7 @@ const PF_COLS = [
 ];
 const PF_MET = ['puntos','pct','estrellas','hits','lavDiarios','entregas','calidad','strikes','retardos','falta','faltaJust'];
 
-// Captura de AppSheet al 29/oct/2026 (base hasta S43) — Valente, Jose Jr, Juan Lopez, Toño y Gio corregidos por Montse
+// Captura de AppSheet al 29/oct/2026 (base hasta S43) — Valente, Jose Jr, Juan Lopez, Toño, Gio y Luis Ángel corregidos por Montse
 const PF_SEED = (()=>{
   const R='PC Refugio', A='PC Álamos';
   const t={
@@ -11230,7 +11230,7 @@ const PF_SEED = (()=>{
     'Toño':      [A,4335, 18.03,40,4.0,1, 9,81,0,0,0,0],
     'Marvin':    [A,2245, 17.13,40,4.0,1, 9,81,1,0,0,0],
     'Valente':   [A,3795, 16.70,40,4.0,0, 9,90,0,0,1,0],
-    'Luis Ángel':[A, 428, 15.55,40,4.0,3, 7,52,0,0,0,0],
+    'Luis Ángel':[A, 652, 15.55,40,4.0,3, 7,52,0,0,0,0],
     'Juan Lopez':[A,1630,  9.10,30,2.6,2, 8,90,0,0,0,1],
     'Gio':       [A,2478,  7.90,30,2.4,1, 9,80,0,0,0,1],
     'Juaquin':   [A,1076,  0.00,30,0.8,0, 5,34,0,0,6,8],
@@ -11241,7 +11241,7 @@ const PF_SEED = (()=>{
       puntos:v[2],pct:v[3],estrellas:v[4],hits:v[5],lavDiarios:v[6],entregas:v[7],
       calidad:v[8],strikes:v[9],retardos:v[10],falta:v[11],faltaJust:null};
   });
-  return {actualizado:'29/10/2026', lav};
+  return {actualizado:'29/10/2026', corrVer:1, lav};
 })();
 
 let pfData = null;
@@ -11254,9 +11254,21 @@ function pf_load(){
   if(pfData) return pfData;
   const v = ld(PF_KEY, null);
   if(!window._pfInitDone && !(v && v.lav)) return JSON.parse(JSON.stringify(PF_SEED)); // aún cargando: no pisar la nube
-  if(v && v.lav){ pfData = v; }
+  if(v && v.lav){ pfData = v; pf_aplicarCorrecciones(); }
   else { pfData = JSON.parse(JSON.stringify(PF_SEED)); sv(PF_KEY, pfData); }
   return pfData;
+}
+// Correcciones de Montse a la base de AppSheet (se aplican una sola vez)
+const PF_CORR_VER = 1;
+const PF_CORR = {'Valente':3795,'Jose Jr':2975,'Juan Lopez':1630,'Toño':4335,'Gio':2478,'Luis Ángel':652};
+function pf_aplicarCorrecciones(){
+  if(!pfData || (pfData.corrVer||0) >= PF_CORR_VER) return;
+  Object.entries(PF_CORR).forEach(([n,base])=>{
+    const k = Object.keys(pfData.lav).find(x=>normN(x)===normN(n));
+    if(k && (pfData.lav[k].semBase||PF_SEM_INICIO)===PF_SEM_INICIO) pfData.lav[k].base = base;
+  });
+  pfData.corrVer = PF_CORR_VER;
+  sv(PF_KEY, pfData);
 }
 function pf_save(){ if(pfData) sv(PF_KEY, pfData); }
 
