@@ -460,6 +460,18 @@ input[type=checkbox]{accent-color:var(--gold);width:15px;height:15px;}
 .lm3-empty{font-size:12px;color:#aaa;padding:6px 0}
 .lm3-past{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:10px;border-top:1px dashed #efe6cf}
 .lm3-past span{font-size:10px;color:#8a7a50;background:#faf7ef;border-radius:10px;padding:2px 8px}
+.pf-av{border-radius:50%;object-fit:cover;flex:none;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle}
+.pf-av.ini{background:#f1efe9;color:#8a7a50;font-weight:800;letter-spacing:.3px}
+.pf-nc{display:flex;align-items:center;gap:10px}
+.pf-mc .pf-av{margin-right:0}
+.lm3-img{width:46px;height:46px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #e0a614;position:relative;z-index:1}
+.lm3-rnn{display:flex;align-items:center;gap:7px}
+.pf-fh{display:flex;align-items:center;gap:14px;margin-right:36px}
+.pf-fav{position:relative;cursor:pointer;flex:none}
+.pf-fav .pf-av{box-shadow:0 0 0 2px #fff,0 0 0 3px #e8e2d2}
+.pf-fcam{position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;font-size:12px}
+.pf-flink{display:inline-block;border:none;background:none;padding:0;margin-top:4px;font-size:11px;color:#aaa;font-family:inherit;cursor:pointer}
+.pf-flink:hover{color:#C62828}
 .pf-tr{cursor:pointer}
 .pf-tr:hover td{background:#fcfbf8}
 .pf-lnk{cursor:pointer}
@@ -11598,6 +11610,7 @@ function an_setSuc(s){
 }
 function an_render(){
   if(!document.getElementById('an-res')) return;
+  if(!pfFotosCargadas) pf_fotosLoad();
   const sems = an_semanas();
   const sel = document.getElementById('an-sem');
   if(sel){
@@ -11753,7 +11766,7 @@ function lm_card(key, suc){
   const q = s=>String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   const head = w ? `
       <div class="lm3-w">
-        <div class="lm3-av">${LM_LAUREL}<span>${esc(lm_ini(w.nombre))}</span><i class="lm3-tro">🏆</i></div>
+        <div class="lm3-av pf-lnk" onclick="pf_ficha('${q(w.nombre)}')">${LM_LAUREL}${pf_foto(w.nombre)?`<img class="lm3-img" src="${pf_foto(w.nombre)}" alt="">`:`<span>${esc(lm_ini(w.nombre))}</span>`}<i class="lm3-tro">🏆</i></div>
         <div class="lm3-wn"><div class="lm3-n">${esc(w.nombre)}</div><div>${we?pf_chip(we.c.rg.cur):''}<span class="lm3-f">nombrado ${esc(w.fecha||'')}</span></div></div>
       </div>
       <div class="lm3-st">
@@ -11771,7 +11784,7 @@ function lm_card(key, suc){
     <div class="lm3-cl">Candidatos</div>
     ${top.length ? top.map((x,k)=>{ const on = w && normN(w.nombre)===normN(x.e.nombre);
       return `<div class="lm3-r${on?' on':''}"><span class="lm3-rk">${k+1}</span>
-        <div class="lm3-rn"><b class="pf-lnk" onclick="pf_ficha('${q(x.e.nombre)}')">${esc(x.e.nombre)}</b><small>${pf_n(x.e.d.puntos).toFixed(1)} pts · ${x.autos} autos · ${pf_n(x.e.d.entregas)}%${pf_n(x.e.d.retardos)?' · '+x.e.d.retardos+' ret.':''}</small>
+        <div class="lm3-rn"><div class="lm3-rnn">${pf_av(x.e.nombre,22)}<b class="pf-lnk" onclick="pf_ficha('${q(x.e.nombre)}')">${esc(x.e.nombre)}</b></div><small>${pf_n(x.e.d.puntos).toFixed(1)} pts · ${x.autos} autos · ${pf_n(x.e.d.entregas)}%${pf_n(x.e.d.retardos)?' · '+x.e.d.retardos+' ret.':''}</small>
           <div class="lm3-sb"><i style="width:${Math.min(100,Math.max(4,x.sc))}%"></i></div></div>
         <button class="lm3-b${on?' on':''}" onclick="lm_nombrar('${key}','${q(suc)}','${q(x.e.nombre)}',${x.autos})">${on?'✓ Nombrado':'Nombrar'}</button></div>`;}).join('')
       : '<div class="lm3-empty">Aún no hay autos registrados en este mes.</div>'}
@@ -11870,7 +11883,7 @@ function dash_renderPerformance(){
   document.getElementById('pf-card').classList.toggle('pf-editing', pfEdit);
   document.getElementById('pf-empty').style.display = lista.length ? 'none' : 'block';
 
-  const nameCell = (e,i)=>`<td><span class="pf-name pf-lnk" onclick="pf_fichaIdx(${i})">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''}<span class="pf-suc">${esc((e.suc||'').replace('PC ',''))}${e.nuevo?' · nuevo':''}</span></td>`;
+  const nameCell = (e,i)=>`<td><div class="pf-nc">${pf_av(e.nombre,32)}<div><span class="pf-name pf-lnk" onclick="pf_fichaIdx(${i})">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''}<span class="pf-suc">${esc((e.suc||'').replace('PC ',''))}${e.nuevo?' · nuevo':''}</span></div></div></td>`;
   document.getElementById('pf-tbody').innerHTML = lista.map((e,i)=>{
     const {d,c} = e;
     if(pfEdit){
@@ -11890,7 +11903,7 @@ function dash_renderPerformance(){
   // Celular: lista simple
   const mb = document.getElementById('pf-mob');
   if(mb) mb.innerHTML = lista.map((e,i)=>`<div class="pf-mc" onclick="pf_fichaIdx(${i})">
-      <div class="l"><span class="pf-name">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''} ${pf_chip(e.c.rg.cur)}
+      ${pf_av(e.nombre,38)}<div class="l"><span class="pf-name">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''} ${pf_chip(e.c.rg.cur)}
         <div class="pf-falta">${pf_fmtN(e.c.total)} lavados · ${esc((e.suc||'').replace('PC ',''))}${pf_incN(e.d)?` · <span style="color:#C62828">${pf_incN(e.d)} incid.</span>`:''}</div></div>
       <div class="r">${pf_semCell(e)}</div></div>`).join('');
 
@@ -11980,6 +11993,62 @@ function pf_benTodo(nombre){
   flash('✓ Beneficios de '+nombre+' entregados');
 }
 
+// ── Fotos de perfil (Firestore: pc_fotos/<nombre>, una por documento) ──
+let pfFotos = (()=>{ try{ return JSON.parse(localStorage.getItem('pc4_fotos')||'{}'); }catch(e){ return {}; } })();
+let pfFotosCargadas = false;
+function pf_fotoKey(n){ return normN(n).replace(/[^a-z0-9]+/g,'_'); }
+function pf_foto(n){ return pfFotos[pf_fotoKey(n)] || null; }
+function pf_fotosCache(){ try{ localStorage.setItem('pc4_fotos', JSON.stringify(pfFotos)); }catch(e){} }
+async function pf_fotosLoad(){
+  if(pfFotosCargadas) return; pfFotosCargadas = true;
+  try{
+    if(!_sobFbReady) await _sobInitFirebase();
+    if(!_sobFbDb) return;
+    const snap = await _sobFbDb.collection('pc_fotos').get();
+    const nuevo = {}; snap.forEach(d=>{ const v=d.data(); if(v && v.data) nuevo[d.id]=v.data; });
+    const cambio = JSON.stringify(nuevo)!==JSON.stringify(pfFotos);
+    pfFotos = nuevo; pf_fotosCache();
+    if(cambio){ an_render(); pf_fichaRefresh(); }
+  }catch(e){ console.warn('fotos', e); }
+}
+function pf_av(nombre, size, extra){
+  const f = pf_foto(nombre), st = `width:${size}px;height:${size}px;font-size:${Math.round(size*.36)}px`;
+  return f ? `<img class="pf-av${extra?' '+extra:''}" src="${f}" alt="" style="${st}">`
+           : `<span class="pf-av ini${extra?' '+extra:''}" style="${st}">${esc(lm_ini(nombre))}</span>`;
+}
+function pf_redimensionar(file, lado){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onerror = rej;
+    r.onload = ()=>{ const img = new Image(); img.onerror = rej; img.onload = ()=>{
+      const c = document.createElement('canvas'); c.width = c.height = lado;
+      const m = Math.min(img.width, img.height), sx = (img.width-m)/2, sy = (img.height-m)/2.6;
+      const ctx = c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,lado,lado);
+      ctx.drawImage(img, sx, Math.max(0,sy), m, m, 0, 0, lado, lado);
+      res(c.toDataURL('image/jpeg', .82)); }; img.src = r.result; };
+    r.readAsDataURL(file);
+  });
+}
+async function pf_subirFoto(nombre, inp){
+  const file = inp.files && inp.files[0]; inp.value=''; if(!file) return;
+  try{
+    flash('Subiendo foto…');
+    const url = await pf_redimensionar(file, 240);
+    const k = pf_fotoKey(nombre);
+    pfFotos[k] = url; pf_fotosCache();
+    an_render(); pf_fichaRefresh();
+    if(!_sobFbReady) await _sobInitFirebase();
+    if(_sobFbDb) await _sobFbDb.collection('pc_fotos').doc(k).set({nombre, data:url, updatedAt:new Date().toISOString()});
+    flash('✓ Foto de '+nombre+' guardada');
+  }catch(e){ console.warn(e); flash('No se pudo guardar la foto'); }
+}
+async function pf_quitarFoto(nombre){
+  if(!confirm('¿Quitar la foto de '+nombre+'?')) return;
+  const k = pf_fotoKey(nombre); delete pfFotos[k]; pf_fotosCache();
+  an_render(); pf_fichaRefresh();
+  try{ if(_sobFbDb) await _sobFbDb.collection('pc_fotos').doc(k).delete(); }catch(e){}
+}
+
 // ── Ficha del lavador ──
 let pfFichaNombre = null;
 function pf_fichaIdx(i){ const e=pfVista[i]; if(e) pf_ficha(e.nombre); }
@@ -12012,8 +12081,13 @@ function pf_ficha(nombre){
     if(items.some(it=>!it.f)) ben += `<button class="pf-all" style="margin:8px 0 0;padding:0" onclick="pf_benTodo('${esc(e.nombre).replace(/'/g,"\\'")}')">Marcar todo entregado ✓</button>`;
   }
   fi.innerHTML = `<button class="pf-fx" onclick="pf_fichaCerrar()">✕</button>
-    <div class="pf-alert-t" style="margin:0">${esc((e.suc||'').replace('PC ',''))}</div>
-    <h2 class="pf-fn">${esc(e.nombre)}${wins.length?' <span class="pf-crown">🏆</span>':''}</h2>
+    <div class="pf-fh">
+      <label class="pf-fav" title="Cambiar foto">${pf_av(e.nombre,72)}<span class="pf-fcam">📷</span>
+        <input type="file" accept="image/*" style="display:none" onchange="pf_subirFoto('${esc(e.nombre).replace(/'/g,"\\'")}',this)"></label>
+      <div><div class="pf-alert-t" style="margin:0">${esc((e.suc||'').replace('PC ',''))}</div>
+        <h2 class="pf-fn">${esc(e.nombre)}${wins.length?' <span class="pf-crown">🏆</span>':''}</h2>
+        ${pf_foto(e.nombre)?`<button class="pf-flink" onclick="pf_quitarFoto('${esc(e.nombre).replace(/'/g,"\\'")}')">Quitar foto</button>`:'<span class="pf-flink" style="cursor:default">Toca el círculo para agregar foto</span>'}</div>
+    </div>
     <div style="margin-top:8px">${pf_rangoCell(c)}</div>
     <div class="pf-fmini">
       <div><span>PUNTOS</span><b style="color:${pf_color('puntos',d.puntos)}">${pf_fmt('puntos',d.puntos)}</b></div>
