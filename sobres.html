@@ -54,6 +54,9 @@ body{
 
 /* ── COORDINADORES: pago por turno ── */
 .co-tabla{min-width:1380px}
+.co-hor{color:#2f855a;font-weight:600}
+.co-hor a{cursor:pointer;color:#888;text-decoration:none;margin-left:2px}
+.co-day-man{box-shadow:inset 0 0 0 1.5px #c0392b!important}
 .co-deuda-add{background:none;border:1px dashed #d8d4c8;border-radius:8px;padding:4px 9px;font-size:10.5px;font-weight:700;color:#aaa;cursor:pointer}
 .co-deuda-add:hover{border-color:#e53e3e;color:#e53e3e}
 .co-deuda-link{cursor:pointer;text-decoration:none;display:block}
@@ -7126,8 +7129,39 @@ function coImss(c,det){
 }
 
 function coDiasDefault(c){
+  const hh=coHorarioDe(c);
+  if(hh)return hh.dias.slice();
   return CO_DIAS.map((_,d)=>d===c.descanso?"D":(c.habitual||"8"));
 }
+// ── Días de pago a partir de Horarios → Coordinadores ──
+// Se busca al coordinador por nombre. Por día se suman sus horas (sin contar dos veces si se empalman)
+// y se convierten al turno que se paga: hasta 6 h → ≤6h · hasta 9 h → 8h · más de 9 h → 11h · sin turno → descanso.
+function coHorarioDe(c){
+  if(typeof chData!=="function"||!c||!c.nombre)return null;
+  let D;try{D=chData();}catch(e){return null;}
+  const hc=(D.coords||[]).find(x=>normN(x.nombre||"")===normN(c.nombre));
+  if(!hc)return null;
+  const hrs=CO_DIAS.map((_,d)=>{
+    const iv=[];RL_SUCS.forEach(s=>(D.bloques[s]||[]).forEach(k=>{if(k.ci===hc.id&&k.dia===d)iv.push([+k.ini,+k.fin]);}));
+    iv.sort((a,b)=>a[0]-b[0]);let tot=0,cur=null;
+    iv.forEach(([a,b])=>{if(!cur)cur=[a,b];else if(a<=cur[1])cur[1]=Math.max(cur[1],b);else{tot+=cur[1]-cur[0];cur=[a,b];}});
+    if(cur)tot+=cur[1]-cur[0];
+    return Math.round(tot*10)/10;
+  });
+  if(!hrs.some(x=>x>0))return null;
+  return {hrs,dias:hrs.map(x=>x<=0?"D":x<=6?"6":x<=9?"8":"11")};
+}
+function coSemanaActual(){const s=document.getElementById("coords-hist-sel");return !s||!s.value;}
+// Pone en la semana los turnos del horario, salvo los días que cambiaste a mano (faltas, incapacidades, etc.)
+function coSyncHorario(c){
+  if(!coSemanaActual())return false;
+  const hh=coHorarioDe(c);if(!hh)return false;
+  if(!Array.isArray(c.diasMan))c.diasMan=[];
+  let cambio=false;
+  hh.dias.forEach((v,d)=>{if(!c.diasMan[d]&&c.dias[d]!==v){c.dias[d]=v;cambio=true;}});
+  return cambio;
+}
+function coVolverHorario(i){const c=coords[i];c.diasMan=[];coSyncHorario(c);coGuardar();renderCoords();}
 function coNorm(c){
   if(!c.tarifas)c.tarifas={"6":0,"8":0,"11":0};
   ["6","8","11"].forEach(k=>{c.tarifas[k]=+c.tarifas[k]||0;});
@@ -7210,13 +7244,17 @@ function renderCoords(){
   let _nuevosIds=false;
   coords.forEach(c=>{if(!c.id){c.id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);_nuevosIds=true;}});
   if(_nuevosIds)coGuardar();
+  let _sinc=false;
+  coords.forEach(c=>{coNorm(c);if(coSyncHorario(c))_sinc=true;});
+  if(_sinc)coGuardar();
   coords.forEach((c,i)=>{
     coNorm(c);
     const r=coCalc(c);
+    const _hh=coHorarioDe(c);
     const tr=document.createElement("tr");
     tr.className="co-row";
     const diasHtml=c.dias.map((v,d)=>`
-      <td class="co-dcell"><select class="co-day" data-v="${v}" title="${CO_DIAS[d]}" ${r.porTarifa?"":"disabled"}
+      <td class="co-dcell"><select class="co-day${_hh&&c.diasMan&&c.diasMan[d]?" co-day-man":""}" data-v="${v}" title="${CO_DIAS[d]}${_hh?" · horario: "+(_hh.hrs[d]?_hh.hrs[d]+" h":"descanso"):""}" ${r.porTarifa?"":"disabled"}
         onchange="coSetDia(${i},${d},this)">${CO_EST.map(o=>`<option value="${o.v}" title="${o.l}" ${o.v===v?"selected":""}>${o.s}</option>`).join("")}</select></td>`).join("");
     tr.innerHTML=`
       <td class="co-name">
@@ -7292,7 +7330,12 @@ function coSumHtml(c,r){
   if(!r.porTarifa)return `<span style="color:#C8960C">Pago fijo · configura tarifas en ⚙</span>`;
   const s=coResumen(r.det,c.seguro);
   const extra=r.desc>0?` · <span style="color:#e53e3e">−${fmt(r.desc)} consumo</span>`:"";
-  return (s||"Sin días capturados")+extra;
+  const hh=coHorarioDe(c), i=coords.indexOf(c);
+  const nMan=hh&&Array.isArray(c.diasMan)?c.diasMan.filter(Boolean).length:0;
+  const hor=!hh?` · <span style="color:#bbb">sin horario</span>`
+    :nMan?` · <span class="co-hor">del horario, ${nMan} cambiado${nMan>1?"s":""} <a onclick="coVolverHorario(${i})">↺</a></span>`
+    :` · <span class="co-hor">del horario</span>`;
+  return (s||"Sin días capturados")+extra+(coSemanaActual()?hor:"");
 }
 
 function coCfgHtml(c,i){
@@ -7329,7 +7372,7 @@ function coCfgHtml(c,i){
       <div id="co-note-imss-${i}" style="margin-top:6px">${coImssNote(c,i)}</div>
     </div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-      <button class="btn" style="background:#f5f3ee;color:#333" onclick="coLlenarSemana(${i})">Llenar semana con turno habitual</button>
+      <button class="btn" style="background:#f5f3ee;color:#333" onclick="coLlenarSemana(${i})">${coHorarioDe(c)?"Volver al horario":"Llenar semana con turno habitual"}</button>
       <button class="btn bk" onclick="coToggleCfg(${i})">Listo</button>
     </div>
   </div>`;
@@ -7364,6 +7407,7 @@ function coSetCfg(i,k,v){
 
 function coLlenarSemana(i){
   const c=coNorm(coords[i]);
+  c.diasMan=[];
   c.dias=coDiasDefault(c);
   c._cfgOpen=true;
   coGuardar();
@@ -7372,6 +7416,7 @@ function coLlenarSemana(i){
 
 function coSetDia(i,d,sel){
   coords[i].dias[d]=sel.value;
+  if(coHorarioDe(coords[i])){if(!Array.isArray(coords[i].diasMan))coords[i].diasMan=[];coords[i].diasMan[d]=true;sel.classList.add("co-day-man");}
   sel.dataset.v=sel.value;
   coGuardar();
   coUpdateRow(i);
@@ -7453,7 +7498,7 @@ function guardarSemanaCoords(){
   if(_dCambio){sv("pc4_deudas",deudas);renderD();}
   // Siguiente semana: se conserva el acuerdo (tarifas, turno, descanso, seguro);
   // los días vuelven al turno habitual y se limpian extra, comisión, food y merch
-  coords=coords.map(c=>{const n={...coNorm(c),extra:0,comision:0,food:0,merch:0};n.dias=coDiasDefault(n);delete n._cfgOpen;return n;});
+  coords=coords.map(c=>{const n={...coNorm(c),extra:0,comision:0,food:0,merch:0};delete n.diasMan;n.dias=coDiasDefault(n);delete n._cfgOpen;return n;});
   coGuardar();
   renderCoords();
   flash("✓ Pagos de coordinadores guardados — S"+sem);
