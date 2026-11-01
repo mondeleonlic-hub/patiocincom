@@ -3755,9 +3755,37 @@ function fmt(n){return(parseFloat(n)||0).toLocaleString("es-MX",{style:"currency
 function esc(v){return String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")}
 function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").replace(/[éèë]/g,"e").replace(/[íìï]/g,"i").replace(/[óòö]/g,"o").replace(/[úùü]/g,"u").replace(/ñ/g,"n").trim()}
 function getDesc(n){const d=deudas[n];if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;if(d.pagoActual>d.numPagos)return 0;return d.montoPorPago||d.total/d.numPagos||0}
+// Food que sí se descuenta del pago:
+// - si la fila tiene Bono, el bono cubre todo el food
+// - si el lavador tiene Bono Food, el saldo del bono cubre su food y solo
+//   se descuenta lo que pase del saldo
+function foodEfectivo(r){
+  const food=num(r.food);
+  if(num(r.bono)>0) return 0;
+  if(!food||!r.nombre) return food;
+  let b=null;
+  try{ b=bonosFood[r.nombre]; }catch(e){ return food; }
+  if(!b||!num(b.monto)) return food;
+  const kIni=semKey(b.semanaAsignado);
+  const kAct=semKey(document.getElementById("sem")?.value||"");
+  if(kAct&&kIni&&kAct<kIni) return food;
+  // food consumido del bono en semanas anteriores a la actual
+  let previo=0;
+  const hist=(historial&&historial.length?historial:ld("pc4_hist",[]));
+  hist.forEach(w=>{
+    const k=semKey(w.semana||w.sem);
+    if(k>=kIni&&(!kAct||k<kAct)&&Array.isArray(w.rows)){
+      w.rows.forEach(x=>{ if(x.nombre===r.nombre) previo+=num(x.food); });
+    }
+  });
+  const disponible=Math.max(0,num(b.monto)-previo);
+  const foodSem=rows.filter(x=>x.nombre===r.nombre&&num(x.bono)<=0).reduce((a,x)=>a+num(x.food),0)||food;
+  const excedente=Math.max(0,foodSem-disponible);
+  return Math.round(excedente*(food/foodSem)*100)/100;
+}
 function calcT(r,n){
-  // Si tiene bono, el bono cubre el food (no se descuenta food)
-  const food = num(r.bono)>0 ? 0 : num(r.food);
+  // Bono o Bono Food cubren el food (ver foodEfectivo)
+  const food = foodEfectivo(r);
   const extra=num(r.extra||0);
   return num(r.comision)-food-num(r.merch)-Math.abs(num(r.ahorro||0))+num(r.bono)+extra-getDesc(n);
 }
@@ -4376,7 +4404,7 @@ function renderT(){
 
     // Desglose del total para mostrar en la celda
     // (food sólo se descuenta si no hay bono — igual que calcT)
-    const effectiveFood = num(row.bono)>0 ? 0 : num(row.food);
+    const effectiveFood = foodEfectivo(row);
     const parts=[];
     if(num(row.comision)) parts.push({v:num(row.comision),lbl:"com",sign:"+"});
     if(effectiveFood>0)   parts.push({v:effectiveFood,lbl:"food",sign:"-"});
@@ -4436,7 +4464,7 @@ function renderT(){
         if(gRows.length>1){
           const tAutos=gRows.reduce((s,r)=>s+num(r.autos),0);
           const tCom  =gRows.reduce((s,r)=>s+num(r.comision),0);
-          const tFood =gRows.reduce((s,r)=>s+(num(r.bono)>0?0:num(r.food)),0);
+          const tFood =gRows.reduce((s,r)=>s+foodEfectivo(r),0);
           const tMerch=gRows.reduce((s,r)=>s+num(r.merch),0);
           const tBono =gRows.reduce((s,r)=>s+num(r.bono),0);
           const tAho  =gRows.reduce((s,r)=>s+num(r.ahorro),0);
@@ -4599,7 +4627,7 @@ function updateTotalCell(i){
   const bord =t>0?"#38a169":t<0?"#e53e3e":"#eee";
   const color=t>0?"#276749":t<0?"#c53030":"#888";
   // Desglose (misma lógica que renderT)
-  const effectiveFood=num(row.bono)>0?0:num(row.food);
+  const effectiveFood=foodEfectivo(row);
   const parts=[];
   if(num(row.comision))              parts.push({v:num(row.comision),lbl:"com",sign:"+"});
   if(effectiveFood>0)                parts.push({v:effectiveFood,lbl:"food",sign:"-"});
@@ -4627,7 +4655,7 @@ function updateCombinedRow(nombre){
   if(gRows.length<2){sumTr.remove();return;}
   const tAutos=gRows.reduce((s,r)=>s+num(r.autos),0);
   const tCom  =gRows.reduce((s,r)=>s+num(r.comision),0);
-  const tFood =gRows.reduce((s,r)=>s+(num(r.bono)>0?0:num(r.food)),0);
+  const tFood =gRows.reduce((s,r)=>s+foodEfectivo(r),0);
   const tMerch=gRows.reduce((s,r)=>s+num(r.merch),0);
   const tBono =gRows.reduce((s,r)=>s+num(r.bono),0);
   const tAho  =gRows.reduce((s,r)=>s+num(r.ahorro),0);
@@ -4724,7 +4752,7 @@ function renderResumen(){
   const vis=rows.filter(r=>rowVisible(r));
   const tP=vis.reduce((s,r)=>s+calcT(r,r.nombre),0);
   const tC=vis.reduce((s,r)=>s+num(r.comision),0);
-  const tF=vis.reduce((s,r)=>s+num(r.food),0);
+  const tF=vis.reduce((s,r)=>s+foodEfectivo(r),0);
   const tM=vis.reduce((s,r)=>s+num(r.merch),0);
   const tB=vis.reduce((s,r)=>s+num(r.bono),0);
   const rowsRef=vis.filter(r=>r.sucursal==="PC Refugio");
@@ -5424,8 +5452,8 @@ function bsobreTermica(row, sem){
   const desc=getDesc(row.nombre);
   const com=num(row.comision),food=num(row.food),merch=num(row.merch),bono=num(row.bono),ahorro=Math.abs(num(row.ahorro||0));
   const entrena=num(row.extra||0);
-  const foodEfectivo=bono>0?0:food;
-  const total=com+entrena-foodEfectivo-merch-ahorro-desc;
+  const foodEf=foodEfectivo(row);
+  const total=com+entrena-foodEf-merch-ahorro-desc;
   const pagoLabel=d&&d.numPagos>1?` (P${d.pagoActual||1}/${d.numPagos})`:"";
   const resta=d?Math.max(0,d.total-desc*(d.pagoActual||1)):0;
   const DASH="------------------------------------";
@@ -5435,6 +5463,9 @@ function bsobreTermica(row, sem){
   if(bono>0&&food>0){
     dc+=`<div style="${rowS}"><span>Bono Food</span><span>+${fmt(bono)}</span></div>`;
     dc+=`<div style="${rowS}"><span>Food</span><span>-${fmt(food)}</span></div>`;
+  } else if(food>0&&foodEf<food){
+    dc+=`<div style="${rowS}"><span>Food (cubre bono)</span><span>${fmt(food-foodEf)}</span></div>`;
+    if(foodEf>0) dc+=`<div style="${rowS}"><span>Food</span><span>-${fmt(foodEf)}</span></div>`;
   } else if(food>0){
     dc+=`<div style="${rowS}"><span>Food</span><span>-${fmt(food)}</span></div>`;
   }
@@ -5630,8 +5661,8 @@ function bsobre(row,sem){
   const com=num(row.comision),food=num(row.food),merch=num(row.merch),bono=num(row.bono),ahorro=Math.abs(num(row.ahorro||0));
   const entrena=num(row.extra||0);
   const bruto=com;
-  const foodEfectivo = bono>0 ? 0 : food;
-  const total=com+entrena-foodEfectivo-merch-ahorro-desc;
+  const foodEf=foodEfectivo(row);
+  const total=com+entrena-foodEf-merch-ahorro-desc;
   const pagoLabel=d&&d.numPagos>1?` (Pago ${d.pagoActual||1} de ${d.numPagos})`:"";
   const resta=d?Math.max(0,d.total-desc*(d.pagoActual||1)):0;
   let dc="";
@@ -5639,6 +5670,9 @@ function bsobre(row,sem){
     dc+=`<div class="sr" style="color:#888;font-style:italic"><span class="sl2" style="font-size:9px">— solo informativo —</span></div>`;
     dc+=`<div class="sr" style="color:#38a169"><span class="sl2">Bono Food</span><span class="sv">+${fmt(bono)}</span></div>`;
     dc+=`<div class="sr"><span class="sl2">Food</span><span class="sv">-${fmt(food)}</span></div>`;
+  } else if(food>0&&foodEf<food){
+    dc+=`<div class="sr ssm" style="color:#38a169"><span>Food cubierto por bono</span><span>${fmt(food-foodEf)}</span></div>`;
+    if(foodEf>0) dc+=`<div class="sr"><span class="sl2">Food</span><span class="sv">-${fmt(foodEf)}</span></div>`;
   } else if(food>0){
     dc+=`<div class="sr"><span class="sl2">Food</span><span class="sv">-${fmt(food)}</span></div>`;
   }
