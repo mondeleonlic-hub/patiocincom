@@ -77,6 +77,7 @@ body{
 .co-day[data-v="FJ"]{background:#e6f6ec;color:#2f855a;border-color:#b7e2c6}
 .co-day[data-v="FI"]{background:#fde8e8;color:#c53030;border-color:#f5bcbc}
 .co-day[data-v="INC"]{background:#efe7fb;color:#6b46c1;border-color:#d6c5f3}
+.co-day[data-v="V"]{background:#e3f6f4;color:#0f766e;border-color:#b5e3dd}
 .co-in{width:88px;text-align:right}
 .co-neg{color:#e53e3e}
 .co-num{text-align:right;font-weight:700;white-space:nowrap}
@@ -7083,6 +7084,7 @@ const CO_EST=[
   {v:"FJ", s:"Just.", l:"Falta justificada (se paga)"},
   {v:"FI", s:"Falta", l:"Falta injustificada (no se paga)"},
   {v:"INC",s:"Incap.",l:"Incapacidad médica (60% si no tiene seguro)"},
+  {v:"V",  s:"Vacas", l:"Vacaciones pagadas (se paga lo que trabaja ese día)"},
   {v:"",   s:"—",     l:"Sin capturar / no aplica ($0)"}
 ];
 const CO_PCT_INC=0.6;
@@ -7225,11 +7227,19 @@ function coTieneTarifas(c){return !!(c.tarifas&&(c.tarifas["6"]||c.tarifas["8"]|
 function coCalc(c){
   coNorm(c);
   const t=c.tarifas, hab=t[c.habitual]||0;
-  const det={"6":0,"8":0,"11":0,D:0,FJ:0,FI:0,INC:0,"":0};
-  let base=0, pagoInc=0;
+  const det={"6":0,"8":0,"11":0,D:0,FJ:0,FI:0,INC:0,V:0,"":0};
+  let base=0, pagoInc=0, pagoVac=0;
   const porTarifa=coTieneTarifas(c);
+  // Vacaciones: se paga lo que trabaja normalmente ese día (según su horario; si no tiene, su turno habitual)
+  const _hor=porTarifa&&c.dias.includes("V")&&typeof coHorarioDe==="function"?coHorarioDe(c):null;
   if(porTarifa){
-    c.dias.forEach(v=>{
+    c.dias.forEach((v,d)=>{
+      if(v==="V"){
+        det.V++;
+        const n=_hor?_hor.dias[d]:c.habitual;
+        const p=(n==="6"||n==="8"||n==="11")?t[n]:hab;
+        base+=p;pagoVac+=p;return;
+      }
       det[v]=(det[v]||0)+1;
       if(v==="6"||v==="8"||v==="11")base+=t[v];
       else if(v==="D")base+=c.pagoDescanso;
@@ -7249,7 +7259,7 @@ function coCalc(c){
   const deuda=dk&&typeof getDesc==="function"?Math.round(getDesc(dk)*100)/100:0;
   const desc=c.food+c.merch;
   const total=Math.round((base+c.extra+c.comision-desc-ret-deuda)*100)/100;
-  return {base,det,pagoInc,desc,imss,isr,inf,ret,deuda,dk,dObj,total,porTarifa};
+  return {base,det,pagoInc,pagoVac,desc,imss,isr,inf,ret,deuda,dk,dObj,total,porTarifa};
 }
 function coResumen(det,seguro){
   if(!det)return "";
@@ -7261,6 +7271,7 @@ function coResumen(det,seguro){
   if(det.FJ)p.push(det.FJ+" falta just.");
   if(det.FI)p.push(det.FI+" falta injust.");
   if(det.INC)p.push(det.INC+" incap."+(seguro?" (con seguro)":" (60%)"));
+  if(det.V)p.push(det.V+" vacas");
   return p.join(" · ");
 }
 
@@ -12439,7 +12450,7 @@ function dash_init() {
 })();
 
 // ══ TICKETS DE COORDINADORES (misma pestaña Tickets) ═════════════════════════
-const TK_DIA_S={"6":"≤6h","8":"8h","11":"11h",D:"Desc",FJ:"Just",FI:"Falta",INC:"Incap","":"—"};
+const TK_DIA_S={"6":"≤6h","8":"8h","11":"11h",D:"Desc",FJ:"Just",FI:"Falta",INC:"Incap",V:"Vacas","":"—"};
 
 function coTicketData(c,hist){
   if(!hist){
