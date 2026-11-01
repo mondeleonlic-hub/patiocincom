@@ -3787,11 +3787,20 @@ function foodEfectivo(r){
   const excedente=Math.max(0,foodSem-disponible);
   return Math.round(excedente*(food/foodSem)*100)/100;
 }
+// Lavadores en 2 sucursales tienen 2 filas: la deuda/merch a pagos se cobra
+// una sola vez, en la primera fila de esa persona.
+function descFila(r){
+  if(!r||!r.nombre) return 0;
+  const k=normN(r.nombre);
+  const primera=(rows||[]).find(x=>normN(x.nombre)===k);
+  if(primera&&primera!==r) return 0;
+  return getDesc(r.nombre);
+}
 function calcT(r,n){
   // Bono o Bono Food cubren el food (ver foodEfectivo)
   const food = foodEfectivo(r);
   const extra=num(r.extra||0);
-  return num(r.comision)-food-num(r.merch)-Math.abs(num(r.ahorro||0))+num(r.bono)+extra-getDesc(n);
+  return num(r.comision)-food-num(r.merch)-Math.abs(num(r.ahorro||0))+num(r.bono)+extra-descFila(r);
 }
 function flash(m){const e=document.getElementById("fmsg");e.textContent=m;e.style.display="block";setTimeout(()=>e.style.display="none",3000)}
 function setSt(t,m){
@@ -4326,7 +4335,7 @@ function renderTHistorico(semana, tb){
 const mcAbiertas=new WeakSet();
 function mcSumInner(row,t){
   const suc=row.sucursal==="PC Refugio"?'<span class="pill-ref">Refugio</span>':row.sucursal==="PC Álamos"?'<span class="pill-ala">Álamos</span>':'<span class="pill-sin">Sin sucursal</span>';
-  const dsc=getDesc(row.nombre);
+  const dsc=descFila(row);
   const deu=dsc>0?`<span class="mc-deu">deuda −${fmt(dsc)}</span>`:"";
   const nom=esc(row.nombre).replace(/</g,"&lt;")||"Sin nombre";
   return `<div class="mc-who"><b>${nom}</b><div class="mc-meta">${suc}<span>${num(row.autos)} autos</span>${deu}</div></div>
@@ -4370,7 +4379,7 @@ function renderT(){
 
   rows.forEach((row,i)=>{
     const d=deudas[row.nombre];
-    const desc=getDesc(row.nombre);
+    const desc=descFila(row);
     const t=calcT(row,row.nombre);
     const tc=t>0?"cp":t<0?"cn2":"cz";
     const show=rowVisible(row);if(show)vis++;
@@ -4629,7 +4638,7 @@ function updateTotalCell(i){
   const tr=document.querySelector(`#tb tr[data-row-idx="${i}"]`);
   if(!tr) return;
   const row=rows[i];
-  const desc=getDesc(row.nombre);
+  const desc=descFila(row);
   const t=calcT(row,row.nombre);
   const bg   =t>0?"#f0fff4":t<0?"#fff5f5":"#fafaf8";
   const bord =t>0?"#38a169":t<0?"#e53e3e":"#eee";
@@ -5445,9 +5454,15 @@ function mergeRows(act){
     if(todas.length===1){res.push(row);return res;}
     const totalAutos=todas.reduce((s,r)=>s+num(r.autos),0);
     const totalCom  =todas.reduce((s,r)=>s+num(r.comision),0);
-    // food/merch/bono/ahorro/extra: del row que los tenga (Refugio los tiene)
+    // food/merch/bono/ahorro/extra: se suman las de todas sus filas
     const base=todas.find(r=>num(r.food)||num(r.merch)||num(r.bono)||Math.abs(num(r.ahorro||0))||num(r.extra||0))||todas[0];
+    const suma=f=>todas.reduce((s,r)=>s+num(r[f]||0),0);
+    const unir=f=>[...new Set(todas.map(r=>String(r[f]||"").trim()).filter(Boolean))].join(" · ");
     res.push({...base,autos:totalAutos,comision:totalCom,sucursal:"",
+      food:suma("food"),merch:suma("merch"),bono:suma("bono"),extra:suma("extra"),
+      ahorro:todas.reduce((s,r)=>s+Math.abs(num(r.ahorro||0)),0),
+      extraConcepto:unir("extraConcepto")||base.extraConcepto,
+      merchConcepto:unir("merchConcepto")||base.merchConcepto,
       _suc_lines:todas.map(r=>({suc:r.sucursal==="PC Álamos"?"Álamos":"Refugio",autos:num(r.autos),com:num(r.comision)}))
     });
     return res;
@@ -5886,7 +5901,7 @@ function cerrarSemana(){
   }
   const arr=ld("pc4_hist",[]);
   arr.unshift({semana:sem,fecha:new Date().toLocaleDateString("es-MX"),
-    rows:rows.map(r=>{const desc=getDesc(r.nombre);const d=deudas[r.nombre];return{...r,total:calcT(r,r.nombre),deudaDesc:desc,deudaCon:d?.concepto||"",pagoPago:d?.pagoActual||1,pagoTot:d?.numPagos||1}})});
+    rows:rows.map(r=>{const desc=descFila(r);const d=deudas[r.nombre];return{...r,total:calcT(r,r.nombre),deudaDesc:desc,deudaCon:d?.concepto||"",pagoPago:d?.pagoActual||1,pagoTot:d?.numPagos||1}})});
   historial=arr.slice(0,52); // Fix #6: un año completo
   rows=rows.map(r=>({nombre:r.nombre,sucursal:r.sucursal,pct:r.pct,autos:"",comision:"",food:"",merch:"",bono:"",ahorro:r.ahorro||"",extraConcepto:r.extraConcepto||""}));
   const parts = sem.split("/");
@@ -8059,7 +8074,7 @@ function foodConsumidoDesde(nombre, semanaInicio){
   const hist=(historial&&historial.length?historial:ld("pc4_hist",[]));
   hist.forEach(w=>{
     const k=semKey(w.semana||w.sem);
-    if(k>=kInicio && Array.isArray(w.rows)){
+    if(k>=kInicio && k!==semKey(document.getElementById("sem")?.value||"") && Array.isArray(w.rows)){
       w.rows.forEach(r=>{ if(r.nombre===nombre) total+=num(r.food); });
     }
   });
