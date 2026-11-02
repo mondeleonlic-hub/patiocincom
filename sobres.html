@@ -1010,6 +1010,149 @@ tbody tr:nth-child(even){background:#fafaf8;}
 tbody tr:hover{background:var(--gold-pale);}
 tbody td{padding:6px 6px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
 tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #e0ddd4;background:#f7f6f3;color:#111;}
+
+/* ══ ANALYTICS v4 · más grande, full width ══ */
+#pnl-sucursales.pnl.on{max-width:none;padding:28px 40px 60px}
+#pnl-sucursales{font-size:15px}
+.an-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.an-title{font-size:28px;font-weight:800;color:#111;margin:0;letter-spacing:-.4px}
+.an-subt{font-size:14px;color:#888;margin-top:4px}
+.an-subt b{color:#111}
+.an-week{display:flex;align-items:center;background:#fff;border:1px solid #e5e2d8;border-radius:14px;padding:4px;gap:2px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.an-wk-b{width:36px;height:36px;border:none;background:transparent;border-radius:10px;font-size:22px;line-height:1;color:#555;cursor:pointer;font-family:inherit}
+.an-wk-b:hover{background:#f4f2ec;color:#111}
+#pnl-sucursales .an-sel{border:none!important;background:transparent!important;font-size:15px!important;font-weight:800;padding:6px 8px!important;color:#111;-webkit-appearance:none;appearance:none;text-align:center;cursor:pointer;min-width:110px}
+.an-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid #e8e4d9}
+.an-tabs{display:flex;background:#ebe8e0;border-radius:14px;padding:4px;gap:4px}
+.an-tab{border:none;background:transparent;border-radius:11px;padding:10px 26px;font-size:15px;font-weight:700;color:#777;cursor:pointer;font-family:inherit;transition:all .15s}
+.an-tab:hover{color:#111}
+.an-tab.on{background:#111;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.an-seg{display:flex;background:#fff;border:1px solid #e5e2d8;border-radius:14px;padding:4px;gap:4px}
+.an-seg button{display:flex;align-items:center;gap:8px;border:none;background:transparent;border-radius:10px;padding:9px 18px;font-size:14px;font-weight:700;color:#777;cursor:pointer;font-family:inherit;transition:all .15s}
+.an-seg button i{width:9px;height:9px;border-radius:50%;flex:none;opacity:.5}
+.an-seg button:hover{color:#111}
+.an-seg button.on{background:#f4f1e8;color:#111}
+.an-seg button.on i{opacity:1}
+#pnl-sucursales .an-link{font-size:14px;margin-left:auto}
+.an-hint{font-size:12px;color:#aaa}
+/* KPIs */
+#pnl-sucursales .an-kpis{gap:16px;margin-bottom:16px}
+#pnl-sucursales .an-k{padding:20px 22px 0;border-radius:20px}
+#pnl-sucursales .an-ic{width:40px;height:40px;border-radius:12px}
+#pnl-sucursales .an-ic svg{width:22px;height:22px}
+#pnl-sucursales .an-k-l{font-size:12px}
+#pnl-sucursales .an-k-v{font-size:40px;margin:14px 0 4px}
+#pnl-sucursales .an-k-d{font-size:13px}
+#pnl-sucursales .an-k-x{font-size:13px}
+#pnl-sucursales .an-split-b{height:7px}
+#pnl-sucursales .an-split-l{font-size:12px}
+#pnl-sucursales .an-k-sp{width:calc(100% + 44px);margin:16px -22px 0;height:56px}
+#pnl-sucursales .an-row2{gap:16px;margin-bottom:16px}
+#pnl-sucursales .an-card{padding:22px 24px;border-radius:20px}
+#pnl-sucursales .an-leg{font-size:13px}
+#pnl-sucursales .pf-alert-t{font-size:12px}
+#pnl-sucursales .an-al{padding:12px 0;gap:12px}
+#pnl-sucursales .an-al b{font-size:15px}
+#pnl-sucursales .an-al span{font-size:13px}
+#pnl-sucursales .an-dot{width:10px;height:10px;margin-top:6px}
+/* Top de la semana */
+.an-top-g{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.an-tp{background:#faf9f6;border:1px solid #f0ece2;border-radius:16px;padding:18px 12px 14px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.an-tp:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.an-tp.first{background:linear-gradient(180deg,#fff6dc,#fffdf7);border-color:#efd99a}
+.an-tp-av{position:relative;width:64px;margin:0 auto 10px}
+.an-tp-av .pf-av{box-shadow:0 0 0 3px #fff,0 0 0 4px #e8e2d2}
+.an-tp.first .an-tp-av .pf-av{box-shadow:0 0 0 3px #fff,0 0 0 5px #e0a614}
+.an-tp-n{position:absolute;right:-6px;bottom:-4px;width:24px;height:24px;border-radius:50%;background:#111;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.an-tp.first .an-tp-n{background:#e0a614;color:#111}
+.an-tp-name{font-size:16px;font-weight:800;color:#111}
+.an-tp-suc{margin:6px 0 8px}
+.an-tp-v{font-size:28px;font-weight:800;color:#111;line-height:1}
+.an-tp-v small{display:block;font-size:11px;font-weight:600;color:#aaa;margin-top:3px;letter-spacing:.5px;text-transform:uppercase}
+.an-tp-d{font-size:12px;font-weight:700;margin-top:6px}
+/* Equipo más grande */
+#pnl-sucursales .pf-head{margin-bottom:18px}
+#pnl-sucursales .pf-kicker{font-size:12px}
+#pnl-sucursales .pf-sub{font-size:14px}
+#pnl-sucursales .pf-btn{font-size:14px;padding:9px 20px}
+#pnl-sucursales .pf-alert,#pnl-sucursales .pf-ben{padding:16px 20px;border-radius:16px;margin-bottom:14px}
+#pnl-sucursales .pf-alert-it{font-size:15px}
+#pnl-sucursales .pf-alert-it span.m{font-size:13px}
+#pnl-sucursales .pf-ben-h .s{font-size:15px}
+#pnl-sucursales .pf-ben-h .tg{font-size:13px}
+#pnl-sucursales .pf-ben-n{font-size:14px;min-width:120px}
+#pnl-sucursales .pf-pill{font-size:13px;padding:5px 12px}
+#pnl-sucursales .pf-chip{font-size:11px;padding:3px 10px}
+#pnl-sucursales .pf-card{border-radius:20px}
+#pnl-sucursales .pf-table{font-size:15px}
+#pnl-sucursales .pf-table th{font-size:11px;padding:14px 12px}
+#pnl-sucursales .pf-table td{padding:14px 12px}
+#pnl-sucursales .pf-table th:first-child,#pnl-sucursales .pf-table td:first-child{padding-left:22px}
+#pnl-sucursales .pf-name{font-size:16px}
+#pnl-sucursales .pf-suc{font-size:12px}
+#pnl-sucursales .pf-nc{gap:14px}
+#pnl-sucursales .pf-bar{width:150px;height:5px;margin-top:7px}
+#pnl-sucursales .pf-bar i{height:5px}
+#pnl-sucursales .pf-falta{font-size:12px;margin-top:4px}
+#pnl-sucursales .pf-lav{font-size:17px}
+#pnl-sucursales .pf-wk{font-size:12px}
+#pnl-sucursales .pf-inc span{font-size:12px;padding:2px 8px}
+#pnl-sucursales .pf-legend{font-size:12px;gap:14px;margin-top:16px}
+#pnl-sucursales .pf-mc{padding:14px 18px}
+/* Lavador del mes más grande */
+#pnl-sucursales .lm3{padding:22px 24px 24px;border-radius:20px;margin-bottom:14px}
+#pnl-sucursales .lm3-k{font-size:12px}
+#pnl-sucursales .lm3-sel{font-size:26px!important}
+#pnl-sucursales .lm3-crit{font-size:12px}
+#pnl-sucursales .lm3-g{gap:16px}
+#pnl-sucursales .lm3-c{padding:20px 22px;border-radius:16px}
+#pnl-sucursales .lm3-suc{font-size:12px;margin-bottom:16px}
+#pnl-sucursales .lm3-av{width:84px;height:84px}
+#pnl-sucursales .lm3-lau{width:84px;height:84px}
+#pnl-sucursales .lm3-av span,#pnl-sucursales .lm3-img{width:62px;height:62px;font-size:20px}
+#pnl-sucursales .lm3-n{font-size:28px}
+#pnl-sucursales .lm3-f{font-size:12px}
+#pnl-sucursales .lm3-st{gap:10px;margin-top:18px}
+#pnl-sucursales .lm3-st div{padding:12px 14px;border-radius:12px}
+#pnl-sucursales .lm3-st span{font-size:10px}
+#pnl-sucursales .lm3-st b{font-size:22px}
+#pnl-sucursales .lm3-cl{font-size:12px;margin:20px 0 6px}
+#pnl-sucursales .lm3-r{padding:11px 0;grid-template-columns:24px 1fr auto;gap:12px}
+#pnl-sucursales .lm3-rk{width:24px;height:24px;font-size:12px}
+#pnl-sucursales .lm3-rn b{font-size:16px}
+#pnl-sucursales .lm3-rn small{font-size:12px;margin-top:2px}
+#pnl-sucursales .lm3-sb{height:4px;max-width:240px;margin-top:7px}
+#pnl-sucursales .lm3-sb i{height:4px}
+#pnl-sucursales .lm3-b{font-size:13px;padding:7px 16px;border-radius:16px}
+#pnl-sucursales .lm3-out{font-size:12px;padding:8px 12px}
+#pnl-sucursales .lm3-past span{font-size:12px;padding:3px 10px}
+/* Ficha más grande */
+.pf-fi{width:440px}
+.pf-fn{font-size:26px}
+.pf-fmini b{font-size:19px}
+.pf-ftxt{font-size:14px}
+.pf-bi{font-size:14px;padding:9px 0}
+@media(max-width:1100px){.an-top-g{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){
+  #pnl-sucursales.pnl.on{padding:16px 14px 100px}
+  .an-title{font-size:24px}
+  .an-bar{gap:10px}
+  .an-tabs,.an-seg{width:100%}
+  .an-tab{flex:1;padding:10px 0}
+  .an-seg button{flex:1;justify-content:center;padding:9px 6px}
+  #pnl-sucursales .an-link{margin-left:0}
+  #pnl-sucursales .an-k{padding:14px 14px 0}
+  #pnl-sucursales .an-k-v{font-size:28px;margin-top:10px}
+  #pnl-sucursales .an-k-sp{width:calc(100% + 28px);margin:12px -14px 0;height:44px}
+  #pnl-sucursales .an-card{padding:16px}
+  .an-top-g{grid-template-columns:repeat(2,1fr);gap:10px}
+  .an-top-g .an-tp:first-child{grid-column:1/-1}
+  #pnl-sucursales .lm3{padding:16px}
+  #pnl-sucursales .lm3-c{padding:16px}
+  #pnl-sucursales .lm3-n{font-size:24px}
+  #pnl-sucursales .lm3-st b{font-size:18px}
+  .pf-fi{width:100%}
+}
 </style>
 <link rel="stylesheet" href="patio-cinco.css">
 <style id="dash-styles">
@@ -1918,19 +2061,26 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
 
   <!-- SUCURSALES / ANALYTICS -->
   <div class="pnl" id="pnl-sucursales">
-    <div class="ph">
-      <h2>Analytics</h2>
-      <div class="bg"><select id="an-sem" class="an-sel" onchange="anSemSel=this.value;an_render()"></select></div>
-    </div>
-    <div class="hr-top">
-      <div class="fseg" id="an-vista">
-        <button class="fbtn on" data-v="res" onclick="an_setVista('res')">Resumen</button>
-        <button class="fbtn" data-v="eq" onclick="an_setVista('eq')">Equipo</button>
+    <div class="an-head">
+      <div>
+        <h2 class="an-title">Analytics</h2>
+        <div class="an-subt" id="an-subt">—</div>
       </div>
-      <div id="an-suc" style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="fbtn on" data-s="all" onclick="an_setSuc('all')">Todos</button>
-        <button class="fbtn ref" data-s="PC Refugio" onclick="an_setSuc('PC Refugio')">PC Refugio</button>
-        <button class="fbtn ala" data-s="PC Álamos" onclick="an_setSuc('PC Álamos')">PC Álamos</button>
+      <div class="an-week">
+        <button class="an-wk-b" onclick="an_semStep(1)" title="Semana anterior" aria-label="Semana anterior">‹</button>
+        <select id="an-sem" class="an-sel" onchange="anSemSel=this.value;an_render()"></select>
+        <button class="an-wk-b" onclick="an_semStep(-1)" title="Semana siguiente" aria-label="Semana siguiente">›</button>
+      </div>
+    </div>
+    <div class="an-bar">
+      <div class="an-tabs" id="an-vista">
+        <button class="an-tab on" data-v="res" onclick="an_setVista('res')">Resumen</button>
+        <button class="an-tab" data-v="eq" onclick="an_setVista('eq')">Equipo</button>
+      </div>
+      <div class="an-seg" id="an-suc">
+        <button class="on" data-s="all" onclick="an_setSuc('all')"><i style="background:linear-gradient(90deg,#1c3a61 50%,#14AACE 50%)"></i>Todas</button>
+        <button data-s="PC Refugio" onclick="an_setSuc('PC Refugio')"><i style="background:#1c3a61"></i>Refugio</button>
+        <button data-s="PC Álamos" onclick="an_setSuc('PC Álamos')"><i style="background:#14AACE"></i>Álamos</button>
       </div>
       <button class="an-link" id="an-ins-link" onclick="an_setVista(anVista==='ins'?'res':'ins')">Insumos</button>
     </div>
@@ -1941,6 +2091,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
         <div class="an-card" id="an-chart"></div>
         <div class="an-card" id="an-atencion"></div>
       </div>
+      <div class="an-card an-top" id="an-top"></div>
     </div>
 
     <div id="an-eq" style="display:none">
@@ -11712,7 +11863,7 @@ function an_autos(w, nombre){ return w ? pf_autosEn(w, nombre) : 0; }
 function an_setVista(v){
   if(pfEdit) pf_cancelEdit();
   anVista = v;
-  document.querySelectorAll('#an-vista .fbtn').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+  document.querySelectorAll('#an-vista .an-tab').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
   ['res','eq','ins'].forEach(k=>{ const el=document.getElementById('an-'+k); if(el) el.style.display = k===v ? 'block' : 'none'; });
   const ins=document.getElementById('an-ins-link'); if(ins) ins.classList.toggle('on', v==='ins');
   if(v==='ins' && typeof renderInsumos==='function'){ try{ renderInsumos(); }catch(e){} }
@@ -11721,7 +11872,7 @@ function an_setVista(v){
 function an_setSuc(s){
   if(pfEdit) pf_cancelEdit();
   pfSucSel = s;
-  document.querySelectorAll('#an-suc .fbtn').forEach(b=>b.classList.toggle('on', b.dataset.s===s));
+  document.querySelectorAll('#an-suc button').forEach(b=>b.classList.toggle('on', b.dataset.s===s));
   an_render();
 }
 function an_render(){
@@ -11733,8 +11884,16 @@ function an_render(){
     sel.innerHTML = sems.slice(0,12).map(w=>`<option value="${esc(w.sem)}">${pf_semCorta(w.sem)}${w.actual?' · en curso':''}</option>`).join('') || '<option value="">Sin semanas</option>';
     if(anSemSel && sems.some(w=>w.sem===anSemSel)) sel.value = anSemSel;
   }
+  const W = sems[an_idxSel(sems)];
+  const st = document.getElementById('an-subt');
+  if(st) st.innerHTML = W ? `Semana <b>${pf_semCorta(W.sem).slice(1)}</b>${W.actual?' · en curso':(W.fecha?' · cerrada el '+esc(W.fecha):'')} · ${pfSucSel==='all'?'Refugio y Álamos':esc(pfSucSel)}` : 'Sin semanas cerradas todavía';
   if(anVista==='res') an_renderResumen(sems);
   if(anVista==='eq') dash_renderPerformance();
+}
+function an_semStep(d){
+  const sems = an_semanas(); if(!sems.length) return;
+  const i = Math.max(0, Math.min(sems.length-1, an_idxSel(sems)+d));
+  anSemSel = sems[i].sem; an_render();
 }
 
 // ── Resumen: KPIs ilustrados ──
@@ -11792,7 +11951,8 @@ function an_renderResumen(sems){
   const series = todas ? [['PC Refugio','#1c3a61'],['PC Álamos','#14AACE']] : [[pfSucSel, normN(pfSucSel).includes('alamos')?'#14AACE':'#1c3a61']];
   const val = (w,s)=>(w.rows||[]).filter(r=>normN(r.sucursal)===normN(s)).reduce((a,r)=>a+pf_n(r.autos),0);
   const mx = Math.max(10, ...ws.flatMap(w=>series.map(([s])=>val(w,s))));
-  const VW=640, H=170, gw=VW/Math.max(ws.length,1), bw=Math.min(26,(gw-16)/series.length);
+  const mob = window.innerWidth<760;
+  const VW=mob?360:640, H=mob?170:240, gw=VW/Math.max(ws.length,1), bw=Math.min(mob?16:28,(gw-(mob?8:16))/series.length);
   let svg = `<svg viewBox="0 0 ${VW} ${H+22}" width="100%" style="display:block">`;
   ws.forEach((w,j)=>{
     const x0 = j*gw + (gw - bw*series.length - 3*(series.length-1))/2;
@@ -11823,6 +11983,21 @@ function an_renderResumen(sems){
   at.innerHTML = `<div class="pf-alert-t">Atención · ${pf_semCorta(W.sem)}</div>` + (items.length ? items.map(([c,t,s,n])=>
     `<div class="an-al"${n?` onclick="pf_ficha('${esc(n).replace(/'/g,"\\'")}')" style="cursor:pointer"`:''}><span class="an-dot" style="background:${c}"></span><div><b>${t}</b><span>${s}</span></div></div>`).join('')
     : '<div class="an-al"><span class="an-dot" style="background:#2E7D32"></span><div><b>Todo en orden</b><span>Sin alertas esta semana</span></div></div>');
+  // Top de la semana
+  const tp = document.getElementById('an-top');
+  if(tp){
+    const lst = pf_lista().filter(e=>an_sucOk(e.suc)).map(e=>({e, a:an_autos(W,e.nombre), p:P?an_autos(P,e.nombre):0})).filter(x=>x.a>0).sort((a,b)=>b.a-a.a).slice(0,5);
+    const q = s=>String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    tp.innerHTML = `<div class="an-ct"><div class="pf-alert-t" style="margin:0">Top de la semana · ${pf_semCorta(W.sem)}</div><span class="an-hint">por autos lavados</span></div>` +
+      (lst.length ? `<div class="an-top-g">${lst.map((x,k)=>{ const df=x.a-x.p;
+        return `<div class="an-tp${k===0?' first':''}" onclick="pf_ficha('${q(x.e.nombre)}')">
+          <div class="an-tp-av">${pf_av(x.e.nombre,64)}<span class="an-tp-n">${k+1}</span></div>
+          <div class="an-tp-name">${esc(x.e.nombre)}</div>
+          <div class="an-tp-suc">${pf_chip(x.e.c.rg.cur)}</div>
+          <div class="an-tp-v">${x.a}<small>autos</small></div>
+          ${P&&x.p?`<div class="an-tp-d" style="color:${df>=0?'#2E7D32':'#C62828'}">${df>0?'↑':df<0?'↓':'='} ${Math.abs(df)} vs ${pf_semCorta(P.sem)}</div>`:'<div class="an-tp-d">&nbsp;</div>'}
+        </div>`;}).join('')}</div>` : '<div class="an-hint" style="padding:8px 0">Aún no hay autos registrados esta semana.</div>');
+  }
 }
 
 // ── Lavador del mes (uno por sucursal) ──
@@ -11900,7 +12075,7 @@ function lm_card(key, suc){
     <div class="lm3-cl">Candidatos</div>
     ${top.length ? top.map((x,k)=>{ const on = w && normN(w.nombre)===normN(x.e.nombre);
       return `<div class="lm3-r${on?' on':''}"><span class="lm3-rk">${k+1}</span>
-        <div class="lm3-rn"><div class="lm3-rnn">${pf_av(x.e.nombre,22)}<b class="pf-lnk" onclick="pf_ficha('${q(x.e.nombre)}')">${esc(x.e.nombre)}</b></div><small>${pf_n(x.e.d.puntos).toFixed(1)} pts · ${x.autos} autos · ${pf_n(x.e.d.entregas)}%${pf_n(x.e.d.retardos)?' · '+x.e.d.retardos+' ret.':''}</small>
+        <div class="lm3-rn"><div class="lm3-rnn">${pf_av(x.e.nombre,28)}<b class="pf-lnk" onclick="pf_ficha('${q(x.e.nombre)}')">${esc(x.e.nombre)}</b></div><small>${pf_n(x.e.d.puntos).toFixed(1)} pts · ${x.autos} autos · ${pf_n(x.e.d.entregas)}%${pf_n(x.e.d.retardos)?' · '+x.e.d.retardos+' ret.':''}</small>
           <div class="lm3-sb"><i style="width:${Math.min(100,Math.max(4,x.sc))}%"></i></div></div>
         <button class="lm3-b${on?' on':''}" onclick="lm_nombrar('${key}','${q(suc)}','${q(x.e.nombre)}',${x.autos})">${on?'✓ Nombrado':'Nombrar'}</button></div>`;}).join('')
       : '<div class="lm3-empty">Aún no hay autos registrados en este mes.</div>'}
@@ -11999,7 +12174,7 @@ function dash_renderPerformance(){
   document.getElementById('pf-card').classList.toggle('pf-editing', pfEdit);
   document.getElementById('pf-empty').style.display = lista.length ? 'none' : 'block';
 
-  const nameCell = (e,i)=>`<td><div class="pf-nc">${pf_av(e.nombre,32)}<div><span class="pf-name pf-lnk" onclick="pf_fichaIdx(${i})">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''}<span class="pf-suc">${esc((e.suc||'').replace('PC ',''))}${e.nuevo?' · nuevo':''}</span></div></div></td>`;
+  const nameCell = (e,i)=>`<td><div class="pf-nc">${pf_av(e.nombre,40)}<div><span class="pf-name pf-lnk" onclick="pf_fichaIdx(${i})">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''}<span class="pf-suc">${esc((e.suc||'').replace('PC ',''))}${e.nuevo?' · nuevo':''}</span></div></div></td>`;
   document.getElementById('pf-tbody').innerHTML = lista.map((e,i)=>{
     const {d,c} = e;
     if(pfEdit){
@@ -12019,7 +12194,7 @@ function dash_renderPerformance(){
   // Celular: lista simple
   const mb = document.getElementById('pf-mob');
   if(mb) mb.innerHTML = lista.map((e,i)=>`<div class="pf-mc" onclick="pf_fichaIdx(${i})">
-      ${pf_av(e.nombre,38)}<div class="l"><span class="pf-name">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''} ${pf_chip(e.c.rg.cur)}
+      ${pf_av(e.nombre,44)}<div class="l"><span class="pf-name">${esc(e.nombre)}</span>${coron.has(normN(e.nombre))?'<span class="pf-crown">🏆</span>':''} ${pf_chip(e.c.rg.cur)}
         <div class="pf-falta">${pf_fmtN(e.c.total)} lavados · ${esc((e.suc||'').replace('PC ',''))}${pf_incN(e.d)?` · <span style="color:#C62828">${pf_incN(e.d)} incid.</span>`:''}</div></div>
       <div class="r">${pf_semCell(e)}</div></div>`).join('');
 
