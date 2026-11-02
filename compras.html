@@ -527,6 +527,26 @@ function normalize(s){
 function getOverride(name){
   return overrides[normalize(name)] || null;
 }
+function baseInfo(name){
+  const key = normalize(name);
+  let arr = CATALOG_INFO[key];
+  if (!arr){
+    for (const k of Object.keys(CATALOG_INFO)){
+      if (k.length > 3 && (key.includes(k) || k.includes(key))){ arr = CATALOG_INFO[k]; break; }
+    }
+  }
+  arr = arr || ['', '', ''];
+  return { marca: arr[0] || '', presentacion: arr[1] || '', precio: arr[2] || '' };
+}
+function getInfo(name){
+  const b = baseInfo(name), ov = getOverride(name) || {};
+  return {
+    marca: ov.marca || b.marca,
+    presentacion: ov.presentacion || b.presentacion,
+    precio: ov.precio || b.precio,
+    notas: ov.notas || ''
+  };
+}
 
 const CATALOG_ALT = {
   'coca regular 355ml': { proveedor:'HEB', marca:'Coca-Cola', presentacion:'Paquete 12 pz de 355 ml', precio:'228.50' },
@@ -674,9 +694,8 @@ function renderResults(){
     const items = groups[prov];
     let provTotal = 0;
     items.forEach(r => {
-      const ov = getOverride(r.i);
       const alt = r.useAlt ? getAlt(r.i) : null;
-      const pr = alt ? alt.precio : (ov && ov.precio);
+      const pr = alt ? alt.precio : getInfo(r.i).precio;
       if (pr) { provTotal += (Number(pr)||0) * ((r.cr||0)+(r.ca||0)); hasAnyPrice = true; }
     });
     grandTotal += provTotal;
@@ -786,12 +805,13 @@ const DELETE_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentCol
 function buildComprasTable(items, transferSet){
   let html = '<table class="compact-list"><thead><tr><th>Insumo</th><th>Unidad</th><th class="num">Refugio</th><th class="num">Álamos</th></tr></thead><tbody>';
   items.forEach((r,i) => {
-    const ov = getOverride(r.i);
-    const pres = ov && ov.presentacion ? `<div class="item-pres">${ov.presentacion}</div>` : '';
-    const notas = ov && ov.notas ? `<div class="item-notes">📝 ${ov.notas}</div>` : '';
+    const inf = getInfo(r.i);
+    const presTxt = [inf.marca, inf.presentacion].filter(Boolean).join(' · ');
+    const pres = presTxt ? `<div class="item-pres">${presTxt}</div>` : '';
+    const notas = inf.notas ? `<div class="item-notes">📝 ${inf.notas}</div>` : '';
     const alt = getAlt(r.i);
     const usingAlt = !!(r.useAlt && alt);
-    const precioVal = usingAlt ? alt.precio : (ov && ov.precio);
+    const precioVal = usingAlt ? alt.precio : inf.precio;
     const precio = precioVal ? ` · $${Number(precioVal).toFixed(2)}/${r.u||'u'}` : '';
     let altHtml = '';
     if (alt && usingAlt){
@@ -905,7 +925,7 @@ function toggleRowEdit(rowId){
   const r = workingRows.find(x => x._id === rowId);
   if (!r) return;
   const key = normalize(r.i);
-  const ov = overrides[key] || {};
+  const ov = Object.assign({}, overrides[key] || {}, getInfo(r.i), { proveedor: (overrides[key] || {}).proveedor || findProvider(r.i, r) || '' });
   const cell = editRow.querySelector('td');
   const optionsHtml = PROVIDERS_LIST.map(p => `<option value="${p}" ${ov.proveedor===p?'selected':''}>${p}</option>`).join('');
   cell.innerHTML = `
@@ -946,8 +966,12 @@ function toggleRowEdit(rowId){
         <input type="number" step="0.01" id="f-precio-${rowId}" value="${ov.precio||''}" placeholder="0.00">
       </div>
       <div>
+        <label>Marca</label>
+        <input type="text" id="f-marca-${rowId}" value="${escapeAttr(ov.marca||'')}" placeholder="Ej. Kirkland">
+      </div>
+      <div>
         <label>Presentación</label>
-        <input type="text" id="f-pres-${rowId}" value="${ov.presentacion||''}" placeholder="Ej. Caja de 24 pzas">
+        <input type="text" id="f-pres-${rowId}" value="${escapeAttr(ov.presentacion||'')}" placeholder="Ej. Caja de 24 pzas">
       </div>
       <div>
         <label>Notas</label>
@@ -1014,6 +1038,7 @@ async function saveRowEdit(rowId){
   const mv = document.getElementById('f-mv-' + rowId).value;
   const precio = document.getElementById('f-precio-' + rowId).value;
   const pres = document.getElementById('f-pres-' + rowId).value;
+  const marca = document.getElementById('f-marca-' + rowId).value;
   const notas = document.getElementById('f-notas-' + rowId).value;
 
   r.i = newName; r.u = newUnit; r.cr = newCr; r.ca = newCa; r.mv = mv || null;
@@ -1025,8 +1050,14 @@ async function saveRowEdit(rowId){
     proveedor: prov || existing.proveedor || '',
     precio: precio || existing.precio || '',
     presentacion: pres || '',
+    marca: marca || '',
     notas: notas || ''
   };
+  const bi = baseInfo(newName);
+  if (overrides[newKey].precio === bi.precio) overrides[newKey].precio = '';
+  if (overrides[newKey].presentacion === bi.presentacion) overrides[newKey].presentacion = '';
+  if (overrides[newKey].marca === bi.marca) overrides[newKey].marca = '';
+  if (overrides[newKey].proveedor && overrides[newKey].proveedor === CATALOG_DEFAULT[newKey]) overrides[newKey].proveedor = '';
   if (newKey !== oldKey) delete overrides[oldKey];
 
   await saveOverrides();
