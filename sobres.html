@@ -1153,6 +1153,35 @@ tfoot td{padding:11px 12px;font-weight:700;font-size:13px;border-top:2px solid #
   #pnl-sucursales .lm3-st b{font-size:18px}
   .pf-fi{width:100%}
 }
+
+/* ── Navegación agrupada ── */
+#nav-grupos .tab{padding:14px 28px;font-size:12px;letter-spacing:2px}
+.subtabs{display:none;background:#faf9f6;border-bottom:1px solid #e8e4d9;position:sticky;top:105px;z-index:89}
+.subtabs.on{display:block}
+.subtabs-inner{display:flex;gap:4px;padding:0 40px;overflow-x:auto;scrollbar-width:none}
+.subtabs-inner::-webkit-scrollbar{display:none}
+.subtab{border:none;background:transparent;padding:13px 16px 11px;font-size:13px;font-weight:700;color:#8a857a;font-family:inherit;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s}
+.subtab:hover{color:#111}
+.subtab.on{color:#111;border-bottom-color:#e0a614}
+.da-switch{display:inline-flex;margin:0 0 14px}
+.da-switch .fbtn{font-size:13px;padding:6px 16px}
+.mas-h{grid-column:1/-1;color:#666;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:12px 10px 4px}
+@media(max-width:1100px){.subtabs-inner{padding:0 24px}}
+@media(max-width:768px){.subtabs,.subtabs.on{display:none}}
+
+.an-upd{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.an-up{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #ebe7dc;border-radius:16px;padding:12px 14px 12px 16px}
+.an-up.warn{border-color:#efd99a;background:#fffbf0}
+.an-up-ic{font-size:20px;width:40px;height:40px;border-radius:12px;background:#f6f4ee;display:flex;align-items:center;justify-content:center;flex:none}
+.an-up.warn .an-up-ic{background:#fbefc8}
+.an-up-t{flex:1;min-width:0}
+.an-up-t b{display:block;font-size:14px;color:#111}
+.an-up-t span{font-size:13px;color:#888}
+.an-up.warn .an-up-t span{color:#a77a05;font-weight:600}
+.an-up-b{flex:none;border:1px solid #e0ddd4;background:#fff;color:#111;border-radius:12px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.an-up-b:hover{border-color:#111}
+.an-up.warn .an-up-b{background:#111;color:#fff;border-color:#111}
+@media(max-width:760px){.an-upd{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="patio-cinco.css">
 <style id="dash-styles">
@@ -1971,22 +2000,14 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   </div>
 </div>
 <div class="tabs">
-  <div class="tabs-inner">
-  <button class="tab on" data-t="flujo">Flujo</button>
-  <button class="tab" data-t="datos">Datos</button>
-  <button class="tab" data-t="sobres">Tickets</button>
-  <button class="tab" data-t="coords">Coordinadores</button>
-  <button class="tab" data-t="rol">Horarios</button>
-  <button class="tab" data-t="deudas">Deudas</button>
-  <button class="tab" data-t="ahorros">Ahorros</button>
-  <button class="tab" data-t="hist">Historial</button>
-  <button class="tab" data-t="crm">CRM</button>
-
-    <button class="tab" data-t="finanzas">Finanzas</button>
-    <button class="tab" data-t="compras">Compras</button>
-    <button class="tab" data-t="sucursales">Analytics</button>
+  <div class="tabs-inner" id="nav-grupos">
+    <button class="tab grp on" data-g="nomina">Nómina</button>
+    <button class="tab grp" data-g="finanzas">Finanzas</button>
+    <button class="tab grp" data-g="compras">Compras</button>
+    <button class="tab grp" data-g="crm">CRM</button>
   </div>
 </div>
+<div class="subtabs" id="subtabs"><div class="subtabs-inner" id="subtabs-inner"></div></div>
 <div id="content">
 
   <!-- DATOS -->
@@ -2078,14 +2099,16 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
         <button class="an-tab" data-v="eq" onclick="an_setVista('eq')">Equipo</button>
       </div>
       <div class="an-seg" id="an-suc">
-        <button class="on" data-s="all" onclick="an_setSuc('all')"><i style="background:linear-gradient(90deg,#1c3a61 50%,#14AACE 50%)"></i>Todas</button>
+        <button class="on" data-s="all" onclick="an_setSuc('all')"><i style="background:conic-gradient(#1c3a61 0 33%,#14AACE 0 66%,#b07a45 0)"></i>Plantilla full</button>
         <button data-s="PC Refugio" onclick="an_setSuc('PC Refugio')"><i style="background:#1c3a61"></i>Refugio</button>
         <button data-s="PC Álamos" onclick="an_setSuc('PC Álamos')"><i style="background:#14AACE"></i>Álamos</button>
+        <button data-s="PC La Loma" onclick="an_setSuc('PC La Loma')"><i style="background:#b07a45"></i>La Loma</button>
       </div>
       <button class="an-link" id="an-ins-link" onclick="an_setVista(anVista==='ins'?'res':'ins')">Insumos</button>
     </div>
 
     <div id="an-res">
+      <div id="an-upd"></div>
       <div id="an-kpis" class="an-kpis"></div>
       <div class="an-row2">
         <div class="an-card" id="an-chart"></div>
@@ -2351,7 +2374,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   <!-- COORDINADORES -->
   <div class="pnl" id="pnl-coords">
     <div class="ph">
-      <h2>Coordinadores — <span id="coord-sem-lbl" style="color:#C8960C">—</span></h2>
+      <h2>Sueldos — <span id="coord-sem-lbl" style="color:#C8960C">—</span></h2>
     </div>
 
     <!-- Sub-tabs -->
@@ -3966,12 +3989,45 @@ function setSt(t,m){
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
-document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>goTab(b.dataset.t)));
+// Navegación agrupada: Nómina · Finanzas · Compras · CRM
+window.NAV_GROUPS=[
+  {g:'nomina',  label:'Nómina',   items:[['flujo','Flujo'],['datos','Comisiones'],['coords','Sueldos'],['sobres','Tickets'],['deudas','Deudas y Ahorros',['ahorros']],['rol','Horarios'],['sucursales','Analytics'],['hist','Historial']]},
+  {g:'finanzas',label:'Finanzas', items:[['finanzas','Finanzas']]},
+  {g:'compras', label:'Compras',  items:[['inventario','Inventario Car Wash'],['compras','Inventario Food']]},
+  {g:'crm',     label:'CRM',      items:[['crm','CRM']]},
+];
+function nav_grupoDe(id){ return NAV_GROUPS.find(G=>G.items.some(([t,,al])=>t===id||(al||[]).includes(id))); }
+function nav_sync(id){
+  const G = nav_grupoDe(id); if(!G) return;
+  try{ localStorage.setItem('pc_nav_'+G.g, id); }catch(e){}
+  document.querySelectorAll('#nav-grupos .tab').forEach(b=>b.classList.toggle('on', b.dataset.g===G.g));
+  const sub = document.getElementById('subtabs'), inner = document.getElementById('subtabs-inner');
+  if(!sub||!inner) return;
+  sub.classList.toggle('on', G.items.length>1);
+  inner.innerHTML = G.items.length>1 ? G.items.map(([t,l,al])=>`<button class="subtab${t===id||(al||[]).includes(id)?' on':''}" data-t="${t}">${l}</button>`).join('') : '';
+  inner.querySelectorAll('.subtab').forEach(b=>b.addEventListener('click',()=>window.goTab(b.dataset.t)));
+  // switch Deudas | Ahorros
+  document.querySelectorAll('.da-switch .fbtn').forEach(b=>b.classList.toggle('on', b.dataset.t===id));
+}
+document.querySelectorAll('#nav-grupos .tab').forEach(b=>b.addEventListener('click',()=>{
+  const G = NAV_GROUPS.find(x=>x.g===b.dataset.g); let last=null;
+  try{ last = localStorage.getItem('pc_nav_'+G.g); }catch(e){}
+  const ok = t => G.items.some(([x,,al])=>x===t||(al||[]).includes(t)) && document.getElementById('pnl-'+t);
+  window.goTab(ok(last) ? last : G.items.find(([t])=>document.getElementById('pnl-'+t))[0]);
+}));
+// Deudas y Ahorros: un mismo lugar con switch
+['deudas','ahorros'].forEach(t=>{
+  const p=document.getElementById('pnl-'+t); if(!p) return;
+  const sw=document.createElement('div'); sw.className='fseg da-switch';
+  sw.innerHTML='<button class="fbtn" data-t="deudas">Deudas</button><button class="fbtn" data-t="ahorros">Ahorros</button>';
+  sw.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>window.goTab(b.dataset.t)));
+  p.insertBefore(sw, p.firstChild);
+});
 function goTab(id){
-  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("on"));
-  document.querySelector(`.tab[data-t="${id}"]`).classList.add("on");
+  const pnl = document.getElementById("pnl-"+id); if(!pnl) return;
+  nav_sync(id);
   document.querySelectorAll(".pnl").forEach(p=>p.classList.remove("on"));
-  document.getElementById("pnl-"+id).classList.add("on");
+  pnl.classList.add("on");
   if(id==="sobres")renderS();if(id==="hist")renderH();
   if(id==="deudas")renderD();if(id==="sucursales"){renderSucursales();}
   if(id==="ahorros")renderAhorros();
@@ -8945,9 +9001,7 @@ init().then(()=>{
   initLiquidaciones();
   popularSelectores();
   // Asegura que el tab Flujo esté activo al arrancar
-  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("on"));
-  const ft=document.querySelector('.tab[data-t="flujo"]');
-  if(ft)ft.classList.add("on");
+  nav_sync('flujo');
   // Sincronizar todos los labels con la semana real guardada
   const semVal=document.getElementById("sem").value;
   if(semVal)syncSemana(semVal);
@@ -11886,7 +11940,7 @@ function an_render(){
   }
   const W = sems[an_idxSel(sems)];
   const st = document.getElementById('an-subt');
-  if(st) st.innerHTML = W ? `Semana <b>${pf_semCorta(W.sem).slice(1)}</b>${W.actual?' · en curso':(W.fecha?' · cerrada el '+esc(W.fecha):'')} · ${pfSucSel==='all'?'Refugio y Álamos':esc(pfSucSel)}` : 'Sin semanas cerradas todavía';
+  if(st) st.innerHTML = W ? `Semana <b>${pf_semCorta(W.sem).slice(1)}</b>${W.actual?' · en curso':(W.fecha?' · cerrada el '+esc(W.fecha):'')} · ${pfSucSel==='all'?'Plantilla full':esc(pfSucSel)}` : 'Sin semanas cerradas todavía';
   if(anVista==='res') an_renderResumen(sems);
   if(anVista==='eq') dash_renderPerformance();
 }
@@ -11913,11 +11967,30 @@ function an_spark(vals, color, id){
   const [lx,ly]=pts[pts.length-1];
   return `<svg class="an-k-sp" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".18"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><path d="${line} L${W} ${H} L0 ${H} Z" fill="url(#g${id})"/><path d="${line}" fill="none" stroke="${color}" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="${lx}" cy="${ly}" r="2.6" fill="${color}"/></svg>`;
 }
-function an_split(a, b, la, lb){
-  const t=(a+b)||1;
-  return `<div class="an-split"><div class="an-split-b"><i style="width:${a/t*100}%;background:#1c3a61"></i><i style="width:${b/t*100}%;background:#14AACE"></i></div><div class="an-split-l"><span><i style="background:#1c3a61"></i>${la}</span><span><i style="background:#14AACE"></i>${lb}</span></div></div>`;
+const AN_SUCS = [['PC Refugio','#1c3a61','Refugio'],['PC Álamos','#14AACE','Álamos'],['PC La Loma','#b07a45','La Loma']];
+function an_sucColor(s){ const x=AN_SUCS.find(([n])=>normN(n)===normN(s)); return x?x[1]:'#888'; }
+function an_splitN(parts){ // parts: [[valor, color, etiqueta]]
+  const t=parts.reduce((a,p)=>a+p[0],0)||1;
+  return `<div class="an-split"><div class="an-split-b">${parts.map(p=>`<i style="width:${p[0]/t*100}%;background:${p[1]}"></i>`).join('')}</div><div class="an-split-l">${parts.map(p=>`<span><i style="background:${p[1]}"></i>${p[2]}</span>`).join('')}</div></div>`;
 }
+function an_diasDesde(f){ const d=lm_fecha(f); return d ? Math.floor((Date.now()-d.getTime())/864e5) : null; }
+function an_renderUpd(){
+  const el=document.getElementById('an-upd'); if(!el) return;
+  const cerradas = pf_semanas(), ult = cerradas[0];
+  const dN = ult ? an_diasDesde(ult.fecha) : null;
+  const met = pf_load() ? pfData.actualizado : null, dM = met ? an_diasDesde(met) : null;
+  const viejoN = dN===null || dN>8, viejoM = dM===null || dM>7;
+  const item = (ic, tit, txt, viejo, btn) => `<div class="an-up${viejo?' warn':''}"><span class="an-up-ic">${ic}</span><div class="an-up-t"><b>${tit}</b><span>${txt}</span></div>${btn}</div>`;
+  el.innerHTML = `<div class="an-upd">
+    ${item('🧾','Nómina', ult ? `Hasta ${pf_semCorta(ult.semana||ult.sem)} · cerrada ${dN===0?'hoy':dN===1?'ayer':'hace '+dN+' días'}` : 'Sin semanas cerradas', viejoN,
+      `<button class="an-up-b" onclick="an_subirNomina()">Subir reporte</button>`)}
+    ${item('📊','AppSheet · Performance', met ? `Métricas al ${esc(met)}${dM>0?' · hace '+dM+' día'+(dM>1?'s':''):' · hoy'}` : 'Sin capturas', viejoM,
+      `<label class="an-up-b">Subir captura<input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)"></label>`)}
+  </div>`;
+}
+function an_subirNomina(){ window.goTab('datos'); setTimeout(()=>{ const f=document.getElementById('fi'); if(f) f.click(); }, 250); }
 function an_renderResumen(sems){
+  an_renderUpd();
   const k = document.getElementById('an-kpis'), ch = document.getElementById('an-chart'), at = document.getElementById('an-atencion');
   if(!sems.length){ k.innerHTML=''; ch.innerHTML='<p class="it" style="margin:0">Cuando cierres la primera semana aquí verás el resumen.</p>'; at.innerHTML=''; return; }
   const i = an_idxSel(sems), W = sems[i], P = sems[i+1];
@@ -11932,23 +12005,25 @@ function an_renderResumen(sems){
     const cls = d===0||good===null ? 'n' : ((d>0)===good ? 'up' : 'down');
     return `<div class="an-k-d ${cls}"><b>${d>0?'↑':d<0?'↓':'='} ${abs?'$':''}${Math.abs(d)}${abs?'':'%'}</b> vs ${pf_semCorta(P.sem)}</div>`; };
   const todas = pfSucSel==='all';
-  const R = todas ? met(W,'PC Refugio') : null, A = todas ? met(W,'PC Álamos') : null;
+  // sucursales con datos (La Loma aparece solo si ya tiene autos)
+  const SUC = todas ? AN_SUCS.filter(([n],j)=>j<2 || sems.slice(i, i+8).some(w=>met(w,n).autos>0)).map(([n,c,l])=>({n,c,l,m:met(W,n)})) : [];
+  const split = (f,fmtv)=> todas ? an_splitN(SUC.map(x=>[f(x.m),x.c,`${x.l} ${fmtv?fmtv(f(x.m)):f(x.m)}`])) : '';
   const card = (ic, col, bg, lbl, val, delta, extra, sp)=>`<div class="an-k">
       <div class="an-k-top"><span class="an-ic" style="color:${col};background:${bg}">${AN_IC[ic]}</span><span class="an-k-l">${lbl}</span></div>
       <div class="an-k-v">${val}</div>${delta}${extra||''}${sp}</div>`;
   k.innerHTML =
     card('autos','#1c3a61','#edf1f7','Autos lavados', pf_fmtN(M.autos), dl(M.autos,MP&&MP.autos,true),
-      todas ? an_split(R.autos, A.autos, `Refugio ${R.autos}`, `Álamos ${A.autos}`) : '', an_spark(serie.map(s=>s.autos),'#1c3a61','a')) +
+      split(m=>m.autos), an_spark(serie.map(s=>s.autos),'#1c3a61','a')) +
     card('nomina','#a77a05','#fbf3dc','Nómina lavadores', fmt$(M.nom), dl(M.nom,MP&&MP.nom,null),
-      todas ? an_split(R.nom, A.nom, `Refugio ${fmt$(R.nom)}`, `Álamos ${fmt$(A.nom)}`) : '', an_spark(serie.map(s=>s.nom),'#C8960C','n')) +
+      split(m=>m.nom,fmt$), an_spark(serie.map(s=>s.nom),'#C8960C','n')) +
     card('cpa','#0c7e9a','#e6f5f9','Comisión por auto', fmt$(M.cpa), dl(M.cpa,MP&&MP.cpa,false,true),
-      todas ? `<div class="an-k-x">Refugio ${fmt$(R.cpa)} · Álamos ${fmt$(A.cpa)}</div>` : '', an_spark(serie.map(s=>s.cpa),'#14AACE','c')) +
+      todas ? `<div class="an-k-x">${SUC.map(x=>`${x.l} ${fmt$(x.m.cpa)}`).join(' · ')}</div>` : '', an_spark(serie.map(s=>s.cpa),'#14AACE','c')) +
     card('equipo','#2E7D32','#ebf5ec','Lavadores activos', M.act, MP ? dl(M.act,MP.act,null) : '<div class="an-k-d n">&nbsp;</div>',
-      todas ? an_split(R.act, A.act, `Refugio ${R.act}`, `Álamos ${A.act}`) : `<div class="an-k-x">${M.act?Math.round(M.autos/M.act):0} autos promedio c/u</div>`, an_spark(serie.map(s=>s.act),'#2E7D32','e'));
+      todas ? split(m=>m.act) : `<div class="an-k-x">${M.act?Math.round(M.autos/M.act):0} autos promedio c/u</div>`, an_spark(serie.map(s=>s.act),'#2E7D32','e'));
 
   // Gráfica: hasta 8 semanas terminando en la seleccionada
   const ws = sems.slice(i, i+8).reverse();
-  const series = todas ? [['PC Refugio','#1c3a61'],['PC Álamos','#14AACE']] : [[pfSucSel, normN(pfSucSel).includes('alamos')?'#14AACE':'#1c3a61']];
+  const series = todas ? SUC.map(x=>[x.n,x.c]) : [[pfSucSel, an_sucColor(pfSucSel)]];
   const val = (w,s)=>(w.rows||[]).filter(r=>normN(r.sucursal)===normN(s)).reduce((a,r)=>a+pf_n(r.autos),0);
   const mx = Math.max(10, ...ws.flatMap(w=>series.map(([s])=>val(w,s))));
   const mob = window.innerWidth<760;
@@ -11979,7 +12054,7 @@ function an_renderResumen(sems){
   lista.filter(e=>e.c.semanas!==null && e.c.semanas<=PF_ALERTA_SEM).forEach(e=>items.push(['#e0a614', `${esc(e.nombre)} · a ${pf_fmtN(e.c.faltan)} de ${e.c.rg.next.n}`, `~${e.c.semanas} sem a su ritmo`, e.nombre]));
   lista.filter(e=>e.c.subio).forEach(e=>items.push(['#2E7D32', `${esc(e.nombre)} subió a ${e.c.subio.a.n}`, 'Revisa sus beneficios en Equipo', e.nombre]));
   const mesP = lm_mesDefault();
-  if(mesP){ const faltan = LM_SUCS.filter(s=>an_sucOk(s) && !lm_entry(mesP.key,s)); if(faltan.length) items.push(['#111', 'Lavador del mes por nombrar', `${mesP.label} · ${faltan.map(s=>s.replace('PC ','')).join(' y ')}`]); }
+  if(mesP){ const faltan = lm_sucsActivas(mesP.key).filter(s=>an_sucOk(s) && !lm_entry(mesP.key,s)); if(faltan.length) items.push(['#111', 'Lavador del mes por nombrar', `${mesP.label} · ${faltan.map(s=>s.replace('PC ','')).join(' y ')}`]); }
   at.innerHTML = `<div class="pf-alert-t">Atención · ${pf_semCorta(W.sem)}</div>` + (items.length ? items.map(([c,t,s,n])=>
     `<div class="an-al"${n?` onclick="pf_ficha('${esc(n).replace(/'/g,"\\'")}')" style="cursor:pointer"`:''}><span class="an-dot" style="background:${c}"></span><div><b>${t}</b><span>${s}</span></div></div>`).join('')
     : '<div class="an-al"><span class="an-dot" style="background:#2E7D32"></span><div><b>Todo en orden</b><span>Sin alertas esta semana</span></div></div>');
@@ -12002,10 +12077,11 @@ function an_renderResumen(sems){
 
 // ── Lavador del mes (uno por sucursal) ──
 const LM_MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-const LM_SUCS = ['PC Refugio','PC Álamos'];
+const LM_SUCS = ['PC Refugio','PC Álamos','PC La Loma'];
 let lmMesSel = '';
 function lm_key(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
 function lm_label(key){ const [y,m]=key.split('-'); const s=LM_MESES[+m-1]; return s.charAt(0).toUpperCase()+s.slice(1)+' '+y; }
+function lm_sucsActivas(key){ return LM_SUCS.filter((s,i)=> i<2 || lm_entry(key,s) || pf_lista().some(e=>normN(e.suc)===normN(s))); }
 function lm_sucCanon(s){ return LM_SUCS.find(x=>normN(x)===normN(s)) || s; }
 function lm_migrar(){
   if(!pfData || !pfData.lavMes) return;
@@ -12021,7 +12097,7 @@ function lm_migrar(){
 function lm_entry(key, suc){ const m = pfData && pfData.lavMes && pfData.lavMes[key]; if(!m) return null; const k=Object.keys(m).find(x=>normN(x)===normN(suc)); return k ? m[k] : null; }
 function lm_mesDefault(){
   const hoy=new Date(), prev=lm_key(new Date(hoy.getFullYear(), hoy.getMonth()-1, 1));
-  if(hoy.getDate()<=7 && LM_SUCS.some(s=>!lm_entry(prev,s))) return {key:prev, label:lm_label(prev)};
+  if(hoy.getDate()<=7 && lm_sucsActivas(prev).some(s=>!lm_entry(prev,s))) return {key:prev, label:lm_label(prev)};
   return null;
 }
 function lm_mesActual(){ if(lmMesSel) return lmMesSel; const p=lm_mesDefault(); return p ? p.key : lm_key(new Date()); }
@@ -12052,7 +12128,7 @@ function lm_card(key, suc){
   const top = cands.filter(x=>x.ok).slice(0,3);
   const fuera = cands.find(x=>!x.ok && (!top.length || x.sc>top[top.length-1].sc));
   const hist = Object.keys((pfData&&pfData.lavMes)||{}).filter(k=>k!==key && lm_entry(k,suc)).sort().reverse().slice(0,3);
-  const color = normN(suc).includes('alamos') ? '#14AACE' : '#1c3a61';
+  const color = an_sucColor(suc);
   const we = w ? pf_lista().find(x=>normN(x.nombre)===normN(w.nombre)) : null;
   const q = s=>String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   const head = w ? `
@@ -12089,7 +12165,7 @@ function lm_render(){
   lm_migrar();
   const key = lm_mesActual();
   const meses = [...new Set([lm_key(new Date()), lm_key(new Date(new Date().getFullYear(), new Date().getMonth()-1, 1)), ...Object.keys(pfData.lavMes||{})])].sort().reverse().slice(0,6);
-  const sucs = LM_SUCS.filter(s=>an_sucOk(s));
+  const sucs = (pfSucSel==='all' ? lm_sucsActivas(key) : LM_SUCS).filter(s=>an_sucOk(s));
   el.innerHTML = `<div class="lm3">
     <div class="lm3-h">
       <div><div class="lm3-k">🏆 Lavador del mes</div>
@@ -12512,7 +12588,7 @@ Devuelve SOLO este JSON (sin markdown):
     pfData.actualizado = new Date().toLocaleDateString('es-MX');
     pf_save();
     pf_guardarHist();
-    dash_renderPerformance();
+    an_render();
     flash(`✓ ${act} actualizados${nuevos?` · ${nuevos} nuevos`:''}`);
   }catch(e){
     flash(e.message==='QUOTA_429' ? 'Cuota de Gemini agotada, captura con Editar' : 'Error: '+e.message);
@@ -12570,28 +12646,33 @@ function dash_init() {
       compras:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 11.4a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6"/></svg>`,
       crm:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`,
   };
+  SVG.inv=`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
   const MAIN_TABS=[
-    {t:"datos",    icon:"datos",    label:"Nómina"},
-    {t:"flujo",    icon:"flujo",    label:"Flujo"},
-    {t:"deudas",   icon:"deudas",   label:"Deudas"},
-    {t:"finanzas", icon:"finanzas", label:"Finanzas"},
+    {t:"datos",      icon:"datos",      label:"Comisiones"},
+    {t:"flujo",      icon:"flujo",      label:"Flujo"},
+    {t:"sucursales", icon:"sucursales", label:"Analytics"},
+    {t:"finanzas",   icon:"finanzas",   label:"Finanzas"},
   ];
   const MORE_TABS=[
+    {h:"Nómina"},
+    {t:"coords",     icon:"coords",     label:"Sueldos"},
     {t:"sobres",     icon:"sobres",     label:"Tickets"},
-    {t:"coords",     icon:"coords",     label:"Coords"},
-    {t:"rol",        icon:"rol",        label:"Horarios"},
+    {t:"deudas",     icon:"deudas",     label:"Deudas"},
     {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
+    {t:"rol",        icon:"rol",        label:"Horarios"},
     {t:"hist",       icon:"hist",       label:"Historial"},
-    {t:"compras",    icon:"compras",    label:"Compras"},
-    {t:"crm",        icon:"crm",        label:"CRM"},
-    {t:"sucursales", icon:"sucursales", label:"Analytics"}];
+    {h:"Compras"},
+    {t:"inventario", icon:"inv",        label:"Inv. Car Wash"},
+    {t:"compras",    icon:"compras",    label:"Inv. Food"},
+    {h:"Clientes"},
+    {t:"crm",        icon:"crm",        label:"CRM"}];
   // 1. Build overlay + sheet FIRST (so closeMas/toggleMas can close them)
   const overlay=document.createElement("div");
   overlay.className="mas-overlay";
   const sheet=document.createElement("div");
   sheet.className="mas-sheet";
   sheet.id="mas-sheet";
-  sheet.innerHTML=`<div class="mas-handle"></div><div class="mas-title">Más opciones</div><div class="mas-grid" id="mas-grid"></div>`;
+  sheet.innerHTML=`<div class="mas-handle"></div><div class="mas-grid" id="mas-grid"></div>`;
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
   const grid=document.getElementById("mas-grid");
@@ -12605,7 +12686,7 @@ function dash_init() {
   window.syncMobNav=function(activeId){
     document.querySelectorAll(".mob-nav-item[data-mt]").forEach(b=>b.classList.toggle("on",b.dataset.mt===activeId));
     document.querySelectorAll(".mas-item[data-mt]").forEach(b=>b.classList.toggle("on",b.dataset.mt===activeId));
-    const masInMore=MORE_TABS.some(x=>x.t===activeId);
+    const masInMore=MORE_TABS.some(x=>x.t&&x.t===activeId);
     const masBtnEl=document.getElementById("mob-mas-btn");
     if(masBtnEl)masBtnEl.classList.toggle("on",masInMore);
   };
@@ -12629,7 +12710,8 @@ function dash_init() {
 
   // 4. Fill "Más" grid and wire overlay close
   overlay.addEventListener("click",window.closeMas);
-  MORE_TABS.forEach(({t,icon,label})=>{
+  MORE_TABS.forEach(({t,icon,label,h})=>{
+    if(h){ const d=document.createElement("div"); d.className="mas-h"; d.textContent=h; grid.appendChild(d); return; }
     const btn=document.createElement("button");
     btn.className="mas-item";btn.dataset.mt=t;
     btn.innerHTML=`${SVG[icon]}<span>${label}</span>`;
@@ -12638,8 +12720,8 @@ function dash_init() {
   });
 
   // 5. Sync initial active tab
-  const initTab=document.querySelector(".tab.on");
-  if(initTab)window.syncMobNav(initTab.dataset.t);
+  const initPnl=document.querySelector(".pnl.on");
+  window.syncMobNav(initPnl?initPnl.id.replace('pnl-',''):'flujo');
 })();
 
 // ══ TICKETS DE COORDINADORES (misma pestaña Tickets) ═════════════════════════

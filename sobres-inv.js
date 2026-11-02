@@ -270,16 +270,17 @@
     if(!content||!tabs||typeof window.goTab!=='function')return false;
     if(document.getElementById('pnl-inventario'))return true;
     const pnl=document.createElement('div');pnl.id='pnl-inventario';pnl.className='pnl';
-    pnl.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0;font-size:20px">Inventario carwash</h2><div id="inv-subs" style="display:flex;gap:8px;flex-wrap:wrap">'+
+    pnl.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h2 style="margin:0;font-size:20px">Inventario Car Wash</h2><div id="inv-subs" style="display:flex;gap:8px;flex-wrap:wrap">'+
       [['todo','Compras y existencias'],['mins','Mínimos'],['fix','Corregir existencias'],['units','Unidades'],['liga','Liga']].map(([k,n])=>'<button data-sub="'+k+'" style="padding:9px 16px;border:0;border-radius:99px;font-weight:700;cursor:pointer;background:#f0ede6;color:#555">'+n+'</button>').join('')+
       '<button id="inv-reload" style="padding:9px 14px;border:1px solid #e8e0cc;border-radius:99px;background:#fff;cursor:pointer">Actualizar</button></div></div><div id="inv-body"></div>';
     content.appendChild(pnl);
     pnl.querySelectorAll('#inv-subs button[data-sub]').forEach(b=>b.onclick=()=>{sub=b.dataset.sub;paint();});
     pnl.querySelector('#inv-reload').onclick=render;
+    const navNuevo=!!window.NAV_GROUPS;
     const t=document.createElement('button');t.className='tab';t.dataset.t='inventario';t.textContent='Inventario';
     t.onclick=()=>window.goTab('inventario');
-    const an=tabs.querySelector('.tab[data-t="sucursales"]');an?tabs.insertBefore(t,an):tabs.appendChild(t); // Analytics siempre al final
-    if(grid){
+    if(!navNuevo){const an=tabs.querySelector('.tab[data-t="sucursales"]');an?tabs.insertBefore(t,an):tabs.appendChild(t);} // con navegación agrupada vive en Compras
+    if(grid&&!navNuevo){
       const src=grid.querySelector('.mas-item');
       if(src){const m=src.cloneNode(true);m.dataset.mt='inventario';m.classList.remove('on');
         const sp=m.querySelector('span');if(sp)sp.textContent='Inventario';
