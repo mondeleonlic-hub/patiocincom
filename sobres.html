@@ -5482,10 +5482,10 @@ function bsobreTermica(row, sem){
   const DASH="------------------------------------";
 
   let dc="";
-  // Térmica: todo negro puro, negritas y sans-serif (los grises y la letra delgada salen punteados)
+  // Térmica: todo negro puro y sans-serif; negritas solo en nombre, comisión y total (los grises y la letra delgada salen punteados)
   const TKF="Arial,Helvetica,sans-serif";
-  const rowS=`display:flex;justify-content:space-between;gap:6px;font-size:12px;font-weight:700;line-height:1.5;color:#000;font-family:${TKF};font-variant-numeric:tabular-nums`;
-  const subS=`display:flex;justify-content:space-between;font-size:10px;font-weight:700;line-height:1.4;color:#000;font-family:${TKF};font-variant-numeric:tabular-nums`;
+  const rowS=`display:flex;justify-content:space-between;gap:6px;font-size:12px;font-weight:400;line-height:1.5;color:#000;font-family:${TKF};font-variant-numeric:tabular-nums`;
+  const subS=`display:flex;justify-content:space-between;font-size:10px;font-weight:400;line-height:1.4;color:#000;font-family:${TKF};font-variant-numeric:tabular-nums`;
   if(bono>0&&food>0){
     dc+=`<div style="${rowS}"><span>Bono Food</span><span>+${fmt(bono)}</span></div>`;
     dc+=`<div style="${rowS}"><span>Food</span><span>-${fmt(food)}</span></div>`;
@@ -5519,26 +5519,26 @@ function bsobreTermica(row, sem){
   return`<div class="sobre" style="width:${W};background:#fff;color:#000;font-family:${FONT};overflow:hidden;page-break-inside:avoid;break-inside:avoid">
   <div style="padding:10px 12px 4px;text-align:center">
     <img src="${LOGO_V}" alt="PATIO CINCO" style="width:150px;height:auto;display:block;margin:0 auto 4px">
-    <div style="text-align:center;font-size:9px;letter-spacing:1.5px;color:#000;font-weight:900;text-transform:uppercase">LAVADORES · S${sem}</div>
+    <div style="text-align:center;font-size:9px;letter-spacing:1.5px;color:#000;font-weight:400;text-transform:uppercase">LAVADORES · S${sem}</div>
   </div>
   ${SEP}
   <div style="text-align:center;font-size:28px;font-weight:900;padding:8px 12px 2px;color:#000;line-height:1.1">${row.nombre}</div>
   ${row._suc_lines
-    ? row._suc_lines.map(l=>`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;padding:0 12px;line-height:1.6;font-variant-numeric:tabular-nums">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
-      +`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:3px 12px 2px">Total: ${row.autos} autos</div>`
-    : `${row.sucursal?`<div style="text-align:center;font-size:11px;color:#000;font-weight:700;letter-spacing:1px;padding:0 12px">${row.sucursal}</div>`:""}${row.autos?`<div style="text-align:center;font-size:16px;font-weight:900;color:#000;padding:2px 12px 2px">${row.autos} autos</div>`:""}`
+    ? row._suc_lines.map(l=>`<div style="text-align:center;font-size:11px;color:#000;font-weight:400;padding:0 12px;line-height:1.6;font-variant-numeric:tabular-nums">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
+      +`<div style="text-align:center;font-size:16px;font-weight:400;color:#000;padding:3px 12px 2px">Total: ${row.autos} autos</div>`
+    : `${row.sucursal?`<div style="text-align:center;font-size:11px;color:#000;font-weight:400;letter-spacing:1px;padding:0 12px">${row.sucursal}</div>`:""}${row.autos?`<div style="text-align:center;font-size:16px;font-weight:400;color:#000;padding:2px 12px 2px">${row.autos} autos</div>`:""}`
   }
   ${SEP}
   <div style="border:2px solid #000;margin:2px 12px;padding:6px 8px;display:flex;flex-direction:column;align-items:center">
-    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:#000;text-transform:uppercase;text-align:center;margin-bottom:1px">${row._suc_lines?"COMISIÓN TOTAL":"COMISIÓN BRUTA"}</div>
+    <div style="font-size:9px;font-weight:400;letter-spacing:1.5px;color:#000;text-transform:uppercase;text-align:center;margin-bottom:1px">${row._suc_lines?"COMISIÓN TOTAL":"COMISIÓN BRUTA"}</div>
     <div style="font-size:24px;font-weight:900;color:#000;text-align:center">${fmt(com)}</div>
   </div>
   ${dc?`${SEP}<div style="padding:4px 12px 2px">${dc}</div>${SEP}`:`${SEP}`}
   <div style="text-align:center;padding:6px 12px 12px">
-    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#000;margin-bottom:1px">TOTAL A PAGAR</div>
+    <div style="font-size:9px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;color:#000;margin-bottom:1px">TOTAL A PAGAR</div>
     <div style="font-size:24px;font-weight:900;color:#000">${fmt(total)}</div>
   </div>
-  ${saldoAcum>0?`<div style="text-align:center;padding:0 12px 10px;font-family:${FONT}"><span style="font-size:9px;font-weight:900;color:#000;letter-spacing:1px;text-transform:uppercase">Ahorro acumulado</span><br><span style="font-size:13px;font-weight:900;color:#000">${fmt(saldoAcum)}</span></div>`:""}
+  ${saldoAcum>0?`<div style="text-align:center;padding:0 12px 10px;font-family:${FONT}"><span style="font-size:9px;font-weight:400;color:#000;letter-spacing:1px;text-transform:uppercase">Ahorro acumulado</span><br><span style="font-size:13px;font-weight:400;color:#000">${fmt(saldoAcum)}</span></div>`:""}
 </div>`;
 }
 
@@ -12494,7 +12494,7 @@ function tkCoordLista(){
 function bcoordTicket(t,sem){
   const F="Arial,Helvetica,sans-serif";
   const SEP=`<div style="border-top:1px dashed #000;margin:4px 12px"></div>`;
-  const rowS=`display:flex;justify-content:space-between;gap:6px;font-size:12px;font-weight:700;line-height:1.5;color:#000;font-family:${F};font-variant-numeric:tabular-nums`;
+  const rowS=`display:flex;justify-content:space-between;gap:6px;font-size:12px;font-weight:400;line-height:1.5;color:#000;font-family:${F};font-variant-numeric:tabular-nums`;
   const L=(lbl,v,sig)=>`<div style="${rowS}"><span>${lbl}</span><span>${sig}${fmt(v)}</span></div>`;
   let mas="",menos="";
   if(t.extra>0)mas+=L("Extra / Bono",t.extra,"+");
@@ -12513,21 +12513,21 @@ function bcoordTicket(t,sem){
   return `<div class="sobre" style="width:260px;background:#fff;color:#000;font-family:${F};overflow:hidden;page-break-inside:avoid;break-inside:avoid">
   <div style="padding:10px 12px 4px;text-align:center">
     <img src="${LOGO_V}" alt="PATIO CINCO" style="width:150px;height:auto;display:block;margin:0 auto 4px">
-    <div style="font-size:9px;letter-spacing:1.5px;font-weight:900;text-transform:uppercase">COORDINADORES · S${esc(String(sem||""))}</div>
+    <div style="font-size:9px;letter-spacing:1.5px;font-weight:400;text-transform:uppercase">COORDINADORES · S${esc(String(sem||""))}</div>
   </div>
   ${SEP}
   <div style="text-align:center;font-size:24px;font-weight:900;padding:6px 12px 4px;line-height:1.1">${esc(t.nombre)}</div>
   ${strip}
-  ${res?`<div style="text-align:center;font-size:10px;font-weight:700;padding:0 10px 4px;line-height:1.4">${res}</div>`:""}
+  ${res?`<div style="text-align:center;font-size:10px;font-weight:400;padding:0 10px 4px;line-height:1.4">${res}</div>`:""}
   ${SEP}
   <div style="border:2px solid #000;margin:2px 12px;padding:6px 8px;text-align:center">
-    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1px">${t.porTarifa?"PAGO POR DÍAS":"SUELDO SEMANAL"}</div>
+    <div style="font-size:9px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1px">${t.porTarifa?"PAGO POR DÍAS":"SUELDO SEMANAL"}</div>
     <div style="font-size:22px;font-weight:900">${fmt(t.base)}</div>
   </div>
   ${(mas||menos)?`${SEP}<div style="padding:4px 12px 2px">${mas}${menos}</div>`:""}
   ${SEP}
   <div style="text-align:center;padding:6px 12px 12px">
-    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1px">TOTAL A PAGAR</div>
+    <div style="font-size:9px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1px">TOTAL A PAGAR</div>
     <div style="font-size:24px;font-weight:900">${fmt(t.total)}</div>
   </div>
 </div>`;
