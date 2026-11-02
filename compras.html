@@ -1060,9 +1060,9 @@ async function saveRowEdit(rowId){
   if (overrides[newKey].proveedor && overrides[newKey].proveedor === CATALOG_DEFAULT[newKey]) overrides[newKey].proveedor = '';
   if (newKey !== oldKey) delete overrides[oldKey];
 
-  await saveOverrides();
   renderResults();
   renderCatalogTab();
+  saveOverrides();
 }
 window.closeRowEdit = closeRowEdit;
 window.saveRowEdit = saveRowEdit;
@@ -1190,9 +1190,9 @@ async function swapPrincipal(key){
     proveedor: m.alt.proveedor, marca: m.alt.marca||'', presentacion: m.alt.presentacion||'', precio: m.alt.precio||'',
     alt: { proveedor: m.proveedor, marca: m.marca||'', presentacion: m.presentacion||'', precio: m.precio||'' }
   });
-  await saveOverrides();
   renderCatalogTab();
   if (workingRows.length) renderResults();
+  saveOverrides();
 }
 window.swapPrincipal = swapPrincipal;
 
@@ -1214,9 +1214,9 @@ async function saveCatalogEdit(key){
   } : null;
   overrides[newKey] = { nombre, marca, proveedor: prov, precio, presentacion: pres, notas, alt };
   if (newKey !== key) delete overrides[key];
-  await saveOverrides();
   renderCatalogTab();
   if (workingRows.length) renderResults();
+  saveOverrides();
 }
 window.closeCatalogEdit = closeCatalogEdit;
 window.saveCatalogEdit = saveCatalogEdit;
