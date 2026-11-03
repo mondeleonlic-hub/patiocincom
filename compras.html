@@ -762,7 +762,6 @@ function renderResults(){
       const alt = r.useAlt ? getAlt(r.i) : null;
       const pr = alt ? alt.precio : ((getOverride(r.i) || {}).precio);
       if (pr) { provTotal += (Number(pr)||0) * ((r.cr||0)+(r.ca||0)); hasAnyPrice = true; }
-      else { const pk = packInfo(r); if (pk && pk.subtotal){ provTotal += pk.subtotal; hasAnyPrice = true; } }
     });
     grandTotal += provTotal;
     const div = document.createElement('div');
@@ -873,8 +872,8 @@ function buildComprasTable(items, transferSet){
   items.forEach((r,i) => {
     const inf = getInfo(r.i);
     const ovPrecio = (getOverride(r.i) || {}).precio;
-    const presTxt = [inf.marca, inf.presentacion, (!ovPrecio && inf.precio) ? ('$' + Number(inf.precio).toFixed(2) + ' catálogo') : ''].filter(Boolean).join(' · ');
-    const pk = packInfo(r);
+    const presTxt = [inf.marca, inf.presentacion, (!ovPrecio && inf.precio) ? ('$' + Number(inf.precio).toFixed(2) + '') : ''].filter(Boolean).join(' · ');
+    const pk = null; // sin sugerencias de cuánto comprar
     const pkTxt = pk ? `<div class="item-pres" style="font-weight:600;color:var(--navy);">Comprar: ${pk.n} ${pk.label}${pk.n===1?'':(pk.label==='bolsa'||pk.label==='rejilla'||pk.label==='caja'?'s':'s')} (${pk.size} ${pk.unit} c/u)${pk.subtotal ? ' · $' + pk.subtotal.toFixed(2) : ''}</div>` : '';
     const pres = (presTxt ? `<div class="item-pres">${presTxt}</div>` : '') + pkTxt;
     const notas = inf.notas ? `<div class="item-notes">📝 ${inf.notas}</div>` : '';
