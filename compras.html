@@ -549,7 +549,18 @@ const PACK = {
 function packInfo(r){
   if (r.useAlt) return null;
   let pk = null;
-  for (const k of keyCands(r.i)){ if (PACK[k]){ pk = PACK[k]; break; } }
+  const cands = keyCands(r.i);
+  for (const k of cands){ if (PACK[k]){ pk = PACK[k]; break; } }
+  if (!pk){
+    // nombres cortados por la tabla ("Leche (Deslactosada li...)"): coincidir por el inicio
+    const keys = Object.keys(PACK);
+    for (const c of cands.filter(x => x.length >= 8)){
+      const cut = keys.filter(k => k.startsWith(c));
+      if (cut.length){ pk = PACK[cut[0]]; break; }
+      const longer = keys.filter(k => c.startsWith(k)).sort((x, y) => y.length - x.length);
+      if (longer.length){ pk = PACK[longer[0]]; break; }
+    }
+  }
   if (!pk) return null;
   const need = (r.cr || 0) + (r.ca || 0);
   if (need <= 0) return null;
