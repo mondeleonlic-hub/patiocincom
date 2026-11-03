@@ -275,7 +275,9 @@
   </header>
 
   <div class="card">
-    <h2 class="section">1. Sube las capturas del inventario</h2>
+    <h2 class="section">1. Trae el inventario</h2>
+    <button class="btn" id="invBtn">Leer inventario</button>
+    <p class="hint" style="margin:10px 0 14px;">Lee directo la hoja FT_INSUMOS (sin capturas). Si falla, sube las capturas aquí abajo.</p>
     <div class="drop" id="dropZone">
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#002852" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
       <p><strong>Toca para elegir imágenes</strong></p>
@@ -699,6 +701,44 @@ async function runAnalysis(){
 }
 
 analyzeBtn.addEventListener('click', runAnalysis);
+
+async function runInventario(){
+  const btn = document.getElementById('invBtn');
+  btn.disabled = true;
+  statusEl.className = 'status';
+  statusEl.innerHTML = '<span class="spinner"></span> Leyendo inventario...';
+  try {
+    const d = await api('inventario');
+    const rows = (d.rows || []).filter(r => ((Number(r.cr)||0) + (Number(r.ca)||0)) > 0);
+    if (!rows.length){
+      statusEl.className = 'status err';
+      statusEl.textContent = 'La hoja se leyó (' + (d.leidos||0) + ' insumos) pero no hay nada con compra mayor a 0.';
+      btn.disabled = false;
+      return;
+    }
+    const byName = {};
+    rows.forEach(r => { byName[normalizeFull(r.i)] = r; });
+    const lista = Object.values(byName);
+    workingRows = lista.map((r, idx) => Object.assign({_id: 'r'+idx}, r));
+    analysisAt = Date.now();
+    if (typeof deletedStack !== 'undefined') deletedStack.length = 0;
+    let msg = `Listo — ${lista.length} insumos con compra, de ${d.leidos} leídos en el inventario.`;
+    let warn = false;
+    if (lista.length !== rows.length){ warn = true; msg += ` ⚠ ${rows.length - lista.length} nombres repetidos se juntaron.`; }
+    if ((d.inactivos||[]).length){ warn = true; msg += ' Omitidos por estar INACTIVOS: ' + d.inactivos.join(', ') + '.'; }
+    if ((d.difs||[]).length){ warn = true; msg += ' ⚠ No coincide con COMPRAS_SEM_ALAMOS de la hoja: ' + d.difs.join(', ') + '.'; }
+    statusEl.className = warn ? 'status err' : 'status';
+    statusEl.textContent = msg;
+    renderResults();
+  } catch(e){
+    statusEl.className = 'status err';
+    statusEl.textContent = /Acción desconocida/.test(e.message||'')
+      ? 'El servidor todavía no tiene la lectura de inventario. Usa las capturas mientras tanto.'
+      : 'No pude leer el inventario: ' + (e.message || 'error desconocido');
+  }
+  btn.disabled = false;
+}
+document.getElementById('invBtn').addEventListener('click', runInventario);
 
 let autoAnalyzeTimer = null;
 function scheduleAutoAnalyze(){
