@@ -685,7 +685,11 @@ async function runAnalysis(){
   analyzeBtn.disabled = false;
 
   const byName = {};
-  extracted.forEach(r => { byName[normalizeFull(r.i)] = r; });
+  const sinCantidad = extracted.filter(r => ((Number(r.cr)||0) + (Number(r.ca)||0)) <= 0).map(r => r.i);
+  extracted.filter(r => ((Number(r.cr)||0) + (Number(r.ca)||0)) > 0).forEach(r => { byName[normalizeFull(r.i)] = r; });
+  if (sinCantidad.length){
+    statusEl.textContent += ' Se omitieron sin cantidad a comprar: ' + sinCantidad.join(', ') + '.';
+  }
   workingRows = Object.values(byName).map((r, idx) => Object.assign({_id: 'r'+idx}, r));
   analysisAt = Date.now();
   if (typeof deletedStack !== 'undefined') deletedStack.length = 0;
