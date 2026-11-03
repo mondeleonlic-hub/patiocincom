@@ -4041,7 +4041,7 @@ function goTab(id){
 // Compras: carga la página una sola vez, la primera vez que se abre la pestaña
 function comprasInit(){
   const f=document.getElementById("compras-frame");
-  if(f&&!f.getAttribute("src"))f.setAttribute("src",f.dataset.src);
+  if(f&&!f.getAttribute("src"))f.setAttribute("src",f.dataset.src+"?v="+Date.now());
 }
 // ── SYNC SEMANA — actualiza todos los labels al cambiar la semana ────────────
 function syncSemana(v){
