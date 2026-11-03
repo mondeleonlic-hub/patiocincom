@@ -537,6 +537,26 @@ function keyCands(name){
   const a = normalizeFull(name), b = normalize(name);
   return a === b ? [a] : [a, b];
 }
+// Presentaciones de compra confirmadas: [cuántas unidades de inventario trae cada paquete, nombre del paquete, unidad]
+const PACK = {
+  'leche entera':[12,'caja','L'], 'leche deslactosada light':[12,'caja','L'], 'leche de almendra':[5.68,'caja','L'],
+  'coca cola':[12,'rejilla','pz'], 'coca cola sin azucar':[12,'caja','pz'], 'coca regular 355ml':[12,'rejilla','pz'],
+  'delaware':[12,'rejilla','pz'], 'manzana mundet':[12,'rejilla','pz'], 'sprite':[12,'rejilla','pz'],
+  'boing mango':[12,'rejilla','pz'], 'boing fresa':[24,'rejilla','pz'],
+  'papas a la francesa':[6,'caja','bolsas'], 'lechuga':[3,'bolsa','pz'], 'croissant':[12,'charola','pz'],
+  'chocolate morelia':[0.7,'bolsa','kg']
+};
+function packInfo(r){
+  if (r.useAlt) return null;
+  let pk = null;
+  for (const k of keyCands(r.i)){ if (PACK[k]){ pk = PACK[k]; break; } }
+  if (!pk) return null;
+  const need = (r.cr || 0) + (r.ca || 0);
+  if (need <= 0) return null;
+  const price = Number(getInfo(r.i).precio) || 0;
+  const n = Math.ceil(need / pk[0] - 1e-9);
+  return { n, label: pk[1], size: pk[0], unit: pk[2], subtotal: price ? n * price : 0, price };
+}
 function getOverride(name){
   for (const k of keyCands(name)){ if (overrides[k]) return overrides[k]; }
   return null;
@@ -731,6 +751,7 @@ function renderResults(){
       const alt = r.useAlt ? getAlt(r.i) : null;
       const pr = alt ? alt.precio : ((getOverride(r.i) || {}).precio);
       if (pr) { provTotal += (Number(pr)||0) * ((r.cr||0)+(r.ca||0)); hasAnyPrice = true; }
+      else { const pk = packInfo(r); if (pk && pk.subtotal){ provTotal += pk.subtotal; hasAnyPrice = true; } }
     });
     grandTotal += provTotal;
     const div = document.createElement('div');
@@ -842,7 +863,9 @@ function buildComprasTable(items, transferSet){
     const inf = getInfo(r.i);
     const ovPrecio = (getOverride(r.i) || {}).precio;
     const presTxt = [inf.marca, inf.presentacion, (!ovPrecio && inf.precio) ? ('$' + Number(inf.precio).toFixed(2) + ' catálogo') : ''].filter(Boolean).join(' · ');
-    const pres = presTxt ? `<div class="item-pres">${presTxt}</div>` : '';
+    const pk = packInfo(r);
+    const pkTxt = pk ? `<div class="item-pres" style="font-weight:600;color:var(--navy);">Comprar: ${pk.n} ${pk.label}${pk.n===1?'':(pk.label==='bolsa'||pk.label==='rejilla'||pk.label==='caja'?'s':'s')} (${pk.size} ${pk.unit} c/u)${pk.subtotal ? ' · $' + pk.subtotal.toFixed(2) : ''}</div>` : '';
+    const pres = (presTxt ? `<div class="item-pres">${presTxt}</div>` : '') + pkTxt;
     const notas = inf.notas ? `<div class="item-notes">📝 ${inf.notas}</div>` : '';
     const alt = getAlt(r.i);
     const usingAlt = !!(r.useAlt && alt);
