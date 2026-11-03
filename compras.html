@@ -298,7 +298,7 @@
 
     <div id="panel-compras">
       <div id="movedSectionsTop"></div>
-      <h2 class="section">Lista de compras por proveedor</h2>
+      <h2 class="section">Lista de compras por proveedor <span id="analysisStamp" style="font-weight:500;font-size:12px;color:var(--muted,#8a8578);text-transform:none;letter-spacing:0;"></span></h2>
       <div id="comprasBody"><div class="empty">Sube y analiza capturas para ver tu lista de compras.</div></div>
       <div class="grand-total" id="grandTotal" style="display:none;"></div>
       <button class="btn secondary" id="saveHistoryBtn" style="margin-top:14px;display:none;">💾 Guardar lista final en el historial</button>
@@ -687,6 +687,7 @@ async function runAnalysis(){
   const byName = {};
   extracted.forEach(r => { byName[normalizeFull(r.i)] = r; });
   workingRows = Object.values(byName).map((r, idx) => Object.assign({_id: 'r'+idx}, r));
+  analysisAt = Date.now();
   if (typeof deletedStack !== 'undefined') deletedStack.length = 0;
 
   renderResults();
@@ -707,14 +708,20 @@ function scheduleAutoAnalyze(){
 }
 
 const LAST_KEY = 'pc_compras_ultimo_analisis';
+let analysisAt = 0;
+function stampText(){
+  if (!analysisAt) return '';
+  return '· análisis del ' + new Date(analysisAt).toLocaleString('es-MX', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+}
 function persistLast(){
-  try { localStorage.setItem(LAST_KEY, JSON.stringify({ t: Date.now(), rows: workingRows })); } catch(e){}
+  try { localStorage.setItem(LAST_KEY, JSON.stringify({ t: analysisAt || Date.now(), rows: workingRows })); } catch(e){}
 }
 function restoreLast(){
   try {
     const d = JSON.parse(localStorage.getItem(LAST_KEY) || 'null');
     if (d && Array.isArray(d.rows) && d.rows.length){
       workingRows = d.rows;
+      analysisAt = d.t || 0;
       statusEl.className = 'status';
       statusEl.textContent = 'Último análisis recuperado (' + new Date(d.t).toLocaleString('es-MX', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ').';
       renderResults();
@@ -725,6 +732,7 @@ function restoreLast(){
 function renderResults(){
   const rows = workingRows;
   persistLast();
+  const stampEl = document.getElementById('analysisStamp'); if (stampEl) stampEl.textContent = stampText();
 
   const transferSet = new Set();
   rows.forEach(r => {
