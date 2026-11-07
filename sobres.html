@@ -2005,6 +2005,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
     <button class="tab grp" data-g="finanzas">Finanzas</button>
     <button class="tab grp" data-g="compras">Compras</button>
     <button class="tab grp" data-g="crm">CRM</button>
+    <button class="tab grp" data-g="capac">Capacitación</button>
   </div>
 </div>
 <div class="subtabs" id="subtabs"><div class="subtabs-inner" id="subtabs-inner"></div></div>
@@ -2743,6 +2744,11 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
       <button class="btn btn-dark" onclick="guardarInicialAh()">Guardar</button>
     </div>
   </div>
+</div>
+
+<!-- ══ PAGE: RESULTADOS EXAMEN (resultados.html embebida) ══ -->
+<div class="pnl" id="pnl-examen" style="padding:0 !important;max-width:none;">
+  <iframe id="examen-frame" title="Resultados examen" data-src="resultados.html" style="width:100%;height:calc(100vh - 190px);min-height:620px;border:0;display:block;background:#fff;"></iframe>
 </div>
 
 <!-- ══ PAGE: COMPRAS (compras.html embebida) ══ -->
@@ -3995,6 +4001,7 @@ window.NAV_GROUPS=[
   {g:'finanzas',label:'Finanzas', items:[['finanzas','Finanzas']]},
   {g:'compras', label:'Compras',  items:[['inventario','Inventario Car Wash'],['compras','Inventario Food']]},
   {g:'crm',     label:'CRM',      items:[['crm','CRM']]},
+  {g:'capac',   label:'Capacitación', items:[['examen','Resultados examen']]},
 ];
 function nav_grupoDe(id){ return NAV_GROUPS.find(G=>G.items.some(([t,,al])=>t===id||(al||[]).includes(id))); }
 function nav_sync(id){
@@ -4037,6 +4044,11 @@ function goTab(id){
   if(id==="datos"){renderT();}
   if(id==="crm"){crmInit();}
   if(id==="compras"){comprasInit();}
+  if(id==="examen"){examenInit();}
+}
+function examenInit(){
+  const f=document.getElementById("examen-frame");
+  if(f)f.setAttribute("src",f.dataset.src+"?v="+Date.now());
 }
 // Compras: carga la página una sola vez, la primera vez que se abre la pestaña
 function comprasInit(){
