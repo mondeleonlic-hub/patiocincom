@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Resultados Examen · Patio Cinco</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Montserrat:wght@400;600;700&display=swap">
+<style>*{box-sizing:border-box}body{margin:0;padding:20px 16px;font:14px/1.5 Montserrat,sans-serif;background:#fff;color:#2E2E2E}.w{max-width:560px;margin:auto}h1{font:400 28px 'Barlow Condensed';letter-spacing:.18em;text-transform:uppercase;margin:0 0 12px}h1 b{font-weight:700}
+select{padding:10px;border:1px solid #d6d6d6;border-radius:12px;font:14px Montserrat;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}th{font:700 10px Montserrat;letter-spacing:.12em;text-transform:uppercase;color:#6b6b6b;text-align:left;padding:6px}td{padding:8px 6px;border-top:1px solid #EDEDED}
+.p{color:#1e6b2e;font-weight:700}.f{color:#c0392b;font-weight:700}.m{color:#6b6b6b;font-size:12px;margin-top:10px}</style></head><body><div class="w"><h1>Resultados <b>Examen</b></h1>
+<select id="ms"></select><div id="o" class="m">Cargando…</div></div>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",authDomain:"montseflow.firebaseapp.com",projectId:"montseflow",appId:"1:249314346746:web:0d39b74f90dad6eff22b43"});
+var all=[];function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function draw(){var m=document.getElementById('ms').value,r=all.filter(function(x){return x.mes===m}).sort(function(a,b){return a.suc>b.suc?1:a.name>b.name?1:-1});
+ document.getElementById('o').innerHTML=r.length?'<table><tr><th>Nombre</th><th>Sucursal</th><th>Nota</th><th></th></tr>'+r.map(function(x){return '<tr><td>'+esc(x.name)+'</td><td>'+esc(x.suc)+'</td><td>'+x.score+'/'+x.total+'</td><td class="'+(x.pass?'p':'f')+'">'+(x.pass?'Aprobó':'No aprobó')+'</td></tr>'}).join('')+'</table><div class="m">'+r.filter(function(x){return x.pass}).length+' de '+r.length+' aprobaron · promedio '+(r.reduce(function(a,x){return a+x.score},0)/r.length).toFixed(1)+'/20</div>':'Sin resultados este mes.'}
+firebase.firestore().collection('pc_examenes').get().then(function(s){s.forEach(function(d){all.push(d.data())});var ms=Array.from(new Set(all.map(function(x){return x.mes}))).sort().reverse();if(!ms.length)ms=[new Date().toISOString().slice(0,7)];var sel=document.getElementById('ms');sel.innerHTML=ms.map(function(m){return '<option>'+m+'</option>'}).join('');sel.onchange=draw;draw()},function(){document.getElementById('o').textContent='No se pudieron cargar los resultados.'});
+</script></body></html>

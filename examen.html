@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es"><head><title>Examen Recepción · Patio Cinco</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Montserrat:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#fff;--fg:#2E2E2E;--k:#111;--y:#F8BA00;--g:#EDEDED;--line:#d6d6d6;--mut:#6b6b6b;--red:#c0392b;--redbg:#fdecea;--ok:#e8f3e8;--okfg:#1e6b2e;--sel:#fff6d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111;--fg:#eee;--k:#fff;--g:#222;--line:#3a3a3a;--mut:#999;--red:#ff8a7a;--redbg:#3a1a17;--ok:#16301b;--okfg:#7fd68f;--sel:#3a3210;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111;--fg:#eee;--k:#fff;--g:#222;--line:#3a3a3a;--mut:#999;--red:#ff8a7a;--redbg:#3a1a17;--ok:#16301b;--okfg:#7fd68f;--sel:#3a3210;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 Montserrat,sans-serif;margin:0;padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.w{max-width:460px;margin:auto}
+h1{font:400 28px 'Barlow Condensed',sans-serif;letter-spacing:.18em;text-transform:uppercase;margin:0 0 6px}h1 b{font-weight:700}
+.sub{color:var(--mut);font-size:12px;margin-bottom:16px}
+.card{background:var(--g);border-radius:14px;padding:14px;margin-bottom:14px;font-size:13px}
+.card li{margin:4px 0}.card ul{margin:0;padding-left:18px}
+label{display:block;font:700 10px Montserrat;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:12px 0 4px}
+input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg);font:14px Montserrat}
+.btn{display:block;width:100%;margin-top:16px;padding:13px;border:0;border-radius:12px;background:var(--y);color:#111;font:700 13px Montserrat;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.o{background:none;border:1px solid var(--line);color:var(--fg)}
+.bar{height:6px;background:var(--g);border-radius:3px;margin:8px 0 14px}.bar i{display:block;height:100%;background:var(--y);border-radius:3px}
+.tag{font:700 10px Montserrat;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.sit{font:700 21px/1.2 'Barlow Condensed',sans-serif;margin:6px 0 4px}
+.hint{font-size:12px;color:var(--mut);margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:none;color:var(--fg);border-radius:12px;padding:11px 12px;margin:8px 0;font:13px/1.45 Montserrat;cursor:pointer}
+.opt.on{border-color:var(--y);background:var(--sel)}
+.opt b{font:700 11px Montserrat;color:var(--mut);margin-right:6px}
+.nav{display:flex;gap:8px}.nav .btn{margin-top:10px}
+.score{font:700 64px/1 'Barlow Condensed',sans-serif;text-align:center}
+.res{text-align:center;font-weight:700;padding:10px;border-radius:12px;margin:10px 0}
+.res.p{background:var(--ok);color:var(--okfg)}.res.f{background:var(--redbg);color:var(--red)}
+.code{background:var(--g);border-radius:12px;padding:12px;font:12px/1.5 monospace;word-break:break-word;white-space:pre-wrap;user-select:all}
+.rv{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:12px}
+.rv .bad{color:var(--red)}.rv .good{color:var(--okfg)}
+.msg{font-size:12px;color:var(--mut);margin-top:8px}
+.err{color:var(--red)}
+</style></head><body>
+<div class="w" id="app"></div>
+<script>
+var Q=[
+["Llega el cliente al carril.","¡Hola! ¿Cómo estás? (pausa) Bienvenido a Patio Cinco. ¿Es la primera vez que vienes o ya conoces Patio?",["¡Hola! ¿Cómo estás? Bienvenido a Patio Cinco. ¿Qué paquete vamos a hacer hoy?","¡Hola! ¿Cómo estás? (pausa) Bienvenido a Patio Cinco. ¿Es la primera vez que vienes o ya tienes la membresía?","¡Hola! ¿Cómo estás? (pausa) Bienvenido a Patio Cinco. ¿Es tu primera vez? ¿Básico o Premium?"],"Paso 1"],
+["Es su primera vez. Explícale los paquetes.","Aquí hay dos paquetes: Básico y Premium. En ambos el auto sale muy bien lavado. La diferencia son los productos del Premium, que lo mantienen limpio más tiempo.",["Aquí hay dos paquetes: Básico y Premium. En el Básico el auto sale limpio y en el Premium muy bien lavado. La diferencia son los productos del Premium.","Aquí hay tres paquetes: Básico, Premium y membresías. En ambos el auto sale muy bien lavado. La diferencia son los productos del Premium.","Aquí hay dos paquetes: Básico y Premium. En ambos el auto sale muy bien lavado. La diferencia es el tiempo: el Premium es más rápido."],"Paso 1"],
+["Explica el Premium a un cliente de primera vez.","¡Por $30 pesos más, todos los productos PREMIUM! Que te ayudan a mantener el auto limpio más tiempo.",["¡Por $50 pesos más, todos los productos PREMIUM! Que te ayudan a mantener el auto limpio más tiempo.","¡Por $30 pesos más, algunos productos PREMIUM! Que te ayudan a mantener el auto limpio más tiempo.","¡Por $30 pesos más, todos los productos PREMIUM! Que te dejan el auto más brilloso."],"Paso 1"],
+["Terminaste de explicar. Ofrece el Premium.","La MAYORÍA elige PREMIUM. ¿Ese te parece bien?",["TODOS eligen PREMIUM. ¿Ese te parece bien?","La MAYORÍA elige PREMIUM. ¿Prefieres el Básico?","La MAYORÍA elige BÁSICO. ¿Ese te parece bien?"],"Paso 1"],
+["El cliente duda entre Básico y Premium.","En el Premium te ponemos cera express, Armor All en lugar de brillo, hidratamos molduras y tolvas, y adentro limpiamos con un hidratante de plásticos que no deja brilloso ni grasoso.",["En el Premium te ponemos cera líquida, Armor All en lugar de brillo, hidratamos molduras y tolvas, y adentro limpiamos con un hidratante de plásticos que no deja brilloso ni grasoso.","En el Premium te ponemos cera express, brillo en lugar de Armor All, hidratamos molduras y tolvas, y adentro limpiamos con un hidratante de plásticos que no deja brilloso ni grasoso.","En el Premium te ponemos cera express, Armor All en lugar de brillo, hidratamos molduras y tolvas, y adentro limpiamos con un hidratante de plásticos que deja brillo."],"Paso 1"],
+["El cliente YA conoce Patio. ¿Qué le dices?","¿Qué paquete vamos a hacer? (asume que es el PREMIUM) ¿El aroma de la casa está bien? ¿Algún adicional?",["¿Qué paquete vamos a hacer? (asume que es el BÁSICO) ¿El aroma de la casa está bien? ¿Algún adicional?","¿Qué paquete vamos a hacer? (asume que es el PREMIUM) ¿Qué aroma quieres? ¿Algún adicional?","¿Quieres el Premium? ¿El aroma de la casa está bien? ¿Algún adicional?"],"Paso 1"],
+["Ofrece el aroma (Paso 2).","Tu paquete ya lo incluye. ¿Gustas que pongamos el aroma?",["Tu paquete lo incluye por $10 pesos. ¿Gustas que pongamos el aroma?","Tu paquete ya lo incluye. ¿Qué aroma te gustaría?","Tu paquete ya incluye el aroma. ¿Quieres que pongamos el de la casa?"],"Paso 2"],
+["Ofrece un adicional.","¿Vamos a hacer algún servicio adicional, como pelo de mascota o lavado de tapetes?",["¿Vamos a hacer algún servicio adicional, como encerado o lavado de motor?","¿Te gustaría algún servicio adicional, como pelo de mascota o lavado de tapetes? Tiene costo.","¿Vamos a hacer algún servicio adicional, como pelo de mascota o lavado de asientos?"],"Paso 2"],
+["Es un cliente que YA conoce Patio y hay tiempo. Pregunta por la membresía.","¿Ya tienes nuestra membresía WASH CLUB? (pausa breve)",["¿Quieres conocer nuestra membresía WASH CLUB? (pausa breve)","¿Ya tienes nuestra membresía QUICK PASS CLUB? (pausa breve)","¿Ya tienes nuestra membresía WASH CLUB? ¡Está muy barata!"],"Paso 3"],
+["No tiene la membresía y hay tiempo.","¡Ah! Déjame explicarte, ¡está muy bien! Si te registras, te sale más barato desde hoy. Y cada visita te da un boleto para la rifa de UN AÑO de LAVADOS gratis. ¿Quieres que te cuente cómo funciona?",["¡Ah! Déjame explicarte, ¡está muy bien! Si te registras, te sale más barato desde hoy. Y cada mes te da un boleto para la rifa de UN AÑO de LAVADOS gratis. ¿Quieres que te cuente cómo funciona?","¡Ah! Déjame explicarte, ¡está muy bien! Si te registras, te sale más barato desde hoy. Y cada visita te da un boleto para la rifa de UN MES de LAVADOS gratis. ¿Quieres que te cuente cómo funciona?","¡Ah! Déjame explicarte, ¡está muy bien! Si te registras, el primer lavado es gratis. Y cada visita te da un boleto para la rifa de UN AÑO de LAVADOS gratis. ¿Quieres que te cuente cómo funciona?"],"Paso 3"],
+["El cliente quiere saber qué es QUICK PASS CLUB.","¡4 lavados SIN HACER FILA! Agenda tu cita.",["¡4 lavados con PRIORIDAD! Agenda tu cita.","¡Lavados ILIMITADOS SIN HACER FILA! Agenda tu cita.","¡4 lavados SIN HACER FILA! Llega cuando quieras."],"Paso 3"],
+["Le explicaste las membresías y no está seguro.","No hay problema. Si luego te animas, puedes registrarte aquí mismo con este QR.",["No hay problema. Si luego te animas, puedes registrarte en nuestra página.","No hay problema. Si te animas hoy, el primer mes tiene descuento. Aquí está el QR.","No te preocupes. Si luego te animas, puedes registrarte aquí mismo con este QR."],"Paso 3"],
+["Llega un auto a la sucursal Refugio.","Por favor, ¿me ayudas a colocarte alineado con el auto de enfrente y a poner tu llave en el parabrisas? ¡Bienvenido!",["Por favor, ¿me ayudas a colocarte en el carril X y a entregar tu llave al lavador? ¡Bienvenido!","Por favor, ¿me ayudas a colocarte alineado con el auto de enfrente y a entregar tu llave al lavador? ¡Bienvenido!","Por favor, ¿me ayudas a colocarte alineado con el auto de enfrente y a dejar tu llave puesta? ¡Bienvenido!"],"Paso 4"],
+["Llega un auto a la sucursal Álamos (o La Loma).","Por favor, ¿me ayudas a colocarte en el carril X y a entregar tu llave al lavador? ¡Bienvenido!",["Por favor, ¿me ayudas a colocarte en el carril X y a poner tu llave en el parabrisas? ¡Bienvenido!","Por favor, ¿me ayudas a colocarte alineado con el auto de enfrente y a entregar tu llave al lavador? ¡Bienvenido!","Por favor, ¿me ayudas a colocarte en el carril X y a dejar tu llave con el cajero? ¡Bienvenido!"],"Paso 4"],
+["El cliente pide dejar el coche más tiempo.","Te comento que no contamos con espacios de estacionamiento fijos. Por eso es importante que vengas por él en el horario acordado, el tiempo que dura tu lavado. Si decides dejarlo más tiempo, manejamos un costo de resguardo de $250 pesos.",["Te comento que no contamos con espacios de estacionamiento fijos. Por eso es importante que vengas por él en el horario acordado, el tiempo que dura tu lavado. Si decides dejarlo más tiempo, manejamos un costo de resguardo de $150 pesos.","Te comento que contamos con pocos espacios de estacionamiento. Por eso es importante que vengas por él en el horario acordado. Si decides dejarlo más tiempo, manejamos un costo de resguardo de $250 pesos.","Te comento que no contamos con espacios de estacionamiento fijos. Por eso es importante que vengas por él en el horario acordado. Si decides dejarlo más tiempo, no hay problema, sin costo."],"Paso 4"],
+["Notas pelo de mascota en el auto. Ofrece el paquete adicional.","Disculpa, notamos que tu auto tiene (pelo de mascota / arena / suciedad en exceso). ¿Te gustaría que agreguemos el paquete adicional?",["Disculpa, notamos que tu auto está muy sucio. Vamos a agregar el paquete adicional, tiene costo.","Disculpa, notamos que tu auto tiene (pelo de mascota / arena / suciedad en exceso). ¿Estás de acuerdo con que lo cobremos?","Disculpa, notamos que tu auto tiene (pelo de mascota / arena / suciedad en exceso). ¿Te gustaría que agreguemos el paquete Premium?"],"Extra A"],
+["El cliente de cobro adicional dice que NO quiere pagar.","Haremos la limpieza convencional, pero no podemos prometerte que el auto quede al 100%. ¿Está bien?",["Haremos la limpieza convencional y quedará al 100%. ¿Está bien?","Haremos la limpieza convencional, pero no podemos prometerte que el auto quede al 100%. Si no, no lo lavamos.","Haremos la limpieza básica, pero no podemos prometerte que el auto quede al 100%. ¿Está bien?"],"Extra A"],
+["Un cliente molesto se queja de un incidente.","Entiendo tu preocupación. Permíteme solicitar una revisión del sistema de vigilancia para intentar corroborar el incidente.",["Entiendo tu preocupación. Permíteme solicitar una revisión con el lavador para intentar corroborar el incidente.","Entiendo tu enojo. Permíteme solicitar una revisión del sistema de vigilancia para intentar corroborar el incidente.","Entiendo tu preocupación. Permíteme solicitar una revisión del sistema de vigilancia para confirmar el incidente."],"Extra B"],
+["El cliente molesto pregunta cuándo habrá respuesta.","Te pedimos un plazo de 24 horas para darte una respuesta formal por parte de la empresa.",["Te pedimos un plazo de 48 horas para darte una respuesta formal por parte de la empresa.","Te pedimos un plazo de 24 horas para darte una respuesta por parte del gerente.","Te pedimos un plazo de 24 horas hábiles para darte una respuesta formal por parte de la empresa."],"Extra B"],
+["Un cliente toma una bebida abierta dentro de la sucursal.","Disculpa, me da mucha pena, pero no tenemos permiso de consumo de alcohol. No podemos tener envases abiertos porque nos podría provocar una multa. Te agradezco si me ayudas tomando tu bebida fuera o tirándola en la basura, por favor.",["Disculpa, me da mucha pena, pero no tenemos permiso de consumo de alcohol. No podemos tener envases abiertos porque nos podría provocar un cierre. Te agradezco si me ayudas tomando tu bebida fuera o tirándola en la basura, por favor.","Disculpa, me da mucha pena, pero no se permite tomar dentro. Te agradezco si me ayudas tomando tu bebida fuera o tirándola en la basura, por favor.","Disculpa, me da mucha pena, pero no tenemos permiso de consumo de alcohol. No podemos tener envases abiertos porque nos podría provocar una multa. Te pido que tires tu bebida de inmediato."],"Extra C"]
+];
+var N=Q.length,PASS=16,SUC=["Refugio","Álamos","La Loma"];
+var app=document.getElementById('app'),db=null,uid=null,st={v:'load'};
+var now=new Date(),MES=now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function R(){
+ var h='<h1>Examen <b>Recepción</b></h1>';
+ if(st.v==='load')h+='<div class="sub">Cargando…</div>';
+ else if(st.v==='done')h+=doneV();
+ else if(st.v==='start')h+=startV();
+ else if(st.v==='q')h+=qV();
+ else if(st.v==='end')h+=endV();
+ app.innerHTML=h;window.scrollTo(0,0)}
+function startV(){return '<div class="sub">Auditoría mensual · Guion de recepción</div><div class="card"><ul><li><b>'+N+' preguntas</b>, elige el guion correcto. Los guiones se parecen: lee con calma.</li><li>Apruebas con <b>'+PASS+' de '+N+' (80%)</b>.</li><li><b>Un solo intento</b> al mes. Cuenta como tu auditoría.</li><li>No puedes regresar a una pregunta.</li></ul></div><label>Tu nombre completo</label><input id="nm" autocomplete="name" value="'+esc(st.name||'')+'"><label>Sucursal</label><select id="sc"><option value="">Elige…</option>'+SUC.map(function(s){return '<option'+(st.suc===s?' selected':'')+'>'+s+'</option>'}).join('')+'</select><button class="btn" id="go" disabled>Comenzar examen</button><div class="msg" id="m"></div>'}
+function qV(){var q=st.qs[st.i],o=q.o;
+ return '<div class="tag">Pregunta '+(st.i+1)+' de '+N+' · '+q.p+'</div><div class="bar"><i style="width:'+(st.i/N*100)+'%"></i></div><div class="hint">Situación</div><div class="sit">'+esc(q.s)+'</div><div class="hint">¿Cuál es el guion correcto?</div>'+o.map(function(t,k){return '<button class="opt'+(st.sel===k?' on':'')+'" data-k="'+k+'"><b>'+'ABCD'[k]+'</b>'+esc(t)+'</button>'}).join('')+'<button class="btn" id="nx"'+(st.sel==null?' disabled':'')+'>'+(st.i===N-1?'Terminar':'Siguiente')+'</button>'}
+function endV(){var r=st.res,ok=r.score>=PASS;
+ return '<div class="sub">'+esc(r.name)+' · '+esc(r.suc)+' · '+r.date+'</div><div class="score">'+r.score+'/'+N+'</div><div class="res '+(ok?'p':'f')+'">'+Math.round(r.score/N*100)+'% · '+(ok?'APROBADO':'NO APROBADO')+'</div>'+
+ '<div class="msg" style="margin:0 0 8px">'+(st.saved===true?'✓ Tu resultado quedó guardado.':st.saved===false?'<span class="err">No se pudo guardar automáticamente.</span> Envía el código de abajo por WhatsApp.':'Guardando…')+'</div>'+
+ '<label>Código de resultado (mándalo por WhatsApp)</label><div class="code" id="cd">'+esc(code(r))+'</div><button class="btn o" id="cp">Copiar código</button>'+
+ (r.wrong&&r.wrong.length?'<label style="margin-top:20px">Tus errores</label>'+r.wrong.map(function(w){return '<div class="rv"><b>'+(w.n)+'. '+esc(w.s)+'</b><div class="bad">✗ '+esc(w.a)+'</div><div class="good">✓ '+esc(w.c)+'</div></div>'}).join(''):'<div class="msg">Sin errores. Excelente.</div>')}
+function doneV(){var r=st.prev;return '<div class="sub">Ya presentaste el examen de este mes.</div><div class="score">'+r.score+'/'+N+'</div><div class="res '+(r.score>=PASS?'p':'f')+'">'+(r.score>=PASS?'APROBADO':'NO APROBADO')+'</div><label>Código de resultado</label><div class="code">'+esc(code(r))+'</div><div class="msg">Solo hay un intento por mes. Si crees que hay un error, habla con Montse.</div>'}
+function code(r){return 'EXAMEN RECEPCIÓN PC\n'+r.name+' · '+r.suc+'\nCalificación: '+r.score+'/'+N+' ('+Math.round(r.score/N*100)+'%) '+(r.score>=PASS?'APROBADO':'NO APROBADO')+'\nFecha: '+r.date+'\nMes: '+MES}
+app.addEventListener('input',function(){var n=document.getElementById('nm'),s=document.getElementById('sc'),g=document.getElementById('go');if(n&&s&&g){st.name=n.value;st.suc=s.value;g.disabled=!(n.value.trim().length>2&&s.value)}});
+app.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+ if(t.id==='go'){
+  st.name=document.getElementById('nm').value.trim();st.suc=document.getElementById('sc').value;
+  if(ls('pcx-'+MES)){try{st.prev=JSON.parse(ls('pcx-'+MES));st.v='done';R();return}catch(x){}}
+  function begin(){st.qs=shuffle(Q).map(function(q){var o=shuffle([q[1]].concat(q[2]));return{s:q[0],c:q[1],p:q[3],o:o}});
+   st.i=0;st.sel=null;st.ans=[];st.v='q';ls('pcx-'+MES,JSON.stringify({name:st.name,suc:st.suc,score:0,date:'incompleto'}));R()}
+  if(fs){t.disabled=true;fs.collection('pc_examenes').doc(docId()).get().then(function(s){if(s.exists){var x=s.data();st.prev={name:x.name,suc:x.suc,score:x.score,date:x.date};st.v='done';R()}else begin()},function(){begin()})}else begin()}
+ else if(t.dataset.k!=null){st.sel=+t.dataset.k;R()}
+ else if(t.id==='nx'){st.ans.push(st.qs[st.i].o[st.sel]);st.sel=null;st.i++;if(st.i>=N)finish();else R()}
+ else if(t.id==='cp'){var x=code(st.res);if(navigator.clipboard)navigator.clipboard.writeText(x).then(function(){t.textContent='Copiado ✓'},function(){sel()});else sel()}});
+function sel(){try{var r=document.createRange();r.selectNodeContents(document.getElementById('cd'));var s=getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}}
+function finish(){var sc=0,wr=[];st.qs.forEach(function(q,i){if(st.ans[i]===q.c)sc++;else wr.push({n:i+1,s:q.s,a:st.ans[i],c:q.c})});
+ var d=now.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'});
+ st.res={name:st.name,suc:st.suc,score:sc,date:d,wrong:wr};
+ ls('pcx-'+MES,JSON.stringify({name:st.name,suc:st.suc,score:sc,date:d}));
+ st.v='end';st.saved=null;R();save()}
+
+var FB={apiKey:"AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",authDomain:"montseflow.firebaseapp.com",projectId:"montseflow",storageBucket:"montseflow.firebasestorage.app",messagingSenderId:"249314346746",appId:"1:249314346746:web:0d39b74f90dad6eff22b43"},fs=null;
+function lsc(src){return new Promise(function(a,b){var s=document.createElement('script');s.src=src;s.onload=a;s.onerror=b;document.head.appendChild(s)})}
+function slug(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+function docId(){return MES+'_'+slug(st.name)+'_'+slug(st.suc)}
+function save(){if(!fs){st.saved=false;R();return}
+ var r=st.res;fs.collection('pc_examenes').doc(docId()).set({name:r.name,suc:r.suc,mes:MES,score:r.score,total:N,pass:r.score>=PASS,date:r.date,at:new Date().toISOString(),wrong:r.wrong.map(function(w){return w.n})}).then(function(){st.saved=true;R()},function(){st.saved=false;R()})}
+R();
+lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js').then(function(){return lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js')}).then(function(){firebase.initializeApp(FB);fs=firebase.firestore()}).catch(function(){}).then(function(){st.v='start';R()});
+</script>
+</body></html>
