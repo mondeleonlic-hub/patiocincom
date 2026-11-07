@@ -89,7 +89,7 @@ app.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)
   st.name=document.getElementById('nm').value.trim();st.suc=document.getElementById('sc').value;
   function begin(){st.qs=shuffle(Q).map(function(q){var o=shuffle([q[1]].concat(q[2]));return{s:q[0],c:q[1],p:q[3],o:o}});
    st.i=0;st.sel=null;st.ans=[];st.v='q';R()}
-  if(fs){t.disabled=true;fs.collection('pc_examenes').doc(docId()).get().then(function(s){if(s.exists){var x=s.data();st.prev={name:x.name,suc:x.suc,score:x.score,date:x.date};st.v='done';R()}else begin()},function(){begin()})}else{var p=ls('pcx-'+MES);if(p){try{st.prev=JSON.parse(p);st.v='done';R();return}catch(x){}}begin()}}
+  if(fs){t.disabled=true;fs.collection('pc_examenes').doc(docId()).get().then(function(s){if(s.exists){var x=s.data();st.prev={name:x.name,suc:x.suc,score:x.score,date:x.date};st.v='done';R()}else begin()},function(){begin()})}else{var p=ls('pcx-'+MES);if(p){try{var o=JSON.parse(p);if(o&&o.date&&o.date!=='incompleto'){st.prev=o;st.v='done';R();return}}catch(x){}}begin()}}
  else if(t.dataset.k!=null){st.sel=+t.dataset.k;R()}
  else if(t.id==='nx'){st.ans.push(st.qs[st.i].o[st.sel]);st.sel=null;st.i++;if(st.i>=N)finish();else R()}
  else if(t.id==='cp'){var x=code(st.res);if(navigator.clipboard)navigator.clipboard.writeText(x).then(function(){t.textContent='Copiado ✓'},function(){sel()});else sel()}});
@@ -106,6 +106,7 @@ function slug(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f
 function docId(){return MES+'_'+slug(st.name)+'_'+slug(st.suc)}
 function save(){if(!fs){st.saved=false;R();return}
  var r=st.res;fs.collection('pc_examenes').doc(docId()).set({name:r.name,suc:r.suc,mes:MES,score:r.score,total:N,pass:r.score>=PASS,date:r.date,at:new Date().toISOString(),wrong:r.wrong.map(function(w){return w.n})}).then(function(){st.saved=true;R()},function(){st.saved=false;R()})}
+if(/reset=1/.test(location.search)){try{localStorage.removeItem('pcx-'+MES)}catch(e){}}
 R();
 lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js').then(function(){return lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js')}).then(function(){firebase.initializeApp(FB);fs=firebase.firestore()}).catch(function(){}).then(function(){st.v='start';R()});
 </script>
