@@ -87,10 +87,9 @@ app.addEventListener('input',function(){var n=document.getElementById('nm'),s=do
 app.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
  if(t.id==='go'){
   st.name=document.getElementById('nm').value.trim();st.suc=document.getElementById('sc').value;
-  if(ls('pcx-'+MES)){try{st.prev=JSON.parse(ls('pcx-'+MES));st.v='done';R();return}catch(x){}}
   function begin(){st.qs=shuffle(Q).map(function(q){var o=shuffle([q[1]].concat(q[2]));return{s:q[0],c:q[1],p:q[3],o:o}});
-   st.i=0;st.sel=null;st.ans=[];st.v='q';ls('pcx-'+MES,JSON.stringify({name:st.name,suc:st.suc,score:0,date:'incompleto'}));R()}
-  if(fs){t.disabled=true;fs.collection('pc_examenes').doc(docId()).get().then(function(s){if(s.exists){var x=s.data();st.prev={name:x.name,suc:x.suc,score:x.score,date:x.date};st.v='done';R()}else begin()},function(){begin()})}else begin()}
+   st.i=0;st.sel=null;st.ans=[];st.v='q';R()}
+  if(fs){t.disabled=true;fs.collection('pc_examenes').doc(docId()).get().then(function(s){if(s.exists){var x=s.data();st.prev={name:x.name,suc:x.suc,score:x.score,date:x.date};st.v='done';R()}else begin()},function(){begin()})}else{var p=ls('pcx-'+MES);if(p){try{st.prev=JSON.parse(p);st.v='done';R();return}catch(x){}}begin()}}
  else if(t.dataset.k!=null){st.sel=+t.dataset.k;R()}
  else if(t.id==='nx'){st.ans.push(st.qs[st.i].o[st.sel]);st.sel=null;st.i++;if(st.i>=N)finish();else R()}
  else if(t.id==='cp'){var x=code(st.res);if(navigator.clipboard)navigator.clipboard.writeText(x).then(function(){t.textContent='Copiado ✓'},function(){sel()});else sel()}});
