@@ -3939,6 +3939,24 @@ function fmt(n){return(parseFloat(n)||0).toLocaleString("es-MX",{style:"currency
 function esc(v){return String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")}
 function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").replace(/[éèë]/g,"e").replace(/[íìï]/g,"i").replace(/[óòö]/g,"o").replace(/[úùü]/g,"u").replace(/ñ/g,"n").trim()}
 // Una persona puede tener varias deudas: la principal con su nombre y las demás como "Nombre##id"
+// Si alguien sale dos veces con la MISMA sucursal (p. ej. Gemini no leyó la sucursal y usó la del perfil),
+// la fila que está rodeada de lavadores de otra sucursal se pasa a esa sucursal.
+function pcArreglarSucDobles(lista){
+  const sucs=["PC Refugio","PC Álamos","La Loma"];
+  const porNom={};lista.forEach((r,i)=>{const k=normN(r.nombre||"");if(k)(porNom[k]=porNom[k]||[]).push(i);});
+  // vecina más cercana que no esté repetida (las repetidas no dicen de qué bloque es la fila)
+  const vecina=(i,paso)=>{for(let j=i+paso;j>=0&&j<lista.length;j+=paso){const r=lista[j];const n=normN(r&&r.nombre||"");if(r&&r.sucursal&&n&&porNom[n].length<2)return {s:r.sucursal,n};}return null;};
+  Object.entries(porNom).forEach(([k,idx])=>{
+    if(idx.length<2)return;
+    const s0=lista[idx[0]].sucursal;if(!idx.every(i=>lista[i].sucursal===s0))return;
+    idx.forEach(i=>{
+      const a=vecina(i,-1),b=vecina(i,1);
+      const otra=[a,b].filter(v=>v&&v.s!==s0).map(v=>v.s)[0];
+      if(otra&&sucs.includes(otra)&&(!a||a.s===otra)&&(!b||b.s===otra)){lista[i].sucursal=otra;}
+    });
+  });
+  return lista;
+}
 function dMpp(d){return (d&&(d.montoPorPago||d.total/d.numPagos))||0;}
 function getDesc1(d){if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;if(d.pagoActual>d.numPagos)return 0;return dMpp(d);}
 function dBase(k){return String(k).split("##")[0];}
@@ -4159,7 +4177,7 @@ async function runPDFextract(data){
       : parsePatioCincoText(visualLines,detectedPageW);
     if(!newRows.length){setSt("err","❌ No se encontraron lavadores. Verifica el formato del PDF.");return;}
 
-    rows=newRows;
+    rows=pcArreglarSucDobles(newRows);
     rows.forEach(r=>{
       if(r.nombre&&r.sucursal){
         if(!perfiles[r.nombre])perfiles[r.nombre]={sucursal:r.sucursal,pct:r.pct};
@@ -4486,6 +4504,7 @@ REGLAS DEL JSON:
       extraConcepto:""
     }));
 
+    pcArreglarSucDobles(rows);
     // actualizar perfiles con sucursal recién leída
     rows.forEach(r=>{
       if(r.nombre&&r.sucursal){
@@ -5695,7 +5714,7 @@ function mergeRows(act){
       ahorro:todas.reduce((s,r)=>s+Math.abs(num(r.ahorro||0)),0),
       extraConcepto:unir("extraConcepto")||base.extraConcepto,
       merchConcepto:unir("merchConcepto")||base.merchConcepto,
-      _suc_lines:todas.map(r=>({suc:r.sucursal==="PC Álamos"?"Álamos":"Refugio",autos:num(r.autos),com:num(r.comision)}))
+      _suc_lines:todas.map(r=>({suc:String(r.sucursal||"Sin sucursal").replace(/^PC /,""),autos:num(r.autos),com:num(r.comision)}))
     });
     return res;
   },[]);
