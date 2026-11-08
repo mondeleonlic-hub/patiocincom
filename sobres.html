@@ -3939,9 +3939,8 @@ function fmt(n){return(parseFloat(n)||0).toLocaleString("es-MX",{style:"currency
 function esc(v){return String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")}
 function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").replace(/[éèë]/g,"e").replace(/[íìï]/g,"i").replace(/[óòö]/g,"o").replace(/[úùü]/g,"u").replace(/ñ/g,"n").trim()}
 // Una persona puede tener varias deudas: la principal con su nombre y las demás como "Nombre##id"
-// Pago por semana redondeado hacia arriba; el último pago se ajusta a lo que reste
-function dMpp(d){const m=(d&&(d.montoPorPago||d.total/d.numPagos))||0;return Math.ceil(m-1e-9);}
-function getDesc1(d){if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;if(d.pagoActual>d.numPagos)return 0;const m=dMpp(d);return Math.max(0,Math.min(m,d.total-m*(d.pagoActual-1)));}
+function dMpp(d){return (d&&(d.montoPorPago||d.total/d.numPagos))||0;}
+function getDesc1(d){if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;if(d.pagoActual>d.numPagos)return 0;return dMpp(d);}
 function dBase(k){return String(k).split("##")[0];}
 function dKeys(n){return Object.keys(deudas||{}).filter(k=>k===n||k.indexOf(n+"##")===0);}
 function dActivas(n){return dKeys(n).map(k=>[k,deudas[k]]).filter(([,d])=>d&&d.total>0);}
