@@ -3938,7 +3938,12 @@ function num(s){return parseFloat(String(s||"").replace(/[$,\s]/g,""))||0}
 function fmt(n){return(parseFloat(n)||0).toLocaleString("es-MX",{style:"currency",currency:"MXN"})}
 function esc(v){return String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")}
 function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").replace(/[éèë]/g,"e").replace(/[íìï]/g,"i").replace(/[óòö]/g,"o").replace(/[úùü]/g,"u").replace(/ñ/g,"n").trim()}
-function getDesc(n){const d=deudas[n];if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;if(d.pagoActual>d.numPagos)return 0;return d.montoPorPago||d.total/d.numPagos||0}
+// Una persona puede tener varias deudas: la principal con su nombre y las demás como "Nombre##id"
+function getDesc1(d){if(!d||!d.total)return 0;if(d.pagoActual===0)return 0;if(d.pagoActual>d.numPagos)return 0;return d.montoPorPago||d.total/d.numPagos||0}
+function dBase(k){return String(k).split("##")[0];}
+function dKeys(n){return Object.keys(deudas||{}).filter(k=>k===n||k.indexOf(n+"##")===0);}
+function dActivas(n){return dKeys(n).map(k=>[k,deudas[k]]).filter(([,d])=>d&&d.total>0);}
+function getDesc(n){if(String(n).indexOf("##")>=0)return getDesc1(deudas[n]);return dKeys(n).reduce((s,k)=>s+getDesc1(deudas[k]),0);}
 // Food que sí se descuenta del pago:
 // - si la fila tiene Bono, el bono cubre todo el food
 // - si el lavador tiene Bono Food, el saldo del bono cubre su food y solo
@@ -4622,20 +4627,23 @@ function renderT(){
       return `<div style="font-size:9px;font-weight:700;color:#C8960C;letter-spacing:.3px;margin-top:3px;line-height:1.6">↕ 2 sucursales<br>${otrasStr}</div>`;
     })() : "";
 
-    const _dm=!!(d&&d.total>0&&d.comoMerch);
-    const _dmHtml=_dm?(desc>0?`<div class="merch-deuda" title="Merch a pagos · ${esc(d.concepto||"")}"><b>−${fmt(desc)}</b> ${esc(d.concepto||"Merch")} <span>${d.pagoActual}/${d.numPagos}</span></div>`
-      :d.pagoActual===0?`<div class="merch-deuda"><span>${esc(d.concepto||"Merch")} · inicia la próxima semana</span></div>`:""):"";
-    let deudaCell=_dm?`<span class="deuda-sin">—</span>`:d&&d.total>0?`<div class="deuda-info">
+    const _prim=(rows||[]).find(x=>normN(x.nombre)===normN(row.nombre))===row;
+    const _ds=_prim?dActivas(row.nombre).map(([k,x])=>({k,d:x,v:getDesc1(x)})):[];
+    const _dsM=_ds.filter(o=>o.d.comoMerch), _dsD=_ds.filter(o=>!o.d.comoMerch);
+    const descMerch=_dsM.reduce((s,o)=>s+o.v,0), descDeuda=_dsD.reduce((s,o)=>s+o.v,0);
+    const _dmHtml=_dsM.map(({d,v})=>v>0?`<div class="merch-deuda" title="Merch a pagos · ${esc(d.concepto||"")}"><b>−${fmt(v)}</b> ${esc(d.concepto||"Merch")} <span>${d.pagoActual}/${d.numPagos}</span></div>`
+      :d.pagoActual===0?`<div class="merch-deuda"><span>${esc(d.concepto||"Merch")} · inicia la próxima semana</span></div>`:"").join("");
+    let deudaCell=_dsD.length?_dsD.map(({d,v})=>`<div class="deuda-info">
       <div class="deuda-concepto">${d.concepto||"Deuda"}</div>
       <div class="deuda-row"><span>Total:</span><strong style="color:#e53e3e">${fmt(d.total)}</strong></div>
       ${d.pagoActual===0
         ? `<div class="deuda-row" style="color:#38a169"><span>⏳ Inicia la próxima semana</span></div>`
         : d.pagoActual>d.numPagos
         ? `<div class="deuda-row" style="color:#38a169"><span>✓ Deuda completada — cierra semana para limpiar</span></div>`
-        : `<div class="deuda-row"><span>Esta semana (Pago ${d.pagoActual}/${d.numPagos}):</span><strong style="color:#e53e3e">-${fmt(desc)}</strong></div>
-           <div class="deuda-resta">Saldo tras pago: ${fmt(Math.max(0,d.total-desc*(d.pagoActual||1)))}</div>`
+        : `<div class="deuda-row"><span>Esta semana (Pago ${d.pagoActual}/${d.numPagos}):</span><strong style="color:#e53e3e">-${fmt(v)}</strong></div>
+           <div class="deuda-resta">Saldo tras pago: ${fmt(Math.max(0,d.total-v*(d.pagoActual||1)))}</div>`
       }
-    </div>`:`<span class="deuda-sin">—</span>`;
+    </div>`).join('<div style="height:6px"></div>'):`<span class="deuda-sin">—</span>`;
 
     // Desglose del total para mostrar en la celda
     // (food sólo se descuenta si no hay bono — igual que calcT)
@@ -4645,7 +4653,8 @@ function renderT(){
     if(effectiveFood>0)   parts.push({v:effectiveFood,lbl:"food",sign:"-"});
     if(num(row.merch)>0)  parts.push({v:num(row.merch),lbl:"merch",sign:"-"});
     if(Math.abs(num(row.ahorro||0))>0) parts.push({v:Math.abs(num(row.ahorro||0)),lbl:"ahorro",sign:"-"});
-    if(desc>0)            parts.push({v:desc,lbl:_dm?"merch":"deuda",sign:"-"});
+    if(descMerch>0)       parts.push({v:descMerch,lbl:"merch",sign:"-"});
+    if(descDeuda>0)       parts.push({v:descDeuda,lbl:"deuda",sign:"-"});
     if(num(row.extra||0)>0) parts.push({v:num(row.extra||0),lbl:"extra",sign:"+"});
     const desglose = parts.length>1
       ? `<div style="font-size:9px;color:#aaa;margin-top:3px;line-height:1.4">
@@ -4669,7 +4678,7 @@ function renderT(){
         <input type="number" min="0" step="0.01" value="${row.merch||""}" oninput="uf(${i},'merch',+this.value)" style="width:60px;text-align:right;color:${num(row.merch)>0?"#e53e3e":"inherit"}" title="Doble clic: agregar concepto" ondblclick="editarConceptoMerch(${i})">
         <div ondblclick="editarConceptoMerch(${i})" style="font-size:9px;color:${row.merchConcepto?'#c0392b':'#ccc'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64px;cursor:pointer" title="${esc(row.merchConcepto||'Doble clic para agregar concepto')}">${esc(row.merchConcepto||'+ concepto')}</div>
         ${_dmHtml}
-        ${num(row.merch)>100&&!(d&&d.total>0)?`<button onclick="merchADeuda(${i})" title="Merch >$100 — convertir en deuda" style="display:block;margin-top:3px;background:#fff3cd;border:1px solid #e0a614;border-radius:5px;cursor:pointer;font-size:10px;font-weight:800;padding:2px 5px;color:#7a5c00;white-space:nowrap">📋→ A deuda</button>`:""}
+        ${num(row.merch)>100?`<button onclick="merchADeuda(${i})" title="Merch >$100 — convertir en deuda" style="display:block;margin-top:3px;background:#fff3cd;border:1px solid #e0a614;border-radius:5px;cursor:pointer;font-size:10px;font-weight:800;padding:2px 5px;color:#7a5c00;white-space:nowrap">📋→ A deuda</button>`:""}
       </td>
       <td data-label="Bono" style="padding:5px 4px">
         <input type="number" min="0" value="${row.bono||""}" oninput="uf(${i},'bono',+this.value)" style="width:62px;text-align:right;color:${num(row.bono)>0?"#38a169":"inherit"}" title="Doble clic: agregar concepto" ondblclick="editarConceptoBono(${i})">
@@ -4994,7 +5003,7 @@ function renderResumen(){
   const rowsRef=vis.filter(r=>r.sucursal==="PC Refugio");
   const rowsAla=vis.filter(r=>r.sucursal==="PC Álamos");
   const nR=rowsRef.length, nA=rowsAla.length;
-  const nD=vis.filter(r=>deudas[r.nombre]&&deudas[r.nombre].total>0).length;
+  const nD=vis.filter(r=>dActivas(r.nombre).length>0).length;
   const tAutos=vis.reduce((s,r)=>s+num(r.autos),0);
 
   // ── Flujo para calcular margen nómina/ingresos ──
@@ -5214,6 +5223,7 @@ function guardarSucursales(){
 // Avanzan al "Guardar semana" de Coordinadores, no al cerrar la semana de lavadores.
 function esDeudaCoord(n){return String(n).indexOf("coord:")===0;}
 function dNom(n){
+  n=dBase(n);
   if(!esDeudaCoord(n))return n;
   const id=n.slice(6), c=(typeof coords!=="undefined"?coords:[]).find(x=>x.id===id);
   return (c&&c.nombre)||(deudas[n]&&deudas[n].nombre)||"Coordinador";
@@ -5563,8 +5573,8 @@ function abrirNuevaDeuda(prefill){
   prefill = prefill || {};
   const nombres = prefill.lockNombre
     ? [prefill.nombre]
-    : [...new Set(rows.filter(r=>r.nombre&&!deudas[r.nombre]).map(r=>r.nombre))];
-  const coordOpts = (typeof coords!=="undefined"?coords:[]).filter(c=>c.nombre&&c.id&&!(deudas["coord:"+c.id]&&deudas["coord:"+c.id].total>0));
+    : [...new Set(rows.filter(r=>r.nombre).map(r=>r.nombre))];
+  const coordOpts = (typeof coords!=="undefined"?coords:[]).filter(c=>c.nombre&&c.id);
   if(!nombres.length&&!coordOpts.length&&!prefill.lockNombre&&!prefill.coordKey){alert("Todos ya tienen deuda activa.");return}
   const modal=document.createElement("div");
   modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:center;justify-content:center";
@@ -5641,8 +5651,10 @@ function abrirNuevaDeuda(prefill){
     if(!nombre){alert("Selecciona a quién");return}
     if(total<=0){alert("El monto debe ser mayor a 0");return}
     // pagoActual:0 = no descuenta esta semana, al cerrar semana avanza a 1
-    deudas[nombre]={concepto,total,numPagos,pagoActual:proxima?0:1,montoPorPago:total/numPagos};
-    if(esDeudaCoord(nombre)){deudas[nombre].tipo="coord";deudas[nombre].nombre=dNom(nombre);}
+    // Si ya tiene una deuda activa, la nueva se agrega aparte (no la reemplaza)
+    const _k=(deudas[nombre]&&deudas[nombre].total>0)?nombre+"##"+Date.now().toString(36):nombre;
+    deudas[_k]={concepto,total,numPagos,pagoActual:proxima?0:1,montoPorPago:total/numPagos};
+    if(esDeudaCoord(nombre)){deudas[_k].tipo="coord";deudas[_k].nombre=dNom(nombre);}
     sv("pc4_deudas",deudas);
     // Limpiar merch del row si: vino del botón "📋→ A deuda" (lockNombre)
     // O si el monto coincide con el merch del lavador
@@ -5720,14 +5732,15 @@ function bsobreTermica(row, sem){
   }
   if(ahorro>0) dc+=`<div style="${rowS}"><span>Ahorro/Abono</span><span>-${fmt(ahorro)}</span></div>`;
   if(entrena>0) dc+=`<div style="${rowS}"><span>${row.extraConcepto||"Extra"}</span><span>+${fmt(entrena)}</span></div>`;
-  if(d&&d.total>0){
+  dActivas(row.nombre).forEach(([,d])=>{
+    const v=getDesc1(d), pl=d.numPagos>1?` (P${d.pagoActual||1}/${d.numPagos})`:"", rs=Math.max(0,d.total-v*(d.pagoActual||1));
     if(d.pagoActual===0){
       dc+=`<div style="${rowS}"><span>${d.concepto||"Deuda"} (no cobrada esta sem.)</span><span>${fmt(d.total)}</span></div>`;
-    } else if(desc>0){
-      dc+=`<div style="${rowS}"><span>${d.comoMerch?"Merch "+d.concepto:(d.concepto||"Deuda")}${pagoLabel}</span><span>-${fmt(desc)}</span></div>`;
-      if(resta>0)dc+=`<div style="${subS}"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
+    } else if(v>0){
+      dc+=`<div style="${rowS}"><span>${d.comoMerch?"Merch "+d.concepto:(d.concepto||"Deuda")}${pl}</span><span>-${fmt(v)}</span></div>`;
+      if(rs>0)dc+=`<div style="${subS}"><span>Saldo pendiente</span><span>${fmt(rs)}</span></div>`;
     }
-  }
+  });
 
   const saldoAcum = (typeof saldoAhorroDe==='function') ? saldoAhorroDe(row.nombre) : 0;
 
@@ -5927,14 +5940,15 @@ function bsobre(row,sem){
   }
   if(ahorro>0) dc+=`<div class="sr"><span class="sl2">Ahorro/Abono</span><span class="sv">-${fmt(ahorro)}</span></div>`;
   if(entrena>0) dc+=`<div class="sr" style="color:#38a169"><span class="sl2">${row.extraConcepto||"Extra"}</span><span class="sv">+${fmt(entrena)}</span></div>`;
-  if(d&&d.total>0){
+  dActivas(row.nombre).forEach(([,d])=>{
+    const v=getDesc1(d), pl=d.numPagos>1?` (Pago ${d.pagoActual||1} de ${d.numPagos})`:"", rs=Math.max(0,d.total-v*(d.pagoActual||1));
     if(d.pagoActual===0){
       dc+=`<div class="sr ssm"><span>${d.concepto||"Deuda"} (no cobrada esta semana)</span><span>${fmt(d.total)}</span></div>`;
-    } else if(desc>0){
-      dc+=`<div class="sr"><span class="sl2">${d.comoMerch?"Merch "+d.concepto:(d.concepto||"Deuda")}${pagoLabel}</span><span class="sv">-${fmt(desc)}</span></div>`;
-      if(resta>0)dc+=`<div class="sr ssm"><span>Saldo pendiente</span><span>${fmt(resta)}</span></div>`;
+    } else if(v>0){
+      dc+=`<div class="sr"><span class="sl2">${d.comoMerch?"Merch "+d.concepto:(d.concepto||"Deuda")}${pl}</span><span class="sv">-${fmt(v)}</span></div>`;
+      if(rs>0)dc+=`<div class="sr ssm"><span>Saldo pendiente</span><span>${fmt(rs)}</span></div>`;
     }
-  }
+  });
   const saldoAcum = (typeof saldoAhorroDe==='function') ? saldoAhorroDe(row.nombre) : 0;
   const _sucHead=row._suc_lines
     ? row._suc_lines.map(l=>`<div class="s-suc" style="font-size:10px">${l.suc}: ${l.autos} autos · ${fmt(l.com)}</div>`).join("")
@@ -6106,6 +6120,10 @@ async function guardarTicketsHTML(){
 // ── CERRAR SEMANA ─────────────────────────────────────────────────────────────
 function cerrarSemana(){
   const sem=document.getElementById("sem").value;
+  const _ya=ld("pc4_hist",[]).find(h=>h.semana===sem);
+  if(_ya){alert("La semana "+sem+" ya se cerró el "+(_ya.fecha||"")+".\n\nSi es otra semana, cambia el número de semana arriba antes de cerrar.");return;}
+  const _hoy=new Date().toLocaleDateString("es-MX"), _ult=ld("pc4_hist",[])[0];
+  if(_ult&&_ult.fecha===_hoy&&!confirm("Hoy ya cerraste la semana "+_ult.semana+".\n\nCada cierre avanza un pago de todas las deudas. ¿Seguro que quieres cerrar también la "+sem+"?"))return;
   if(!confirm("¿Cerrar semana "+sem+"?\n\nEsto guardará el flujo de efectivo, avanzará al historial y limpiará los datos para la próxima semana."))return;
   takeSnapshot(); // ← undo point antes de operación destructiva
   // ── Guardar flujo antes de cerrar (Fix #2) ───────────────────────────────
@@ -6116,14 +6134,16 @@ function cerrarSemana(){
   sv("pc4_flujo",flujoHist);
   sv("pc4_flujo_dias",[]);
   flujoDias=[];
+  // ── Historial con lo que se cobró ESTA semana (antes de avanzar las deudas) ──
+  const _histRows=rows.map(r=>{const desc=descFila(r);const ds=dActivas(r.nombre).filter(([,d])=>getDesc1(d)>0).map(([,d])=>d);const d=ds[0];
+    return{...r,total:calcT(r,r.nombre),deudaDesc:desc,deudaCon:ds.map(x=>x.concepto||"Deuda").join(" + "),pagoPago:d?.pagoActual||1,pagoTot:d?.numPagos||1}});
   // ── Avanzar deudas ───────────────────────────────────────────────────────
   for(const n in deudas){
     if(esDeudaCoord(n))continue; // las de coordinadores avanzan al guardar su semana
     avanzarDeuda(deudas[n]);
   }
   const arr=ld("pc4_hist",[]);
-  arr.unshift({semana:sem,fecha:new Date().toLocaleDateString("es-MX"),
-    rows:rows.map(r=>{const desc=descFila(r);const d=deudas[r.nombre];return{...r,total:calcT(r,r.nombre),deudaDesc:desc,deudaCon:d?.concepto||"",pagoPago:d?.pagoActual||1,pagoTot:d?.numPagos||1}})});
+  arr.unshift({semana:sem,fecha:new Date().toLocaleDateString("es-MX"),rows:_histRows});
   historial=arr.slice(0,52); // Fix #6: un año completo
   rows=rows.map(r=>({nombre:r.nombre,sucursal:r.sucursal,pct:r.pct,autos:"",comision:"",food:"",merch:"",bono:"",ahorro:r.ahorro||"",extraConcepto:r.extraConcepto||""}));
   const parts = sem.split("/");
@@ -7784,7 +7804,7 @@ function guardarSemanaCoords(){
   sv("pc4_coord_hist",coordHist);
   // Avanzar deudas de coordinadores (un pago por semana guardada)
   let _dCambio=false;
-  coords.forEach(c=>{const k="coord:"+c.id;if(c.id&&deudas[k]&&deudas[k].total>0){avanzarDeuda(deudas[k]);_dCambio=true;}});
+  coords.forEach(c=>{if(!c.id)return;dActivas("coord:"+c.id).forEach(([,d])=>{avanzarDeuda(d);_dCambio=true;});});
   if(_dCambio){sv("pc4_deudas",deudas);renderD();}
   // Siguiente semana: se conserva el acuerdo (tarifas, turno, descanso, seguro);
   // los días vuelven al turno habitual y se limpian extra, comisión, food y merch
