@@ -3930,7 +3930,8 @@ async function init(){
 
 function applyPerfil(r){
   const p = perfiles[r.nombre];
-  if(p) return {...r, sucursal: p.sucursal||r.sucursal||"", pct: p.pct||r.pct||40};
+  // la sucursal de la fila manda (quien trabaja en 2 sucursales tiene una fila por sucursal); el perfil solo rellena si falta
+  if(p) return {...r, sucursal: r.sucursal||p.sucursal||"", pct: p.pct||r.pct||40};
   return r;
 }
 
