@@ -778,6 +778,14 @@ function restoreLast(){
   } catch(e){}
 }
 
+// Las capturas a veces no traen las columnas de stock/óptimo y la lectura las rellena con 0.
+// Un renglón es confiable solo si compra = óptimo − stock en cada sucursal.
+function datosOk(r){
+  const n = v => Number(v) || 0;
+  const er = Math.max(0, n(r.or) - n(r.sr)), ea = Math.max(0, n(r.oa) - n(r.sa));
+  return Math.abs(er - n(r.cr)) <= 0.06 && Math.abs(ea - n(r.ca)) <= 0.06;
+}
+
 function renderResults(){
   const rows = workingRows;
   persistLast();
@@ -787,7 +795,7 @@ function renderResults(){
   rows.forEach(r => {
     const surplusRefugio = (r.sr||0) - (r.or||0);
     const surplusAlamos = (r.sa||0) - (r.oa||0);
-    if ((r.ca > 0 && surplusRefugio > 0) || (r.cr > 0 && surplusAlamos > 0)){
+    if (datosOk(r) && ((r.ca > 0 && surplusRefugio > 0) || (r.cr > 0 && surplusAlamos > 0))){
       transferSet.add(r._id);
     }
   });
@@ -873,6 +881,7 @@ function renderResults(){
   let anyTransfer = false;
   rows.forEach(r => {
     if (r.mv === 'r2a' || r.mv === 'a2r') return;
+    if (!datosOk(r)) return; // sin existencias confiables no se sugiere traspaso
     const surplusRefugio = (r.sr||0) - (r.or||0);
     const surplusAlamos = (r.sa||0) - (r.oa||0);
     if (r.ca > 0 && surplusRefugio > 0){
@@ -908,15 +917,20 @@ function renderResults(){
 function buildCompactExistenciasTable(rows){
   let html = '<table class="compact-list compact-table"><thead><tr><th>Insumo</th><th>Unid.</th><th class="num">Refugio</th><th class="num">Álamos</th></tr></thead><tbody>';
   rows.forEach((r,i) => {
+    const ok = datosOk(r);
     const rs = fmt(r.sr)||'0', ro = fmt(r.or)||'0', as = fmt(r.sa)||'0', ao = fmt(r.oa)||'0';
+    const celdaR = ok ? `<b>${rs}</b><span style="color:var(--muted)"> / ${ro}</span>` : '<span style="color:var(--muted)" title="La captura no trae este dato">—</span>';
+    const celdaA = ok ? `<b>${as}</b><span style="color:var(--muted)"> / ${ao}</span>` : '<span style="color:var(--muted)" title="La captura no trae este dato">—</span>';
     html += `<tr${i%2?' class=alt':''}>
       <td>${r.i}</td>
       <td>${r.u||''}</td>
-      <td class="num"><b>${rs}</b><span style="color:var(--muted)"> / ${ro}</span></td>
-      <td class="num"><b>${as}</b><span style="color:var(--muted)"> / ${ao}</span></td>
+      <td class="num">${celdaR}</td>
+      <td class="num">${celdaA}</td>
     </tr>`;
   });
   html += '</tbody></table>';
+  const sinDatos = rows.filter(r => !datosOk(r)).length;
+  if (sinDatos) html += `<p style="font-size:12px;color:var(--muted);margin:10px 0 0;">${sinDatos} de ${rows.length} insumos salen con “—” porque la captura no trae su stock u óptimo. Con “Leer inventario” aparecen completos.</p>`;
   return html;
 }
 
