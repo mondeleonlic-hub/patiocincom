@@ -935,6 +935,21 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .ph-toolbar .ph .bg{margin-left:auto;border-left:1px solid #e0ddd4;padding-left:16px;}
 .ph-toolbar .filtros{border-bottom:none;margin-bottom:0;}
 .ph-toolbar #resumen-efec-nom .card{background:transparent;border:none;box-shadow:none;padding:0!important;margin-bottom:0!important;gap:20px!important;}
+/* Encabezado de Comisiones en una sola línea (escritorio) */
+#pnl-datos .ph-toolbar .ph{align-items:center}
+#pnl-datos #datos-sem-sel{margin:0!important}
+#pnl-datos #resumen-efec-nom .card{gap:18px!important;align-items:center!important}
+@media(min-width:769px){
+  #pnl-datos #resumen-efec-nom .card{flex-wrap:nowrap!important}
+  #pnl-datos #resumen-efec-nom .card>div{white-space:nowrap}
+  #pnl-datos .ph-toolbar .ph #resumen-efec-nom{min-width:max-content}
+}
+#pnl-datos #resumen-efec-nom .card>div:last-child{margin-left:0!important;padding:4px 10px!important}
+@media(min-width:1101px){
+  #pnl-datos .ph-toolbar .ph h2{font-size:16px}
+  #pnl-datos .ph-toolbar .ph .bg{flex-wrap:nowrap;flex-shrink:0;gap:6px}
+  #pnl-datos .ph-toolbar .ph .bg .btn{padding:8px 12px;font-size:12px;white-space:nowrap}
+}
 @media(max-width:768px){
   .ph-toolbar .ph #resumen-efec-nom,.ph-toolbar .ph .bg{border-left:none;padding-left:0;margin-left:0;}
   #crm-layout{flex-direction:column!important;}
@@ -4086,7 +4101,7 @@ function syncSemana(v){
   const s=v||"";
   const lbl=s?"Semana "+s:"—";
   const el=id=>document.getElementById(id);
-  if(el("ptit"))el("ptit").textContent=s?"Semana "+s+" — datos cargados ✓":"Sin datos cargados";
+  if(el("ptit"))el("ptit").textContent=s?"Semana "+s+" ✓":"Sin datos cargados";
   if(el("stit"))el("stit").textContent=s?"Tickets — Semana "+s:"Tickets";
   if(el("flujo-sem-lbl"))el("flujo-sem-lbl").textContent=lbl;
   if(el("coord-sem-lbl"))el("coord-sem-lbl").textContent=lbl;
@@ -5002,15 +5017,13 @@ function renderResumenEfectivoNomina(){
   box.innerHTML=`
     <div class="card" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:10px;padding:10px 14px">
       <div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:1px">Efectivo de la semana</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:1px" title="Según Flujo">Efectivo (Flujo)</div>
         <div style="font-size:14px;font-weight:700;color:var(--gold)">${fmt(efectivo)}</div>
-        <div style="font-size:9px;color:#aaa">Según Flujo</div>
-      </div>
+              </div>
       <div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:1px">Total a pagar (nómina)</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#888;margin-bottom:1px" title="Según esta tabla">Nómina a pagar</div>
         <div style="font-size:14px;font-weight:700;color:#1c3a61">${fmt(nomina)}</div>
-        <div style="font-size:9px;color:#aaa">Según esta tabla</div>
-      </div>
+              </div>
       <div style="margin-left:auto;background:${ok?"#eafaf1":"#fdecea"};color:${ok?"#1B5E20":"#A32D2D"};border-radius:9px;padding:6px 12px;text-align:right">
         <div style="font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;opacity:.8">${ok?"Sobra":"Falta"}</div>
         <div style="font-size:15px;font-weight:800">${fmt(Math.abs(dif))}</div>
