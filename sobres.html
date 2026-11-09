@@ -3971,6 +3971,27 @@ function pcArreglarSucDobles(lista){
       if(otra&&sucs.includes(otra)&&(!a||a.s===otra)&&(!b||b.s===otra)){lista[i].sucursal=otra;}
     });
   });
+  pcFoodMerchUnaVez(lista);
+  return lista;
+}
+// El reporte trae Food y Merch UNA vez por persona, pero al importar ese monto
+// se copiaba a cada fila de quien trabaja en 2 sucursales (se cobraba doble).
+// Deja el monto solo en una fila (Refugio si la tiene) y en 0 las demás.
+// Si los montos son distintos entre filas, se suman en esa fila.
+function pcFoodMerchUnaVez(lista){
+  const porNom={};
+  lista.forEach(r=>{const k=normN(r.nombre||"");if(k)(porNom[k]=porNom[k]||[]).push(r);});
+  Object.values(porNom).forEach(fs=>{
+    if(fs.length<2)return;
+    const dest=fs.find(r=>r.sucursal==="PC Refugio")||fs[0];
+    ["food","merch"].forEach(f=>{
+      const vals=fs.map(r=>num(r[f])).filter(v=>v>0);
+      if(!vals.length)return;
+      const iguales=vals.every(v=>Math.abs(v-vals[0])<0.01);
+      const monto=iguales?vals[0]:vals.reduce((a,v)=>a+v,0);
+      fs.forEach(r=>{r[f]=r===dest?monto:0;});
+    });
+  });
   return lista;
 }
 function dMpp(d){return (d&&(d.montoPorPago||d.total/d.numPagos))||0;}
