@@ -3957,6 +3957,19 @@ function normN(s){return String(s||"").toLowerCase().replace(/[áàä]/g,"a").re
 // Una persona puede tener varias deudas: la principal con su nombre y las demás como "Nombre##id"
 // Si alguien sale dos veces con la MISMA sucursal (p. ej. Gemini no leyó la sucursal y usó la del perfil),
 // la fila que está rodeada de lavadores de otra sucursal se pasa a esa sucursal.
+// Quien sale en 2 sucursales: el reporte trae su food/merch una sola vez, pero al leerlo a veces
+// se repite en ambas filas (y se cobraba doble). Si las dos filas traen el mismo monto, se deja en una.
+function pcUnaVezPorPersona(lista){
+  const porNom={};lista.forEach(r=>{const k=normN(r.nombre||"");if(k)(porNom[k]=porNom[k]||[]).push(r);});
+  Object.values(porNom).forEach(fs=>{
+    if(fs.length<2)return;
+    ["food","merch"].forEach(f=>{
+      const con=fs.filter(r=>num(r[f])>0);
+      if(con.length>1&&con.every(r=>num(r[f])===num(con[0][f])))con.slice(1).forEach(r=>{r[f]="";});
+    });
+  });
+  return lista;
+}
 function pcArreglarSucDobles(lista){
   const sucs=["PC Refugio","PC Álamos","La Loma"];
   const porNom={};lista.forEach((r,i)=>{const k=normN(r.nombre||"");if(k)(porNom[k]=porNom[k]||[]).push(i);});
@@ -4217,7 +4230,7 @@ async function runPDFextract(data){
       : parsePatioCincoText(visualLines,detectedPageW);
     if(!newRows.length){setSt("err","❌ No se encontraron lavadores. Verifica el formato del PDF.");return;}
 
-    rows=pcArreglarSucDobles(newRows);
+    rows=pcUnaVezPorPersona(pcArreglarSucDobles(newRows));
     rows.forEach(r=>{
       if(r.nombre&&r.sucursal){
         if(!perfiles[r.nombre])perfiles[r.nombre]={sucursal:r.sucursal,pct:r.pct};
@@ -4544,7 +4557,7 @@ REGLAS DEL JSON:
       extraConcepto:""
     }));
 
-    pcArreglarSucDobles(rows);
+    pcArreglarSucDobles(rows);pcUnaVezPorPersona(rows);
     // actualizar perfiles con sucursal recién leída
     rows.forEach(r=>{
       if(r.nombre&&r.sucursal){
