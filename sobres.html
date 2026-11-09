@@ -4058,6 +4058,7 @@ document.querySelectorAll('#nav-grupos .tab').forEach(b=>b.addEventListener('cli
 function goTab(id){
   const pnl = document.getElementById("pnl-"+id); if(!pnl) return;
   nav_sync(id);
+  try{localStorage.setItem("pc_nav_ultima",id);}catch(e){}
   document.querySelectorAll(".pnl").forEach(p=>p.classList.remove("on"));
   pnl.classList.add("on");
   if(id==="sobres")renderS();if(id==="hist")renderH();
@@ -4094,6 +4095,7 @@ function syncSemana(v){
 }
 
 // ── SUB-TABS (Coordinadores) ───────────────────────────────────────────────
+let _navRestaurando=false;
 function goSubTab(id){
   document.querySelectorAll(".stab").forEach(b=>b.classList.remove("on"));
   const btn=document.querySelector(`.stab[data-st="${id}"]`);
@@ -4102,6 +4104,7 @@ function goSubTab(id){
   const spnl=document.getElementById("spnl-"+id);
   if(spnl)spnl.classList.add("on");
   if(id==="liquidaciones")renderLiquidaciones();
+  if(!_navRestaurando)try{localStorage.setItem("pc_nav_sub",id);}catch(e){}
 }
 
 
@@ -9053,8 +9056,20 @@ init().then(()=>{
   initBonosFood();
   initLiquidaciones();
   popularSelectores();
-  // Asegura que el tab Flujo esté activo al arrancar
-  nav_sync('flujo');
+  // Al recargar, regresa a la última pantalla que estaba abierta (si no, Flujo)
+  let _ult=null,_sub=null,_tk=null,_hor=null;
+  try{_ult=localStorage.getItem("pc_nav_ultima");_sub=localStorage.getItem("pc_nav_sub");_tk=localStorage.getItem("pc_nav_tk");_hor=localStorage.getItem("pc_nav_hor");}catch(e){}
+  if(_hor==="lav"||_hor==="coo"||_hor==="fie")horQuien=_hor;
+  if(_tk==="lav"||_tk==="coord")ticketsModo=_tk;
+  if(_ult&&_ult!=="flujo"&&document.getElementById("pnl-"+_ult)){
+    try{
+      _navRestaurando=true;
+      window.goTab(_ult);
+      if(_ult==="sobres"&&ticketsModo!=="lav"&&typeof setTicketsModo==="function")setTicketsModo(ticketsModo);
+      if(_ult==="coords"&&_sub&&document.getElementById("spnl-"+_sub))goSubTab(_sub);
+    }catch(e){console.warn(e);nav_sync('flujo');}
+    finally{_navRestaurando=false;}
+  } else nav_sync('flujo');
   // Sincronizar todos los labels con la semana real guardada
   const semVal=document.getElementById("sem").value;
   if(semVal)syncSemana(semVal);
@@ -12896,7 +12911,7 @@ function bcoordTicket(t,sem){
 }
 
 function setTicketsModo(m){
-  ticketsModo=m;
+  ticketsModo=m;try{localStorage.setItem("pc_nav_tk",m);}catch(e){}
   sobreSeleccionado=null;
   const b=document.getElementById("btn-imprimir-sel");if(b)b.style.display="none";
   document.querySelectorAll("#tk-modos .fbtn").forEach(x=>x.classList.toggle("on",x.dataset.m===m));
@@ -13625,7 +13640,7 @@ async function vaImagen(){
 }
 
 function setHorQuien(q){
-  horQuien=q;
+  horQuien=q;try{localStorage.setItem("pc_nav_hor",q);}catch(e){}
   document.querySelectorAll("#hr-quien .fbtn").forEach(b=>b.classList.toggle("on",b.dataset.q===q));
   document.getElementById("hr-lav").style.display=q==="lav"?"":"none";
   document.getElementById("hr-coo").style.display=q==="coo"?"":"none";
