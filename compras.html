@@ -962,15 +962,19 @@ function buildComprasTable(items, transferSet){
     const transferBtn = hasTransfer
       ? `<button class="transfer-icon" data-jump="${r._id}" title="Hay sugerencia de traspaso — ver" aria-label="Ver sugerencia de traspaso">${TRANSFER_ICON_SVG}</button>`
       : '';
+    const okSt = datosOk(r);
+    const stockHtml = `<div class="stock-detail" id="stock-${r._id}" style="display:none;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">` + (okSt
+      ? `Refugio: hay <b>${fmt(r.sr)||'0'}</b> / óptimo ${fmt(r.or)||'0'}<br>Álamos: hay <b>${fmt(r.sa)||'0'}</b> / óptimo ${fmt(r.oa)||'0'}`
+      : 'Esta captura no trae el stock de este insumo. Usa “Leer inventario” para verlo.') + `</div>`;
     html += `<tr${i%2?' class=alt':''}>
       <td>
         <div class="item-row-head">
           <button class="edit-icon" data-edit="${r._id}" title="Editar" aria-label="Editar ${escapeAttr(r.i)}">${EDIT_ICON_SVG}</button>
           <button class="edit-icon danger" data-delete="${r._id}" title="Eliminar renglón" aria-label="Eliminar ${escapeAttr(r.i)}">${DELETE_ICON_SVG}</button>
           ${transferBtn}
-          <span class="item-name">${r.i}${precio}</span>
+          <span class="item-name" data-stock="${r._id}" title="Ver existencias" style="cursor:pointer;">${r.i}${precio} <span style="color:var(--muted);font-size:10px;">▾</span></span>
         </div>
-        ${pres}${notas}${altHtml}
+        ${pres}${notas}${altHtml}${stockHtml}
       </td>
       <td><input type="text" class="qty-input unit-input" data-id="${r._id}" data-field="u" value="${escapeAttr(r.u||'')}" placeholder="—"></td>
       <td class="num"><input type="number" step="0.01" class="qty-input" data-id="${r._id}" data-field="cr" value="${r.cr||''}" placeholder="—"></td>
@@ -983,6 +987,12 @@ function buildComprasTable(items, transferSet){
 }
 
 function attachQtyHandlers(){
+  document.querySelectorAll('.item-name[data-stock]').forEach(el => {
+    el.onclick = () => {
+      const d = document.getElementById('stock-' + el.dataset.stock);
+      if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    };
+  });
   document.querySelectorAll('.qty-input').forEach(el => {
     el.onchange = () => {
       const r = workingRows.find(x => x._id === el.dataset.id);
