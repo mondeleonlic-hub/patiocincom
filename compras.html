@@ -703,6 +703,7 @@ async function runAnalysis(){
   if (sinCantidad.length){
     statusEl.textContent += ' Se omitieron sin cantidad a comprar: ' + sinCantidad.join(', ') + '.';
   }
+  todosInv = null;
   workingRows = Object.values(byName).map((r, idx) => Object.assign({_id: 'r'+idx}, r));
   analysisAt = Date.now();
   if (typeof deletedStack !== 'undefined') deletedStack.length = 0;
@@ -729,6 +730,7 @@ async function runInventario(){
     }
     const byName = {};
     rows.forEach(r => { byName[normalizeFull(r.i)] = r; });
+    todosInv = Array.isArray(d.todos) ? d.todos : null;
     const lista = Object.values(byName);
     workingRows = lista.map((r, idx) => Object.assign({_id: 'r'+idx}, r));
     analysisAt = Date.now();
@@ -769,15 +771,17 @@ function stampText(){
   return '· análisis del ' + new Date(analysisAt).toLocaleString('es-MX', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
 }
 let lastModified = 0, pushTimer = null, pulling = false;
+let todosInv = null; // inventario completo leído de la hoja (para Existencias)
 function persistLast(){
   lastModified = Date.now();
-  const payload = { t: analysisAt || lastModified, m: lastModified, rows: workingRows };
+  const payload = { t: analysisAt || lastModified, m: lastModified, rows: workingRows, todos: todosInv };
   try { localStorage.setItem(LAST_KEY, JSON.stringify(payload)); } catch(e){}
   clearTimeout(pushTimer);
   pushTimer = setTimeout(() => { api('actual_set', { data: payload }).catch(e => console.warn('No se pudo sincronizar la lista', e)); }, 1500);
 }
 function applyList(d, msg){
   workingRows = d.rows;
+  todosInv = Array.isArray(d.todos) ? d.todos : null;
   analysisAt = d.t || 0;
   lastModified = d.m || d.t || 0;
   statusEl.className = 'status';
@@ -941,27 +945,27 @@ function renderResults(fromSync){
   if (!rows.length){
     existenciasBody.innerHTML = '<div class="empty">Sube y analiza capturas para ver existencias.</div>';
   } else {
-    existenciasBody.innerHTML = buildCompactExistenciasTable(rows);
+    existenciasBody.innerHTML = buildCompactExistenciasTable(todosInv && todosInv.length ? todosInv.slice().sort((a,b)=>String(a.i).localeCompare(String(b.i),'es')) : rows, !!(todosInv && todosInv.length));
   }
 }
 
-function buildCompactExistenciasTable(rows){
+function buildCompactExistenciasTable(rows, completo){
   let html = '<table class="compact-list compact-table"><thead><tr><th>Insumo</th><th>Unid.</th><th class="num">Refugio</th><th class="num">Álamos</th></tr></thead><tbody>';
   rows.forEach((r,i) => {
-    const ok = datosOk(r);
+    const ok = completo || datosOk(r);
     const rs = fmt(r.sr)||'0', ro = fmt(r.or)||'0', as = fmt(r.sa)||'0', ao = fmt(r.oa)||'0';
-    const celdaR = ok ? `<b>${rs}</b><span style="color:var(--muted)"> / ${ro}</span>` : '<span style="color:var(--muted)" title="La captura no trae este dato">—</span>';
-    const celdaA = ok ? `<b>${as}</b><span style="color:var(--muted)"> / ${ao}</span>` : '<span style="color:var(--muted)" title="La captura no trae este dato">—</span>';
+    const celdaR = ok ? `<b>${rs}</b><span style="color:var(--muted)"> / ${ro}</span>` : '<span style="color:var(--muted);font-style:italic" title="Dato dudoso: la captura no lo trae completo">'+rs+' / '+ro+' *</span>';
+    const celdaA = ok ? `<b>${as}</b><span style="color:var(--muted)"> / ${ao}</span>` : '<span style="color:var(--muted);font-style:italic" title="Dato dudoso: la captura no lo trae completo">'+as+' / '+ao+' *</span>';
     html += `<tr${i%2?' class=alt':''}>
-      <td>${r.i}</td>
+      <td${r.x?' style="opacity:.5"':''}>${r.i}${r.x?' (inactivo)':''}</td>
       <td>${r.u||''}</td>
       <td class="num">${celdaR}</td>
       <td class="num">${celdaA}</td>
     </tr>`;
   });
   html += '</tbody></table>';
-  const sinDatos = rows.filter(r => !datosOk(r)).length;
-  if (sinDatos) html += `<p style="font-size:12px;color:var(--muted);margin:10px 0 0;">${sinDatos} de ${rows.length} insumos salen con “—” porque la captura no trae su stock u óptimo. Con “Leer inventario” aparecen completos.</p>`;
+  const sinDatos = completo ? 0 : rows.filter(r => !datosOk(r)).length;
+  if (sinDatos) html += `<p style="font-size:12px;color:var(--muted);margin:10px 0 0;">${sinDatos} de ${rows.length} insumos llevan * porque la captura no trae bien su stock u óptimo. Con “Leer inventario” aparecen completos.</p>`;
   return html;
 }
 
