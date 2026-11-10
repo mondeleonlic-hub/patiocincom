@@ -736,11 +736,7 @@ async function runInventario(){
     analysisAt = Date.now();
     if (typeof deletedStack !== 'undefined') deletedStack.length = 0;
     let msg = `Listo — ${lista.length} insumos con compra, de ${d.leidos} leídos en el inventario.`;
-    let warn = false;
-    if (lista.length !== rows.length){ warn = true; msg += ` ⚠ ${rows.length - lista.length} nombres repetidos se juntaron.`; }
-    if ((d.inactivos||[]).length){ warn = true; msg += ' Omitidos por estar INACTIVOS: ' + d.inactivos.join(', ') + '.'; }
-    if ((d.difs||[]).length){ warn = true; msg += ' ⚠ No coincide con COMPRAS_SEM_ALAMOS de la hoja: ' + d.difs.join(', ') + '.'; }
-    statusEl.className = warn ? 'status err' : 'status';
+    statusEl.className = 'status';
     statusEl.textContent = msg;
     renderResults();
   } catch(e){
@@ -1007,9 +1003,8 @@ function buildComprasTable(items, transferSet){
       ? `<button class="transfer-icon" data-jump="${r._id}" title="Hay sugerencia de traspaso — ver" aria-label="Ver sugerencia de traspaso">${TRANSFER_ICON_SVG}</button>`
       : '';
     const sf = stockFor(r);
-    const stockHtml = `<div class="stock-detail" id="stock-${r._id}" style="display:none;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">` + (sf.ok
-      ? `Refugio: <b>${fmt(sf.sr)||'0'}</b> / ${fmt(sf.or)||'0'} · Álamos: <b>${fmt(sf.sa)||'0'}</b> / ${fmt(sf.oa)||'0'}`
-      : `<i>Refugio: ${fmt(sf.sr)||'0'} / ${fmt(sf.or)||'0'} · Álamos: ${fmt(sf.sa)||'0'} / ${fmt(sf.oa)||'0'} *</i> (dato dudoso de la captura; usa “Leer inventario”)`) + `</div>`;
+    const stCell = (h, o) => `<div class="stock-detail" data-row="${r._id}" style="display:none;font-size:12px;color:var(--muted);margin-top:3px;${sf.ok?'':'font-style:italic;'}">${fmt(h)||'0'} / ${fmt(o)||'0'}${sf.ok?'':' *'}</div>`;
+    const stockHtml = '';
     html += `<tr${i%2?' class=alt':''}>
       <td>
         <div class="item-row-head">
@@ -1021,8 +1016,8 @@ function buildComprasTable(items, transferSet){
         ${pres}${notas}${altHtml}${stockHtml}
       </td>
       <td><input type="text" class="qty-input unit-input" data-id="${r._id}" data-field="u" value="${escapeAttr(r.u||'')}" placeholder="—"></td>
-      <td class="num"><input type="number" step="0.01" class="qty-input" data-id="${r._id}" data-field="cr" value="${r.cr||''}" placeholder="—"></td>
-      <td class="num"><input type="number" step="0.01" class="qty-input" data-id="${r._id}" data-field="ca" value="${r.ca||''}" placeholder="—"></td>
+      <td class="num"><input type="number" step="0.01" class="qty-input" data-id="${r._id}" data-field="cr" value="${r.cr||''}" placeholder="—">${stCell(sf.sr, sf.or)}</td>
+      <td class="num"><input type="number" step="0.01" class="qty-input" data-id="${r._id}" data-field="ca" value="${r.ca||''}" placeholder="—">${stCell(sf.sa, sf.oa)}</td>
     </tr>
     <tr class="edit-row" id="edit-${r._id}" style="display:none;"><td colspan="4"></td></tr>`;
   });
@@ -1033,8 +1028,9 @@ function buildComprasTable(items, transferSet){
 function attachQtyHandlers(){
   document.querySelectorAll('.item-name[data-stock]').forEach(el => {
     el.onclick = () => {
-      const d = document.getElementById('stock-' + el.dataset.stock);
-      if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+      document.querySelectorAll('.stock-detail[data-row="' + el.dataset.stock + '"]').forEach(d => {
+        d.style.display = d.style.display === 'none' ? 'block' : 'none';
+      });
     };
   });
   document.querySelectorAll('.qty-input').forEach(el => {
