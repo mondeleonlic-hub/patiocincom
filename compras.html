@@ -973,6 +973,15 @@ const EDIT_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const TRANSFER_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l-4 4 4 4"/><path d="M3 14h13a4 4 0 0 0 4-4"/><path d="M17 14l4-4-4-4"/><path d="M21 10H8a4 4 0 0 0-4 4"/></svg>';
 const DELETE_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
 
+function stockFor(r){
+  if (todosInv && todosInv.length){
+    const k = normalizeFull(r.i);
+    const t = todosInv.find(x => normalizeFull(x.i) === k);
+    if (t) return { sr:t.sr, sa:t.sa, or:t.or, oa:t.oa, ok:true };
+  }
+  return { sr:r.sr, sa:r.sa, or:r.or, oa:r.oa, ok:datosOk(r) };
+}
+
 function buildComprasTable(items, transferSet){
   let html = '<table class="compact-list"><thead><tr><th>Insumo</th><th>Unidad</th><th class="num">Refugio</th><th class="num">Álamos</th></tr></thead><tbody>';
   items.forEach((r,i) => {
@@ -997,10 +1006,10 @@ function buildComprasTable(items, transferSet){
     const transferBtn = hasTransfer
       ? `<button class="transfer-icon" data-jump="${r._id}" title="Hay sugerencia de traspaso — ver" aria-label="Ver sugerencia de traspaso">${TRANSFER_ICON_SVG}</button>`
       : '';
-    const okSt = datosOk(r);
-    const stockHtml = `<div class="stock-detail" id="stock-${r._id}" style="display:none;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">` + (okSt
-      ? `Refugio: hay <b>${fmt(r.sr)||'0'}</b> / óptimo ${fmt(r.or)||'0'}<br>Álamos: hay <b>${fmt(r.sa)||'0'}</b> / óptimo ${fmt(r.oa)||'0'}`
-      : 'Esta captura no trae el stock de este insumo. Usa “Leer inventario” para verlo.') + `</div>`;
+    const sf = stockFor(r);
+    const stockHtml = `<div class="stock-detail" id="stock-${r._id}" style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">` + (sf.ok
+      ? `Refugio: hay <b>${fmt(sf.sr)||'0'}</b> / óptimo ${fmt(sf.or)||'0'} · Álamos: hay <b>${fmt(sf.sa)||'0'}</b> / óptimo ${fmt(sf.oa)||'0'}`
+      : `<i>Refugio: ${fmt(sf.sr)||'0'} / ${fmt(sf.or)||'0'} · Álamos: ${fmt(sf.sa)||'0'} / ${fmt(sf.oa)||'0'} *</i> (dato dudoso de la captura; usa “Leer inventario”)`) + `</div>`;
     html += `<tr${i%2?' class=alt':''}>
       <td>
         <div class="item-row-head">
