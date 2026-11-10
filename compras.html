@@ -166,6 +166,15 @@
   .alt-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;border:none;flex-shrink:0;background:#faf3df;cursor:pointer;color:#9a6b00;}
   .alt-icon.on{background:var(--gold);color:#fff;}
   .alt-icon svg{width:16px;height:16px;display:block;}
+  .icon-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--muted);margin:-4px 0 10px;}
+  .icon-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .icon-legend svg{width:14px;height:14px;}
+  .alt-modal-bg{position:fixed;inset:0;background:rgba(20,20,20,.35);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;}
+  .alt-modal{background:#fff;border-radius:12px;padding:18px 18px 14px;max-width:340px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:13px;color:var(--navy);}
+  .alt-modal h4{margin:0 0 10px;font-size:14px;}
+  .alt-modal .am-row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--cream);}
+  .alt-modal .am-row span:first-child{color:var(--muted);}
+  .alt-modal .am-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
   .transfer-card.highlight{background:#dff0d3;border-color:var(--ok);}
 
   .edit-row td{background:#fdfaf1;padding:14px 10px;}
@@ -309,6 +318,7 @@
     <div id="panel-compras">
       <div id="movedSectionsTop"></div>
       <h2 class="section">Lista de compras por proveedor <span id="analysisStamp" style="font-weight:500;font-size:12px;color:var(--muted,#8a8578);text-transform:none;letter-spacing:0;"></span></h2>
+      <div id="iconLegend" class="icon-legend"></div>
       <div id="comprasBody"><div class="empty">Sube y analiza capturas para ver tu lista de compras.</div></div>
       <div class="grand-total" id="grandTotal" style="display:none;"></div>
       <button class="btn secondary" id="saveHistoryBtn" style="margin-top:14px;display:none;">💾 Guardar lista final en el historial</button>
@@ -1071,14 +1081,42 @@ function attachQtyHandlers(){
   });
 }
 
+(function(){
+  const L = document.getElementById('iconLegend'); if (!L) return;
+  L.innerHTML = `<span>${EDIT_ICON_SVG} Editar</span><span>${DELETE_ICON_SVG} Eliminar</span><span style="color:var(--ok)">${TRANSFER_ICON_SVG} Sugerencia de traspaso</span><span style="color:#9a6b00">${ALT_ICON_SVG} Proveedor alterno</span><span>▾ Ver existencias</span>`;
+})();
+function showAltModal(r){
+  const alt = getAlt(r.i); if (!alt) return;
+  const inf = getInfo(r.i), ov = getOverride(r.i) || {};
+  const prinProv = findProvider(r.i, Object.assign({}, r, {useAlt:false}));
+  const usando = !!r.useAlt;
+  const money = v => v ? '$' + Number(v).toFixed(2) : '—';
+  const row = (k, a, b) => `<div class="am-row"><span>${k}</span><span style="text-align:right">${a}${b!==undefined?' <span style="color:var(--muted)">/ '+b+'</span>':''}</span></div>`;
+  const bg = document.createElement('div'); bg.className = 'alt-modal-bg';
+  bg.innerHTML = `<div class="alt-modal" role="dialog" aria-label="Proveedor alterno">
+    <h4>${escapeAttr(r.i)}</h4>
+    <div class="am-row" style="color:var(--muted);font-size:11px;border:none"><span></span><span>Alterno / Principal</span></div>
+    ${row('Proveedor', alt.proveedor || '—', prinProv || '—')}
+    ${row('Marca', alt.marca || '—', ov.marca || inf.marca || '—')}
+    ${row('Presentación', alt.presentacion || '—', ov.presentacion || inf.presentacion || '—')}
+    ${row('Precio', money(alt.precio), money(ov.precio || inf.precio))}
+    <div class="am-btns">
+      <button class="btn" type="button" data-am="no" style="background:#fff;color:var(--navy);border:1px solid var(--gold);">Cancelar</button>
+      <button class="btn" type="button" data-am="yes">${usando ? 'Volver al principal' : 'Comprar con el alterno'}</button>
+    </div></div>`;
+  const close = () => bg.remove();
+  bg.addEventListener('click', e => { if (e.target === bg) close(); });
+  bg.querySelector('[data-am=no]').onclick = close;
+  bg.querySelector('[data-am=yes]').onclick = () => { close(); r.useAlt = !usando; renderResults(); };
+  document.body.appendChild(bg);
+}
 function attachAltHandlers(){
   document.querySelectorAll('[data-usealt]').forEach(el => {
     el.onclick = (e) => {
       e.stopPropagation();
       const r = workingRows.find(x => x._id === el.dataset.usealt);
       if (!r) return;
-      r.useAlt = el.dataset.val === '1';
-      renderResults();
+      showAltModal(r);
     };
   });
 }
