@@ -1007,8 +1007,8 @@ function buildComprasTable(items, transferSet){
       ? `<button class="transfer-icon" data-jump="${r._id}" title="Hay sugerencia de traspaso — ver" aria-label="Ver sugerencia de traspaso">${TRANSFER_ICON_SVG}</button>`
       : '';
     const sf = stockFor(r);
-    const stockHtml = `<div class="stock-detail" id="stock-${r._id}" style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">` + (sf.ok
-      ? `Refugio: hay <b>${fmt(sf.sr)||'0'}</b> / óptimo ${fmt(sf.or)||'0'} · Álamos: hay <b>${fmt(sf.sa)||'0'}</b> / óptimo ${fmt(sf.oa)||'0'}`
+    const stockHtml = `<div class="stock-detail" id="stock-${r._id}" style="display:none;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">` + (sf.ok
+      ? `Refugio: <b>${fmt(sf.sr)||'0'}</b> / ${fmt(sf.or)||'0'} · Álamos: <b>${fmt(sf.sa)||'0'}</b> / ${fmt(sf.oa)||'0'}`
       : `<i>Refugio: ${fmt(sf.sr)||'0'} / ${fmt(sf.or)||'0'} · Álamos: ${fmt(sf.sa)||'0'} / ${fmt(sf.oa)||'0'} *</i> (dato dudoso de la captura; usa “Leer inventario”)`) + `</div>`;
     html += `<tr${i%2?' class=alt':''}>
       <td>
