@@ -163,6 +163,9 @@
     background:#e8f5ee;cursor:pointer;color:var(--ok);
   }
   .transfer-icon svg{width:16px;height:16px;display:block;}
+  .alt-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;border:none;flex-shrink:0;background:#faf3df;cursor:pointer;color:#9a6b00;}
+  .alt-icon.on{background:var(--gold);color:#fff;}
+  .alt-icon svg{width:16px;height:16px;display:block;}
   .transfer-card.highlight{background:#dff0d3;border-color:var(--ok);}
 
   .edit-row td{background:#fdfaf1;padding:14px 10px;}
@@ -982,6 +985,7 @@ function buildCompactExistenciasTable(rows, completo){
 }
 
 const EDIT_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+const ALT_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16"/><path d="M3 16l4 4 4-4"/><path d="M17 20V4"/><path d="M13 8l4-4 4 4"/></svg>';
 const TRANSFER_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l-4 4 4 4"/><path d="M3 14h13a4 4 0 0 0 4-4"/><path d="M17 14l4-4-4-4"/><path d="M21 10H8a4 4 0 0 0-4 4"/></svg>';
 const DELETE_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
 
@@ -1009,10 +1013,12 @@ function buildComprasTable(items, transferSet){
     const precioVal = usingAlt ? alt.precio : ovPrecio;
     const precio = precioVal ? ` · $${Number(precioVal).toFixed(2)}/${r.u||'u'}` : '';
     let altHtml = '';
-    if (alt && usingAlt){
-      altHtml = `<div class="item-alt using">Comprando con el alterno${alt.presentacion?' ('+alt.presentacion+')':''} <button type="button" class="alt-btn" data-usealt="${r._id}" data-val="0">Volver al principal</button></div>`;
-    } else if (alt){
-      altHtml = `<div class="item-alt">Alterno: ${alt.proveedor}${alt.presentacion?' · '+alt.presentacion:''}${alt.precio?' · $'+Number(alt.precio).toFixed(2):''} <button type="button" class="alt-btn" data-usealt="${r._id}" data-val="1">Comprar con el alterno</button></div>`;
+    let altBtn = '';
+    if (alt){
+      const info = `${alt.proveedor}${alt.presentacion?' · '+alt.presentacion:''}${alt.precio?' · $'+Number(alt.precio).toFixed(2):''}`;
+      altBtn = usingAlt
+        ? `<button type="button" class="alt-icon on" data-usealt="${r._id}" data-val="0" title="Comprando con el alterno (${escapeAttr(info)}) — volver al principal" aria-label="Volver al proveedor principal">${ALT_ICON_SVG}</button>`
+        : `<button type="button" class="alt-icon" data-usealt="${r._id}" data-val="1" title="Comprar con el alterno: ${escapeAttr(info)}" aria-label="Comprar con el alterno">${ALT_ICON_SVG}</button>`;
     }
     const hasTransfer = transferSet && transferSet.has(r._id);
     const transferBtn = hasTransfer
@@ -1026,7 +1032,7 @@ function buildComprasTable(items, transferSet){
         <div class="item-row-head">
           <button class="edit-icon" data-edit="${r._id}" title="Editar" aria-label="Editar ${escapeAttr(r.i)}">${EDIT_ICON_SVG}</button>
           <button class="edit-icon danger" data-delete="${r._id}" title="Eliminar renglón" aria-label="Eliminar ${escapeAttr(r.i)}">${DELETE_ICON_SVG}</button>
-          ${transferBtn}
+          ${transferBtn}${altBtn}
           <span class="item-name" data-stock="${r._id}" title="Ver existencias" style="cursor:pointer;">${r.i}${precio} <span style="color:var(--muted);font-size:10px;">▾</span></span>
         </div>
         ${pres}${notas}${altHtml}${stockHtml}
