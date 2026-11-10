@@ -450,6 +450,7 @@ async function init(){
   await loadOverrides();
   renderCatalogTab();
   restoreLast();
+  pullShared();
   loadUsageBadge();
 }
 init();
@@ -767,21 +768,46 @@ function stampText(){
   if (!analysisAt) return '';
   return '· análisis del ' + new Date(analysisAt).toLocaleString('es-MX', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
 }
+let lastModified = 0, pushTimer = null, pulling = false;
 function persistLast(){
-  try { localStorage.setItem(LAST_KEY, JSON.stringify({ t: analysisAt || Date.now(), rows: workingRows })); } catch(e){}
+  lastModified = Date.now();
+  const payload = { t: analysisAt || lastModified, m: lastModified, rows: workingRows };
+  try { localStorage.setItem(LAST_KEY, JSON.stringify(payload)); } catch(e){}
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => { api('actual_set', { data: payload }).catch(e => console.warn('No se pudo sincronizar la lista', e)); }, 1500);
+}
+function applyList(d, msg){
+  workingRows = d.rows;
+  analysisAt = d.t || 0;
+  lastModified = d.m || d.t || 0;
+  statusEl.className = 'status';
+  statusEl.textContent = msg + ' (' + new Date(d.t || d.m).toLocaleString('es-MX', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ').';
+  renderResults(true);
 }
 function restoreLast(){
   try {
     const d = JSON.parse(localStorage.getItem(LAST_KEY) || 'null');
     if (d && Array.isArray(d.rows) && d.rows.length){
-      workingRows = d.rows;
-      analysisAt = d.t || 0;
-      statusEl.className = 'status';
-      statusEl.textContent = 'Último análisis recuperado (' + new Date(d.t).toLocaleString('es-MX', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ').';
-      renderResults();
+      applyList(d, 'Último análisis recuperado');
     }
   } catch(e){}
 }
+// Trae la lista compartida; si es más nueva que la de esta compu, la usa.
+async function pullShared(){
+  if (pulling) return;
+  pulling = true;
+  try {
+    const r = await api('actual_get');
+    const d = r && r.data;
+    if (d && Array.isArray(d.rows) && d.rows.length && (d.m || 0) > lastModified){
+      applyList(d, 'Lista sincronizada');
+    }
+  } catch(e){ console.warn('No se pudo traer la lista compartida', e); }
+  pulling = false;
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) pullShared(); });
+window.addEventListener('focus', pullShared);
+setInterval(() => { if (!document.hidden) pullShared(); }, 30000);
 
 // Las capturas a veces no traen las columnas de stock/óptimo y la lectura las rellena con 0.
 // Un renglón es confiable solo si compra = óptimo − stock en cada sucursal.
@@ -791,9 +817,9 @@ function datosOk(r){
   return Math.abs(er - n(r.cr)) <= 0.06 && Math.abs(ea - n(r.ca)) <= 0.06;
 }
 
-function renderResults(){
+function renderResults(fromSync){
   const rows = workingRows;
-  persistLast();
+  if (!fromSync) persistLast();
   const stampEl = document.getElementById('analysisStamp'); if (stampEl) stampEl.textContent = stampText();
 
   const transferSet = new Set();
