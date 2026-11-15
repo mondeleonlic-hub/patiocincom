@@ -4415,7 +4415,9 @@ function parseCRMText(visualLines,pageW){
   let inMerch=false;
   for(const l of visualLines){
     const rItems=l.items.filter(i=>i.x>=MERCH_X_MIN);
-    const rTxt=rItems.map(i=>i.str).join(' ').trim();
+    // En la misma franja puede venir la columna SUDADERAS ("-195 -$195") antes del
+    // nombre del merch; esos montos sueltos al inicio se quitan.
+    const rTxt=rItems.map(i=>i.str).join(' ').trim().replace(/^(?:-?\$?-?[\d,]+(?:\.\d+)?\s+)+(?=[A-Za-záéíóúüñÁÉÍÓÚÜÑ])/,'');
     if(!rTxt) continue;
     if(/^MERCH\s*\(/i.test(rTxt)){ inMerch=true; continue; }
     if(/^FOOD\s*\(/i.test(rTxt)){ inMerch=false; continue; } // tabla de food de oficina, no es MERCH
