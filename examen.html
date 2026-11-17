@@ -66,7 +66,7 @@ var Q=[
 ];
 var N=Q.length,PASS=16,SUC=["Refugio","Álamos","La Loma"];
 var app=document.getElementById('app'),db=null,uid=null,st={v:'load'};
-var now=new Date(),MES=now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2);
+var now=new Date(),MES=now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2),RONDA='2026-11-17',CIERRE=new Date('2026-11-17T22:00:00-06:00');
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
@@ -74,7 +74,7 @@ function R(){
  var h='<h1>Examen <b>Recepción</b></h1>';
  if(st.v==='load')h+='<div class="sub">Cargando…</div>';
  else if(st.v==='done')h+=doneV();
- else if(st.v==='start')h+=startV();
+ else if(st.v==='start')h+=(new Date()>CIERRE?'<div class="card"><b>Esta auditoría ya cerró.</b><br>El plazo terminó a las 10:00 p.m. Habla con Montse.</div>':startV());
  else if(st.v==='q')h+=qV();
  else if(st.v==='end')h+=endV();
  app.innerHTML=h;window.scrollTo(0,0)}
@@ -86,15 +86,15 @@ function endV(){var r=st.res,ok=r.score>=PASS;
  '<div class="msg" style="margin:0 0 8px">'+(st.saved===true?'✓ Tu resultado quedó guardado.':st.saved===false?'<span class="err">No se pudo guardar automáticamente.</span> Envía el código de abajo por WhatsApp.':'Guardando…')+'</div>'+
  '<label>Código de resultado (mándalo por WhatsApp)</label><div class="code" id="cd">'+esc(code(r))+'</div><button class="btn o" id="cp">Copiar código</button>'+
  (r.wrong&&r.wrong.length?'<label style="margin-top:20px">Tus errores</label>'+r.wrong.map(function(w){return '<div class="rv"><b>'+(w.n)+'. '+esc(w.s)+'</b><div class="bad">✗ '+esc(w.a)+'</div><div class="good">✓ '+esc(w.c)+'</div></div>'}).join(''):'<div class="msg">Sin errores. Excelente.</div>')}
-function doneV(){var r=st.prev;return '<div class="sub">Ya presentaste el examen de este mes.</div><div class="score">'+r.score+'/'+N+'</div><div class="res '+(r.score>=PASS?'p':'f')+'">'+(r.score>=PASS?'APROBADO':'NO APROBADO')+'</div><label>Código de resultado</label><div class="code">'+esc(code(r))+'</div><div class="msg">Solo hay un intento por mes. Si crees que hay un error, habla con Montse.</div>'}
-function code(r){return 'EXAMEN RECEPCIÓN PC\n'+r.name+' · '+r.suc+'\nCalificación: '+r.score+'/'+N+' ('+Math.round(r.score/N*100)+'%) '+(r.score>=PASS?'APROBADO':'NO APROBADO')+'\nFecha: '+r.date+'\nMes: '+MES}
+function doneV(){var r=st.prev;return '<div class="sub">Ya presentaste el examen de este mes.</div><div class="score">'+r.score+'/'+N+'</div><div class="res '+(r.score>=PASS?'p':'f')+'">'+(r.score>=PASS?'APROBADO':'NO APROBADO')+'</div><label>Código de resultado</label><div class="code">'+esc(code(r))+'</div><div class="msg">Solo hay un intento por auditoría. Si crees que hay un error, habla con Montse.</div>'}
+function code(r){return 'EXAMEN RECEPCIÓN PC\n'+r.name+' · '+r.suc+'\nCalificación: '+r.score+'/'+N+' ('+Math.round(r.score/N*100)+'%) '+(r.score>=PASS?'APROBADO':'NO APROBADO')+'\nFecha: '+r.date+'\nAuditoría: '+RONDA}
 app.addEventListener('input',function(){var n=document.getElementById('nm'),s=document.getElementById('sc'),g=document.getElementById('go');if(n&&s&&g){st.name=n.value;st.suc=s.value;g.disabled=!(n.value.trim().length>2&&s.value)}});
 app.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
  if(t.id==='go'){
   st.name=document.getElementById('nm').value.trim();st.suc=document.getElementById('sc').value;
   function begin(){st.qs=shuffle(Q).map(function(q){var o=shuffle([q[1]].concat(q[2]));return{s:q[0],c:q[1],p:q[3],o:o}});
    st.i=0;st.sel=null;st.ans=[];st.v='q';R()}
-  if(fs){t.disabled=true;fs.collection('pc_examenes').doc(docId()).get().then(function(s){if(s.exists){var x=s.data();st.prev={name:x.name,suc:x.suc,score:x.score,date:x.date};st.v='done';R()}else begin()},function(){begin()})}else{var p=ls('pcx-'+MES);if(p){try{var o=JSON.parse(p);if(o&&o.date&&o.date!=='incompleto'){st.prev=o;st.v='done';R();return}}catch(x){}}begin()}}
+  if(fs){t.disabled=true;fs.collection('pc_examenes').doc(docId()).get().then(function(s){if(s.exists){var x=s.data();st.prev={name:x.name,suc:x.suc,score:x.score,date:x.date};st.v='done';R()}else begin()},function(){begin()})}else{var p=ls('pcx-'+RONDA);if(p){try{var o=JSON.parse(p);if(o&&o.date&&o.date!=='incompleto'){st.prev=o;st.v='done';R();return}}catch(x){}}begin()}}
  else if(t.dataset.k!=null){st.sel=+t.dataset.k;R()}
  else if(t.id==='nx'){st.ans.push(st.qs[st.i].o[st.sel]);st.sel=null;st.i++;if(st.i>=N)finish();else R()}
  else if(t.id==='cp'){var x=code(st.res);if(navigator.clipboard)navigator.clipboard.writeText(x).then(function(){t.textContent='Copiado ✓'},function(){sel()});else sel()}});
@@ -102,16 +102,16 @@ function sel(){try{var r=document.createRange();r.selectNodeContents(document.ge
 function finish(){var sc=0,wr=[];st.qs.forEach(function(q,i){if(st.ans[i]===q.c)sc++;else wr.push({n:i+1,s:q.s,a:st.ans[i],c:q.c})});
  var d=now.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'});
  st.res={name:st.name,suc:st.suc,score:sc,date:d,wrong:wr};
- ls('pcx-'+MES,JSON.stringify({name:st.name,suc:st.suc,score:sc,date:d}));
+ ls('pcx-'+RONDA,JSON.stringify({name:st.name,suc:st.suc,score:sc,date:d}));
  st.v='end';st.saved=null;R();save()}
 
 var FB={apiKey:"AIzaSyDXwdUwNo2_3LG9d5Kg9-AtPQR8fXzV-X8",authDomain:"montseflow.firebaseapp.com",projectId:"montseflow",storageBucket:"montseflow.firebasestorage.app",messagingSenderId:"249314346746",appId:"1:249314346746:web:0d39b74f90dad6eff22b43"},fs=null;
 function lsc(src){return new Promise(function(a,b){var s=document.createElement('script');s.src=src;s.onload=a;s.onerror=b;document.head.appendChild(s)})}
 function slug(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
-function docId(){return MES+'_'+slug(st.name)+'_'+slug(st.suc)}
+function docId(){return RONDA+'_'+slug(st.name)+'_'+slug(st.suc)}
 function save(){if(!fs){st.saved=false;R();return}
- var r=st.res;fs.collection('pc_examenes').doc(docId()).set({name:r.name,suc:r.suc,mes:MES,score:r.score,total:N,pass:r.score>=PASS,date:r.date,at:new Date().toISOString(),wrong:r.wrong.map(function(w){return w.n})}).then(function(){st.saved=true;R()},function(){st.saved=false;R()})}
-if(/reset=1/.test(location.search)){try{localStorage.removeItem('pcx-'+MES)}catch(e){}}
+ var r=st.res;fs.collection('pc_examenes').doc(docId()).set({name:r.name,suc:r.suc,mes:MES,ronda:RONDA,score:r.score,total:N,pass:r.score>=PASS,date:r.date,at:new Date().toISOString(),wrong:r.wrong.map(function(w){return w.n})}).then(function(){st.saved=true;R()},function(){st.saved=false;R()})}
+if(/reset=1/.test(location.search)){try{localStorage.removeItem('pcx-'+RONDA)}catch(e){}}
 R();
 lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js').then(function(){return lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js')}).then(function(){firebase.initializeApp(FB);fs=firebase.firestore()}).catch(function(){}).then(function(){st.v='start';R()});
 </script>
