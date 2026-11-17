@@ -110,7 +110,7 @@ function lsc(src){return new Promise(function(a,b){var s=document.createElement(
 function slug(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
 function docId(){return RONDA+'_'+slug(st.name)+'_'+slug(st.suc)}
 function save(){if(!fs){st.saved=false;R();return}
- var r=st.res;fs.collection('pc_examenes').doc(docId()).set({name:r.name,suc:r.suc,mes:MES,ronda:RONDA,score:r.score,total:N,pass:r.score>=PASS,date:r.date,at:new Date().toISOString(),wrong:r.wrong.map(function(w){return w.n})}).then(function(){st.saved=true;R()},function(){st.saved=false;R()})}
+ var r=st.res;fs.collection('pc_examenes').doc(docId()).set({name:r.name,suc:r.suc,mes:MES,ronda:RONDA,score:r.score,total:N,pass:r.score>=PASS,date:r.date,at:new Date().toISOString(),wrong:r.wrong.map(function(w){return {n:w.n,q:w.s,a:w.a,c:w.c}})}).then(function(){st.saved=true;R()},function(){st.saved=false;R()})}
 if(/reset=1/.test(location.search)){try{localStorage.removeItem('pcx-'+RONDA)}catch(e){}}
 R();
 lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js').then(function(){return lsc('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js')}).then(function(){firebase.initializeApp(FB);fs=firebase.firestore()}).catch(function(){}).then(function(){st.v='start';R()});
