@@ -66,7 +66,7 @@ var Q=[
 ];
 var N=Q.length,PASS=16,SUC=["Refugio","Álamos","La Loma"];
 var app=document.getElementById('app'),db=null,uid=null,st={v:'load'};
-var now=new Date(),MES=now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2),RONDA='2026-11-17',CIERRE=new Date('2026-11-17T22:00:00-06:00');
+var now=new Date(),MES=now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2),RONDA=(/[?&]r=([0-9a-z-]{4,30})/.exec(location.search)||[0,'2026-11-17'])[1],CIERRE=RONDA==='2026-11-17'?new Date('2026-11-17T22:00:00-06:00'):new Date('2100-01-01');
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
