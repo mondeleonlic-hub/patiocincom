@@ -851,6 +851,46 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .fd-coincide .fd-chk{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;}
 .fd-chk-box{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border:1.5px solid #d8d4c8;border-radius:6px;background:#fff;color:transparent;font-size:12px;font-weight:900;transition:all .15s;pointer-events:none;}
 .fd-coincide .fd-chk:checked + .fd-chk-box{background:#1e9e5a;border-color:#1e9e5a;color:#fff;}
+/* Tab desde el monto llega a la palomita: se ve el foco y Espacio/Enter la marcan */
+.fd-coincide .fd-chk:focus-visible + .fd-chk-box{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--gold);border-color:var(--gold);}
+/* Visor de la semana (derecha) */
+.fd-layout{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:14px;align-items:start;}
+.fd-visor{position:sticky;top:12px;background:#fff;border:0.5px solid #e5e2d8;border-radius:14px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.035);font-size:12px;}
+.fdv-t{font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#999;margin-bottom:6px;}
+.fdv-big{font-size:20px;font-weight:800;color:#111;line-height:1.1;}
+.fdv-big small{font-size:12px;font-weight:600;color:#999;}
+.fdv-bar{height:4px;background:#f0ede4;border-radius:4px;margin:8px 0 12px;overflow:hidden;}
+.fdv-bar i{display:block;height:100%;background:#1e9e5a;border-radius:4px;transition:width .2s;}
+.fdv-grid{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 6px;align-items:center;}
+.fdv-h{font-size:9px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;text-align:center;}
+.fdv-d{font-size:11px;font-weight:600;color:#555;white-space:nowrap;padding-right:2px;}
+.fdv-c{display:flex;align-items:center;justify-content:space-between;gap:4px;border:1px solid #eee;border-radius:7px;padding:3px 6px;font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;color:#bbb;background:#fff;cursor:pointer;font-family:inherit;}
+.fdv-c:hover{border-color:#d8d4c8;}
+.fdv-c .dot{width:7px;height:7px;border-radius:50%;background:#ddd;flex:none;}
+.fdv-c.pend{color:#333;}
+.fdv-c.pend .dot{background:#e0a614;}
+.fdv-c.ok{color:#1e7a47;background:#f2faf5;border-color:#d4eedd;}
+.fdv-c.ok .dot{background:#1e9e5a;}
+.fdv-tot{border-top:1px solid #f0ede4;margin-top:12px;padding-top:10px;display:grid;gap:4px;}
+.fdv-tot div{display:flex;justify-content:space-between;font-size:11.5px;color:#666;}
+.fdv-tot b{color:#111;font-variant-numeric:tabular-nums;}
+.fdv-tot .fdv-sum{font-size:13px;color:#111;font-weight:800;margin-top:2px;}
+.fdv-ley{display:flex;gap:10px;margin-top:10px;font-size:9.5px;color:#999;}
+.fdv-ley span{display:flex;align-items:center;gap:4px;}
+.fdv-ley i{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.fd-nocuadra{display:block;margin:4px 0 0 auto;background:none;border:none;color:#bbb;font-size:9.5px;font-weight:700;cursor:pointer;padding:2px 0;font-family:inherit;}
+.fd-nocuadra:hover{color:#c53030;}
+.fd-cuadre{display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-top:6px;}
+.fd-cuadre-lbl{font-size:9.5px;font-weight:700;color:#888;}
+.fd-cuadre-inp{width:84px;text-align:right;font-size:11px;font-weight:700;padding:4px 6px;}
+.fd-cuadre-x{background:none;border:none;color:#ccc;cursor:pointer;font-size:11px;padding:0 2px;}
+.fd-dif{text-align:right;font-size:10.5px;font-weight:800;margin-top:3px;min-height:0;}
+.fd-dif.falta{color:#c53030;}.fd-dif.sobra{color:#b7791f;}.fd-dif.cuadra{color:#1e9e5a;}
+.fdv-c.dif{color:#c53030;background:#fdf3f3;border-color:#f3d3d3;}
+.fdv-c.dif .dot{background:#e53e3e;}
+.fdv-alerta{margin-top:10px;background:#fdf3f3;border-radius:8px;padding:7px 9px;font-size:10.5px;color:#9b2c2c;line-height:1.45;}
+.fd-card.fd-flash{box-shadow:0 0 0 2px var(--gold);transition:box-shadow .3s;}
+@media(max-width:1100px){.fd-layout{grid-template-columns:1fr;}.fd-visor{position:static;order:-1;}}
 .fd-elim-corte{background:none;border:none;color:#ddd;cursor:pointer;font-size:12px;padding:0 1px;line-height:1;flex:none;}
 .fd-corte-coord{width:0;flex:1;min-width:0;font-size:10px;font-weight:600;padding:4px 5px;text-transform:uppercase;}
 .fd-corte-coord::placeholder{color:#bbb;font-weight:600;}
@@ -860,7 +900,7 @@ details.rl-av summary{cursor:pointer;font-weight:800;margin-bottom:4px}
 .fd-col-divider{border-top:1px solid #eee;margin:6px 0;}
 .fd-gasto-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px;}
 .fd-gasto-lbl{font-size:9px;font-weight:600;color:#999;white-space:nowrap;}
-.fd-inp-gasto-card{width:64px;text-align:right;color:#e53e3e;font-weight:700;font-size:11px;padding:4px 6px;}
+.fd-inp-gasto-card{width:84px;text-align:right;color:#e53e3e;font-weight:700;font-size:11px;padding:4px 6px;}
 .fd-inp-concepto-card{width:100%;font-size:10px;color:#888;margin-bottom:8px;padding:4px 6px;}
 .fd-col-total{font-size:10.5px;font-weight:600;text-align:right;padding-top:6px;border-top:1px solid #eee;}
 .fd-col-total b{font-size:13px;font-weight:800;}
@@ -2545,7 +2585,10 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
     </div>
 
     <!-- TARJETAS DE FLUJO -->
-    <div id="flujo-body" class="fd-grid"></div>
+    <div class="fd-layout">
+      <div id="flujo-body" class="fd-grid"></div>
+      <aside id="fd-visor" class="fd-visor" aria-label="Resumen de sobres de la semana"></aside>
+    </div>
 
     <div class="card" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;margin-bottom:20px">
       <div>
@@ -7117,8 +7160,9 @@ function renderFlujoTabla(){
               oninput="ufdCorte(${i},'${suc}',${ci},'val',+this.value)"
               class="fd-corte-num" style="color:${color}" title="Monto del corte">
             <label class="fd-coincide" title="¿Coincide el efectivo contado con lo reportado?">
-              <input type="checkbox" ${c.coincide?"checked":""}
-                onchange="ufdCorte(${i},'${suc}',${ci},'coincide',this.checked)" class="fd-chk">
+              <input type="checkbox" tabindex="0" ${c.coincide?"checked":""}
+                onkeydown="if(event.key==='Enter'){event.preventDefault();this.click();}"
+                onchange="ufdCorte(${i},'${suc}',${ci},'coincide',this.checked)" class="fd-chk" aria-label="Sobre revisado">
               <span class="fd-chk-box">✓</span>
             </label>
             <input type="text" value="${c.coord||""}" placeholder="COORD"
@@ -7130,10 +7174,6 @@ function renderFlujoTabla(){
       <div class="fd-col">
         <div class="fd-col-head">
           <span class="fd-col-label" style="color:${color}">${label}</span>
-          <label class="fd-recibido" title="Efectivo recibido / conciliado">
-            <input type="checkbox" ${d[suc].recibido?"checked":""} onchange="ufd(${i},'${suc}.recibido',this.checked)" class="fd-chk">
-            <span>Recibido</span>
-          </label>
         </div>
         <div class="fd-cortes">${cortesRows}</div>
         <button onclick="addCorte(${i},'${suc}')" title="Agregar corte" class="fd-add-corte">+ corte</button>
@@ -7148,11 +7188,20 @@ function renderFlujoTabla(){
         <input type="text" value="${d[suc].gastoNota||""}" placeholder="Concepto del gasto"
           oninput="ufd(${i},'${suc}.gastoNota',this.value)" class="fd-inp-concepto-card">
         <div class="fd-col-total" style="color:${color}">Neto: <b id="fd-neto-${i}-${suc}">${fmt(neto)}</b></div>
+        ${(d[suc].noCuadra||(d[suc].contado!==undefined&&d[suc].contado!==""))?`
+        <div class="fd-cuadre">
+          <span class="fd-cuadre-lbl">Trae el sobre</span>
+          <input type="number" id="fd-cont-${i}-${suc}" value="${d[suc].contado??""}" placeholder="0"
+            oninput="ufd(${i},'${suc}.contado',this.value===''?'':+this.value);calcFlujoTotales()" class="fd-cuadre-inp">
+          <button class="fd-cuadre-x" title="Quitar" onclick="fdQuitarCuadre(${i},'${suc}')">✕</button>
+        </div>
+        <div class="fd-dif" id="fd-dif-${i}-${suc}"></div>`
+        :`<button class="fd-nocuadra" onclick="fdNoCuadra(${i},'${suc}')" title="El efectivo del sobre no coincide con el neto">≠ No cuadra</button>`}
       </div>`;
     };
 
     return`
-    <div class="fd-card">
+    <div class="fd-card" id="fd-card-${i}">
       <div class="fd-card-head">
         <input type="text" value="${d.dia||""}" placeholder="lunes, 5 de may"
           oninput="ufd(${i},'dia',this.value)" class="fd-inp-txt-card">
@@ -7221,14 +7270,86 @@ function calcFlujoTotales(){
       const netoEl=document.getElementById(`fd-neto-${i}-${suc}`);
       if(sumEl){sumEl.textContent="Suma cortes: "+fmt(monto);sumEl.style.display=(d[suc].cortes||[]).length>1?"block":"none";}
       if(netoEl)netoEl.textContent=fmt(neto);
+      const difEl=document.getElementById(`fd-dif-${i}-${suc}`);
+      if(difEl){const dif=fdDifSobre(d[suc]);
+        difEl.className="fd-dif"+(dif===null?"":Math.abs(dif)<0.5?" cuadra":dif<0?" falta":" sobra");
+        difEl.textContent=dif===null?"":Math.abs(dif)<0.5?"✓ Cuadra":(dif<0?"Falta ":"Sobra ")+fmt(Math.abs(dif));}
     });
   });
+  renderFdVisor(totRef,totAla);
   // Actualizar gráfica (#5)
   if(typeof renderFlujoChart==="function")renderFlujoChart();
   // Actualizar margen en resumen (#6)
   if(typeof renderResumen==="function"&&rows.length)renderResumen();
   // Actualizar resumen Efectivo vs Nómina en pestaña Datos
   if(typeof renderResumenEfectivoNomina==="function")renderResumenEfectivoNomina();
+}
+
+// ── VISOR DE SOBRES (derecha): estado de cada sobre por día y sucursal ─────────
+// revisado = todos los cortes con monto tienen palomita; pendiente = hay monto sin palomita
+function fdDifSobre(col){
+  if(!col||col.contado===undefined||col.contado==="") return null;
+  const neto=sumaCortes(col.cortes)-(+col.gasto||0);
+  return Math.round(((+col.contado)-neto)*100)/100;
+}
+function fdEstadoSobre(col){
+  const dif=fdDifSobre(col);
+  if(dif!==null&&Math.abs(dif)>=0.5) return "dif";
+  const cs=(col&&col.cortes||[]).filter(c=>+c.val>0);
+  if(!cs.length) return "vacio";
+  if(dif!==null) return "ok"; // contado igual al neto
+  return cs.every(c=>c.coincide)?"ok":"pend";
+}
+function fdNoCuadra(i,suc){
+  flujoDias[i][suc].noCuadra=true;
+  sv("pc4_flujo_dias",flujoDias); renderFlujoTabla();
+  const el=document.getElementById(`fd-cont-${i}-${suc}`); if(el) el.focus();
+}
+function fdQuitarCuadre(i,suc){
+  delete flujoDias[i][suc].noCuadra; delete flujoDias[i][suc].contado;
+  sv("pc4_flujo_dias",flujoDias); renderFlujoTabla();
+}
+function fdDiaCorto(txt){
+  const t=String(txt||"").trim(); if(!t) return "—";
+  const m=t.match(/^([a-záéíóúñ]+)[^\d]*(\d{1,2})?/i);
+  if(!m) return t.slice(0,6);
+  const d=m[1].slice(0,3); return d.charAt(0).toUpperCase()+d.slice(1)+(m[2]?" "+m[2]:"");
+}
+function fdIrA(i){
+  const el=document.getElementById("fd-card-"+i); if(!el) return;
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+  el.classList.add("fd-flash"); setTimeout(()=>el.classList.remove("fd-flash"),900);
+}
+function renderFdVisor(totRef,totAla){
+  const el=document.getElementById("fd-visor"); if(!el) return;
+  if(!flujoDias.length){el.innerHTML='<div class="fdv-t">Sobres de la semana</div><div style="color:#aaa;font-size:11px">Sin días capturados</div>';return;}
+  let ok=0,tot=0; const difs=[];
+  const k=v=>v>=1000?(Math.round(v/100)/10)+"k":String(Math.round(v));
+  const celda=(d,i,suc)=>{
+    const st=fdEstadoSobre(d[suc]); tot++; if(st==="ok") ok++;
+    const m=sumaCortes(d[suc].cortes);
+    const dif=fdDifSobre(d[suc]);
+    if(st==="dif") difs.push({dia:fdDiaCorto(d.dia),suc:suc==="ref"?"Refugio":"Álamos",dif});
+    const tip=st==="ok"?"Revisado":st==="pend"?"Falta palomear":st==="dif"?((dif<0?"Falta ":"Sobra ")+fmt(Math.abs(dif))):"Sin capturar";
+    return `<button class="fdv-c ${st==="vacio"?"":st}" onclick="fdIrA(${i})" title="${tip}"><span class="dot"></span><span>${m>0?"$"+k(m):"—"}</span></button>`;
+  };
+  const filas=flujoDias.map((d,i)=>`<div class="fdv-d">${esc(fdDiaCorto(d.dia))}</div>${celda(d,i,"ref")}${celda(d,i,"ala")}`).join("");
+  const pct=tot?Math.round(ok/tot*100):0;
+  el.innerHTML=`
+    <div class="fdv-t">Sobres revisados</div>
+    <div class="fdv-big">${ok} <small>de ${tot}</small></div>
+    <div class="fdv-bar"><i style="width:${pct}%"></i></div>
+    <div class="fdv-grid">
+      <div></div><div class="fdv-h" style="color:#C8960C">Refugio</div><div class="fdv-h" style="color:#185FA5">Álamos</div>
+      ${filas}
+    </div>
+    <div class="fdv-ley"><span><i style="background:#1e9e5a"></i>Revisado</span><span><i style="background:#e0a614"></i>Pendiente</span><span><i style="background:#e53e3e"></i>No cuadra</span></div>
+    ${difs.length?`<div class="fdv-alerta">${difs.map(x=>`${esc(x.dia)} · ${x.suc}: <b>${x.dif<0?"falta":"sobra"} ${fmt(Math.abs(x.dif))}</b>`).join("<br>")}</div>`:""}
+    <div class="fdv-tot">
+      <div><span>Refugio</span><b>${fmt(totRef)}</b></div>
+      <div><span>Álamos</span><b>${fmt(totAla)}</b></div>
+      <div class="fdv-sum"><span>Total semana</span><b>${fmt(totRef+totAla)}</b></div>
+    </div>`;
 }
 
 function guardarFlujo(){
