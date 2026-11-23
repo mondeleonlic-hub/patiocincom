@@ -4790,7 +4790,7 @@ function renderT(){
       <td data-label="Nombre" style="position:relative;${isDoble?"border-left:3px solid #e0a614;":""}padding:5px 7px">
         <input type="text" value="${esc(row.nombre)}" onchange="ufNombre(${i},this.value)" style="width:90px">
         ${row.nombre?`<button onclick="verPerfilLavador('${esc(row.nombre)}')" title="Ver historial de ${esc(row.nombre)}" style="background:none;border:none;cursor:pointer;font-size:11px;color:#C8960C;padding:0;vertical-align:middle">📈</button>`:""}
-        ${dobleTag}
+        ${dobleTag}${esCoordLavador(row.nombre)?`<div style="font-size:9px;font-weight:700;color:#1c3a61;letter-spacing:.3px;margin-top:3px">→ se paga en Sueldos</div>`:""}
       </td>
       <td data-label="Sucursal" style="padding:5px 4px">${sucLabel}</td>
       <td data-label="%" style="padding:5px 4px"><span style="font-size:11px;color:#888">${row.pct||40}%</span></td>
@@ -5096,7 +5096,7 @@ function renderResumenEfectivoNomina(){
     // Fallback: si no hay entrada archivada para esta semana, usar la vista actual de Flujo
     efectivo=(typeof flujoDias!=="undefined"?flujoDias:[]).reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0)+montoAla(d)-(d.ala.gasto||0),0);
   }
-  const nomina=rows.filter(r=>rowVisible(r)).reduce((s,r)=>s+calcT(r,r.nombre),0);
+  const nomina=rows.filter(r=>rowVisible(r)&&!esCoordLavador(r.nombre)).reduce((s,r)=>s+calcT(r,r.nombre),0); // coordinadores que lavan: se pagan en Sueldos
   const dif=efectivo-nomina;
   const ok=dif>=0;
   box.innerHTML=`
@@ -5906,7 +5906,7 @@ function printTermica(){
     colaImpresion=L.list.map(t=>({nombre:t.nombre,html:bcoordTicket(t,L.sem)}));
     colaIndex=0;mostrarCola();return;
   }
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0)&&!esCoordLavador(r.nombre));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir.");return;}
   const sem=document.getElementById("sem").value;
@@ -6096,7 +6096,7 @@ let rolData=null, rolSuc="PC Refugio", rolModo="rol", horQuien="lav", chEdit=nul
 function renderS(){
   if(ticketsModo==="coord"){renderSCoord();return;}
   const sem=document.getElementById("sem").value,g=document.getElementById("sg");
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0)&&!esCoordLavador(r.nombre));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){g.innerHTML='<p class="nd">Sin datos.</p>';return;}
   act=mergeRows(act); // 1 ticket por lavador aunque trabaje en 2 sucursales
@@ -6150,7 +6150,7 @@ function printSeleccionado(){
 
 function printSobres(){
   const sem=document.getElementById("sem").value;
-  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+  let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0)&&!esCoordLavador(r.nombre));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
   if(!act.length){alert("No hay sobres para imprimir con este filtro.");return;}
   act=mergeRows(act); // 1 ticket por lavador
@@ -6170,7 +6170,7 @@ async function guardarTicketsHTML(){
   if(ticketsModo==="coord"){
     const L=tkCoordLista(); sem=String(L.sem||""); act=L.list; _tkHtml=t=>bcoordTicket(t,sem); _tkPref="tickets-coordinadores";
   } else {
-    act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0));
+    act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0)&&!esCoordLavador(r.nombre));
     if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
     act=mergeRows(act); // 1 ticket por lavador
     _tkHtml=r=>bsobreTermica(r,sem);
@@ -6944,6 +6944,7 @@ function abrirLiquidacion(){
   };
 }
 let flujoHist=[];
+let flujoVerHist=null; // índice de flujoHist que se está viendo/editando, o null = semana en captura
 let flujoDias=[]; // [{dia, ref:{monto,gasto,gastoNota,staff,recibido}, ala:{monto,gasto,gastoNota,staff,recibido}}]
 
 function initFlujo(){
@@ -6955,7 +6956,42 @@ function initFlujo(){
   popularSelectorFlujo();
 }
 
+// Guarda lo que se edita: si estás viendo una semana del historial se actualiza ESA
+// semana (no se toca la captura actual); si no, se guarda la captura actual.
+function fdPersist(){
+  if(flujoVerHist!==null&&flujoHist[flujoVerHist]){
+    flujoHist[flujoVerHist].dias=flujoDias;
+    _recalcFlujoEntry(flujoHist[flujoVerHist]);
+    sv("pc4_flujo",flujoHist);
+  } else {
+    sv("pc4_flujo_dias",flujoDias);
+  }
+}
+// Semana (Dom–Sáb, como la usa Patio Cinco) que corresponde a los días capturados,
+// a partir del lunes ("Lunes, 16 de nov" → 47/2026). null si no se puede leer.
+function fdSemanaDeDias(dias){
+  const meses={ene:0,feb:1,mar:2,abr:3,may:4,jun:5,jul:6,ago:7,sep:8,oct:9,nov:10,dic:11};
+  for(const d of (dias||[])){
+    const m=String(d.dia||"").toLowerCase().match(/(\d{1,2})\s+de\s+([a-zá]{3})/);
+    if(!m||meses[m[2]]===undefined) continue;
+    const hoy=new Date(); let y=hoy.getFullYear();
+    let f=new Date(y,meses[m[2]],+m[1]);
+    if(f-hoy>60*864e5) f=new Date(y-1,meses[m[2]],+m[1]);
+    f.setDate(f.getDate()+(f.getDay()===0?1:1-f.getDay())); // lunes de esa semana Dom–Sáb
+    const t=new Date(Date.UTC(f.getFullYear(),f.getMonth(),f.getDate()));
+    const dn=t.getUTCDay()||7; t.setUTCDate(t.getUTCDate()+4-dn);
+    const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));
+    const w=Math.ceil(((t-y0)/864e5+1)/7);
+    return w+"/"+t.getUTCFullYear();
+  }
+  return null;
+}
+
 function cargarSemanaFlujoVacia(){
+  const hayDatos=flujoVerHist===null&&flujoDias.some(d=>montoRef(d)+montoAla(d)+(+d.ref?.gasto||0)+(+d.ala?.gasto||0)>0);
+  if(hayDatos&&!confirm("Esto borra la captura de la semana actual y pone una semana vacía.\n¿Ya guardaste esta semana?"))return;
+  flujoVerHist=null;
+  const _sel=document.getElementById("flujo-sem-sel"); if(_sel) _sel.value="";
   const today = new Date();
   const anchorDate = new Date(today);
   anchorDate.setDate(today.getDate() - 1);
@@ -6985,6 +7021,7 @@ function cambiarSemanaFlujo(){
   const lbl = document.getElementById("flujo-sem-lbl");
   if(!val){
     // Volver a semana actual
+    flujoVerHist=null;
     flujoDias = ld("pc4_flujo_dias",[]);
     if(!flujoDias.length) cargarSemanaFlujoVacia();
     else renderFlujoTabla();
@@ -6996,7 +7033,8 @@ function cambiarSemanaFlujo(){
   const idx = parseInt(val.replace("hist_",""));
   const hist = (flujoHist && flujoHist.length) ? flujoHist : ld("pc4_flujo",[]);
   if(hist[idx] && hist[idx].dias){
-    flujoDias = hist[idx].dias;
+    flujoVerHist = idx;
+    flujoDias = JSON.parse(JSON.stringify(hist[idx].dias));
     renderFlujoTabla();
     // Actualizar label con semana del historial
     const semHist = hist[idx].semana || hist[idx].label || ("Semana "+(idx+1));
@@ -7117,7 +7155,7 @@ function agregarDiaFlujo(silent){
     ref:{cortes:[{val:"",coincide:false,coord:""}], gasto:0, gastoNota:"", recibido:false},
     ala:{cortes:[{val:"",coincide:false,coord:""}], gasto:0, gastoNota:"", recibido:false}
   });
-  sv("pc4_flujo_dias",flujoDias);
+  fdPersist();
   renderFlujoTabla();
 }
 
@@ -7219,21 +7257,21 @@ function renderFlujoTabla(){
 function ufdCorte(i,suc,ci,campo,val){
   if(!flujoDias[i][suc].cortes)flujoDias[i][suc].cortes=[{val:"",coincide:false,coord:""}];
   flujoDias[i][suc].cortes[ci][campo]=val;
-  sv("pc4_flujo_dias",flujoDias);
+  fdPersist();
   calcFlujoTotales();
 }
 
 function addCorte(i,suc){
   if(!flujoDias[i][suc].cortes)flujoDias[i][suc].cortes=[{val:"",coincide:false,coord:""}];
   flujoDias[i][suc].cortes.push({val:"",coincide:false,coord:""});
-  sv("pc4_flujo_dias",flujoDias);
+  fdPersist();
   renderFlujoTabla();
 }
 
 function elimCorte(i,suc,ci){
   flujoDias[i][suc].cortes.splice(ci,1);
   if(!flujoDias[i][suc].cortes.length)flujoDias[i][suc].cortes=[{val:"",coincide:false,coord:""}];
-  sv("pc4_flujo_dias",flujoDias);
+  fdPersist();
   renderFlujoTabla();
 }
 
@@ -7241,13 +7279,13 @@ function ufd(i, campo, val){
   const parts=campo.split(".");
   if(parts.length===2){ flujoDias[i][parts[0]][parts[1]]=val; }
   else { flujoDias[i][campo]=val; }
-  sv("pc4_flujo_dias",flujoDias);
+  fdPersist();
 }
 
 function elimDiaFlujo(i){
   if(!confirm("¿Eliminar este día?"))return;
   flujoDias.splice(i,1);
-  sv("pc4_flujo_dias",flujoDias);
+  fdPersist();
   renderFlujoTabla();
 }
 
@@ -7302,12 +7340,12 @@ function fdEstadoSobre(col){
 }
 function fdNoCuadra(i,suc){
   flujoDias[i][suc].noCuadra=true;
-  sv("pc4_flujo_dias",flujoDias); renderFlujoTabla();
+  fdPersist(); renderFlujoTabla();
   const el=document.getElementById(`fd-cont-${i}-${suc}`); if(el) el.focus();
 }
 function fdQuitarCuadre(i,suc){
   delete flujoDias[i][suc].noCuadra; delete flujoDias[i][suc].contado;
-  sv("pc4_flujo_dias",flujoDias); renderFlujoTabla();
+  fdPersist(); renderFlujoTabla();
 }
 function fdDiaCorto(txt){
   const t=String(txt||"").trim(); if(!t) return "—";
@@ -7353,13 +7391,30 @@ function renderFdVisor(totRef,totAla){
 }
 
 function guardarFlujo(){
-  const sem=document.getElementById("sem").value;
+  // Viendo una semana del historial: se actualiza esa misma semana
+  if(flujoVerHist!==null&&flujoHist[flujoVerHist]){
+    fdPersist(); renderFlujoHist();
+    flash("✓ Semana "+flujoHist[flujoVerHist].semana+" actualizada");
+    return;
+  }
+  let sem=document.getElementById("sem").value;
+  const semDias=fdSemanaDeDias(flujoDias);
+  if(semDias&&semDias!==sem){
+    if(!confirm("Los días capturados son de la semana "+semDias+", pero arriba dice "+sem+".\n\nAceptar = guardar como "+semDias+"\nCancelar = no guardar"))return;
+    sem=semDias;
+  }
+  const yaIdx=flujoHist.findIndex(w=>w&&w.semana===sem);
   const totRef=flujoDias.reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0),0);
   const totAla=flujoDias.reduce((s,d)=>s+montoAla(d)-(d.ala.gasto||0),0);
   const entry={semana:sem,fecha:new Date().toLocaleDateString("es-MX"),dias:[...flujoDias],totRef,totAla,total:totRef+totAla};
-  flujoHist=[entry,...flujoHist].slice(0,30);
+  if(yaIdx>=0){
+    flujoHist[yaIdx]={...entry,dias:JSON.parse(JSON.stringify(flujoDias))};   // actualiza la que ya existía, no duplica
+  } else {
+    flujoHist=[{...entry,dias:JSON.parse(JSON.stringify(flujoDias))},...flujoHist].slice(0,30);
+  }
   sv("pc4_flujo",flujoHist);
-  flash("✓ Flujo semana "+sem+" guardado");
+  if(typeof popularSelectores==="function") popularSelectores();
+  flash(yaIdx>=0?"✓ Semana "+sem+" actualizada":"✓ Flujo semana "+sem+" guardado");
   renderFlujoHist();
 }
 
@@ -7681,6 +7736,26 @@ function coNorm(c){
 }
 function coTieneTarifas(c){return !!(c.tarifas&&(c.tarifas["6"]||c.tarifas["8"]||c.tarifas["11"]));}
 
+// ── Coordinadores que también lavan: sus lavados de la semana (pestaña Comisiones)
+// se pagan junto con su sueldo de coordinador; ya no llevan ticket de lavador.
+function coLavados(c){
+  if(!c||!c.nombre||typeof rows==="undefined"||!Array.isArray(rows)) return null;
+  const k=normN(c.nombre).trim(); if(!k) return null;
+  const rs=rows.filter(r=>r.nombre&&normN(r.nombre).trim()===k&&(num(r.comision)>0||num(r.autos)>0));
+  if(!rs.length) return null;
+  const S=f=>rs.reduce((a,r)=>a+f(r),0), R=v=>Math.round(v*100)/100;
+  const com=R(S(r=>num(r.comision))), autos=S(r=>num(r.autos));
+  const food=R(S(r=>foodEfectivo(r))), merch=R(S(r=>num(r.merch)));
+  const deuda=R(S(r=>descFila(r))), extra=R(S(r=>num(r.extra||0)+num(r.bono)));
+  const neto=R(S(r=>calcT(r,r.nombre)));
+  const otros=R(neto-(com-food-merch-deuda+extra));
+  return {com,autos,food,merch,deuda,extra,otros,neto};
+}
+function esCoordLavador(nombre){
+  if(typeof coords==="undefined"||!Array.isArray(coords)) return false;
+  const k=normN(nombre||"").trim();
+  return !!k&&coords.some(c=>c&&c.nombre&&normN(c.nombre).trim()===k);
+}
 function coCalc(c){
   coNorm(c);
   const t=c.tarifas, hab=t[c.habitual]||0;
@@ -7715,8 +7790,9 @@ function coCalc(c){
   const dk=c.id?"coord:"+c.id:null, dObj=dk&&typeof deudas!=="undefined"?deudas[dk]:null;
   const deuda=dk&&typeof getDesc==="function"?Math.round(getDesc(dk)*100)/100:0;
   const desc=c.food+c.merch;
-  const total=Math.round((base+c.extra+c.comision-desc-ret-deuda)*100)/100;
-  return {base,det,pagoInc,pagoVac,desc,imss,isr,inf,ret,deuda,dk,dObj,total,porTarifa};
+  const lav=coLavados(c);
+  const total=Math.round((base+c.extra+c.comision-desc-ret-deuda+(lav?lav.neto:0))*100)/100;
+  return {base,det,pagoInc,pagoVac,desc,imss,isr,inf,ret,deuda,dk,dObj,total,porTarifa,lav};
 }
 function coResumen(det,seguro){
   if(!det)return "";
@@ -7845,7 +7921,8 @@ function coSumHtml(c,r){
   const hor=!hh?` · <span style="color:#bbb">sin horario</span>`
     :nMan?` · <span class="co-hor">del horario, ${nMan} cambiado${nMan>1?"s":""} <a onclick="coVolverHorario(${i})">↺</a></span>`
     :` · <span class="co-hor">del horario</span>`;
-  return (s||"Sin días capturados")+extra+(coSemanaActual()?hor:"");
+  const lav=r.lav?`<br><span style="color:#1e7a47">+ lavados ${fmt(r.lav.com)} (${r.lav.autos} autos)</span>${r.lav.food?` <span style="color:#e53e3e">−${fmt(r.lav.food)} food</span>`:""}${(r.lav.merch+r.lav.deuda)?` <span style="color:#e53e3e">−${fmt(r.lav.merch+r.lav.deuda)} merch/deuda</span>`:""}`:"";
+  return (s||"Sin días capturados")+extra+(coSemanaActual()?hor:"")+lav;
 }
 
 function coCfgHtml(c,i){
@@ -7991,6 +8068,7 @@ function guardarSemanaCoords(){
     const r=coCalc(c);
     const o={...c,sueldo:r.base,base:r.base,detalle:r.porTarifa?r.det:null,pagoInc:r.pagoInc,imss:r.imss.monto,isr:r.isr.monto,infonavit:r.inf.monto,deudaDesc:r.deuda,deudaCon:r.deuda?(r.dObj.concepto||""):"",deudaPago:r.deuda?r.dObj.pagoActual+"/"+r.dObj.numPagos:"",total:r.total};
     delete o._cfgOpen;
+    if(r.lav) o.lav=r.lav; else delete o.lav;
     if(!r.porTarifa)delete o.dias;
     return o;
   });
@@ -8015,7 +8093,7 @@ function guardarSemanaCoords(){
 }
 
 function coHistTotal(c){
-  return Math.round(((+c.sueldo||0)+(+c.extra||0)+(+c.comision||0)-(+c.food||0)-(+c.merch||0)-(+c.imss||0)-(+c.isr||0)-(+c.infonavit||0)-(+c.deudaDesc||0))*100)/100;
+  return Math.round(((+c.sueldo||0)+(+c.extra||0)+(+c.comision||0)-(+c.food||0)-(+c.merch||0)-(+c.imss||0)-(+c.isr||0)-(+c.infonavit||0)-(+c.deudaDesc||0)+(c.lav?+c.lav.neto||0:0))*100)/100;
 }
 
 function renderCoordHist(){
@@ -8044,6 +8122,7 @@ function renderCoordHist(){
               <span style="font-size:11px;color:#888">${c.detalle?"Días":"Fijo"} <strong style="color:#111">${fmt(c.sueldo||0)}</strong></span>
               ${(c.extra||0)>0?`<span style="font-size:11px;color:#888">Extra <strong style="color:#38a169">+${fmt(c.extra)}</strong></span>`:""}
               ${(c.comision||0)>0?`<span style="font-size:11px;color:#888">Com. <strong style="color:#1565C0">${fmt(c.comision)}</strong></span>`:""}
+              ${c.lav?`<span style="font-size:11px;color:#888">Lavados <strong style="color:#1e7a47">${c.lav.neto<0?"−":"+"}${fmt(Math.abs(c.lav.neto))}</strong></span>`:""}
               ${(c.food||0)>0?`<span style="font-size:11px;color:#888">Food <strong style="color:#e53e3e">−${fmt(c.food)}</strong></span>`:""}
               ${(c.merch||0)>0?`<span style="font-size:11px;color:#888">Merch <strong style="color:#e53e3e">−${fmt(c.merch)}</strong></span>`:""}
               ${(c.imss||0)>0?`<span style="font-size:11px;color:#888">IMSS <strong style="color:#e53e3e">−${fmt(c.imss)}</strong></span>`:""}
@@ -12942,18 +13021,18 @@ function dash_init() {
   };
   SVG.inv=`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
   const MAIN_TABS=[
-    {t:"datos",      icon:"datos",      label:"Comisiones"},
     {t:"flujo",      icon:"flujo",      label:"Flujo"},
-    {t:"sucursales", icon:"sucursales", label:"Analytics"},
+    {t:"datos",      icon:"datos",      label:"Comisiones"},
+    {t:"coords",     icon:"coords",     label:"Sueldos"},
+    {t:"rol",        icon:"rol",        label:"Horarios"},
     {t:"finanzas",   icon:"finanzas",   label:"Finanzas"},
   ];
   const MORE_TABS=[
     {h:"Nómina"},
-    {t:"coords",     icon:"coords",     label:"Sueldos"},
     {t:"sobres",     icon:"sobres",     label:"Tickets"},
     {t:"deudas",     icon:"deudas",     label:"Deudas"},
     {t:"ahorros",    icon:"ahorros",    label:"Ahorros"},
-    {t:"rol",        icon:"rol",        label:"Horarios"},
+    {t:"sucursales", icon:"sucursales", label:"Analytics"},
     {t:"hist",       icon:"hist",       label:"Historial"},
     {h:"Compras"},
     {t:"inventario", icon:"inv",        label:"Inv. Car Wash"},
@@ -13029,12 +13108,12 @@ function coTicketData(c,hist){
     return {nombre:c.nombre,seguro:c.seguro,porTarifa:r.porTarifa,dias:r.porTarifa?c.dias.slice():null,det:r.porTarifa?r.det:null,
       base:r.base,extra:+c.extra||0,comision:+c.comision||0,food:+c.food||0,merch:+c.merch||0,
       imss:r.imss.monto,isr:r.isr.monto,inf:r.inf.monto,deuda:r.deuda,
-      deudaCon:r.deuda?(r.dObj.concepto||"Deuda"):"",deudaPago:r.deuda?(r.dObj.pagoActual+"/"+r.dObj.numPagos):"",total:r.total};
+      deudaCon:r.deuda?(r.dObj.concepto||"Deuda"):"",deudaPago:r.deuda?(r.dObj.pagoActual+"/"+r.dObj.numPagos):"",total:r.total,lav:r.lav||null};
   }
   return {nombre:c.nombre,seguro:!!c.seguro,porTarifa:!!c.detalle,dias:Array.isArray(c.dias)&&c.dias.length===7?c.dias:null,det:c.detalle||null,
     base:+(c.base!==undefined?c.base:c.sueldo)||0,extra:+c.extra||0,comision:+c.comision||0,food:+c.food||0,merch:+c.merch||0,
     imss:+c.imss||0,isr:+c.isr||0,inf:+c.infonavit||0,deuda:+c.deudaDesc||0,deudaCon:c.deudaCon||"Deuda",deudaPago:c.deudaPago||"",
-    total:(c.total!==undefined&&c.total!==null)?+c.total:coHistTotal(c)};
+    total:(c.total!==undefined&&c.total!==null)?+c.total:coHistTotal(c),lav:c.lav||null};
 }
 function tkCoordLista(){
   if(tkCoordSem===""||!coordHist[+tkCoordSem]){
@@ -13051,6 +13130,14 @@ function bcoordTicket(t,sem){
   const L=(lbl,v,sig)=>`<div style="${rowS}"><span>${lbl}</span><span>${sig}${fmt(v)}</span></div>`;
   let mas="",menos="";
   if(t.extra>0)mas+=L("Extra / Bono",t.extra,"+");
+  if(t.lav){
+    mas+=L("Lavados ("+t.lav.autos+" autos)",t.lav.com,"+");
+    if(t.lav.extra>0)mas+=L("Extra lavados",t.lav.extra,"+");
+    if(t.lav.food>0)menos+=L("Food",t.lav.food,"-");
+    if(t.lav.merch>0)menos+=L("Merch lavados",t.lav.merch,"-");
+    if(t.lav.deuda>0)menos+=L("Deuda lavados",t.lav.deuda,"-");
+    if(Math.abs(t.lav.otros)>=0.01)(t.lav.otros>0?mas+=L("Otros lavados",t.lav.otros,"+"):menos+=L("Otros lavados",-t.lav.otros,"-"));
+  }
   if(t.comision>0)mas+=L("Comisión",t.comision,"+");
   if(t.food>0)menos+=L("Food",t.food,"-");
   if(t.merch>0)menos+=L("Merch",t.merch,"-");
