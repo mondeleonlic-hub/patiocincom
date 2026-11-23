@@ -2211,7 +2211,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
     <div class="pf-actions">
       <label class="pf-btn" title="Sube la captura de PERFORMANCE de AppSheet">
         Leer AppSheet
-        <input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)">
+        <input type="file" accept="image/*" multiple style="display:none" onchange="pf_onFile(this)">
       </label>
       <button class="pf-btn pf-btn-dark" id="pf-edit-btn" onclick="pf_toggleEdit()">Editar</button>
     </div>
@@ -12353,7 +12353,7 @@ function an_renderUpd(){
     ${item('🧾','Nómina', ult ? `Hasta ${pf_semCorta(ult.semana||ult.sem)} · cerrada ${dN===0?'hoy':dN===1?'ayer':'hace '+dN+' días'}` : 'Sin semanas cerradas', viejoN,
       `<button class="an-up-b" onclick="an_subirNomina()">Subir reporte</button>`)}
     ${item('📊','AppSheet · Performance', met ? `Métricas al ${esc(met)}${dM>0?' · hace '+dM+' día'+(dM>1?'s':''):' · hoy'}` : 'Sin capturas', viejoM,
-      `<label class="an-up-b">Subir captura<input type="file" accept="image/*" style="display:none" onchange="pf_onFile(this)"></label>`)}
+      `<label class="an-up-b">Subir captura<input type="file" accept="image/*" multiple style="display:none" onchange="pf_onFile(this)"></label>`)}
   </div>`;
 }
 function an_subirNomina(){ window.goTab('datos'); setTimeout(()=>{ const f=document.getElementById('fi'); if(f) f.click(); }, 250); }
@@ -12966,14 +12966,25 @@ function pf_guardarHist(){
 }
 
 // ── Leer captura de AppSheet ──
-function pf_onFile(inp){
-  const file = inp.files && inp.files[0]; if(!file) return;
-  const r = new FileReader();
-  r.onload = e => pf_leerAppSheet(e.target.result.split(',')[1], file.type||'image/png');
-  r.readAsDataURL(file); inp.value = '';
+async function pf_onFile(inp){
+  const files = [...(inp.files||[])]; inp.value = '';
+  if(!files.length) return;
+  const leer = f => new Promise((ok,ko)=>{ const r=new FileReader(); r.onload=e=>ok(e.target.result.split(',')[1]); r.onerror=ko; r.readAsDataURL(f); });
+  const porSuc = {}; let nuevos = 0, err = null;
+  for(let i=0;i<files.length;i++){
+    flash(files.length>1 ? `Leyendo AppSheet ${i+1} de ${files.length}…` : 'Leyendo AppSheet…');
+    try{
+      const r = await pf_leerAppSheet(await leer(files[i]), files[i].type||'image/png', true);
+      if(r && r.error){ err = r.error; break; }
+      if(r){ nuevos += r.nuevos; Object.entries(r.porSuc).forEach(([k,v])=>porSuc[k]=(porSuc[k]||0)+v); }
+    }catch(e){ err = e.message; break; }
+  }
+  const txt = Object.entries(porSuc).map(([k,v])=>`${k.replace(/^PC /,'')} ${v}`).join(' · ');
+  if(err) flash((txt?`✓ ${txt} · `:'')+'Error: '+err);
+  else flash(txt ? `✓ ${txt}${nuevos?` · ${nuevos} nuevo${nuevos>1?'s':''}`:''}` : 'No se pudo leer la tabla');
 }
-async function pf_leerAppSheet(b64, mime){
-  flash('Leyendo AppSheet…');
+async function pf_leerAppSheet(b64, mime, silencio){
+  if(!silencio) flash('Leyendo AppSheet…');
   const prompt = `Analiza esta captura de pantalla de AppSheet con la tabla PERFORMANCE de un autolavado.
 Columnas: ALIAS, PUNTOS, LAVADOS_#, COMISIÓN, ESTRELLAS, HITS, # LAVADOS DIARIOS, ENTREGAS EN TIEMPO, CALIDAD, STRIKES, RETARDOS, FALTA, FALTA JUST (puede no verse).
 Lee TODOS los lavadores visibles. Porcentajes como número ("85%" → 85). Puntos con decimales, pueden ser negativos. Celda vacía → null. Los colores rojo/verde son solo alertas.
@@ -12982,12 +12993,12 @@ Devuelve SOLO este JSON (sin markdown):
   try{
     const parsed = await callGemini(b64, mime, prompt);
     const lst = (parsed && parsed.lavadores) || [];
-    if(!lst.length){ flash('No se pudo leer la tabla'); return; }
+    if(!lst.length){ if(!silencio) flash('No se pudo leer la tabla'); return {porSuc:{}, nuevos:0}; }
     pf_load();
-    if(!pfData){ flash('Espera a que terminen de cargar los datos'); return; }
+    if(!pfData){ const m='Espera a que terminen de cargar los datos'; if(!silencio) flash(m); return {error:m}; }
     const ultSem = pf_semanas()[0];
     const semNueva = ultSem && semKey(ultSem.semana||ultSem.sem) > semKey(PF_SEM_INICIO) ? (ultSem.semana||ultSem.sem) : PF_SEM_INICIO;
-    let act=0, nuevos=0;
+    let act=0, nuevos=0; const porSuc={};
     lst.forEach(l=>{
       if(!l.nombre) return;
       const nn = normN(l.nombre);
@@ -12999,6 +13010,7 @@ Devuelve SOLO este JSON (sin markdown):
         nuevos++;
       } else act++;
       const d = pfData.lav[key];
+      const sk = d.suc || 'Sin sucursal'; porSuc[sk] = (porSuc[sk]||0) + 1;
       d.oculto = false;
       d.appsheet = l.lavTotal ?? d.appsheet;
       PF_MET.forEach(k=>{ if(l[k]!==undefined) d[k] = l[k]; });
@@ -13007,9 +13019,12 @@ Devuelve SOLO este JSON (sin markdown):
     pf_save();
     pf_guardarHist();
     an_render();
-    flash(`✓ ${act} actualizados${nuevos?` · ${nuevos} nuevos`:''}`);
+    if(!silencio) flash(`✓ ${act} actualizados${nuevos?` · ${nuevos} nuevos`:''}`);
+    return {act, nuevos, porSuc};
   }catch(e){
-    flash(e.message==='QUOTA_429' ? 'Cuota de Gemini agotada, captura con Editar' : 'Error: '+e.message);
+    const m = e.message==='QUOTA_429' ? 'Cuota de Gemini agotada, captura con Editar' : e.message;
+    if(!silencio) flash('Error: '+m);
+    return {error:m};
   }
 }
 
