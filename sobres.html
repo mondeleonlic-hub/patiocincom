@@ -3836,14 +3836,27 @@ async function _sobLoadFromFirebase(){
   return out;
 }
 
+// Firestore rechaza campos con nombre vacío ("") y valores undefined (p. ej. el conteo
+// de días "sin capturar" en el detalle de coordinadores, o huecos en diasMan).
+// Se limpian solo para la copia en la nube; los datos en la app no cambian.
+function _sobFbLimpio(v){
+  return JSON.parse(JSON.stringify(v===undefined?null:v),(k,x)=>{
+    if(x&&typeof x==="object"&&!Array.isArray(x)&&Object.prototype.hasOwnProperty.call(x,"")){const y={...x};delete y[""];return y;}
+    return x;
+  });
+}
 function _sobSaveToFirebase(k){
   if(!_sobFbReady||!_sobFbDb) return;
   if(!k){ _SOB_KEYS.forEach(kk=>{ if(_cache[kk]!==undefined) _sobSaveToFirebase(kk); }); return; }
   if(_cache[k]===undefined) return;
   clearTimeout(_sobFbTimers[k]);
   _sobFbTimers[k]=setTimeout(()=>{
-    _sobFbDb.collection('pc_sobres').doc(k).set({data:_cache[k], updatedAt:new Date().toISOString()})
-      .catch(e=>console.warn('FB write error ('+k+'):',e));
+    _sobFbDb.collection('pc_sobres').doc(k).set({data:_sobFbLimpio(_cache[k]), updatedAt:new Date().toISOString()})
+      .catch(e=>{
+        console.warn('FB write error ('+k+'):',e);
+        // Antes fallaba en silencio (así se perdieron semanas de Sueldos): ahora avisa
+        try{ flash("⚠️ No se pudo guardar en la nube ("+k.replace("pc4_","")+"). Vuelve a intentar o avísame."); }catch(_){}
+      });
   },800);
 }
 
@@ -7772,7 +7785,7 @@ function coCalc(c){
         const p=(n==="6"||n==="8"||n==="11")?t[n]:hab;
         base+=p;pagoVac+=p;return;
       }
-      det[v]=(det[v]||0)+1;
+      if(v) det[v]=(det[v]||0)+1;
       if(v==="6"||v==="8"||v==="11")base+=t[v];
       else if(v==="D")base+=c.pagoDescanso;
       else if(v==="FJ")base+=hab;
