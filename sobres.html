@@ -2043,9 +2043,30 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   .fd-col-total{font-size:12px}
   .fd-inp-txt-card{font-size:15px}
 }
+
+/* ── ISLA DE CIERRE DE SEMANA ── */
+#cierre-isla{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:150;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:inherit}
+#cierre-isla .ci-pill{display:flex;align-items:center;gap:10px;background:#fff;color:#111;border:1px solid #e5e2d8;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700;letter-spacing:.3px;font-family:inherit;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.14)}
+#cierre-isla .ci-pill b{color:#e0a614;font-weight:800}
+#cierre-isla .ci-dots{display:flex;gap:4px}
+#cierre-isla .ci-dots i{width:6px;height:6px;border-radius:50%;background:#d9d5c8;display:block}
+#cierre-isla .ci-dots i.on{background:#e0a614}
+#cierre-isla .ci-panel{display:none;width:250px;background:#fff;border:1px solid #e5e2d8;border-radius:18px;padding:14px 14px 12px;box-shadow:0 8px 28px rgba(0,0,0,.16)}
+#cierre-isla.open .ci-panel{display:block}
+#cierre-isla .ci-tit{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:8px}
+#cierre-isla .ci-row{display:flex;align-items:center;gap:10px;padding:6px 0}
+#cierre-isla .ci-chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #cfcabb;background:#fff;color:#111;font-size:12px;font-weight:900;line-height:1;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;font-family:inherit}
+#cierre-isla .ci-chk.on{background:#e0a614;border-color:#e0a614}
+#cierre-isla .ci-name{flex:1;color:#111;font-size:13px;font-weight:600;cursor:pointer}
+#cierre-isla .ci-name:hover{color:#e0a614}
+#cierre-isla .ci-btn{width:100%;margin-top:10px;padding:10px;border:none;border-radius:12px;background:#f0eee6;color:#a8a495;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
+#cierre-isla .ci-btn.ready{background:#e0a614;color:#111}
+.tk-lock{opacity:.45}
+@media(max-width:768px){#cierre-isla{bottom:calc(66px + env(safe-area-inset-bottom))}}
 </style>
 </head>
 <body>
+<div id="cierre-isla"></div>
 <div class="hdr">
   <div style="display:flex;align-items:center;">
     <img src="logo.png" height="26" style="display:block;vertical-align:middle;">
@@ -2081,7 +2102,6 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
         <div id="resumen-efec-nom"></div>
         <div class="bg">
           <button class="ph-btn ph-gold" onclick="document.getElementById('fi').click()">📷 Subir reporte</button>
-          <button class="ph-btn ph-dark" onclick="cerrarSemana()">🔒 Cerrar semana</button>
           <button class="ph-btn ph-danger-outline" onclick="limpiarDatosSem()">🗑 Limpiar datos</button>
           <button class="ph-btn ph-navy" onclick="addRow()">＋ Lavador</button>
         </div>
@@ -2436,7 +2456,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   <!-- COORDINADORES -->
   <div class="pnl" id="pnl-coords">
     <div class="ph">
-      <h2>Sueldos — <span id="coord-sem-lbl" style="color:#C8960C">—</span></h2>
+      <h2>Sueldos<span id="coord-sem-lbl" style="color:#C8960C"></span></h2>
     </div>
 
     <!-- Sub-tabs -->
@@ -2454,7 +2474,6 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
             <option value="">Semana actual</option>
           </select>
           <button class="btn by" onclick="addCoord()">+ Coordinador</button>
-          <button class="btn bk" onclick="guardarSemanaCoords()">Guardar semana</button>
         </div>
       </div>
       <div class="tw" style="margin-bottom:14px">
@@ -2572,7 +2591,7 @@ input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}
   <!-- FLUJO DE EFECTIVO -->
   <div class="pnl on" id="pnl-flujo">
     <div class="ph">
-      <h2>Flujo de efectivo — <span id="flujo-sem-lbl" style="color:#C8960C">—</span></h2>
+      <h2>Flujo de efectivo<span id="flujo-sem-lbl" style="color:#C8960C"></span></h2>
       <div class="bg">
         <span style="font-size:11px;font-weight:700;color:#888;letter-spacing:.5px;text-transform:uppercase;">📅 Ver semana:</span>
         <select class="ph-btn ph-outline" id="flujo-sem-sel" onchange="cambiarSemanaFlujo()" title="Selecciona una semana para ver su flujo de efectivo">
@@ -3778,7 +3797,8 @@ const GS_KEY_MAP = {
   "pc4_ah_abonos":     "ah_abonos",
   "pc4_inventario":    "inventario",
   "pc4_rol":           "rol",
-  "pc4_perf_lav":      "perf_lav"
+  "pc4_perf_lav":      "perf_lav",
+  "pc4_cierre":        "cierre"
 };
 // Cache local para evitar múltiples fetches
 const _cache = {};
@@ -3895,6 +3915,8 @@ function _updateUndoBtn(){
 async function sv(k, v) {
   const sheet = GS_KEY_MAP[k];
   if (!sheet) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} return; }
+  // Marcas del cierre de semana: solo Firebase + copia local (no hay hoja en Google Sheets)
+  if (k === "pc4_cierre") { _cache[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} _sobSaveToFirebase(k); return; }
   _cache[k] = v;
   _pending[k] = v;
   _sobSaveToFirebase(k);  // sync a Firebase (fuente principal)
@@ -4199,10 +4221,12 @@ function syncSemana(v){
   const el=id=>document.getElementById(id);
   if(el("ptit"))el("ptit").textContent=s?"Semana "+s+" ✓":"Sin datos cargados";
   if(el("stit"))el("stit").textContent=s?"Tickets — Semana "+s:"Tickets";
-  if(el("flujo-sem-lbl"))el("flujo-sem-lbl").textContent=lbl;
-  if(el("coord-sem-lbl"))el("coord-sem-lbl").textContent=lbl;
+  // Sueldos y Flujo ya no repiten el número de semana (solo lo muestran al ver una semana histórica)
+  if(el("flujo-sem-lbl"))el("flujo-sem-lbl").textContent="";
+  if(el("coord-sem-lbl"))el("coord-sem-lbl").textContent="";
   if(el("perf-sem-lbl"))el("perf-sem-lbl").textContent=s?"S"+s:"—";
   sv("pc4_semana",s);
+  if(typeof cierreRender==="function")cierreRender();
 }
 
 // ── SUB-TABS (Coordinadores) ───────────────────────────────────────────────
@@ -5913,6 +5937,7 @@ let colaImpresion = [];
 let colaIndex = 0;
 
 function printTermica(){
+  if(ticketsBloqueados())return;
   if(ticketsModo==="coord"){
     const L=tkCoordLista();
     if(!L.list.length){alert("No hay tickets de coordinadores para imprimir.");return;}
@@ -6137,6 +6162,7 @@ function renderS(){
 
 function printSeleccionado(){
   if(!sobreSeleccionado) return;
+  if(ticketsBloqueados())return;
   const sem=document.getElementById("sem").value;
   let _tkH;
   if(ticketsModo==="coord"){
@@ -6162,6 +6188,7 @@ function printSeleccionado(){
 }
 
 function printSobres(){
+  if(ticketsBloqueados())return;
   const sem=document.getElementById("sem").value;
   let act=rows.filter(r=>r.nombre&&(num(r.comision)>0||num(r.autos)>0)&&!esCoordLavador(r.nombre));
   if(filtroS!=="all")act=act.filter(r=>r.sucursal===filtroS);
@@ -6179,6 +6206,7 @@ function printSobres(){
 }
 
 async function guardarTicketsHTML(){
+  if(ticketsBloqueados())return;
   let sem=document.getElementById("sem").value, act, _tkHtml, _tkPref="tickets";
   if(ticketsModo==="coord"){
     const L=tkCoordLista(); sem=String(L.sem||""); act=L.list; _tkHtml=t=>bcoordTicket(t,sem); _tkPref="tickets-coordinadores";
@@ -6253,14 +6281,17 @@ async function guardarTicketsHTML(){
 }
 
 // ── CERRAR SEMANA ─────────────────────────────────────────────────────────────
-function cerrarSemana(){
+// `auto` = lo llama la isla de cierre (cierreCerrarSemana), que ya hizo las preguntas y el snapshot.
+function cerrarSemana(auto){
   const sem=document.getElementById("sem").value;
+  if(!auto){
   const _ya=ld("pc4_hist",[]).find(h=>h.semana===sem);
   if(_ya){alert("La semana "+sem+" ya se cerró el "+(_ya.fecha||"")+".\n\nSi es otra semana, cambia el número de semana arriba antes de cerrar.");return;}
   const _hoy=new Date().toLocaleDateString("es-MX"), _ult=ld("pc4_hist",[])[0];
   if(_ult&&_ult.fecha===_hoy&&!confirm("Hoy ya cerraste la semana "+_ult.semana+".\n\nCada cierre avanza un pago de todas las deudas. ¿Seguro que quieres cerrar también la "+sem+"?"))return;
   if(!confirm("¿Cerrar semana "+sem+"?\n\nEsto guardará el flujo de efectivo, avanzará al historial y limpiará los datos para la próxima semana."))return;
   takeSnapshot(); // ← undo point antes de operación destructiva
+  }
   // ── Guardar flujo antes de cerrar (Fix #2) ───────────────────────────────
   const totRef=flujoDias.reduce((s,d)=>s+montoRef(d)-(d.ref.gasto||0),0);
   const totAla=flujoDias.reduce((s,d)=>s+montoAla(d)-(d.ala.gasto||0),0);
@@ -7040,7 +7071,7 @@ function cambiarSemanaFlujo(){
     else renderFlujoTabla();
     // Restaurar label con semana actual
     const curSem = document.getElementById("sem").value;
-    if(lbl) lbl.textContent = curSem ? "Semana "+curSem : "—";
+    if(lbl) lbl.textContent = "";
     return;
   }
   const idx = parseInt(val.replace("hist_",""));
@@ -7051,7 +7082,7 @@ function cambiarSemanaFlujo(){
     renderFlujoTabla();
     // Actualizar label con semana del historial
     const semHist = hist[idx].semana || hist[idx].label || ("Semana "+(idx+1));
-    if(lbl) lbl.textContent = "Semana "+semHist+" (hist.)";
+    if(lbl) lbl.textContent = " — Semana "+semHist+" (hist.)";
     flash("Cargado: semana "+semHist);
   } else {
     flash("Sin datos de flujo para esa semana");
@@ -7085,13 +7116,13 @@ function cargarSemanaHistDatos(){
 function cargarSemanaHistCoords(){
   const sel = document.getElementById("coords-hist-sel");
   const val = sel ? sel.value : "";
-  if(!val){ renderCoords(); renderCoordHist(); return; }
+  if(!val){ const _l=document.getElementById("coord-sem-lbl"); if(_l)_l.textContent=""; renderCoords(); renderCoordHist(); return; }
   const idx = parseInt(val.replace("hist_",""));
   const hist = historial && historial.length ? historial : ld("pc4_hist",[]);
   if(hist[idx]){
     const w = hist[idx];
     if(w.coords) { coords = w.coords; renderCoords(); }
-    document.getElementById("coord-sem-lbl").textContent = "Semana "+(w.semana||idx)+" — histórico";
+    document.getElementById("coord-sem-lbl").textContent = " — Semana "+(w.semana||idx)+" — histórico";
     flash("Semana "+(w.semana||idx)+" cargada");
   }
 }
@@ -8074,9 +8105,10 @@ function delCoord(i){
   renderCoords();
 }
 
-function guardarSemanaCoords(){
+// `auto` = lo llama el cierre de semana (ya confirmó): no pregunta ni avisa por separado.
+function guardarSemanaCoords(auto){
   const sem=document.getElementById("sem").value;
-  if(!confirm("¿Guardar pagos de coordinadores para la semana "+sem+"?"))return;
+  if(!auto&&!confirm("¿Guardar pagos de coordinadores para la semana "+sem+"?"))return;
   const lista=coords.map(c=>{
     const r=coCalc(c);
     const o={...c,sueldo:r.base,base:r.base,detalle:r.porTarifa?r.det:null,pagoInc:r.pagoInc,imss:r.imss.monto,isr:r.isr.monto,infonavit:r.inf.monto,deudaDesc:r.deuda,deudaCon:r.deuda?(r.dObj.concepto||""):"",deudaPago:r.deuda?r.dObj.pagoActual+"/"+r.dObj.numPagos:"",total:r.total};
@@ -8102,7 +8134,7 @@ function guardarSemanaCoords(){
   coords=coords.map(c=>{const n={...coNorm(c),extra:0,comision:0,food:0,merch:0};delete n.diasMan;n.dias=coDiasDefault(n);delete n._cfgOpen;return n;});
   coGuardar();
   renderCoords();
-  flash("✓ Pagos de coordinadores guardados — S"+sem);
+  if(!auto)flash("✓ Pagos de coordinadores guardados — S"+sem);
 }
 
 function coHistTotal(c){
@@ -13924,6 +13956,62 @@ function setHorQuien(q){
   if(q==="coo")renderHorCoord();else if(q==="fie")renderVac();else renderRol();
 }
 function renderHorarios(){setHorQuien(horQuien);}
+
+
+// ── ISLA DE CIERRE DE SEMANA ─────────────────────────────────────────────────
+// Flujo → Comisiones → Sueldos → Horarios. Las marcas ✓ son libres (se pueden quitar)
+// y pertenecen a la semana del selector: al cambiar de semana se reinician solas.
+// Con las 4 marcadas se desbloquean los tickets y el botón "Cerrar semana".
+function cierreAreas(){return [["flujo","Flujo","flujo"],["comisiones","Comisiones","datos"],["sueldos","Sueldos","coords"],["horarios","Horarios","rol"]];}
+function cierreGet(){
+  const sem=String((document.getElementById("sem")||{}).value||"").trim();
+  const c=ld("pc4_cierre",null);
+  return (c&&c.sem===sem&&c.ok)?c:{sem,ok:{}};
+}
+function cierreListo(){const c=cierreGet();return cierreAreas().every(a=>c.ok[a[0]]);}
+function cierreFaltan(){const c=cierreGet();return cierreAreas().filter(a=>!c.ok[a[0]]).map(a=>a[1]);}
+function cierreToggle(k){const c=cierreGet();c.ok[k]=!c.ok[k];sv("pc4_cierre",c);cierreRender();}
+function cierreAbrir(v){const el=document.getElementById("cierre-isla");if(el)el.classList.toggle("open",v===undefined?!el.classList.contains("open"):!!v);}
+function cierreIr(k){const a=cierreAreas().find(x=>x[0]===k);if(!a)return;cierreAbrir(false);goTab(a[2]);}
+function cierreRender(){
+  try{
+    const el=document.getElementById("cierre-isla");if(!el)return;
+    const c=cierreGet(),A=cierreAreas(),listo=A.every(a=>c.ok[a[0]]);
+    el.innerHTML=`<div class="ci-panel">
+      <div class="ci-tit">Cierre · Semana ${esc(c.sem||"—")}</div>
+      ${A.map(a=>`<div class="ci-row"><button type="button" class="ci-chk${c.ok[a[0]]?" on":""}" onclick="cierreToggle('${a[0]}')" aria-label="Marcar ${a[1]}">${c.ok[a[0]]?"✓":""}</button><span class="ci-name" onclick="cierreIr('${a[0]}')">${a[1]}</span></div>`).join("")}
+      <button type="button" class="ci-btn${listo?" ready":""}" onclick="cierreCerrarSemana()">Cerrar semana</button>
+    </div>
+    <button type="button" class="ci-pill" onclick="cierreAbrir()"><span>Semana <b>${esc(c.sem||"—")}</b></span><span class="ci-dots">${A.map(a=>`<i class="${c.ok[a[0]]?"on":""}"></i>`).join("")}</span></button>`;
+    document.querySelectorAll('#pnl-sobres [onclick*="printTermica"],#pnl-sobres [onclick*="printSeleccionado"],#pnl-sobres [onclick*="guardarTicketsHTML"]').forEach(b=>b.classList.toggle("tk-lock",!listo));
+  }catch(e){console.warn("cierreRender:",e);}
+}
+document.addEventListener("click",e=>{const el=document.getElementById("cierre-isla");if(el&&el.classList.contains("open")&&!el.contains(e.target))el.classList.remove("open");});
+// Tickets de la semana en curso: no se imprimen ni se guardan hasta tener las 4 áreas marcadas.
+// (Los de una semana de coordinadores ya guardada, vista desde el historial, sí se pueden sacar.)
+function ticketsBloqueados(){
+  if(typeof ticketsModo!=="undefined"&&ticketsModo==="coord"&&typeof tkCoordSem!=="undefined"&&tkCoordSem!==""&&coordHist[+tkCoordSem])return false;
+  if(cierreListo())return false;
+  flash("🔒 Marca primero: "+cierreFaltan().join(", "));
+  cierreAbrir(true);
+  return true;
+}
+// Cerrar semana (único botón): Sueldos → Flujo, Comisiones y deudas → avanza de semana.
+// Sueldos va primero porque usa los lavados de las comisiones, que el cierre limpia.
+function cierreCerrarSemana(){
+  if(!cierreListo()){flash("Faltan: "+cierreFaltan().join(", "));cierreAbrir(true);return;}
+  const sem=document.getElementById("sem").value;
+  const _ya=ld("pc4_hist",[]).find(h=>h.semana===sem);
+  if(_ya){alert("La semana "+sem+" ya se cerró el "+(_ya.fecha||"")+".\n\nSi es otra semana, cambia el número de semana arriba antes de cerrar.");return;}
+  const _hoy=new Date().toLocaleDateString("es-MX"),_ult=ld("pc4_hist",[])[0];
+  if(_ult&&_ult.fecha===_hoy&&!confirm("Hoy ya cerraste la semana "+_ult.semana+".\n\nCada cierre avanza un pago de todas las deudas. ¿Seguro que quieres cerrar también la "+sem+"?"))return;
+  if(!confirm("¿Cerrar semana "+sem+"?\n\nSe guardan Sueldos, Flujo y Comisiones, avanzan las deudas y pasas a la semana siguiente.\n\nSi falta imprimir tickets, hazlo antes: al cerrar se limpian los datos de la semana."))return;
+  takeSnapshot();
+  if(!(coordHist||[]).some(h=>String(h.semana)===String(sem)))guardarSemanaCoords(true);
+  cierreAbrir(false);
+  cerrarSemana(true);
+}
+cierreRender();
 
 // Patch goTab to also update mobile nav
 const _origGoTab=goTab;
